@@ -9,10 +9,14 @@ import {fileURLToPath} from 'node:url';
 import {Reader} from '../tools/capture-decoders.mjs';
 import {decodeGuide,guideRequest,guideTasks,guideSkills,guideFields,mergeGuide,readGuideCapture} from '../tools/guide-core.mjs';
 import {request,decode,initialState,applyResult} from '../tools/catalog-core.mjs';
-const root=fileURLToPath(new URL('..',import.meta.url)),folder=path.resolve(root,'../正式服录制数据/2026-09-20T14-58-37-867Z_50e9cd');
-const sample=fs.readFileSync(path.join(folder,'blobs/2e/2ef4f519262d6c19ddc46b04c2765236ed10e5c06648cc978af89cec423233e3.bin'));
+const root=fileURLToPath(new URL('..',import.meta.url)),dataRoot=path.resolve(root,'../正式服录制数据'),folder=path.resolve(dataRoot,'2026-09-20T14-58-37-867Z_50e9cd');
+// 依赖 世界OL_源码/正式服录制数据/ 下的原版抓包。目录不一定在本机，做成「有数据就跑、没有就跳过」；
+// 纯函数用例（guideFields 那条）不受影响照常跑。
+const hasRecordings=fs.existsSync(path.join(folder,'blobs/2e/2ef4f519262d6c19ddc46b04c2765236ed10e5c06648cc978af89cec423233e3.bin'));
+const skipNoRecordings={skip:hasRecordings?false:'缺少 ../正式服录制数据（原版抓包），跳过依赖它的用例'};
+const sample=hasRecordings?fs.readFileSync(path.join(folder,'blobs/2e/2ef4f519262d6c19ddc46b04c2765236ed10e5c06648cc978af89cec423233e3.bin')):null;
 
-test('recorded level-22 guide matches the native parser and preserves every complete effect',()=>{
+test('recorded level-22 guide matches the native parser and preserves every complete effect',skipNoRecordings,()=>{
  const page=decodeGuide(1201,sample);assert.equal(page.title,'22级被动技能效果');assert.equal(page.parentId,1200);assert.equal(page.entries.length,24);
  const raw=fs.readFileSync(path.join(root,'analysis/modules/0207.js'),'utf8'),source=raw.startsWith('function(')?'('+raw+')':raw;let code;
  simple(parse(source,{ecmaVersion:'latest'}),{AssignmentExpression(n){if(n.left.type==='MemberExpression'&&n.left.property.name==='fromBytes'&&n.right.type==='FunctionExpression')code=source.slice(n.right.start,n.right.end);}});
@@ -24,14 +28,14 @@ test('recorded level-22 guide matches the native parser and preserves every comp
  assert.throws(()=>decodeGuide(1201,sample.subarray(0,-1)),/envelope/);
 });
 
-test('guide queue follows only server-listed career links and never guesses IDs or reads content as pages',()=>{
+test('guide queue follows only server-listed career links and never guesses IDs or reads content as pages',skipNoRecordings,()=>{
  assert.deepEqual(guideTasks([]).map(q=>q.id),[0]);
  const rootPage={id:0,parentId:-1,title:'',entries:[{id:38,type:0,name:'职业技能'},{id:999,type:0,name:'其他功能'}]},career={id:38,parentId:0,title:'职业技能',entries:[{id:1200,type:0,name:'修真技能'}]},profession={id:1200,parentId:38,title:'修真技能',entries:[{id:1201,type:0,name:'22级被动技能效果'},{id:1202,type:0,name:'22级自动技能效果'}]};
  assert.deepEqual(guideTasks([rootPage]).map(q=>q.id),[38]);assert.deepEqual(guideTasks([rootPage,career]).map(q=>q.id),[1200]);
  const pages=[rootPage,career,profession,decodeGuide(1201,sample)];assert.deepEqual(guideTasks(pages).map(q=>q.id),[1202]);assert.ok(!guideTasks(pages).some(q=>[999,1205].includes(q.id)));
 });
 
-test('guide skill effects retain menu identity and stay separate from complete native skill definitions',()=>{
+test('guide skill effects retain menu identity and stay separate from complete native skill definitions',skipNoRecordings,()=>{
  const rows=guideSkills([{id:1200,title:'修真技能'},decodeGuide(1201,sample)],[{id:701,name:'灵性根基',type:1,level:1}]);
  assert.equal(rows.length,24);const skill=rows.find(s=>s.name==='灵性根基');
  assert.equal(skill.guideEntryId,1205);assert.deepEqual(skill.matchingSkillIds,[701]);assert.equal(skill.level,22);assert.equal(skill.profession,'修真');assert.equal(skill.completeCombatDefinition,false);assert.equal(skill.wireBase64,undefined);
@@ -42,7 +46,7 @@ test('guide skill effects retain menu identity and stay separate from complete n
  assert.equal(request({kind:'guide',id:1201}).hex,guideRequest(1201).hex);assert.throws(()=>request({kind:'guide',id:-1}),/Invalid/);assert.throws(()=>request({kind:'guide',id:1.5}),/Invalid/);
 });
 
-test('live capture extraction pairs and hash-checks public guide frames without exporting login or chat',()=>{
+test('live capture extraction pairs and hash-checks public guide frames without exporting login or chat',skipNoRecordings,()=>{
  const result=readGuideCapture(folder);assert.ok(result.pages.some(p=>p.id===1201));assert.ok(result.snapshot.responses>=12);
  assert.ok(result.pages.every(p=>p.sources.every(s=>s.protocol===16005&&s.requestSeq&&s.seq&&s.sha256)));
  assert.equal(JSON.stringify(result).includes('5002'),false);assert.equal(result.snapshot.pendingRequests,0);

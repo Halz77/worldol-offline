@@ -49,7 +49,7 @@ function fixture(){
   0:{ModName:{},ProxyType:{}},1:{default:{}},3:{default:{getProxy:()=>({})}},4:{default:C},5:{default:{myPlayer:leader}},
   10:{GameText:{LEGION_DESC1:''}},12:{ModelConst:M},54:{default:{ins:{battle}}},57:{default:Skill},61:{default:BC},
   221:{default:class{onLegionActorlistMsg(){}onLegionChangeMsg(){}}},228:{MonsterGroup:{getLocalBattlePlayerList(){}}},
-  251:{default:Battle},256:{default:Legion},1464:{default:class{onInit(){}}}
+  251:{default:Battle},256:{default:Legion},75:{default:{getPetOwnerPos:()=>-1}},1464:{default:class{onInit(){}}}
  };
  const window={};vm.runInNewContext(fs.readFileSync(new URL('../web/legion.js',import.meta.url),'utf8'),{window,document:{getElementById:()=>({})}});window.installOfflineLegion(id=>modules[id]);
  const orderScope={c:{default:BC},r:{default:Skill},A:{MODEL_TYPE:types},S:{GuideModel:{ins:{isForbidBattle:false}}},egret:{ByteArray:Bytes}};

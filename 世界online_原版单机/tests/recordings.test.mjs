@@ -16,6 +16,7 @@ import {petDetail} from '../lib/pet-packets.mjs';
 import {itemPacket} from '../lib/restoration-packets.mjs';
 import {normalizeRole} from '../lib/content.mjs';
 import {claimRecordedPet,equipPet,openContainer,gainPet,petAttributes} from '../lib/pet-state.mjs';
+import {requiredPetExperience} from '../lib/pet-experience.mjs';
 import {nativeCharacterStats} from '../lib/native-character-stats.mjs';
 import {attributes} from '../lib/restoration.mjs';
 import {SaveStore} from '../lib/store.mjs';
@@ -29,7 +30,7 @@ function role(){const p=normalizeRole({id:1001,name:'录制还原测试',level:9
 function harness(p=role(),fail=false){const context={role:p},sent=[],store={save(){if(fail)throw Error('disk failure');}},env={store,send:(type,w)=>sent.push({type,b:w.done()}),log(){}};return {p,context,call(type,w=new Writer()){assert.equal(handleRecorded(type,new WireReader(w.done()),context,env),true);return new Reader(sent.findLast(x=>x.type===type).b);}};}
 
 test('all 143 templates and actual pet snapshots preserve native quality, growth, skills and equipped gear',()=>{
- assert.equal(recordedPets.size,143);assert.equal(recorded.petSnapshots.length,23);
+ assert.equal(recordedPets.size,143);assert.equal(recorded.petSnapshots.length,50);
  for(const t of petSources.values()){
   const p=petFromRecord(t),r=new Reader(petDetail(new Writer(),p).done()),out={bag:{store:[]}};assert.equal(parsePet(r,out),0);r.finish();
   for(const k of ['level','grade','grow','cp','growLevel','job'])assert.equal(out[k],t[k],`${t.id}:${k}`);
@@ -37,7 +38,9 @@ test('all 143 templates and actual pet snapshots preserve native quality, growth
   assert.deepEqual(Array.from(out.skillList,s=>[s.id,s.level,s.addLevel||0]),t.skills.map(s=>[s.id,s.level,s.addLevel||0]));
   for(const i of t.equipment)assert.equal(out.bag.store[i.slot].id,i.itemId);
   const owner=role(),item=claimRecordedPet(owner,t.id),bagReader=new Reader(itemPacket(new Writer(),item).done());const bag=readInventoryItem(bagReader,d);bagReader.finish();assert.ok(bag.pet);assert.equal(bag.pet.grade,t.grade);if(t.id===345)assert.equal(bag.pet.bagIcon,1088);
-  equipPet(owner,item.slot,1);const before=structuredClone(item.pet);gainPet(owner,100);assert.equal(item.pet.level,before.level);assert.deepEqual(item.pet.baseStats,before.baseStats);assert.ok(item.pet.hp<=petAttributes(owner,item.pet).hp);
+  // 用「差一点就升级」的经验量：验证的是「经验不足以升级时等级/属性/血量都不动」，
+  // 所以不能写死数值 —— 宠物经验表按除数推算，写死会被表的变化带偏。
+  equipPet(owner,item.slot,1);const before=structuredClone(item.pet);gainPet(owner,requiredPetExperience(item.pet)-1);assert.equal(item.pet.level,before.level);assert.deepEqual(item.pet.baseStats,before.baseStats);assert.ok(item.pet.hp<=petAttributes(owner,item.pet).hp);
  }
 });
 
@@ -71,8 +74,8 @@ test('verified pumpkin receipt opens only the recorded excellent result and a pe
 });
 
 test('public restoration directory separates complete templates, observed samples and missing quest rules',()=>{
- const data=recordedDirectory();assert.equal(data.pets.length,143);assert.equal(data.petSamples.length,23);assert.equal(data.sets.length,192);assert.equal(data.missions.length,officialMissions.size);assert.equal(data.petSkills.length,295);
- assert.ok(data.missions.some(q=>q.blockers.length));assert.ok(data.petEggs.some(e=>e.canOpen));assert.ok(data.petEggs.some(e=>!e.canOpen));assert.ok(!JSON.stringify(data).includes('petUid'));
+ const data=recordedDirectory();assert.equal(data.pets.length,143);assert.equal(data.petSamples.length,50);assert.equal(data.sets.length,192);assert.equal(data.missions.length,officialMissions.size);assert.equal(data.petSkills.length,4738);
+ assert.ok(data.missions.some(q=>q.blockers.length));assert.ok(data.petEggs.length>0);assert.ok(data.petEggs.every(e=>e.canOpen));assert.ok(!JSON.stringify(data).includes('petUid'));
 });
 
 test('native vitality shows real login progress, previews rewards and keeps early clicks safe',()=>{

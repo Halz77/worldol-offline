@@ -45,7 +45,7 @@ function harness(){
  const list=(shop=2000)=>{const r=new Message(12004,server(12004,new Writer().short(shop).done()));assert.equal(r.getByte(),0);const n=r.getShort(),items=Array.from({length:n},()=>Shop.fromBytesShopItem(r,shop));r.finish();return items;};
  return {p,server,list,Shop,bag,player,world,alerts,notifications,tips,previews,modals,requests,modules,failSave(){failure=true;},saved:()=>saves};
 }
-test('all VIP shop replies place the finished pets in the actual native pet category, with separate template identities',()=>{
+test('all VIP shop replies place the finished pets in the actual native pet category, with separate template identities',{skip:'成品宠已不再从 VIP 商店（12004）下发，改走 90004 领取 + web/recorded-content.js 面板（见 tests/finished-pet-shop.test.mjs）；本用例仍在断言旧的商店回包。'},()=>{
  const h=harness();
  for(const shopId of[2000,2002,2003,2004]){
   const all=h.list(shopId),pets=all.filter(i=>i.typeForShop===3);assert.equal(pets.length,recordedFinishedPets.size);
@@ -57,7 +57,7 @@ test('all VIP shop replies place the finished pets in the actual native pet cate
  }
  assert.ok(h.list(901).every(i=>i.offlinePetSampleId===undefined));
 });
-test('native pet row and buy modal purchase the corresponding real pet, while help opens its native detail window',async()=>{
+test('native pet row and buy modal purchase the corresponding real pet, while help opens its native detail window',{skip:'同前：VIP 商店回包不再含成品宠条目，web/native-pet-shop.js 现在收不到可点开的宠物行。'},async()=>{
  const h=harness(),item=h.list().find(i=>i.offlinePetSampleId!==undefined);
  const row=Object.assign(Object.create(h.modules[206].ListShopNewItem.prototype),{data:item});row.tapSelf();assert.equal(h.modals[0][2].shopItem,item);
  await row.tapHelp();assert.equal(h.previews[0][2],4);assert.equal(h.previews[0][3].sampleId,item.id);
@@ -66,7 +66,7 @@ test('native pet row and buy modal purchase the corresponding real pet, while he
  const owned=h.p.inventory[0];assert.equal(owned.pet.templateId,item.id);assert.deepEqual(owned.pet.skills,recordedFinishedPets.get(item.id).skills);assert.ok(BigInt(owned.pet.uid)>0n);assert.equal(h.bag.get(owned.slot).petId.toString(),owned.pet.uid);assert.equal(h.saved(),1);assert.ok(h.notifications.some(n=>n[0]==='shop-buy'));assert.equal(h.alerts.length,0);
  assert.equal(await h.Shop.doItemShopBuyMsg(h.player,{id:787},1),'ordinary-item-buy');
 });
-test('native pet purchase prevents double clicks and leaves the client bag empty on save or capacity failure',async()=>{
+test('native pet purchase prevents double clicks and leaves the client bag empty on save or capacity failure',{skip:'同前：VIP 商店回包不再含成品宠条目，购买链路无法在此路径上触发。'},async()=>{
  const h=harness(),item=h.list().find(i=>i.offlinePetSampleId!==undefined);
  const first=h.Shop.doItemShopBuyMsg(h.player,item,1),second=h.Shop.doItemShopBuyMsg(h.player,item,1);assert.equal(await second,false);assert.equal(await first,true);assert.equal(h.p.inventory.length,1);
  for(const mode of['disk','full','level']){const f=harness(),offer=f.list().find(i=>i.offlinePetSampleId!==undefined);if(mode==='disk')f.failSave();if(mode==='full'){f.p.bagLimit=1;f.p.inventory=[{itemId:787,slot:30,quantity:1}];}if(mode==='level')f.p.level=1;const before=structuredClone(f.p);assert.equal(await f.Shop.doItemShopBuyMsg(f.player,offer,1),false);assert.deepEqual(f.p,before);assert.equal(f.bag.size,0);assert.equal(f.alerts.length,1);}

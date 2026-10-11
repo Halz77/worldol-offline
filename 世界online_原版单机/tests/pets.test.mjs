@@ -48,11 +48,15 @@ test('hatched pet, equip/rest, native item/detail parsers, XP scroll and setting
  const {p,call}=harness();assert.equal(call(12001,use(1,32)).byte(),1);const egg=p.inventory.find(i=>i.pet);assert.ok(egg);assert.equal(egg.pet.name,'苍鹰');
  const nativeItem=new NativeReader(itemPacket(new Writer(),egg).done());nativeItem.take(18);const item=new d.Item();d.Item.fromBytesAtts2(item,nativeItem);nativeItem.finish();assert.equal(item.id,24);assert.equal(item.petId.toJSON(),egg.pet.uid);
  assert.equal(call(12001,new Writer().byte(2).byte(1).short(egg.slot).int(1).byte(-1).bool(false).byte(32)).byte(),2);
- assert.equal(activePet(p),egg.pet);assert.equal(petAttributes(p,egg.pet).hp,138);assert.equal(petAttributes(p,egg.pet).mp,92);
+ // 宠物蛋现在孵出即到「90 级或人物等级（取小）」，所以 1 级是旧模型；按人物 15 级重算。
+ assert.equal(activePet(p),egg.pet);assert.equal(petAttributes(p,egg.pet).hp,494);assert.equal(petAttributes(p,egg.pet).mp,266);
  const parser=d.native(42,'fromBytesDetail',{n:{default:{timer:{serverTime:0}}},a:{default:{processDataPlayerSkillMsg(r){return Array.from({length:r.getShort()},()=>d.Skill.fromBytes(r));}}},E:{default:{PET_BAG_SIZE:8}}});
- const nr=new NativeReader(petDetail(new Writer(),egg.pet).done()),decoded={bag:{store:[]}};assert.equal(parser(nr,decoded),0);nr.finish();assert.equal(decoded.level,1);assert.equal(decoded.str,4);assert.equal(decoded.autoSkillID.length,4);assert.equal(decoded.skillList.length,2);
+ const nr=new NativeReader(petDetail(new Writer(),egg.pet).done()),decoded={bag:{store:[]}};assert.equal(parser(nr,decoded),0);nr.finish();assert.equal(decoded.level,Math.min(90,p.level),'宠物蛋孵出即到 90 级或人物等级（取小）');assert.equal(decoded.str>=4,true);assert.ok(decoded.autoSkillID.length>=4);assert.ok(decoded.skillList.length>=2);
  assert.equal(call(14009,new Writer().byte(1).int(5000)).byte(),0);assert.equal(egg.pet.initiativeSkill,5000);
- p.inventory.push({itemId:40006,slot:33,quantity:1});assert.equal(call(12001,use(12,33)).byte(),12);assert.ok(egg.pet.level>1);assert.ok(!p.inventory.some(i=>i.itemId===40006));
+ p.inventory.push({itemId:40006,slot:33,quantity:1});
+ // 宠物蛋孵出即到 min(90, 人物等级)，此时已顶到上限、喂卷会被拒；先把人物等级抬上去腾出空间。
+ p.level=30;normalizeRole(p);
+ assert.equal(call(12001,use(12,33)).byte(),12);assert.ok(egg.pet.level>1);assert.ok(!p.inventory.some(i=>i.itemId===40006));
  const saved=JSON.parse(JSON.stringify(p));normalizeRole(saved);assert.deepEqual(saved,p);
  assert.equal(call(12001,new Writer().byte(3).byte(2).short(1).int(1).bool(false).byte(32)).byte(),3);assert.equal(activePet(p),null);assert.equal(egg.pet.initiativeSkill,5000);
 });
@@ -62,7 +66,9 @@ test('pet participates in native two-plan battle, receives XP, and invalid HP or
  assert.equal(call(12501,new Writer().short(260)).byte(),0);
  const packet=(hp)=>new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(260).bool(true).byte(0).byte(1).bytes([0]).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(hp).int(92);
  const before=p.coins;assert.throws(()=>call(12502,packet(999999)),/宠物战斗状态/);assert.equal(p.coins,before);
- const victory=packet(100);assert.equal(call(12502,victory).byte(),2);assert.equal(item.pet.hp,100);assert.ok(item.pet.exp>0);
+ const victory=packet(100);assert.equal(call(12502,victory).byte(),2);assert.equal(item.pet.hp,petAttributes(p,item.pet).hp,'战斗结束后出战宠回满');assert.ok(item.pet.exp>0);
  const read=new NativeReader(sent.findLast(x=>x.type===12502).bytes);const reward=readBattleReward(read,d,()=>{});read.finish();assert.equal(reward.result,2);assert.throws(()=>call(12502,victory),/已结算/);
- const gain=gainPet(p,1000000);assert.equal(item.pet.level,14);assert.equal(gain.levels,13);assert.ok(item.pet.exp>item.pet.expMax);
+ // 宠物等级上限 = 90 或人物等级（取小）；经验足够时会一直升到上限。
+ const beforeLevel=item.pet.level,cap=Math.min(90,p.level);
+ const gain=gainPet(p,1000000);assert.equal(item.pet.level,cap);assert.equal(gain.levels,cap-beforeLevel);assert.ok(item.pet.exp>item.pet.expMax);
 });

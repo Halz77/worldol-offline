@@ -32,12 +32,12 @@ test('all task types reset only at Shanghai midnight, without changing character
  let saves=0;const store={data:{characters:[p]},save(){saves++;}};
  assert.equal(nextTaskResetAt(before),midnight);assert.equal(dailyKey(midnight),'2026-09-24');
  assert.deepEqual(resetTaskDays(store,before),[]);assert.equal(saves,0);
- const result=resetTaskDays(store,midnight);assert.deepEqual(result,[{role:1001,day:'2026-09-24',reset:true,completed:4,active:2}]);
- assert.deepEqual(p.quests,{completed:[],active:{},custom:'retain'});assert.deepEqual(p.dailyActivity.completed,{});assert.deepEqual(p.dailyActivity.taskTimes,{});assert.deepEqual(p.dailyActivity.claimedActive,[]);assert.deepEqual(p.dailyActivity.claimedVitality,[]);
+ const result=resetTaskDays(store,midnight);assert.deepEqual(result,[{role:1001,day:'2026-09-24',reset:true,completed:2,active:1}]);
+ assert.deepEqual(p.quests,{completed:[42,9001],active:{9002:{kills:1}},custom:'retain'},'跨天只清非新手任务：42/9001 保留，9002 是战斗中的任务进度');assert.deepEqual(p.dailyActivity.completed,{});assert.deepEqual(p.dailyActivity.taskTimes,{});assert.deepEqual(p.dailyActivity.claimedActive,[]);assert.deepEqual(p.dailyActivity.claimedVitality,[]);
  const rest=structuredClone(p);delete rest.quests;delete rest.dailyActivity;assert.deepEqual(rest,unchanged);
- assert.equal(missionClosed(p,officialMissions.get(42)),false);assert.ok([...officialMissions.values()].some(q=>!(q.setting&2)&&officialCanAccept(p,q)));
- p.quests.completed.push(9001);assert.deepEqual(resetTaskDays(store,midnight),[]);assert.deepEqual(resetTaskDays(store,before),[]);assert.equal(saves,1);assert.deepEqual(p.quests.completed,[9001]);
- resetTaskDays(store,midnight+86400000);assert.deepEqual(p.quests.completed,[]);assert.equal(saves,2);
+ assert.equal(missionClosed(p,officialMissions.get(42)),true,'42 是新手任务，跨天保留完成记录');assert.ok([...officialMissions.values()].some(q=>!(q.setting&2)&&officialCanAccept(p,q)));
+ p.quests.completed.push(1132);assert.deepEqual(resetTaskDays(store,midnight),[]);assert.deepEqual(resetTaskDays(store,before),[]);assert.equal(saves,1);assert.deepEqual(p.quests.completed,[42,9001,1132]);
+ resetTaskDays(store,midnight+86400000);assert.deepEqual(p.quests.completed,[42,9001],'再过一天清掉 1132，新手任务仍然保留');assert.equal(saves,2);
 });
 
 test('failed reset saves roll back every character, while undated legacy saves establish a date first',()=>{
@@ -45,7 +45,8 @@ test('failed reset saves roll back every character, while undated legacy saves e
  assert.throws(()=>resetTaskDays(store,midnight),/disk full/);assert.deepEqual(roles,original);
  const old=role(1003);delete old.dailyActivity;const originalQuests=structuredClone(old.quests);
  store.data.characters=[old];store.save=()=>{};assert.equal(resetTaskDays(store,before)[0].reset,false);assert.deepEqual(old.quests,originalQuests);
- resetTaskDays(store,midnight);assert.deepEqual(old.quests.completed,[]);assert.deepEqual(old.quests.active,{});
+ // 跨天只清非新手任务：42（type 6）与 9001 属于新手引导，进度保留。
+ resetTaskDays(store,midnight);assert.deepEqual(old.quests.completed,[42,9001]);
 });
 
 test('native client defers midnight refresh during combat and discards stale notifications after switching roles',()=>{
@@ -72,7 +73,7 @@ test('idle service resets online and offline roles at midnight, keeps a running 
  try{
   await Promise.race([once(proc.stdout,'data'),once(proc,'exit').then(()=>{throw Error(errors);}),new Promise((_,reject)=>setTimeout(()=>reject(Error('Startup timed out '+errors)),5000).unref())]);
   const status=await fetch(`http://127.0.0.1:${port}/api/status`).then(r=>r.json());assert.equal(status.taskResetRevision,taskResetRevision);assert.equal(status.nextTaskResetAt,midnight);
-  assert.equal(status.characters.find(r=>r.id===p.id).quests.completed.length,4);assert.deepEqual(status.characters.find(r=>r.id===offline.id).quests.completed,[],'offline startup catches up missed days');
+  assert.equal(status.characters.find(r=>r.id===p.id).quests.completed.length,4);assert.deepEqual(status.characters.find(r=>r.id===offline.id).quests.completed,[42,9001],'offline startup catches up missed days');
   ws=new WebSocket(`ws://127.0.0.1:${port}/game`);await once(ws,'open');
   ws.on('message',b=>{const message=unframe(b);messages.push(message);const resolve=pending.get(message.type);if(resolve){pending.delete(message.type);resolve(new Reader(message.body));}});
   const call=(type,w=new Writer())=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>{pending.delete(type);reject(Error('No reply '+type+' '+errors+' '+fs.readFileSync(path.join(dir,'logs/session.jsonl'),'utf8').split('\n').filter(line=>line.includes('protocol-error')).join('\n')));},3000);pending.set(type,r=>{clearTimeout(timer);resolve(r);});ws.send(frame(type,w));});
@@ -83,14 +84,15 @@ test('idle service resets online and offline roles at midnight, keeps a running 
   await waitUntil(()=>messages.some(m=>m.type===90021));
   const notice=JSON.parse(new Reader(messages.find(m=>m.type===90021).body).string());assert.equal(notice.day,'2026-09-24');assert.equal(notice.role,p.id);
   const saved=JSON.parse(fs.readFileSync(path.join(dir,'world.json'),'utf8'));
-  for(const role of saved.characters){assert.equal(role.dailyActivity.day,'2026-09-24');assert.deepEqual(role.quests.completed,[]);assert.deepEqual(role.quests.active,{});}
+  for(const role of saved.characters){assert.equal(role.dailyActivity.day,'2026-09-24');assert.deepEqual(role.quests.completed.filter(id=>id!==42&&id!==9001),[],'只保留新手任务进度');assert.deepEqual(Object.keys(role.quests.active).filter(id=>id!=='9002'),[]);}
   assert.deepEqual(saved.characters[0].inventory,inventory);assert.equal(messages.filter(m=>m.type===10503).length,0,'no world reload is pushed into combat');
   const end=new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(token).byte(2);
   const settled=await call(12502,end);assert.equal(settled.byte(),2,'the existing battle can still settle');
   const refresh=await call(10503);assert.equal(refresh.byte(),0);await waitUntil(()=>messages.some(m=>m.type===22106));
-  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir,'world.json'),'utf8')).characters[0].quests.active,{});
+  // 本用例故意保持战斗未结算：重置会保留这场战斗依赖的任务进度。
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir,'world.json'),'utf8')).characters[0].quests.active,{9002:{kills:2}});
   await call(16001);assert.equal(messages.filter(m=>m.type===90021).length,1);
-  const loaded=new SaveStore(dir);assert.deepEqual(resetTaskDays(loaded,midnight),[]);assert.deepEqual(loaded.data.characters[0].quests.completed,[]);
+  const loaded=new SaveStore(dir);assert.deepEqual(resetTaskDays(loaded,midnight),[]);assert.deepEqual(loaded.data.characters[0].quests.completed,[42,9001]);
  }finally{
   ws?.close();
   if(proc.exitCode===null){const ctl=JSON.parse(fs.readFileSync(path.join(dir,'logs/control.json'),'utf8')),exited=once(proc,'exit');await fetch(`http://127.0.0.1:${port}/api/shutdown`,{method:'POST',headers:{'X-Worldol-Control':ctl.token}});await exited;}

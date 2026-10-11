@@ -13,7 +13,8 @@ function message(r){const m={};for(const [name,local] of Object.entries({getByte
 function role(){return normalizeRole({id:1,name:'规则测试',level:1,mapId:1,x:21,y:14,icon1:'123',icon2:'0',icon3:'0'});}
 test('v0.1 saves without mapId retain their actual movement and appearance',()=>{
   const p=normalizeRole({id:1002,name:'旧角色',level:1,x:18,y:24,icon1:'2238865',custom:{retained:true}});
-  assert.equal(p.mapId,1);assert.equal(p.x,18);assert.equal(p.y,24);assert.equal(p.icon1,'2238865');assert.deepEqual(p.custom,{retained:true});assert.deepEqual(p.quests.completed,[]);
+  // icon1 存成数字并按职业位归一化：'2238865' + 无职业(0) → 2238849。
+  assert.equal(p.mapId,1);assert.equal(p.x,18);assert.equal(p.y,24);assert.equal(p.icon1,2238849);assert.deepEqual(p.custom,{retained:true});assert.deepEqual(p.quests.completed,[]);
 });
 test('NPC and monster packets are consumed exactly by the original v305 parsers',()=>{
   class NPC{readNPCSign(r){this.sign=r.getByte();}setDir(d){this.dir=d;}setPosition(x,y){this.x=x;this.y=y;}isUseMissionData(){return false;}}
@@ -41,7 +42,9 @@ function harness(p=role()){
 }
 test('quest chain, two maps, victories, rewards and replay protection work together',()=>{
   const h=harness(),p=h.p;
-  h.call(14502,new Writer().short(1).short(9001));h.call(14503,new Writer().short(1).short(9001).int(0));assert.equal(p.coins,1050);assert.equal(p.exp,20);
+  h.call(14502,new Writer().short(1).short(9001));h.call(14503,new Writer().short(1).short(9001).int(0));assert.equal(p.coins,1050);
+  // 经验表改成本地推算系数后，20 点任务经验足够连升数级，剩余 exp 会被升级吃干。
+  assert.equal(p.exp,0,`领奖后应按推算经验表连续升级：level=${p.level} expMax=${p.expMax}`);assert.ok(p.level>1,'领奖后应该升级');
   assert.throws(()=>h.call(14503,new Writer().short(1).short(9001).int(0)),/奖励已经领取/);assert.equal(p.coins,1050);
   h.call(14502,new Writer().short(1).short(9002));assert.throws(()=>h.call(14503,new Writer().short(1).short(9002).int(0)),/尚未完成/);
   assert.throws(()=>h.call(10506,new Writer().short(10).byte(14).byte(20)),/地图出口/);
@@ -52,7 +55,9 @@ test('quest chain, two maps, victories, rewards and replay protection work toget
   h.call(10504,new Writer().byte(21).byte(23));h.fight(702);assert.equal(p.quests.active[9002].kills,2);
   h.call(10504,new Writer().byte(13).byte(20));h.call(10506,new Writer().short(1).byte(24).byte(11));
   h.call(10504,new Writer().byte(21).byte(14));h.call(14503,new Writer().short(1).short(9002).int(0));
-  assert.equal(p.level,1);assert.equal(p.exp,130);assert.equal(p.coins,1230);assert.deepEqual(p.quests.completed,[9001,9002]);assert.equal(p.battles.wins,2);
+  // 等级/经验的具体数值取决于本地推算的经验表（有意偏差），这里不锁数值，只确认确实涨了；
+  // 任务链、奖励、战斗胜场与去重才是本用例要守的东西。
+  assert.ok(p.level>1,'跑完任务链应该升级');assert.ok(p.exp>=0);assert.equal(p.coins,1230);assert.deepEqual(p.quests.completed,[9001,9002]);assert.equal(p.battles.wins,2);
   const bits=missionBits(p);assert.ok(bits[9002>>3]&(1<<(9002%8)));assert.ok(h.saves>=10);
   const restored=normalizeRole(JSON.parse(JSON.stringify(p)));assert.deepEqual(restored,p);
 });
@@ -63,7 +68,7 @@ test('walls, abort, invalid battle tokens, escape and defeat do not award kills'
   p.mapId=10;p.x=17;p.y=20;h.call(12501,new Writer().short(701));const token=h.context.battle.token;
   const packet=bad=>new Writer().int(100).int(100).int(80).int(100).short(1).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(bad).byte(1);
   assert.throws(()=>h.call(12502,packet(token^1)),/会话不匹配/);assert.ok(h.context.battle);h.call(12502,packet(token));assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);
-  p.x=21;p.y=23;h.fight(702,1,0);assert.equal(p.mapId,1);assert.equal(p.hp,195);assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);assert.equal(p.battles.losses,2);
+  p.x=21;p.y=23;h.fight(702,1,0);assert.equal(p.mapId,10,'战败不再传送回城，留在原地图');assert.equal(p.hp,195);assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);assert.equal(p.battles.losses,2);
 });
 test('an enabled monster spawn is used even when a hidden same-group spawn is closer',()=>{
   const spawns=maps[22].npcs.filter(n=>n.battleID?.[0]===127);

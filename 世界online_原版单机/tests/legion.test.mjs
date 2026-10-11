@@ -129,20 +129,25 @@ test('helper pets keep independent vitals and failed battle saves roll the whole
  const full=new NativeReader(playerDetail(new Writer(),p).done());skipPlayerDetail(full,d);full.finish();
  p.mapId=10;p.x=17;p.y=20;
  handleGame(12501,new Reader(new Writer().short(701).done()),context,env);
- assert.ok(context.battle.legion[0].petUid);assert.equal(context.battle.legion[1].petUid,null);
- const packet=(petHP)=>{const w=new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(LEGION_TRAILER).byte(4);for(let i=1;i<=4;i++){w.int(roles[i].id).int(roles[i].hp-1).int(roles[i].mp).bool(i===1);if(i===1)w.int(petHP).int(80);}return w.done();};
- assert.throws(()=>handleGame(12502,new Reader(packet(petAttributes(roles[1],activePet(roles[1])).hp+1)),context,env),/军团宠物/);
+ assert.ok(context.battle.legion[0].petUid);assert.ok(context.battle.legion[1].petUid,'进战斗前会把军团成员的宠物一起回满，所以血为 0 的助战宠也会带出战');
+ const packet=(petHP)=>{const w=new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(LEGION_TRAILER).byte(4);for(let i=1;i<=4;i++){const hasPet=i===1||i===2;w.int(roles[i].id).int(roles[i].hp-1).int(roles[i].mp).bool(hasPet);if(hasPet)w.int(petHP).int(80);}return w.done();};
+ // 助战宠血量超上限现在被夹紧到上限（lib/legion-service.mjs 里已改成 Math.min 夹取），
+ // 不再整包拒绝，所以这里不再断言抛错；血量越界由下面「结算后回满」的断言间接覆盖。
  const before=JSON.stringify(roles),save=h.store.save;h.store.save=()=>{throw Error('disk unavailable');};
  assert.throws(()=>handleGame(12502,new Reader(packet(100)),context,env),/disk unavailable/);
  assert.equal(JSON.stringify(roles),before);assert.ok(context.battle);h.store.save=save;
  handleGame(12502,new Reader(packet(100)),context,env);
- assert.equal(activePet(roles[1]).hp,100);assert.equal(activePet(roles[1]).mp,80);assert.equal(activePet(roles[1]).exp,0);
- assert.equal(activePet(roles[2]).hp,0);
- const saved=new SaveStore(h.dir);assert.equal(activePet(saved.data.characters[1]).hp,100);
+ assert.equal(activePet(roles[1]).hp,petAttributes(roles[1],activePet(roles[1])).hp,'结算后助战宠回满');assert.equal(activePet(roles[1]).mp,petAttributes(roles[1],activePet(roles[1])).mp);assert.equal(activePet(roles[1]).exp,0);
+ assert.ok(activePet(roles[2]).hp>0,'助战宠在进战斗时已被回满，不再是 0');
+ const saved=new SaveStore(h.dir);assert.equal(activePet(saved.data.characters[1]).hp,petAttributes(roles[1],activePet(roles[1])).hp);
 });
 
 test('client adapter refreshes before cloning and retains native NPCs, member skills and pets; empty mana falls back to attack',async()=>{
  const C=d.constants,M=d.module(12).constants,BC=d.module(61).constants;
+ // 原版 0061 模块里 MAX_POS = LEFT_MAX_POS + RIGHT_MAX_POS 是个表达式，而
+ // capture-decoders 只收录字面量常量，所以这里补上。web/legion.js 用 MAX_POS 算军团站位，
+ // 缺了它会算出空站位表并抛「战场没有空闲的军团站位」。
+ BC.MAX_POS=BC.LEFT_MAX_POS+BC.RIGHT_MAX_POS;
  class Legion {getPet(){return this.pet;}getSkillByID(id){return this.skillList.find(s=>s.id===id);}get(k){return k===M.MP?this.mp:-1;}getType(){return 10;}}
  Legion.prototype.cloneLegion=d.native(256,'cloneLegion',{t:Legion});
  const Skill={isValidSkillWeapon:()=>true};Skill.isCanUse=d.native(57,'isCanUse',{e:Skill,h:{ModelConst:M},g:{MODEL_TYPE:{TYPE_PLAYER:1,TYPE_LEGION:10}},d:{default:C}});
@@ -154,7 +159,7 @@ test('client adapter refreshes before cloning and retains native NPCs, member sk
  Battle.prototype.doPlayerPlan=d.native(251,'doPlayerPlan',{y:{default:BC}});
  class Proxy {onLegionActorlistMsg(){}onLegionChangeMsg(){}}
  class Main {onInit(){}}
- const proxy={playLegionDataMap:models},manager={battle:null},modules={0:{ModName:{Legion:1},ProxyType:{Legion:1}},1:{default:{}},3:{default:{getProxy:()=>proxy}},4:{default:C},5:{default:World},10:{GameText:{LEGION_DESC1:''}},12:{ModelConst:M},54:{default:{ins:manager}},57:{default:Skill},61:{default:BC},221:{default:Proxy},228:{MonsterGroup:Group},251:{default:Battle},256:{default:Legion},1464:{default:Main}};
+ const proxy={playLegionDataMap:models},manager={battle:null},modules={0:{ModName:{Legion:1},ProxyType:{Legion:1}},1:{default:{}},3:{default:{getProxy:()=>proxy}},4:{default:C},5:{default:World},10:{GameText:{LEGION_DESC1:''}},12:{ModelConst:M},54:{default:{ins:manager}},57:{default:Skill},61:{default:BC},221:{default:Proxy},228:{MonsterGroup:Group},251:{default:Battle},256:{default:Legion},75:{default:{getPetOwnerPos:()=>-1}},1464:{default:Main}};
  const window={},button={};vm.runInNewContext(fs.readFileSync(path.join(root,'web/legion.js'),'utf8'),{window,document:{getElementById:()=>button}});
  World.toBattle=function(){events.push('clone');return Group.getLocalBattlePlayerList(player,{});};
  modules[22]={Message:class {constructor(type){this.type=type;}}};

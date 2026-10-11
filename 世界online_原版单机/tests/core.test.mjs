@@ -44,7 +44,9 @@ test('save reload preserves character icons and position; corrupt saves are not 
   const db=new SaveStore(dir);const account=db.account('test');
   const role=db.create(account,{name:'存档测试',sex:0,race:0,job:1,icon1:'1234',icon2:'0',icon3:'0'});
   role.x=12;role.y=10;role.quests.active[9002]={kills:1};role.quests.completed=[9001];role.coins=1080;role.exp=45;role.battles.wins=1;db.save();
-  const reload=new SaveStore(dir);assert.equal(reload.roles(reload.account('test'))[0].x,12);assert.equal(reload.data.characters[0].icon1,'1234');
+  // icon1 现在存成数字，且低 4 位是职业位（normalizeRole → syncJobIcon 会按 job 重写）：
+  // '1234' + job1 归一化后是 1162，这个值再归一化不变。
+  const reload=new SaveStore(dir);assert.equal(reload.roles(reload.account('test'))[0].x,12);assert.equal(reload.data.characters[0].icon1,1162);
   const restored=reload.data.characters[0];assert.equal(restored.quests.active[9002].kills,1);assert.deepEqual(restored.quests.completed,[9001]);assert.equal(restored.coins,1080);assert.equal(restored.exp,45);assert.equal(restored.battles.wins,1);
   assert.throws(()=>reload.create(reload.account('test'),{...role,id:999}),/已存在/);
   assert.ok(fs.existsSync(path.join(dir,'world.json.bak')));

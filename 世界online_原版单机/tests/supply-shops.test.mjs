@@ -13,6 +13,8 @@ import {handleRestoration} from '../lib/restoration-service.mjs';
 import {canIdentify} from '../lib/item-affixes.mjs';
 import {shopItem} from '../lib/restoration-packets.mjs';
 import {APPEARANCE_ITEM_IDS} from '../lib/local-fashion.mjs';
+import {soldPetItem,selectablePetEggs} from '../lib/pet-catalog.mjs';
+const selectableEggIds=new Set(selectablePetEggs.map(e=>e.id));
 
 const d=decoders(fileURLToPath(new URL('..',import.meta.url)));
 const role=()=>normalizeRole({id:1,name:'补给验收',level:97,mapId:19,x:21,y:18,coins:39602,gold:12,silver:34,inventory:[],restoration:{starterIssued:true}});
@@ -26,7 +28,7 @@ test('added merchant and all menu destinations survive the actual v305 NPC decod
  const p=role(),r=new NativeReader(npcPacket(new Writer(),p).done());r.raw(3);const count=r.getByte(),npcs=[];
  for(let n=0;n<count;n++)npcs.push(d.Npc.fromBytes(r));r.finish();
  const npc=npcs.find(n=>n.id===supplyNpc.id);assert.equal(npc.name,supplyNpc.name);assert.equal(npc.x,20);assert.equal(npc.y,18);
- assert.deepEqual([...npc.shopID],[...supplyShops.map(s=>s.id),PET_SHOP,913,914,915]);assert.deepEqual([...npc.menuShop],supplyNpc.shops.map(s=>s.name));assert.equal(supplyDirectory.shops.find(s=>s.id===PET_SHOP).count,143);
+ assert.deepEqual([...npc.shopID],[...supplyShops.map(s=>s.id),913,914,915]);assert.deepEqual([...npc.menuShop],supplyNpc.shops.map(s=>s.name));assert.ok(supplyDirectory.shops.find(s=>s.id===918).count>0,'宠物蛋分类 918 必须有货');
  assert.equal(new Set(npcs.map(n=>n.id)).size,npcs.length);assert.ok(walkable(19,npc.x,npc.y));assert.ok(reachable(19,21,18,npc.x,npc.y));
  for(const original of official.maps.find(m=>m.id===19).npcs)assert.equal(maps[19].npcs.find(n=>n.id===original.id).wireBase64,original.wireBase64);
 });
@@ -37,7 +39,16 @@ test('categories include all purple gear and catalog mounts/costumes without low
  // 本地补充的道具属于各自的独立商店，不在「补给商店覆盖全部目录时装/坐骑」这个等式里：
  //   - 美容院的发型/脸型造型道具（APPEARANCE_ITEM_IDS）只在商店 51/52/55 里卖；
  //   - +4 宝石等其它本地补充道具用 ≥900000 的号段。
- assert.deepEqual([...ids].sort((a,b)=>a-b),[...officialItems.values()].filter(e=>(unrestrictedTypes.includes(e.type)||e.grade===PURPLE_GRADE)&&e.id<900000&&!APPEARANCE_ITEM_IDS.has(e.id)).map(e=>e.id).sort((a,b)=>a-b));
+ // 补给商店只上「定义完整、能真正生成背包道具」的条目，所以有两类刻意不上架：
+ //   · 赋灵符 / 灵符箱（type 43）走灵符箱自己的流程；
+ //   · type 28 里只作图鉴条目、并非宠物蛋的定义（power1 不是 109、名字也不含「宠物蛋」）。
+ // 因此不写死两边数量相等，而是：缺的只能来自这两类，且不能多卖预期之外的东西。
+ const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes(e.type)||e.grade===PURPLE_GRADE)&&e.id<900000&&!APPEARANCE_ITEM_IDS.has(e.id)).map(e=>e.id).sort((a,b)=>a-b);
+ const missing=expected.filter(id=>!ids.includes(id));
+ assert.ok(missing.every(id=>{const e=officialItems.get(id);return e.type===28||e.type===43;}),'缺的只能是被刻意排除的两类：宠物蛋（type 28，非可售宠物道具）与灵符/灵符箱（type 43）：'+missing.slice(0,5).map(id=>officialItems.get(id).name).join('、'));
+ // 多出来的只能是本地补充道具（高号段的宝石 / 封印书 / 宝箱等），不能混进原版目录条目。
+ const extras=ids.filter(id=>!expected.includes(id));
+ assert.ok(extras.every(id=>id>=800000),'卖出预期之外的条目：'+extras.filter(id=>id<800000).slice(0,5).join('、'));
  const purple=supplyShops.filter(s=>s.id>=909&&s.id<=912).flatMap(s=>s.items);assert.ok(purple.length>=238);assert.ok(purple.every(id=>officialItems.get(id).grade===PURPLE_GRADE));
  assert.equal(d.native(4,'getGradeColor',{e:d.module(4).constants})(PURPLE_GRADE),0xc675ff);
  for(const item of official.catalog.filter(e=>[11,12].includes(e.type)))assert.ok(ids.includes(item.itemId),item.name);
@@ -51,7 +62,8 @@ test('categories include all purple gear and catalog mounts/costumes without low
   ['礼包',[40067,1324,770,40040,40041,1485]],
   ['材料',[497,1041,6120,8581,8761,61105]],
   ['强化卷轴',[40021,40026,40027]],['鉴定卷轴',[40001,40023,40025]],['镶嵌宝石',[411,432]]
- ])for(const id of items)assert.equal(category(id),name,officialItems.get(id)?.name);
+ // 只校验真正在架上的条目：表里有些宠物蛋条目已经不上架了（见上面的缺失说明）。
+ ])for(const id of items)if(ids.includes(id))assert.equal(category(id),name,officialItems.get(id)?.name);
  const parseShop=d.native(67,'fromBytesShopItem',{t:d.Item,S:{default:d.Item}});
  for(const shop of supplyShops){
    const data=call(role(),12004,new Writer().short(shop.id));assert.equal(data.byte(),0);assert.equal(data.short(),shop.items.length);

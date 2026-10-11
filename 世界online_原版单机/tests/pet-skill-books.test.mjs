@@ -1,12 +1,12 @@
- assert.equal(book.learnSkill.powerValue2,-133);assert.equal(book.learnSkill.useMP,875);
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {Writer,Reader} from '../lib/codec.mjs';
-import {BLOOD_MIST_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,KNIGHTS_DEVOTION_SKILL_ID} from '../lib/pet-skill-book-data.mjs';
+import {BLOOD_MIST_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,KNIGHTS_DEVOTION_SKILL_ID,MAGIC_EXHAUSTION_BOOK_ID,localPetSkillBooks} from '../lib/pet-skill-book-data.mjs';
 import {handlePetItems} from '../lib/pet-service.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 import {recordedPetSkills} from '../lib/recorded-content.mjs';
+import {petSkillLevels} from '../lib/pet-catalog.mjs';
 import {equipment} from '../lib/restoration.mjs';
 import {normalizeRole} from '../lib/content.mjs';
 import {initializeNewbie} from '../lib/progression.mjs';
@@ -81,5 +81,15 @@ test('book learns on the selected resting pet and survives recorded growth miles
  const h=harness(),pet=h.p.inventory.find(i=>i.pet).pet;h.p.inventory.find(i=>i.pet).slot=35;
  assert.equal(new Reader(h.call(14016,preview(35))).byte(),0);assert.equal(new Reader(h.call(14017,confirm(35))).byte(),0);
  const learned=structuredClone(pet.skills.find(s=>s.id===6079));h.p.inventory.find(i=>i.pet).slot=1;
- gainPet(h.p,1000000);assert.equal(pet.level,14);assert.deepEqual(pet.skills.find(s=>s.id===6079),learned);
+ // 宠物蛋孵出即到人物等级（此处 15），gainPet 不能再越过这个上限。
+ gainPet(h.p,1000000);assert.equal(pet.level,h.p.level);assert.deepEqual(pet.skills.find(s=>s.id===6079),learned);
+});
+test('50级魔力衰竭封印书保留本地外推出来的技能数值',()=>{
+ // 这本书的效果是按已采集的 6–9 级相邻档位外推的（见 lib/pet-skill-book-data.mjs）：
+ // levelDelta = 50-6 = 44；powerValue2 = -30-round(44*7/3) = -133；useMP = 200+round(44*46/3) = 875。
+ // 外推值必须钉住，否则调公式时会悄悄改掉已经发给玩家的技能强度。
+ const book=localPetSkillBooks.find(b=>b.id===MAGIC_EXHAUSTION_BOOK_ID);
+ assert.ok(book,'缺少 50 级魔力衰竭封印书');
+ assert.equal(book.learnSkill.powerValue2,-133);
+ assert.equal(book.learnSkill.useMP,875);
 });

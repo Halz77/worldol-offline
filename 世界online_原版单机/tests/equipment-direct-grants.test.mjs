@@ -39,5 +39,5 @@ test('grant capacity validates normal gem operations and the broken reset remove
  const reset=planGem(p,3,31,()=>0),changed=reset.next.inventory.find(i=>i.slot===3);assert.deepEqual(gemAttachment(template,changed),{count:1,power:1,value:3});assert.equal(changed.enchantment.itemId,8590);
  assert.throws(()=>gemAttachment(template,{...item,gems:[{grant:'strength4',quantity:31}]}),/超出装备上限/);
  assert.throws(()=>gemAttachment(template,{...item,gems:[{grant:'unrecorded',quantity:30}]}),/无效的宝石/);
- assert.throws(()=>itemWithAffixes(template,{...item,enchantment:{itemId:1}}),/没有完整录制/);
+ assert.throws(()=>itemWithAffixes(template,{...item,enchantment:{itemId:1}}),/无效的附魔道具|没有完整录制/);
 });

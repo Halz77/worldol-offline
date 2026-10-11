@@ -52,7 +52,9 @@ test('text disagreements, unknown effects and gaps are not silently imported',()
  const p=role();p.level=60;for(let level=1;level<=22;level++)learn(p,1100,canonicalLegacySkill(s.id),level);assert.throws(()=>learn(p,1100,canonicalLegacySkill(s.id),23),/可靠资料/);
 });
 test('starter migration is additive and equipment swaps are atomic including a full bag',()=>{
- const p=role();const icon='999';p.icon1=icon;normalizeRestoration(p);assert.equal(p.inventory.length,1);
+ // icon1 已归一化成数字（job 位由 syncJobIcon 重写），这里用一个归一化后稳定的值，
+ // 后面才能断言「装备操作不碰 icon1」且 JSON 往返后完全一致。
+ const p=role();const icon=903;p.icon1=icon;normalizeRestoration(p);assert.equal(p.inventory.length,1);
  equip(p,30);assert.equal(p.inventory[0].slot,8);buyItem(p,800000,2);equip(p,30);assert.ok(p.inventory.some(i=>i.slot===10));
  buyItem(p,800000,23);assert.equal(p.inventory.filter(i=>i.slot>=30).length,24);
  const before=JSON.stringify(p);assert.throws(()=>unequip(p,8),/空间不足/);assert.equal(JSON.stringify(p),before);

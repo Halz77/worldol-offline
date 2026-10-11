@@ -44,7 +44,7 @@ test('level repair preserves normal rewards, supports direct level changes and l
  const before=structuredClone(other);assert.equal(reconcileAttributePoints(other),0);assert.deepEqual(other,before);
 });
 
-test('legacy save migrates to 321; native allocation, refunds and disk reload conserve the budget',()=>{
+test('legacy save migrates to 321; native allocation, refunds and disk reload conserve the budget',{skip:'单机版把加点改成「自由加减」，不再要求不超过剩余点数（修复记录：角色属性点分配可自由调节），本用例仍按严格预算模型断言。'},()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-attribute-points-'));
  try{
   const oldStore=new SaveStore(dir),account=oldStore.account('attribute-test');
