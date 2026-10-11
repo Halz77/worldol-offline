@@ -1,5 +1,6 @@
 import {randomInt} from 'node:crypto';
 import {lazyBox,lazyJson} from './lazy-data.mjs';
+import {buildLocalPets} from './local-pets.mjs';
 import {Writer} from './codec.mjs';
 
 /**
@@ -19,7 +20,15 @@ let built=null;
 function ensure(){
  if(built)return built;
  const petProfiles=new Map(petCatalog.profiles.map(p=>[p.key,p]));
- const legendaryPetPool=petCatalog.legendaryPool.map(key=>petProfiles.get(key));
+ // 本地自制宠物（data/local-pets.json）。upstream 先建好再合并：extends 继承与重名校验
+ // 都要拿它当参照。放在建池子之前，自制宠物才能像上游一样自动生成蛋。
+ const local=buildLocalPets(petProfiles);
+ for(const p of local.profiles)petProfiles.set(p.key,p);
+ // 追加在**末尾**：宠物蛋的道具号是 SELECTABLE_PET_EGG_ID_START+下标，插到前面的话
+ // 老存档里已经存在的宠物蛋 itemId 会整体错位一只。
+ const legendaryPetPool=[...petCatalog.legendaryPool,...local.legendaryKeys].map(key=>petProfiles.get(key));
+ if(legendaryPetPool.some(profile=>!profile))
+  throw Error(`传说宠物池里有找不到的 key：${[...petCatalog.legendaryPool,...local.legendaryKeys].find(key=>!petProfiles.get(key))}`);
  const selectablePetEggs=legendaryPetPool.map((profile,index)=>{
   const id=SELECTABLE_PET_EGG_ID_START+index,item={id,type:28,name:`${profile.name}（${profile.grade}阶）宠物蛋`,bagIcon:29,
      info:`免费宠物蛋；开启后固定获得${profile.name}（${profile.grade}阶）。`,grade:profile.grade,autoBinding:0,stackNum:1,

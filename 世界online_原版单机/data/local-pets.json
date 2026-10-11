@@ -1,0 +1,14 @@
+{
+ "_readme": [
+  "本地自制宠物。这份文件是我们自己的，可以手改；上游抓包产物 data/pet-catalog.json 不要动。",
+  "每只宠物用 extends 继承一个上游模板（数值/技能都从它拷贝），再用 baseline 覆盖想改的字段。",
+  "baseline 是「顶层键整体替换」的浅合并：想改 attributes 就把整个 attributes 写出来，不要只写一半。",
+  "必填：key / name / grade / extends。baseline 里至少要给 model 与 headIcon（外观）与 baseStats（成长）。",
+  "key 格式固定为「名字:阶数」，不能与上游 504 个模板重名 —— 重名会在建表时抛错。",
+  "legendaryKeys 里列出要「自动生成宠物蛋并上架商店」的 key；不列就不会进 917/918 商店，也不会稀释 30013 传说蛋的抽取概率。",
+  "外观（model / headIcon）若指向自制贴图，先用 tools/build-pet-reskin.mjs 生成，再把产出的编号填到这里。"
+ ],
+ "revision": "local-pets-v1",
+ "profiles": [],
+ "legendaryKeys": []
+}
