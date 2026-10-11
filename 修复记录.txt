@@ -3079,3 +3079,104 @@ sha256 5d1f522a0f0d3ea7fadbd866b9cc85aa71ac126bbd8bedbf00ebdbc02437c46d
 
 本轮只动服务端加载方式与测试，客户端主包与 gd.js 字节都没变，行为等价；
 换来的是启动内存与首次请求成本的大幅下降（见第三节）。
+
+════════════════ 第 38 版 · 2026-10-11 ════════════════
+
+【需求】架构评审第 9 条（静态检查）—— 用户看完上一轮的调研后拍板：「那就只做第一件，
+2 和 3 后续都不打算做了」。也就是只做语法基线，prettier 一次性 format 与 tsc --checkJs
+明确不做。
+
+──────────────── 一、为什么不照原文写 node --check ────────────────
+
+评审原文的建议是 `"check": "node --check server.mjs && node --check lib/*.mjs"`。
+这个写法有个陷阱：node --check 每个文件都要起一个 node 进程，串行跑 277 个文件
+实测 64.6 秒 —— 比整个测试套件（46 秒）还慢，没人会在日常改动里跑它。
+
+改成 acorn 进程内 parse：277 个文件 407 ms，快 146 倍。acorn 本来就在 dependencies 里
+（构建期锁客户端 module 56 用的），不用多装任何东西。
+
+──────────────── 二、做了什么 ────────────────
+
+tools/syntax-baseline.mjs（纯逻辑，可被测试直接调用，不需要子进程）
+tools/check-syntax.mjs   （CLI：输出与退出码）
+tests/syntax.test.mjs    （5 条守卫用例）
+
+扫描范围：lib/ web/ tools/ tests/ 递归 + 根上的 server.mjs，共 277 个文件。
+按定义跳过 node_modules 与 tests/fixtures（后者是样例数据，里面可能有故意写坏的文件）。
+
+npm script：
+  "check"   = node tools/check-syntax.mjs
+  "pretest" = node tools/check-syntax.mjs --quiet   ← npm test 会先过一遍语法基线
+
+顺手解决的两个具体问题（不做就会误报）：
+
+  1. lib/client-battle-font-module180.js 与 .orig.js 不是完整模块 —— 它们是 webpack
+     模块工厂函数的**裸函数体**（`function(e,t,i){…}` 开头），单独 parse 必然失败。
+     走白名单加一层括号再解析（行号不受影响，只有首行第一个字符前面多一个 '('）。
+     守卫用例同时钉住「白名单不许留死条目」：文件被删了就得清掉这条规则。
+  2. .js 要**双模式**解析。web/ 是浏览器脚本，里面可能出现 with / 八进制这类只有
+     非严格模式才合法的写法；lib/ 与 tools/ 里又有 esbuild 产物。所以先按 ESM 试，
+     失败再退回 sloppy script。.mjs 只走 module、.cjs 只走 script。
+
+──────────────── 三、它抓什么、抓不到什么（别当万能护栏）────────────
+
+抓到的那类错，样本就用第 37 版我自己犯过的：把 recordedExpansionRevision 改成函数
+之后，/api/status 里那个对象字面量的简写属性被顺手改成了调用
+`{recordedExpansionRevision(), …}` —— 语法错误，当时是靠跑到探针阶段才炸出来的。
+现在 0.4 秒内报 `lib/x.mjs:1:14 Unexpected token (1:14)`。
+
+它真正的价值是补上**唯一的执行盲区**：web/ 下 21 个文件、2256 行，**没有任何测试真正
+执行过它们**（测试是用假模块表模拟客户端环境的）。语法检查是「不打开浏览器也知道
+web 脚本没敲坏」的唯一手段。
+
+抓不到：
+  · 补丁模块里要注入客户端的片段 —— 它们以独立文件存在，最终是以字符串拼进去的，
+    语法错误要到浏览器里才暴露；
+  · 「漏 import」「孤儿断言」这类跨文件问题 —— 那要靠 eslint 的 no-undef。
+
+──────────────── 四、第 2 件 prettier：不做 ────────────────
+
+实测 lib/*.mjs + server.mjs 共 120 个文件，无论 tabWidth=1（贴合现状）还是默认 2，
+**都判 120 个不合格**。原因不是缩进，是本项目刻意的紧凑写法（if(a)return b; 一行连写、
+const a=1;const b=2; 同行多语句）。这个风格有它的理由：6000 行 lib 要压在人能一口气
+读完的行数里。
+
+一旦 --write：270+ 个文件全动，git blame 全废，而修复记录.txt 里「这个文件为什么长这样」
+的上下文会与文件对不上号 —— 那份文件是排障时的主要抓手。要做也只能「只对新文件生效」，
+价值缩水成「新代码统一」，却要永久维护一份 .prettierignore 清单。负收益。
+
+──────────────── 五、第 3 件 tsc --checkJs：不做 ────────────────
+
+这个库的形态与类型检查天然别扭：11 处惰性 Proxy（第 37 版刚引入）、动态属性
+（official.items、role.xxx）、Map 存异构对象、以及「字符串匹配改 4.5 MB 压缩产物」
+这种做法；JSDoc 覆盖率约等于 0，直接开会报几千条，而且多是这些动态用法的误报。
+
+更关键的是它**抓不到这个项目真实的 bug 类型**：协议字节偏移、数据血缘（改了 A 结果 B
+才是生效的那份）、补丁锚点失配。这些是靠测试与 replaceOnce() 的「恰好一次」断言兜住的。
+
+──────────────── 六、验证 ────────────────
+
+· node tools/check-syntax.mjs：文件 277 个｜错误 0｜耗时 407ms
+· 负向实验 1（检查器本身）：往 lib/ 放一个 `const o={a,b(),c:1};`
+    → 报 lib/__syntax-probe.mjs:1:14 Unexpected token，退出码 1；--quiet 下也照样报
+    → 删掉后复跑回到 0 错误、退出码 0
+· 负向实验 2（闸门）：带语法错误跑 npm test
+    → pretest 报错、npm 退出码 1，**测试套件根本没有开跑**
+· 负向实验 3（白名单必要性）：两个 fragment 不带白名单必失败、带白名单通过，
+  由 tests/syntax.test.mjs 钉住
+· npm test：文件 69 个｜用例 438｜通过 438｜失败 0｜新增失败 0
+
+写用例时踩到并纠正的一个坑：第一版拿 `export function f(){return 1}` 当「漏了半个括号」
+的样本，其实它的花括号正好闭合、是**合法**代码，断言当场就红了 —— 换成真正不闭合的
+`export function f(){return 1` 才对。
+
+──────────────── 交付 ────────────────
+
+本轮不改任何随包发布的字节，所以**没有重打 APK**，第 37 版 APK 仍是当前版本：
+
+  · git status 证明只动了 5 个文件：package.json、架构评审-20261011.md、
+    tools/syntax-baseline.mjs、tools/check-syntax.mjs、tests/syntax.test.mjs；
+    lib/ web/ data/ server.mjs 与客户端归档**一个字节都没动**。
+  · 站点指纹只由 index.html、客户端主包、modules bundle、worldol-standalone.js 这些
+    产物哈希决定，它们全部源自 lib/ + web/ + client/ —— 输入没变，产物就没变。
+  · 代价：npm test 前面多约 0.4 秒的语法基线检查。

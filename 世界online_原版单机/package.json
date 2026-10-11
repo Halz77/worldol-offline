@@ -6,6 +6,8 @@
   "description": "Local compatibility service for the archived v305 client",
   "scripts": {
     "start": "node server.mjs",
+    "check": "node tools/check-syntax.mjs",
+    "pretest": "node tools/check-syntax.mjs --quiet",
     "test": "node tools/run-tests.mjs",
     "test:all": "node tools/run-tests.mjs --all",
     "test:raw": "node --test tests/*.test.mjs"
