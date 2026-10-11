@@ -59,8 +59,6 @@ function buildPatchedClient() {
 
   // 1b. 主包：完整补丁链（与 server.mjs 共用 client-patch-chain.mjs）
   const original = fs.readFileSync(path.join(gameRoot, 'client', MAIN_PATH), 'utf8');
-  // 浏览器执行的是打过补丁的版本；VFS 里保留原始版本，否则 server.mjs 会二次打补丁报错
-  write(path.join(outRoot, MAIN_PATH + '.orig'), original);
   const main = patchClientMain(original);
   write(path.join(outRoot, MAIN_PATH), main);
   log(`客户端补丁已应用：gd.js ${boot.length} 字节，主包 ${original.length} → ${main.length} 字节`);
@@ -69,8 +67,8 @@ function buildPatchedClient() {
 /**
  * 字体补丁的配套文件（0180 模块原文/替换文 + 字形映射表）。
  *
- * server.mjs 在 standalone 里也会跑一遍补丁链（VFS 里放的是主包 .orig），
- * patchBattleFont() 到时会 fs.readFileSync 这三个文件。VFS 把
+ * server.mjs 在 standalone 里启动时会读主包（此时已经是打过补丁的版本，会直接跳过
+ * 重打），但 patchBattleFont() 仍然要 fs.readFileSync 这三个文件。VFS 把
  * /worldol/lib/xxx 映射到站点 /lib/xxx，所以拷到站点根的 lib/ 下即可命中。
  */
 function layoutFontPatchAssets() {
@@ -222,12 +220,13 @@ function writeManifest() {
   // 凭空搬几百兆。剩下的交给 VFS 的按需同步加载（未命中就现场取一份并缓存）。
   const entries = [];
   entries.push({ vfs: '/worldol/client/v/gd/305.json', url: '/v/gd/305.json' });
-  // 主包：VFS 里用原始版本（server.mjs 还要自己打一遍补丁）
-  entries.push({ vfs: '/worldol/client/' + MAIN_PATH, url: '/' + MAIN_PATH + '.orig' });
+  // 主包：站点里放的就是打过补丁的版本，VFS 也直接指向它。
+  // server.mjs 读到后由 patchClientMain() 的「已打过补丁」判断跳过重打，
+  // 不再需要额外留一份 .orig（省 4.5MB，也省掉每次启动重跑全链的 840ms）。
+  entries.push({ vfs: '/worldol/client/' + MAIN_PATH, url: '/' + MAIN_PATH });
   entries.push({ vfs: '/worldol/analysis/gd.decoded.js', url: '/analysis/gd.decoded.js' });
-  // 字体补丁：构建期已打进主包，但 standalone 的 server.mjs 会对 VFS 里的 .orig
-  // 再打一遍，链上 patchBattleFont() 要读这三个文件。不预载就得靠同步 XHR 现取，
-  // 启动阶段没必要冒这个风险。
+  // 字体补丁：构建期已打进主包，运行时一般不会再触发；但 VFS 下 fs 缺文件就是
+  // ENOENT 抛错，所以还是把这三个文件一起发布并预载，避免任何一条路径踩空。
   for (const name of FONT_PATCH_FILES) {
     entries.push({ vfs: '/worldol/lib/' + name, url: '/lib/' + name });
   }

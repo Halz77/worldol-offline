@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {patchClientBoot,patchClientMain,replaceOnce,clientPatchStepNames,CLIENT_MAIN_PATH} from '../lib/client-patch-chain.mjs';
+import {patchClientBoot,patchClientMain,replaceOnce,clientPatchStepNames,CLIENT_MAIN_PATH,isClientMainPatched} from '../lib/client-patch-chain.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
@@ -129,6 +129,24 @@ test('锚点缺失时整条链必须抛错，不能静默跳过',skipNoBundle,()
  assert.throws(()=>patchClientMain(brokenMain),/Client patch mismatch/,'主包锚点缺失必须抛错');
  const brokenBoot=fs.readFileSync(BOOT,'utf8').replace('(a["gs"] = new n())','(a["gs"] = new N())');
  assert.throws(()=>patchClientBoot(brokenBoot),/Client patch mismatch/,'引导脚本锚点缺失必须抛错');
+});
+
+test('对已打过补丁的主包再打一次是幂等的（standalone 靠这条跳过重打）',skipNoBundle,()=>{
+ const original=fs.readFileSync(MAIN,'utf8');
+ assert.equal(isClientMainPatched(original),false,'原版主包不该带已打补丁的标记');
+ const patched=patchClientMain(original);
+ assert.equal(isClientMainPatched(patched),true);
+ assert.equal(patchClientMain(patched),patched,'已打过补丁的主包必须原样返回，不能重复注入');
+});
+
+test('standalone 的 VFS 清单把主包指向打过补丁的那一份',()=>{
+ const build=fs.readFileSync(path.resolve(root,'..','安卓打包','standalone','build.mjs'),'utf8');
+ // 站点里 client/<MAIN> 就是打过补丁的成品；VFS 直接指向它，server.mjs 读进来后
+ // 由 patchClientMain() 的幂等判断跳过重打。不能再指向 .orig（那会每次启动重跑全链）。
+ const entry=build.split('\n').find(line=>line.includes("vfs: '/worldol/client/' + MAIN_PATH"));
+ assert.ok(entry,'找不到主包的 VFS 清单项');
+ assert.ok(/url:\s*'\/'\s*\+\s*MAIN_PATH\s*\}/.test(entry),'VFS 里的主包地址应该就是 MAIN_PATH：'+entry.trim());
+ assert.ok(!build.includes("write(path.join(outRoot, MAIN_PATH + '.orig')"),'不该再产出主包 .orig');
 });
 
 test('两个调用方指向同一份链（避免再次分叉）',()=>{

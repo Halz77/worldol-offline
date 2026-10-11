@@ -2758,3 +2758,56 @@ node 安卓打包/standalone/build.mjs 再执行 安卓打包/构建APK.ps1 即�
 本次只动用测试与清单，没有改任何 lib/ 实现（三处「改实现」的候选都判为有意为之，
 理由写进了对应用例的 skip 说明）。评审建议的第 5、6 项（server.mjs 结构拆分、
 运行期跳过重复补丁 + patchCombatLimits 局部化）尚未开始。
+
+
+════════════════ 第 35 版 · 2026-10-11 ════════════════
+
+【需求】架构评审建议顺序的第 6 项：运行期跳过重复补丁 + patchCombatLimits 局部化。
+
+【本次只做了前半】——「运行期跳过重复补丁」，patchCombatLimits 的局部化没做（理由见末尾）。
+
+一、问题
+  standalone（安卓包）里，主包在**构建期**就已经被整条链打过一遍并写进站点；
+  但 build.mjs 同时在 VFS 清单里把 server.mjs 眼中的主包指向了另一份 `.orig`
+  （未打补丁的原始版本），注释写着「否则 server.mjs 会二次打补丁报错」。
+  结果是每次启动都要重读 4.5MB、重跑整条链（实测 834ms），其中
+  patchCombatLimits 的 acorn 全量解析独占 700ms 以上。
+
+二、改法
+  · lib/client-patch-chain.mjs
+      - 新增 `WORLD_REQUEST_MARKER`（链上第一个补丁注入的标记）与
+        `isClientMainPatched(source)`；
+      - `patchClientMain()` 开头加幂等判断：源里已有该标记就直接原样返回。
+        标记由链的最前面注入，它出现就说明整条链跑完了。
+  · 安卓打包/standalone/build.mjs
+      - 不再产出 `client/<MAIN>.orig`（省 4.5MB，也少一份容易搞混的副本）；
+      - VFS 清单第二项从 `url: '/'+MAIN+'.orig'` 改成 `url: '/'+MAIN`，
+        也就是让运行期直接读打过补丁的成品，靠上面的幂等判断跳过重打。
+
+三、验证
+  · 站点主包 sha256 与改动前**逐字节一致**（f5abf262…），说明站点产物没变；
+  · 站点里已无 `.orig`；
+  · 直接量：对站点主包调 patchClientMain = **0 ms**（判为「已打过补丁」直接返回），
+    对原版主包 = **834 ms**。也就是 standalone 每次启动省掉这 834ms。
+    注：Node 开发路径（npm start）读的是 client/ 里的原版，仍会正常打链，
+    这个优化只作用于打包后的运行时。
+  · 守卫用例（tests/client-patch-chain.test.mjs）新增 2 条：
+      - 对已打过补丁的主包再打一次必须幂等（原样返回）；
+      - build.mjs 的 VFS 清单必须把主包指向 MAIN_PATH，且不再产出 .orig。
+    现在共 10 条，全绿。
+  · node tools/run-tests.mjs → 66 文件｜用例 396｜通过 396｜失败 0。
+
+四、patchCombatLimits 局部化为什么没做
+  它现在的实现是：用 acorn 把整个 4.5MB 源码 parse 成 AST，再找出「最大的那个
+  全由 FunctionExpression 组成的数组」（即模块数组），取第 56 号（角色模块），
+  在它的 `get` / `addValue` 两个函数里按 `case _.ModelConst.ATK_*` 逐个改写，
+  并强制校验「恰好 2 个函数、每个恰好 7 个 case」。
+  想省掉这次 parse，就得改成纯文本定位。但纯文本无法区分「第 56 号模块里的 case」
+  与「别处恰好长得一样的 case」，而当前实现的严格校验正是防误改的关键。
+  省下来的是每次启动 700ms（且只在开发路径上——打包运行时已经整体跳过了），
+  换掉的是「误改到别处」的风险，不划算。
+  如果以后真要动，建议的方向是：只 parse 「模块数组」那一段切片（先用轻量扫描
+  找到数组起止），保留 AST 校验、把 parse 范围缩小，而不是退回纯文本匹配。
+
+──────────────── 交付 ────────────────
+评审建议里只剩第 5 项（server.mjs 拆路由 + 分派表化 + 协议常量从 0019.js 生成）未做。

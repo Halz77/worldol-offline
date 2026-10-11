@@ -78,7 +78,7 @@ export function patchClientBoot(source){
  * 方便测试直接拿原版主包跑一遍全链。
  */
 export const CLIENT_MAIN_STEPS=[
- ['worldReq',source=>replaceOnce(source,'t.m=e,t.c=i,','t.m=e,t.c=i,window.__worldReq=t,')],
+ ['worldReq',source=>replaceOnce(source,'t.m=e,t.c=i,',WORLD_REQUEST_MARKER)],
  ['battleDamageMath',patchBattleDamageMath],
  ['npcRepeatableMissions',patchNpcRepeatableMissions],
  ['offlineStoryBattles',patchOfflineStoryBattles],
@@ -103,9 +103,27 @@ export const CLIENT_MAIN_STEPS=[
  ['weaponIcon',patchWeaponIcon]
 ];
 
+/** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */
+export const WORLD_REQUEST_MARKER='t.m=e,t.c=i,window.__worldReq=t,';
+
+/**
+ * 判断主包是否已经打过补丁。
+ *
+ * 站点构建（安卓打包/standalone/build.mjs）会在构建期把整条链打一遍并把成品
+ * 放进站点；standalone 里的 server.mjs 读到的就是这份成品。没有这个判断的话
+ * 每次启动都要把 4.5MB 的主包重读、重跑全链（实测约 840ms，其中
+ * patchCombatLimits 的 acorn 全量解析独占 700ms 以上）。
+ *
+ * 判据用第一个补丁注入的标记：它在链的最前面执行，出现即说明整条链跑完了。
+ */
+export function isClientMainPatched(source){
+ return source.includes(WORLD_REQUEST_MARKER);
+}
+
 export function patchClientMain(source){
-  for(const [,apply] of CLIENT_MAIN_STEPS)source=apply(source);
-  return source;
+ if(isClientMainPatched(source))return source;
+ for(const [,apply] of CLIENT_MAIN_STEPS)source=apply(source);
+ return source;
 }
 
 /** 链上所有步骤名（按作用顺序），供守卫用例与 /api/status 之类的地方引用。 */
