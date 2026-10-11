@@ -2589,3 +2589,99 @@ sha256 645a92c537b65a0af03ea9815907e5bb8fb5690059ee924fa0bc22576f9df4a5
       BUILD SUCCESSFUL in 17s
   · 核对：解包 APK 的 assets/public/worldol-standalone.js，memorialNpcs 里
     x/y 确实是 16/10、21/10、18/16、21/14，中文没有被转义。
+
+
+════════════════ 第 33 版 · 2026-10-11 ════════════════
+
+【需求】按《架构评审-20261011.md》给出的建议顺序，先落地前两项，另加一项顺手能做的：
+  ① 给工程建立版本控制；
+  ② 把写了两份的「客户端补丁链」收敛成唯一来源，并补守信用例；
+  ③ 清掉仓库根残留的 78 个测试临时目录，测试改写落点。
+
+──────────────── ① 版本控制 ────────────────
+
+仓库根 git init（分支 main），新增 .gitignore，首次提交 789 个文件，
+提交号 2bbe512。.git 体积 260 MB。
+
+本地配置：core.autocrlf=false —— 仓库里有必须保持 CRLF 的文件（修复记录.txt、
+*.cmd、*.ps1），不能让 git 在检出时改行尾；core.quotepath=false 让中文路径
+在 diff/status 里正常显示。
+
+忽略项（合计约 320 MB，不进版本库）：
+  · client/ 148 MB —— 原版 H5 归档，只读；其中 v/gd/305.json 由测试按 sha256 守着
+  · analysis/ 15 MB —— 由 client/ 反编译得到
+  · node_modules
+  · saves/ logs/ backups/ runtime/ —— 运行时状态
+  · 安卓打包/app/www、android 的 build/.gradle、*.apk/*.aab/*.keystore、
+    local.properties、build.log —— 构建产物
+  · test-captured-expansion-*/、test-save-check-*/ —— 测试临时目录
+  · .scratch/ —— 草稿区（里面有几份手工备份，需要的话可以改成跟踪）
+纳入版本控制：lib/ tools/ tests/ web/ data/、server.mjs、安卓打包的构建脚本与
+shims、各 .cmd/.ps1、*.md、修复记录.txt、.workbuddy/memory/。
+
+坑：.gitignore **不支持行内注释**，只有行首的 # 才算注释。第一版把说明写在同一行
+（`安卓打包/app/www/   # 站点输出`），整行被当成 pattern 去匹配，结果 10388 个
+站点文件全被暂存。注释必须单独占行。
+
+──────────────── ② 补丁链收敛 ────────────────
+
+新增 lib/client-patch-chain.mjs，成为客户端补丁链的唯一来源：
+  · CLIENT_MAIN_STEPS —— 23 步：worldReq → battleDamageMath → npcRepeatableMissions
+    → offlineStoryBattles → playerLevelRewards → dailyCatalogVisibility →
+    npcMissionRefresh → offlineLegionBattles → gardenerManaRecovery →
+    emptyNativeShop → bulkItemUse → combatLimits → immediateRoleDeletion →
+    legionSurvivors → legionPetGuard → battleSpeedSteps → battleSpeedPersist →
+    battleSkillPanel → battleFont → weaponSlots → phantomImmunity → illusion →
+    weaponIcon（数组顺序 = 实际作用顺序）
+  · CLIENT_BOOT_STEPS —— 3 步：offlineBootSettings / offlineInstall / dropPollingTimer
+  · patchClientMain(source) / patchClientBoot(source) / replaceOnce() / CLIENT_MAIN_PATH
+
+server.mjs：删掉本地 replaceOnce 与 22 个 patch 函数的 import，原来那两行嵌套链式
+调用换成 patchClientBoot() / patchClientMain()。仍然 import 16 个 client-*-patch.mjs
+的 revision 常量（/api/status 要用），但不再从它们取补丁函数。
+
+安卓打包/standalone/build.mjs：18 行 import 收敛成 1 行；MAIN_PATH 改用
+CLIENT_MAIN_PATH；本地 replaceOnce 删除（改用共享模块那份 —— 文件末尾给
+standalone-boot.js 加版本号时还在用它）。
+
+新增 tests/client-patch-chain.test.mjs（8 条）：
+  1. 链只有一份，步骤名与顺序被 deepEqual 钉死（改顺序必须同步改用例，逼它出现在 diff 里）
+  2. server.mjs 不再自带链：剥掉注释后搜不到任何 patch 函数名，也没有本地 replaceOnce
+  3. build.mjs 同上
+  4. replaceOnce 要求锚点恰好出现一次：0 次、2 次都必须抛错
+  5. 主包全链跑通：4,557,839 → 4,564,108，与既有构建指纹一致
+  6. 引导脚本补丁生效：35,493 → 35,317，且原版那个 50ms 轮询定时器被摘掉
+  7. 锚点缺失时整条链必须抛错，不能静默跳过
+  8. 两个调用方都指向同一模块，且不再逐个 import 补丁函数
+已用「往 server.mjs 里塞一行 patchIllusion」实测过用例确实会红，不是摆设。
+
+──────────────── ③ 测试临时目录 ────────────────
+
+10 个用例原本把 mkdtemp 建在仓库根：attribute-points / boss-challenges /
+character-import / core / equipment-skill-stacking / legion / mission-gap-bridge /
+recorded-expansion / service / task-reset。其中 recorded-expansion 与 core 的清理
+写在断言之后（不在 finally 里），中途一失败就留残留，日积月累成了 78 个目录。
+
+全部改为 fs.mkdtempSync(path.join(os.tmpdir(),'worldol-<名字>-'))，删除守卫也从
+「必须在仓库根下」改成「必须在 os.tmpdir() 下」—— 与项目里已有的 20 多个用例写法一致。
+
+78 个残留目录（每个只有 world.json + world.json.bak，共 156 个文件 / 300 KB）
+已移出仓库，暂存于 %TEMP%\worldol-test-junk-20261011-110332，确认无碍后可自行删除。
+
+──────────────── 验证 ────────────────
+
+· node tools/run-tests.mjs
+    文件 66 个｜用例 378｜通过 332｜失败 46（全部在 known-failures 清单内）｜新增失败 0
+  跑完后仓库根的 test-* 目录数 = 0，不再产生残留。
+· 站点构建 node 安卓打包/standalone/build.mjs
+    客户端补丁已应用：gd.js 35317 字节，主包 4557839 → 4564108 字节
+    重建后 app/www 主包 sha256 = f5abf262ad78c45591a72f7a71f8279c3bc28056eff12f5d7a7a6b8c30c48278
+    与重构前逐字节一致 —— 证明收敛没有改变任何行为。
+  （构建指纹从 4995d789ac11 变成 d32d222378bf 属正常：指纹计算时 index.html 里还带着
+    上一版的 ?t= 版本号，所以每次重建都会变，正好用于强制清 WebView 缓存。）
+
+──────────────── 交付 ────────────────
+
+本次只改工程结构，不涉及游戏行为，因此没有重打 APK（第 32 版的 APK 行为等价，
+仍可用）。若需要一份带新工程结构的新 APK，按流程跑
+node 安卓打包/standalone/build.mjs 再执行 安卓打包/构建APK.ps1 即可。

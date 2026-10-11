@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {SaveStore} from '../lib/store.mjs';
@@ -19,8 +20,8 @@ import {handleGame,BATTLE_TRAILER} from '../lib/game-service.mjs';
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
 const cases=[{quest:1317,npc:1,group:11778,boss:3350,hp:20000000,mp:2000000},{quest:3459,npc:4,group:11740,boss:3275,hp:10000000,mp:1000000}];
 function fixture(t){
- const dir=fs.mkdtempSync(path.join(root,'test-boss-challenges-'));
- t.after(()=>{assert.equal(path.dirname(path.resolve(dir)),path.resolve(root));fs.rmSync(dir,{recursive:true,force:true});});
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-boss-challenges-'));
+ t.after(()=>{const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-boss-challenges-'));fs.rmSync(exact,{recursive:true,force:true});});
  const store=new SaveStore(dir),account=store.account('广场Boss验收'),p=store.create(account,{name:'挑战验收',sex:1,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'});
  Object.assign(p,{level:1,mapId:945,x:20,y:11});p.hp=hpMax(p);p.mp=mpMax(p);p.quests={active:{},completed:[1677]};store.save();
  const context={role:p,account},sent=[],env={store,send(type,w){sent.push({type,bytes:w instanceof Writer?w.done():Buffer.from(w)});},log(){}};

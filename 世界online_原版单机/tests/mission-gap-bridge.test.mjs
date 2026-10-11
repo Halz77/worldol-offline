@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {SaveStore} from '../lib/store.mjs';
@@ -16,8 +17,8 @@ import {handleGame,BATTLE_TRAILER} from '../lib/game-service.mjs';
 
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
 test('the single 1678 gap bridges existing saves into Captive battle and the original follow-up without false completion or duplicate rewards',t=>{
- const dir=fs.mkdtempSync(path.join(root,'test-mission-gap-'));
- t.after(()=>{assert.equal(path.dirname(path.resolve(dir)),path.resolve(root));fs.rmSync(dir,{recursive:true,force:true});});
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-mission-gap-'));
+ t.after(()=>{const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-mission-gap-'));fs.rmSync(exact,{recursive:true,force:true});});
  const store=new SaveStore(dir),account=store.account('任务衔接验收'),p=store.create(account,{name:'任务衔接',sex:1,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'});
  Object.assign(p,{level:97,mapId:826,x:15,y:6});p.quests={active:{},completed:[1676,1677]};p.hp=hpMax(p);p.mp=mpMax(p);store.save();
  const q=officialMissions.get(1679),recordedBefore=JSON.stringify(q),npc=maps[826].npcs.find(n=>n.id===33),snapshot=JSON.stringify(p);

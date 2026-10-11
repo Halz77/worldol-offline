@@ -16,25 +16,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 
-// server.mjs 里的补丁链顺序必须与这里一致
-import { patchOfflineLegionBattles } from '../../世界online_原版单机/lib/client-legion-patch.mjs';
-import { patchImmediateRoleDeletion } from '../../世界online_原版单机/lib/client-role-deletion-patch.mjs';
-import { patchBattleDamageMath } from '../../世界online_原版单机/lib/client-damage-patch.mjs';
-import { patchCombatLimits } from '../../世界online_原版单机/lib/client-combat-limits.mjs';
-import { patchGardenerManaRecovery } from '../../世界online_原版单机/lib/client-monster-recovery-patch.mjs';
-import { patchNpcRepeatableMissions, patchOfflineStoryBattles, patchDailyCatalogVisibility, patchNpcMissionRefresh } from '../../世界online_原版单机/lib/client-mission-patch.mjs';
-import { patchPlayerLevelRewards } from '../../世界online_原版单机/lib/client-progression-patch.mjs';
-import { patchBulkItemUse } from '../../世界online_原版单机/lib/client-bag-patch.mjs';
-import { patchBattleSkillPanel } from '../../世界online_原版单机/lib/client-battle-skill-panel-patch.mjs';
-import { patchBattleFont } from '../../世界online_原版单机/lib/client-battle-font-patch.mjs';
-import { patchLegionSurvivors } from '../../世界online_原版单机/lib/client-legion-survivors-patch.mjs';
-import { patchLegionPetGuard } from '../../世界online_原版单机/lib/client-legion-petguard-patch.mjs';
-import { patchBattleSpeedSteps, patchBattleSpeedPersist } from '../../世界online_原版单机/lib/client-battle-speed-patch.mjs';
-import { patchWeaponSlots } from '../../世界online_原版单机/lib/client-weapon-slot-patch.mjs';
-import { patchPhantomImmunity } from '../../世界online_原版单机/lib/client-phantom-immunity-patch.mjs';
-import { patchIllusion } from '../../世界online_原版单机/lib/client-illusion-patch.mjs';
-import { patchWeaponIcon } from '../../世界online_原版单机/lib/client-weapon-icon-patch.mjs';
-import { patchEmptyNativeShop, nativeResourceManifest } from '../../世界online_原版单机/lib/native-ui-restoration.mjs';
+// 客户端补丁链与 server.mjs 共用同一模块。顺序只在
+// lib/client-patch-chain.mjs 里定义一次，这里不再重复排列补丁函数。
+import { patchClientBoot, patchClientMain, replaceOnce, CLIENT_MAIN_PATH } from '../../世界online_原版单机/lib/client-patch-chain.mjs';
+import { nativeResourceManifest } from '../../世界online_原版单机/lib/native-ui-restoration.mjs';
 
 // 字体补丁在运行时用 fs 读同目录的这三个文件（见 client-battle-font-patch.mjs）。
 // standalone 下 fs 走 VFS，缺文件就是 ENOENT 抛错，所以必须一起发布并预载。
@@ -49,7 +34,7 @@ const packRoot = path.resolve(here, '..');                       // 安卓打包
 const gameRoot = path.resolve(packRoot, '..', '世界online_原版单机');
 const outRoot = path.join(packRoot, 'app', 'www');     // 站点根 = 打包输出
 
-const MAIN_PATH = 'js/ff/fff570bb4753f056432680e781d827dc.js';
+const MAIN_PATH = CLIENT_MAIN_PATH;
 
 function log(message) { console.log('[build] ' + message); }
 function ensureDir(dir) { fs.mkdirSync(dir, { recursive: true }); }
@@ -61,10 +46,7 @@ function write(target, content) {
 // --- 1. 构建期打客户端补丁 ------------------------------------------------
 // 注意站点布局：Node 版把 client/ 的内容映射到站点根（/assets、/js、/v/gd…），
 // 所以 standalone 的 www 根就是 client 的内容，web/*.js 也平铺在根上。
-function replaceOnce(source, from, to) {
-  if (source.split(from).length !== 2) throw new Error('客户端补丁锚点不匹配：' + from.slice(0, 60));
-  return source.replace(from, to);
-}
+// replaceOnce() 由 client-patch-chain 提供，这里不再本地定义。
 
 // 必须在 layoutSite() 之后调用：layoutSite 用 fs.cpSync 把 client/ 全量平铺到站点根，
 // 会把这里写出的 gd.js 和打过补丁的主包一起覆盖回原始版本。
@@ -72,36 +54,14 @@ function buildPatchedClient() {
   // 1a. 引导脚本 gd.js（对应 server.mjs 里对 analysis/gd.decoded.js 的三处改写）
   // server.mjs L141: if(pathname==='/gd.js') return answer(res,200,mime['.js'],boot)
   // 也就是站点根的 /gd.js 必须是这份改写版，client/gd.js 只是它的压缩形式。
-  let boot = fs.readFileSync(path.join(gameRoot, 'analysis/gd.decoded.js'), 'utf8');
-  boot = replaceOnce(boot, '(a["gs"] = new n())', '(window.offlineBootSettings(), a["gs"] = new n())');
-  boot = replaceOnce(boot, '(s["startEgret"] = function () {', '(s["startEgret"] = function () { window.offlineInstall();');
-  boot = boot.replace(/\(function \(\) \{\s*try \{\s*setInterval\(function \(\) \{[\s\S]*?\}, 50\);\s*\} catch \(e\) \{\}\s*\}\)\(\),/, '');
+  const boot = patchClientBoot(fs.readFileSync(path.join(gameRoot, 'analysis/gd.decoded.js'), 'utf8'));
   write(path.join(outRoot, 'gd.js'), boot);
 
-  // 1b. 主包：完整补丁链（顺序与 server.mjs 第 79–81 行一致）
+  // 1b. 主包：完整补丁链（与 server.mjs 共用 client-patch-chain.mjs）
   const original = fs.readFileSync(path.join(gameRoot, 'client', MAIN_PATH), 'utf8');
   // 浏览器执行的是打过补丁的版本；VFS 里保留原始版本，否则 server.mjs 会二次打补丁报错
   write(path.join(outRoot, MAIN_PATH + '.orig'), original);
-  const base = patchNpcMissionRefresh(
-    patchDailyCatalogVisibility(
-      patchPlayerLevelRewards(
-        patchOfflineStoryBattles(
-          patchNpcRepeatableMissions(
-            patchBattleDamageMath(
-              replaceOnce(original, 't.m=e,t.c=i,', 't.m=e,t.c=i,window.__worldReq=t,')))))));
-  const main = patchWeaponIcon(patchIllusion(patchPhantomImmunity(patchWeaponSlots(
-    patchBattleFont(
-    patchBattleSkillPanel(
-      patchBattleSpeedPersist(
-        patchBattleSpeedSteps(
-          patchLegionPetGuard(
-            patchLegionSurvivors(
-              patchImmediateRoleDeletion(
-                patchCombatLimits(
-                  patchBulkItemUse(
-                    patchEmptyNativeShop(
-                      patchGardenerManaRecovery(
-                        patchOfflineLegionBattles(base))))))))))))))));
+  const main = patchClientMain(original);
   write(path.join(outRoot, MAIN_PATH), main);
   log(`客户端补丁已应用：gd.js ${boot.length} 字节，主包 ${original.length} → ${main.length} 字节`);
 }

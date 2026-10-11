@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -58,7 +59,7 @@ test('native client defers midnight refresh during combat and discards stale not
 });
 
 test('idle service resets online and offline roles at midnight, keeps a running battle, and persists the cleared tasks',async()=>{
- const dir=fs.mkdtempSync(path.join(root,'test-task-reset-')),clockFile=path.join(dir,'clock.txt'),preload=path.join(dir,'clock.mjs');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-task-reset-')),clockFile=path.join(dir,'clock.txt'),preload=path.join(dir,'clock.mjs');
  const store=new SaveStore(dir),account=store.account('midnight'),icons={icon1:'2240667',icon2:'0',icon3:'0'},p=store.create(account,{name:'在线跨天',sex:1,race:0,job:1,...icons}),offline=store.create(account,{name:'离线跨天',sex:0,race:1,job:3,...icons});
  Object.assign(p,role(p.id),{accountId:account.id,mapId:10,mapName:'村外山道',x:18,y:20});p.hp=hpMax(p);p.mp=mpMax(p);
  Object.assign(offline,role(offline.id),{accountId:account.id});offline.dailyActivity.day='2026-09-22';store.save();
@@ -93,6 +94,6 @@ test('idle service resets online and offline roles at midnight, keeps a running 
  }finally{
   ws?.close();
   if(proc.exitCode===null){const ctl=JSON.parse(fs.readFileSync(path.join(dir,'logs/control.json'),'utf8')),exited=once(proc,'exit');await fetch(`http://127.0.0.1:${port}/api/shutdown`,{method:'POST',headers:{'X-Worldol-Control':ctl.token}});await exited;}
-  const exact=fs.realpathSync(dir);assert.equal(path.dirname(exact),fs.realpathSync(root));assert.ok(path.basename(exact).startsWith('test-task-reset-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-task-reset-'));fs.rmSync(exact,{recursive:true});
  }
 });

@@ -19,10 +19,13 @@ node tools/run-tests.mjs --update         # 修完用例后重写已知失败清
 
 判定标准：**只看「新增失败」是否为 0**。为 0 就是无回归，不需要再去比对老失败。
 
-- `tests/known-failures.json` 里记着 47 条长期失败的用例：它们期望的是原版/早期
-  单机版的行为与数据规模（宠物模板写死 23 个而目录已有 50 个、经验表阈值、
-  icon1 还是字符串的年代…），**不是 bug**。运行器按清单忽略，清单外的失败会
-  点名并以退出码 1 结束。改动用例后如果这个数字变了，用 `--update` 重新生成并复核。
+- `tests/known-failures.json` 里记着 46 条长期失败的用例（2026-10-11 现状）：它们
+  期望的是原版/早期单机版的行为与数据规模（宠物模板写死 23 个而目录已有 50 个、
+  经验表阈值、icon1 还是字符串的年代…），**不是 bug**。运行器按清单忽略，清单外的
+  失败会点名并以退出码 1 结束。改动用例后如果这个数字变了，用 `--update` 重新生成并复核。
+- 测试的临时目录**一律 `fs.mkdtempSync(path.join(os.tmpdir(),'worldol-<名字>-'))`**，
+  删除守卫写「必须在 `os.tmpdir()` 下」。**不要建在仓库根** —— 曾经有 10 个用例这么做，
+  清理又不在 finally 里，攒了 78 个残留目录。
 
 ## 环境坑（本机专属，用户机器上没有）
 - **`node-safe-delete-shim.cjs`**：WorkBuddy/CodeBuddy 命令行通过 `NODE_OPTIONS`
@@ -42,9 +45,28 @@ node tools/run-tests.mjs --update         # 修完用例后重写已知失败清
 - 站点构建日志里的「构建指纹」= `standalone/build.mjs` 算出的站点指纹，
   打包后可从 APK 的 `assets/public/` 里解包核对。
 
+## 版本控制（2026-10-11 起）
+- 仓库根 `世界OL_源码/` 已是 git 仓库（分支 main），基线提交 `2bbe512`。
+- `client/`、`analysis/`、`node_modules/`、`saves|logs|backups|runtime/`、
+  `安卓打包/app/www/`、android 构建产物、`test-*/`、`.scratch/` 都**不入库**（约 320 MB）；
+  `lib/ tools/ tests/ web/ data/`、`server.mjs`、构建脚本与文档入库。
+- 本地配置 `core.autocrlf=false`：修复记录.txt / *.cmd / *.ps1 **必须保持 CRLF**，
+  不能让 git 在检出时改行尾。写文件也要注意别把它转成 LF。
+- `.gitignore` 不支持行内注释（只有行首 # 是注释），说明必须单独占一行。
+
+## 客户端补丁链（唯一来源）
+- **`lib/client-patch-chain.mjs` 是唯一来源**，`CLIENT_MAIN_STEPS`(23 步) 与
+  `CLIENT_BOOT_STEPS`(3 步) 按数组顺序执行；`patchClientMain()` / `patchClientBoot()` /
+  `replaceOnce()` / `CLIENT_MAIN_PATH` 都从这里导出。
+- `server.mjs` 与 `安卓打包/standalone/build.mjs` **都必须 import 它**，
+  不要再在调用方排列补丁函数（`tests/client-patch-chain.test.mjs` 守着，
+  顺序改了要同步改用例里的 EXPECTED_MAIN_STEPS）。
+- 加新补丁：写 `lib/client-xxx-patch.mjs` 导出 patch 函数 → 加进 `CLIENT_MAIN_STEPS`
+  末尾（或按依赖插到合适位置）→ 同步 EXPECTED_MAIN_STEPS → 跑 `--only client-patch-chain`。
+
 ## 客户端要点（改功能前必看）
 - 主包：`client/js/ff/fff570bb4753f056432680e781d827dc.js`（4,557,839 字符，**尽量不要动**；
-  构建期由 `安卓打包/standalone/build.mjs` 打补丁成 4,564,108）。
+  构建期由 `安卓打包/standalone/build.mjs` 打补丁成 4,564,108，这个长度是用例里的指纹）。
 - 资源清单 `client/v/gd/305.json` 是归档原件，**字节不能改**（测试断言 sha256）；
   所有补充只在 `lib/native-ui-restoration.mjs` 内存生成的那份清单上做。
 - 客户端很多判定是**写死 ID 区间**的（例：`isHairItem` 认 40100–40199、

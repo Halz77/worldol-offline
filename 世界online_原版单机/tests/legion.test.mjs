@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
@@ -20,10 +21,10 @@ import {firstFree} from '../lib/restoration.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
 function fixture(t){
- const dir=fs.mkdtempSync(path.join(root,'test-legion-')),store=new SaveStore(dir),account=store.account('军团验收');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-legion-')),store=new SaveStore(dir),account=store.account('军团验收');
  const roles=Array.from({length:5},(_,i)=>store.create(account,{name:'小队'+i,sex:0,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'}));
  const outsider=store.create(store.account('其他存档'),{name:'外部角色',sex:0,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'});
- t.after(()=>{assert.equal(path.dirname(path.resolve(dir)),path.resolve(root));fs.rmSync(dir,{recursive:true,force:true});});
+ t.after(()=>{const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-legion-'));fs.rmSync(exact,{recursive:true,force:true});});
  const p=roles[0],context={role:p,account},sent=[];
  const env={store,send(type,w){sent.push({type,bytes:w instanceof Writer?w.done():Buffer.from(w)});},log(){}};
  const call=(type,data={},responseType=type+1)=>{const schema=type===31053?'c2s_LegionFormation':type===31055?'c2s_LegionBattle':'c2s_LegionInfo';handleLegion(type,new Reader(encodeLegion(schema,data)),context,env);return sent.findLast(v=>v.type===responseType);};

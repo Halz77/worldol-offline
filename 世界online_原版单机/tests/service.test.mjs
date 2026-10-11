@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
@@ -26,7 +27,7 @@ import {recordedExpansion,recordedExpansionRevision} from '../lib/recorded-expan
 import {yunruoTempleRevision} from '../lib/yunruo-temple.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 test('loopback service creates, enters and persists a role through v305 messages',async()=>{
-  const dir=fs.mkdtempSync(path.join(root,'test-service-'));
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-service-'));
   const allocator=net.createServer();allocator.listen(0,'127.0.0.1');await once(allocator,'listening');const port=allocator.address().port;await new Promise(resolve=>allocator.close(resolve));
   const proc=spawn(process.execPath,[path.join(root,'server.mjs')],{cwd:root,env:{...process.env,WORLDOL_PORT:String(port),WORLDOL_SAVES:dir,WORLDOL_LOGS:path.join(dir,'logs')},windowsHide:true,stdio:['ignore','pipe','pipe']});
   let ws;try{
@@ -115,6 +116,6 @@ test('loopback service creates, enters and persists a role through v305 messages
   }finally{
     ws?.close();
     if(proc.exitCode===null){const c=JSON.parse(fs.readFileSync(path.join(dir,'logs/control.json'),'utf8'));const stopped=once(proc,'exit');await fetch(`http://127.0.0.1:${port}/api/shutdown`,{method:'POST',headers:{'X-Worldol-Control':c.token}});await stopped;}
-    const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-service-'));fs.rmSync(exact,{recursive:true});
+    const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-service-'));fs.rmSync(exact,{recursive:true});
   }
 });

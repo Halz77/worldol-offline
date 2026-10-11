@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
@@ -24,8 +25,8 @@ import {balancedMonsterPacket} from '../lib/monster-balance.mjs';
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
 const plain=value=>JSON.parse(JSON.stringify(value));
 function fixture(t){
-  const dir=fs.mkdtempSync(path.join(root,'test-captured-expansion-'));
-  t.after(()=>{assert.equal(path.dirname(path.resolve(dir)),path.resolve(root));fs.rmSync(dir,{recursive:true,force:true});});
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-captured-expansion-'));
+  t.after(()=>{const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-captured-expansion-'));fs.rmSync(exact,{recursive:true,force:true});});
   const store=new SaveStore(dir),account=store.account('录制整合验收'),p=store.create(account,{name:'任务验收',sex:1,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'});
   Object.assign(p,{mapId:411,level:1,x:43,y:37});p.quests={active:{},completed:[]};p.hp=hpMax(p);p.mp=mpMax(p);store.save();
   const context={role:p,account},sent=[],env={store,send(type,w){sent.push({type,bytes:w instanceof Writer?w.done():Buffer.from(w)});},log(){},draw:()=>0.99};

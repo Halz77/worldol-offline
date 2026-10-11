@@ -12,8 +12,7 @@ import {legionRevision} from './lib/legion-state.mjs';
 import {bossChallengeRevision} from './lib/boss-challenges.mjs';
 import {yunruoTempleRevision} from './lib/yunruo-temple.mjs';
 import {recordedExpansionRevision} from './lib/recorded-expansion.mjs';
-import {patchOfflineLegionBattles} from './lib/client-legion-patch.mjs';
-import {patchImmediateRoleDeletion} from './lib/client-role-deletion-patch.mjs';
+import {patchClientBoot,patchClientMain,CLIENT_MAIN_PATH} from './lib/client-patch-chain.mjs';
 import {handleCity} from './lib/city-service.mjs';
 import {handleHomeFeatures,flushHomeSession} from './lib/home-feature-service.mjs';
 import {homeFeatureRevision,towerPreviews} from './lib/home-feature-data.mjs';
@@ -42,30 +41,32 @@ import {identificationPreview} from './lib/catalog-packets.mjs';
 import {careerDirectory,careers} from './lib/career-skills.mjs';
 import {supplyDirectory} from './lib/supply-shops.mjs';
 import {starLimit} from './lib/equipment-policy.mjs';
-import {damageMathRevision,patchBattleDamageMath} from './lib/client-damage-patch.mjs';
-import {combatLimitsRevision,characterAttackLimits,patchCombatLimits} from './lib/client-combat-limits.mjs';
-import {bossManaRecoveryRevision,patchGardenerManaRecovery} from './lib/client-monster-recovery-patch.mjs';
-import {clientMissionRevision,patchNpcRepeatableMissions,patchOfflineStoryBattles,patchDailyCatalogVisibility,patchNpcMissionRefresh} from './lib/client-mission-patch.mjs';
+// 下面这些模块只为了 /api/status 里的 revision 常量而引入；
+// 真正打补丁的函数统一由 ./lib/client-patch-chain.mjs 提供。
+import {damageMathRevision} from './lib/client-damage-patch.mjs';
+import {combatLimitsRevision,characterAttackLimits} from './lib/client-combat-limits.mjs';
+import {bossManaRecoveryRevision} from './lib/client-monster-recovery-patch.mjs';
+import {clientMissionRevision} from './lib/client-mission-patch.mjs';
 import {combatRatingRevision,combatRating,syncCombatRating} from './lib/combat-rating.mjs';
 import {petSnapshotDirectory} from './lib/pet-snapshot-vitals.mjs';
 import {petCatalogSummary} from './lib/pet-catalog.mjs';
 import {dropDirectory} from './lib/loot.mjs';
 import {playerExperience} from './lib/player-experience.mjs';
-import {clientProgressionRevision,patchPlayerLevelRewards} from './lib/client-progression-patch.mjs';
-import {clientBagRevision,patchBulkItemUse} from './lib/client-bag-patch.mjs';
-import {battleSkillPanelRevision,patchBattleSkillPanel} from './lib/client-battle-skill-panel-patch.mjs';
-import {battleFontRevision,patchBattleFont} from './lib/client-battle-font-patch.mjs';
-import {legionSurvivorsRevision,patchLegionSurvivors} from './lib/client-legion-survivors-patch.mjs';
-import {legionPetGuardRevision,patchLegionPetGuard} from './lib/client-legion-petguard-patch.mjs';
-import {battleSpeedRevision,patchBattleSpeedSteps,patchBattleSpeedPersist} from './lib/client-battle-speed-patch.mjs';
-import {weaponSlotRevision,patchWeaponSlots} from './lib/client-weapon-slot-patch.mjs';
-import {phantomImmunityRevision,patchPhantomImmunity} from './lib/client-phantom-immunity-patch.mjs';
-import {illusionRevision,patchIllusion} from './lib/client-illusion-patch.mjs';
-import {weaponIconRevision,patchWeaponIcon} from './lib/client-weapon-icon-patch.mjs';
+import {clientProgressionRevision} from './lib/client-progression-patch.mjs';
+import {clientBagRevision} from './lib/client-bag-patch.mjs';
+import {battleSkillPanelRevision} from './lib/client-battle-skill-panel-patch.mjs';
+import {battleFontRevision} from './lib/client-battle-font-patch.mjs';
+import {legionSurvivorsRevision} from './lib/client-legion-survivors-patch.mjs';
+import {legionPetGuardRevision} from './lib/client-legion-petguard-patch.mjs';
+import {battleSpeedRevision} from './lib/client-battle-speed-patch.mjs';
+import {weaponSlotRevision} from './lib/client-weapon-slot-patch.mjs';
+import {phantomImmunityRevision} from './lib/client-phantom-immunity-patch.mjs';
+import {illusionRevision} from './lib/client-illusion-patch.mjs';
+import {weaponIconRevision} from './lib/client-weapon-icon-patch.mjs';
 import {dailyKey,dailyRevision,dailySnapshot,ensureDaily,taskSnapshot} from './lib/daily-activity.mjs';
 import {notifyDaily,encodeDaily} from './lib/daily-service.mjs';
 import {taskResetRevision,nextTaskResetAt,resetTaskDays} from './lib/task-reset.mjs';
-import {nativeUiRevision,patchEmptyNativeShop,nativeResourceManifest} from './lib/native-ui-restoration.mjs';
+import {nativeUiRevision,nativeResourceManifest} from './lib/native-ui-restoration.mjs';
 import {openPortalsRevision} from './lib/open-portals.mjs';
 import {handleNativeCommerce} from './lib/native-commerce.mjs';
 import {handleSystemSettings,systemSettingsRevision} from './lib/system-settings-service.mjs';
@@ -80,14 +81,11 @@ fs.mkdirSync(logDir,{recursive:true});
 const controlToken=randomBytes(24).toString('hex');
 let recent=[],requests=0,missing=new Set(),unknown=new Set();
 function log(kind,data){const entry={time:new Date().toISOString(),kind,...data};recent.push(entry);if(recent.length>150)recent.shift();const file=path.join(logDir,'session.jsonl');if(fs.existsSync(file)&&fs.statSync(file).size>512*1024)fs.renameSync(file,file+'.previous');fs.appendFileSync(file,JSON.stringify(entry)+'\n');}
-function replaceOnce(source,from,to){if(source.split(from).length!==2)throw Error('Client patch mismatch: '+from);return source.replace(from,to);}
-let boot=fs.readFileSync(path.join(root,'analysis/gd.decoded.js'),'utf8');
-boot=replaceOnce(boot,'(a["gs"] = new n())','(window.offlineBootSettings(), a["gs"] = new n())');
-boot=replaceOnce(boot,'(s["startEgret"] = function () {','(s["startEgret"] = function () { window.offlineInstall();');
-boot=boot.replace(/\(function \(\) \{\s*try \{\s*setInterval\(function \(\) \{[\s\S]*?\}, 50\);\s*\} catch \(e\) \{\}\s*\}\)\(\),/,'');
-const mainPath='js/ff/fff570bb4753f056432680e781d827dc.js';
-const baseMain=patchNpcMissionRefresh(patchDailyCatalogVisibility(patchPlayerLevelRewards(patchOfflineStoryBattles(patchNpcRepeatableMissions(patchBattleDamageMath(replaceOnce(fs.readFileSync(path.join(raw,mainPath),'utf8'),'t.m=e,t.c=i,','t.m=e,t.c=i,window.__worldReq=t,')))))));
-const main=patchWeaponIcon(patchIllusion(patchPhantomImmunity(patchWeaponSlots(patchBattleFont(patchBattleSkillPanel(patchBattleSpeedPersist(patchBattleSpeedSteps(patchLegionPetGuard(patchLegionSurvivors(patchImmediateRoleDeletion(patchCombatLimits(patchBulkItemUse(patchEmptyNativeShop(patchGardenerManaRecovery(patchOfflineLegionBattles(baseMain))))))))))))))));
+// 客户端补丁链：顺序与内容都在 ./lib/client-patch-chain.mjs 里唯一确定，
+// 站点构建（安卓打包/standalone/build.mjs）走的是同一个模块，不会再出现两边写岔。
+const mainPath=CLIENT_MAIN_PATH;
+const boot=patchClientBoot(fs.readFileSync(path.join(root,'analysis/gd.decoded.js'),'utf8'));
+const main=patchClientMain(fs.readFileSync(path.join(raw,mainPath),'utf8'));
 const restoredManifest=JSON.stringify(nativeResourceManifest(root,raw));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.mp3':'audio/mpeg','.bin':'application/octet-stream'};
 function answer(res,code,type,body){res.writeHead(code,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);}

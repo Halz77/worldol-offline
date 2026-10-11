@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
@@ -49,7 +50,7 @@ test('pet native parser reads all 28 skills and explicit five-slot settings; unk
  assert.ok(pet.hp<=petAttributes(p,pet).hp);assert.equal(pet.importedVitals.hp,69089);assert.equal(pet.recordedSnapshotVitals,undefined);
 });
 test('isolated service lists the imported role, enters it, exposes it to legion, and retains data across relogin',async()=>{
- const dir=fs.mkdtempSync(path.join(root,'test-character-import-')),port=8788,result=imported();fs.writeFileSync(path.join(dir,'world.json'),JSON.stringify(result.world));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-character-import-')),port=8788,result=imported();fs.writeFileSync(path.join(dir,'world.json'),JSON.stringify(result.world));
  const proc=spawn(process.execPath,[path.join(root,'server.mjs')],{cwd:root,env:{...process.env,WORLDOL_PORT:String(port),WORLDOL_SAVES:dir,WORLDOL_LOGS:path.join(dir,'logs')},windowsHide:true,stdio:['ignore','pipe','pipe']});
  let ws,stderr='';proc.stderr.on('data',b=>stderr+=b);proc.stdout.on('data',()=>{});
  try{
@@ -67,6 +68,6 @@ test('isolated service lists the imported role, enters it, exposes it to legion,
   const final=await(await fetch(`http://127.0.0.1:${port}/api/status`)).json();assert.equal(final.unknown.length,0);assert.equal(stderr,'');
  }finally{
   ws?.terminate();if(proc.exitCode===null){const c=JSON.parse(fs.readFileSync(path.join(dir,'logs/control.json'))),exited=once(proc,'exit');await fetch(`http://127.0.0.1:${port}/api/shutdown`,{method:'POST',headers:{'X-Worldol-Control':c.token}});await exited;}
-  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-character-import-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-character-import-'));fs.rmSync(exact,{recursive:true});
  }
 });

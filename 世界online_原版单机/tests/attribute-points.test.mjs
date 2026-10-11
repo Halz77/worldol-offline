@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {SaveStore} from '../lib/store.mjs';
@@ -44,7 +45,7 @@ test('level repair preserves normal rewards, supports direct level changes and l
 });
 
 test('legacy save migrates to 321; native allocation, refunds and disk reload conserve the budget',()=>{
- const dir=fs.mkdtempSync(path.join(root,'test-attribute-points-'));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-attribute-points-'));
  try{
   const oldStore=new SaveStore(dir),account=oldStore.account('attribute-test');
   const oldRole=oldStore.create(account,{name:'属性存档验收',sex:1,race:0,job:1,icon1:'2240393',icon2:'0',icon3:'0'});
@@ -68,6 +69,6 @@ test('legacy save migrates to 321; native allocation, refunds and disk reload co
   assert.deepEqual(new SaveStore(dir).data.characters[0],p);
   assert.deepEqual(p.inventory,before.inventory);assert.deepEqual(p.skills,before.skills);assert.equal(p.coins,before.coins);assert.equal(p.vipLevel2,9);
  }finally{
-  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-attribute-points-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-attribute-points-'));fs.rmSync(exact,{recursive:true});
  }
 });

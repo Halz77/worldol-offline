@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
@@ -39,7 +40,7 @@ test('server actor payload passes the actual original v305 actor parser',()=>{
   const entry=new Reader(enterWorld(input).done());assert.equal(entry.byte(),0);assert.equal(entry.int(),0);
 });
 test('save reload preserves character icons and position; corrupt saves are not overwritten',()=>{
-  const dir=fs.mkdtempSync(path.join(root,'test-save-check-'));
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-save-check-'));
   const db=new SaveStore(dir);const account=db.account('test');
   const role=db.create(account,{name:'存档测试',sex:0,race:0,job:1,icon1:'1234',icon2:'0',icon3:'0'});
   role.x=12;role.y=10;role.quests.active[9002]={kills:1};role.quests.completed=[9001];role.coins=1080;role.exp=45;role.battles.wins=1;db.save();
@@ -48,5 +49,5 @@ test('save reload preserves character icons and position; corrupt saves are not 
   assert.throws(()=>reload.create(reload.account('test'),{...role,id:999}),/已存在/);
   assert.ok(fs.existsSync(path.join(dir,'world.json.bak')));
   fs.writeFileSync(path.join(dir,'world.json'),'invalid-json');assert.throws(()=>new SaveStore(dir));assert.equal(fs.readFileSync(path.join(dir,'world.json'),'utf8'),'invalid-json');
-  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-save-check-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-save-check-'));fs.rmSync(exact,{recursive:true});
 });

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {activeSkills,powers,unequip,skills} from '../lib/restoration.mjs';
@@ -38,7 +39,7 @@ test('bound and unbound equipped copies contribute equally; backpack copies do n
 });
 
 test('binding preserves already active skills; unequip refreshes stacked levels and source items survive disk reload',()=>{
- const dir=fs.mkdtempSync(path.join(root,'test-skill-stacking-'));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-skill-stacking-'));
  try{
   const store=new SaveStore(dir),account=store.account('ring-test'),p=store.create(account,{name:'双戒指验收',sex:1,race:0,job:1});
   Object.assign(p,role());p.inventory[1].bound=false;
@@ -53,7 +54,7 @@ test('binding preserves already active skills; unequip refreshes stacked levels 
   d.native(56,'fromSkillData',{l:{default:d.Skill}}).call(client,removed);removed.finish();assert.equal(client.list.get(111).level,11);assert.equal(client.list.get(111).addLevel,11);
   assert.equal(skill(new SaveStore(dir).data.characters[0]).level,11);
  }finally{
-  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-skill-stacking-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-skill-stacking-'));fs.rmSync(exact,{recursive:true});
  }
 });
 
@@ -68,7 +69,7 @@ test('learning and forgetting a base skill keep the effective equipment contribu
 });
 
 test('unbound automatic and active equipment skills can be selected, survive reload and are removed on unequip',()=>{
- const dir=fs.mkdtempSync(path.join(root,'test-skill-stacking-'));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-skill-stacking-'));
  try{
   const store=new SaveStore(dir),account=store.account('unbound-skills'),p=store.create(account,{name:'未绑定技能',sex:1,race:0,job:1});
   Object.assign(p,role(),{inventory:[
@@ -98,7 +99,7 @@ test('unbound automatic and active equipment skills can be selected, survive rel
   assert.equal(call(14004,new Writer().byte(0).int(6518)).getByte(),-1);
   assert.equal(new SaveStore(dir).data.characters[0].inventory.every(i=>i.slot>=30&&!i.bound),true);
  }finally{
-  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(root)+path.sep+'test-skill-stacking-'));fs.rmSync(exact,{recursive:true});
+  const exact=fs.realpathSync(dir);assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-skill-stacking-'));fs.rmSync(exact,{recursive:true});
  }
 });
 
