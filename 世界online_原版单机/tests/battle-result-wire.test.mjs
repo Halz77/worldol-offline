@@ -12,7 +12,7 @@ import {bindLegionRoster,changeLegionFormation} from '../lib/legion-state.mjs';
 import {handleLegion} from '../lib/legion-service.mjs';
 import {handleGame} from '../lib/game-service.mjs';
 import {activePet,openContainer,equipPet} from '../lib/pet-state.mjs';
-import {firstFree} from '../lib/restoration.mjs';
+import {firstFree,nativeVitalsCeiling} from '../lib/restoration.mjs';
 import {BATTLE_TRAILER_V2,BATTLE_TRAILER_V3} from '../lib/battle-result-wire.mjs';
 import {decoders} from '../tools/capture-decoders.mjs';
 
@@ -171,4 +171,39 @@ test('rejection messages name the exact field so a screenshot is enough to diagn
  const badResult=fixture();
  const {bytes:bytes2}=packet(badResult,Array.from({length:2},()=>[1,5]),{rounds:3,result:0});
  assert.throws(()=>badResult.call(12502,bytes2),/战斗结果数据不完整（胜败标记 0 不在 1\.\.4），未发放奖励。/);
+});
+
+test('客户端口径的血蓝上限不被误判（第 41 版：服务端近似公式对称号偏小）',()=>{
+ // 服务端 attributes() 把称号 power 并进「装备列」参与运算，而原生引擎把它当独立的
+ // titlePower 放在另一个层级 —— 同一套配装两边算出的上限不同。实测玩家「魔攻」
+ // （称号 1302）自研 MP 273677 / 原生 280546。结算校验的是客户端发回来的当前值，
+ // 用自研口径去卡它就会把合法战斗判成「战斗结果数据不完整」而扣发奖励（玩家实际报的
+ // 就是「法力 280546 超出 0..273677」）。
+ const h=fixture();
+ h.p.titleId=1302;                     // power 7/+75、8/+20，足以把两条口径拉开
+ const client=nativeVitalsCeiling(h.p);
+ assert.ok(client&&client.mp>mpMax(h.p),`该称号应当造出「原生上限 > 自研上限」：${JSON.stringify(client)} vs 自研 ${mpMax(h.p)}`);
+ h.p.mp=client.mp;                     // 客户端把「它的上限」当当前法力发回来
+ h.call(12502,packet(h,Array.from({length:2},()=>[1,5]),{rounds:3}).bytes);
+ assert.equal(h.p.battles.wins,1,'超出服务端口径、但在客户端口径内的法力不该拒绝结算');
+ const over=h.events.filter(e=>e.kind==='battle-vitals-over-self');
+ assert.equal(over.length,1,'两条口径不同要落一条日志，便于以后和「真异常」区分');
+ assert.deepEqual(over[0].native,client);
+
+ // 真异常（远超客户端口径）仍要拒绝，而且报错点名是哪一项。
+ // 注意上面那场胜利会发经验、可能让角色升级，所以上限要重新取。
+ h.start();
+ const next=nativeVitalsCeiling(h.p)||{hp:mpMax(h.p),mp:mpMax(h.p)};
+ h.p.mp=next.mp*3;
+ assert.throws(()=>h.call(12502,packet(h,Array.from({length:2},()=>[1,5]),{rounds:3}).bytes),
+   /法力 \d+ 超出 0\.\.\d+），未发放奖励。/);   // 原因被全角括号包住
+});
+
+test('nativeVitalsCeiling 在原生模块算不出结果时退回 null，不让结算崩掉',()=>{
+ // 服务端存档里可能有原生模块认不出的本地道具（造型/本地补充装备）。那种情况下原生
+ // 解析会抛错（实测 itemId 999999 就会），校验必须退回服务端口径，而不是把整场结算打断。
+ assert.equal(nativeVitalsCeiling({id:1,level:1,inventory:[{itemId:999999,slot:0}]}),null);
+ // 反过来，算得出的角色必须给正数 —— 否则「放宽」判断会形同虚设。
+ const ok=nativeVitalsCeiling({id:1,level:1,inventory:[]});
+ assert.ok(ok&&ok.hp>0&&ok.mp>0);
 });

@@ -15,6 +15,7 @@ import {recordActivity} from './daily-activity.mjs';
 import {notifyDaily} from './daily-service.mjs';
 import {legionBattleMembers,readLegionResult,pushLegionMembers,legionVitals,encodeLegion} from './legion-service.mjs';
 import {legionRoster} from './legion-state.mjs';
+import {nativeVitalsCeiling} from './restoration.mjs';
 import {BATTLE_TRAILER_V2,readBattleResultTail} from './battle-result-wire.mjs';
 export const BATTLE_TRAILER=BATTLE_TRAILER_V2;
 // MOD(battle-entry-full-heal)：进入战斗前把人物与背包里全部宠物的血蓝原地回满
@@ -174,13 +175,28 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     // 原来这十项挤在一个 if 里共用一句「战斗结果数据不完整，未发放奖励。」，线上出问题时
     // 完全看不出是哪一项（第 40 版排查打怪偶尔结算失败时就卡在这儿）。逐项写清原因，
     // 顺便让 reject() 把这场战斗标成作废，玩家可以重新开战。
+    // 第 41 版：血蓝上限改按「客户端口径」判。客户端跑的是原生引擎，它的上限才是
+    // 玩家真实值；服务端 attributes() 是自研近似公式，对带称号的角色会偏小
+    // （实测「魔攻」自研 MP 273677 / 原生 280546，差 6869），原来直接判
+    // 「法力 280546 超出 0..273677」→ 合法战斗也扣发奖励。
+    // 先按服务端口径判，只有确实超出时才复核客户端口径 —— 原生模块约 9 ms，
+    // 正常结算不付这个成本；两条口径不同时落一条日志，便于与「真异常」区分。
+    let maxHP=hpMax(p),maxMP=mpMax(p);
+    if(hp>maxHP||mp>maxMP){
+      const ceiling=nativeVitalsCeiling(p);
+      if(ceiling){
+        if(hp>maxHP&&hp<=ceiling.hp)maxHP=ceiling.hp;
+        if(mp>maxMP&&mp<=ceiling.mp)maxMP=ceiling.mp;
+        log('battle-vitals-over-self',{role:p.id,hp,mp,self:{hp:hpMax(p),mp:mpMax(p)},native:ceiling});
+      }
+    }
     const anomaly=
       r.pos!==r.b.length?`包尾多出 ${r.b.length-r.pos} 字节`
       :group!==battle.group?`怪物组 ${group} 与开战时的 ${battle.group} 不一致`
       :p.mapId!==battle.mapId?`地图 ${p.mapId} 与开战时的 ${battle.mapId} 不一致`
       :![1,2,3,4].includes(result)?`胜败标记 ${result} 不在 1..4`
-      :hp<0||hp>hpMax(p)?`生命 ${hp} 超出 0..${hpMax(p)}`
-      :mp<0||mp>mpMax(p)?`法力 ${mp} 超出 0..${mpMax(p)}`
+      :hp<0||hp>maxHP?`生命 ${hp} 超出 0..${maxHP}`
+      :mp<0||mp>maxMP?`法力 ${mp} 超出 0..${maxMP}`
       :startHP<1?`开场生命 ${startHP} 小于 1`
       :startMP<0?`开场法力 ${startMP} 小于 0`
       :result===2&&!survivingAlly?`判定胜利但场上没有活着的一方`

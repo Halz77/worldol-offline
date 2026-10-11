@@ -122,6 +122,25 @@ export function attributes(p){
  const mp=value(Math.trunc(7.5*base[3])+Math.trunc(3.5*base[4])+50+10*(totalLevel-1),13);
  return {base,hp,mp};
 }
+// 客户端（原生引擎）算出的血蓝上限。服务端的 attributes() 是自研**近似**公式 ——
+// 例如称号的 power 是并进「装备列」参与运算的（见 powers(p,'equipment') 里的
+// push(...titlePowers(p))），而原生引擎把称号当独立的 titlePower 放在另一个层级，
+// 于是两边对带称号的角色会算出不同的上限。实测「魔攻」（称号 1302，power 7/+75、8/+20）：
+// 自研 MP 273677 / 原生 280546，差 6869 —— 战斗结算校验的是客户端发回来的当前值，
+// 用自研口径去卡它就会把合法战斗判成「战斗结果数据不完整」而扣发奖励。
+//
+// 只在确实超出自研口径时调用（原生模块单次约 9 ms），并吞掉异常退回 null：
+// 服务端存档里可能出现原生模块认不出的本地道具，那不该让整个结算崩掉。
+export function nativeVitalsCeiling(p){
+ try{
+  const {stats}=nativeCharacterStats(p);
+  const hp=Math.trunc(stats?.HPMAX),mp=Math.trunc(stats?.MPMAX);
+  // 算不出结果时统一按 null 退回服务端口径。注意不能只看 isFinite：原生模块对
+  // 残缺角色（例如只有 id/level 的对象）**不抛错**，而是安静地返回 0 —— 那既不是
+  // 有效上限，也不能让它参与「放宽」判断。
+  return Number.isFinite(hp)&&Number.isFinite(mp)&&(hp>0||mp>0)?{hp:Math.max(0,hp),mp:Math.max(0,mp)}:null;
+ }catch{return null;}
+}
 export function clampVitals(p){const a=attributes(p);p.hp=Math.min(p.hp,a.hp);p.mp=Math.min(p.mp,a.mp);}
 export function buyItem(p,id,quantity){
  const e=equipment.get(id),limit=Math.max(1,e?.stackNum||1);
