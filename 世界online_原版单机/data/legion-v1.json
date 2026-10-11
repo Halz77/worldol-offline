@@ -1,0 +1,420 @@
+{
+  "schema": "worldol.legion.v1",
+  "revision": "local-account-legion-four-unlocked-v1",
+  "formations": [
+    {
+      "id": 1,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 0
+        },
+        {
+          "index": 2,
+          "unlockLevel": 0
+        },
+        {
+          "index": 3,
+          "unlockLevel": 0
+        },
+        {
+          "index": 4,
+          "unlockLevel": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 0
+        },
+        {
+          "index": 2,
+          "unlockLevel": 0
+        },
+        {
+          "index": 3,
+          "unlockLevel": 0
+        },
+        {
+          "index": 4,
+          "unlockLevel": 0
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 0
+        },
+        {
+          "index": 2,
+          "unlockLevel": 0
+        },
+        {
+          "index": 3,
+          "unlockLevel": 0
+        },
+        {
+          "index": 4,
+          "unlockLevel": 0
+        }
+      ]
+    }
+  ],
+  "schemas": {
+    "c2s_LegionInfo": {},
+    "s2c_LegionInfo": {
+      "1": {
+        "name": "legionInfos",
+        "type": "legionInfo",
+        "message": true,
+        "repeated": true
+      },
+      "2": {
+        "name": "actorInfos",
+        "type": "legionActorInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "legionInfo": {
+      "1": {
+        "name": "legionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "infos",
+        "type": "legionNumberInfo",
+        "message": true,
+        "repeated": true
+      },
+      "3": {
+        "name": "battle",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "legionNumberInfo": {
+      "1": {
+        "name": "index",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "unlockLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "headInfo",
+        "type": "headimg",
+        "message": true,
+        "repeated": false
+      }
+    },
+    "headimg": {
+      "1": {
+        "name": "sex",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "vocation",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "camp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "level",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "legionActorInfo": {
+      "1": {
+        "name": "actorId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "job",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "level",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "icon1",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "icon2",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "icon3",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "legionIds",
+        "type": "int32",
+        "message": false,
+        "repeated": true
+      }
+    },
+    "c2s_LegionFormation": {
+      "1": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "legionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "index",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "actorId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_LegionFormation": {
+      "1": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "legionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "index",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "actorId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "headInfo",
+        "type": "headimg",
+        "message": true,
+        "repeated": false
+      }
+    },
+    "c2s_LegionBattle": {
+      "1": {
+        "name": "legionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_LegionBattle": {
+      "1": {
+        "name": "legionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_LegionExpReward": {
+      "1": {
+        "name": "exp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_LegionActorHp": {
+      "1": {
+        "name": "infos",
+        "type": "legionHpInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "legionHpInfo": {
+      "1": {
+        "name": "actorId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "hp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "maxHp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "mp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "maxMp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "petHp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "petMaxHp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "petMp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "9": {
+        "name": "petMaxMp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    }
+  },
+  "evidence": {
+    "capture": "2026-09-22T00-25-47-572Z_c936a4",
+    "seq": 11976,
+    "at": "2026-09-22T00:57:21.580Z",
+    "protocol": 31052,
+    "formationSequences": [
+      12137,
+      12162
+    ]
+  },
+  "pending": [
+    "原版军团经验分配比例未录到，助战暂不发经验；主角色仍按原有方式结算。"
+  ],
+  "recordedFormations": [
+    {
+      "id": 1,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 60
+        },
+        {
+          "index": 2,
+          "unlockLevel": 65
+        },
+        {
+          "index": 3,
+          "unlockLevel": 70
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 60
+        },
+        {
+          "index": 2,
+          "unlockLevel": 65
+        },
+        {
+          "index": 3,
+          "unlockLevel": 70
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "slots": [
+        {
+          "index": 1,
+          "unlockLevel": 60
+        },
+        {
+          "index": 2,
+          "unlockLevel": 65
+        },
+        {
+          "index": 3,
+          "unlockLevel": 70
+        }
+      ]
+    }
+  ],
+  "localRules": {
+    "helperCount": 4,
+    "partySize": 5,
+    "minimumLevel": 0,
+    "reason": "用户指定：无等级限制，四个助战角色与当前角色组成五人小队。"
+  }
+}

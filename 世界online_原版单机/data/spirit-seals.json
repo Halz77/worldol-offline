@@ -1,0 +1,5527 @@
+{
+  "revision": "spirit-seals-20260925-v3",
+  "source": {
+    "capture": "2026-09-23T17-08-13-065Z_36afdc",
+    "seq": 617,
+    "ref": {
+      "file": "blobs/ea/eacb963482f44f090846ea52a29322c36455cc3907bcba8fc7805263dfc12ad1.bin",
+      "sha256": "eacb963482f44f090846ea52a29322c36455cc3907bcba8fc7805263dfc12ad1",
+      "bytes": 4427,
+      "representation": "websocket-binary"
+    },
+    "bodySHA256": "22b37eaeb6b7c825fffa0a2f0d756d7257141eae086c83385f2c7a25a712b327"
+  },
+  "basePercent": {
+    "Left": 3,
+    "Right": 5
+  },
+  "costs": {
+    "carve": 0,
+    "installCoins": 1000000,
+    "remove": 0,
+    "boxCoins": 100000
+  },
+  "curve": "Xuan 2*(level+1), Huang level+1; captured instances preserved; inferred extra powers at levels 4/8/12",
+  "info": {
+    "leftCostItem": {
+      "itemId": 61054,
+      "itemCount": 1,
+      "icon": "104",
+      "name": "混元印元力石",
+      "bagIcon": "104",
+      "info": "在玛雅城-圣印仙师中可使用该道具开混元印",
+      "type": 29,
+      "grade": 3,
+      "fashIcons": {
+        "fashIcon1": "0",
+        "fashIcon2": "0",
+        "fashIcon3": "0"
+      }
+    },
+    "rightCostItem": {
+      "itemId": 61055,
+      "itemCount": 1,
+      "icon": "105",
+      "name": "太极印元力石",
+      "bagIcon": "105",
+      "info": "在玛雅城-圣印仙师中可使用该道具开太极印",
+      "type": 29,
+      "grade": 3,
+      "fashIcons": {
+        "fashIcon1": "0",
+        "fashIcon2": "0",
+        "fashIcon3": "0"
+      }
+    },
+    "chisealCostGold": 1000,
+    "setUpCostGold": 0,
+    "takeOffCostGold": 200,
+    "takeOffCostItem": {
+      "itemId": 61056,
+      "itemCount": 1,
+      "icon": "106",
+      "name": "取灵器",
+      "bagIcon": "106",
+      "info": "可将赋灵符完整的取下，取下后的赋灵符无损耗",
+      "type": 29,
+      "grade": 3,
+      "fashIcons": {
+        "fashIcon1": "0",
+        "fashIcon2": "0",
+        "fashIcon3": "0"
+      }
+    },
+    "infos": [
+      {
+        "type": 1,
+        "typeName": "黄阶赋灵符（力量）",
+        "icon": 100,
+        "itemId": [
+          61105,
+          61106,
+          61107,
+          61108,
+          61109,
+          61110,
+          61111,
+          61112,
+          61113,
+          61114,
+          61115,
+          61116
+        ],
+        "itemName": [
+          "一级力量赋灵符（黄阶）",
+          "二级力量赋灵符（黄阶）",
+          "三级力量赋灵符（黄阶）",
+          "四级力量赋灵符（黄阶）",
+          "五级力量赋灵符（黄阶）",
+          "六级力量赋灵符（黄阶）",
+          "七级力量赋灵符（黄阶）",
+          "八级力量赋灵符（黄阶）",
+          "九级力量赋灵符（黄阶）",
+          "十级力量赋灵符（黄阶）",
+          "十一级力量赋灵符（黄阶）",
+          "十二级力量赋灵符（黄阶）"
+        ]
+      },
+      {
+        "type": 2,
+        "typeName": "黄阶赋灵符（敏捷）",
+        "icon": 100,
+        "itemId": [
+          61117,
+          61118,
+          61119,
+          61120,
+          61121,
+          61122,
+          61123,
+          61124,
+          61125,
+          61126,
+          61127,
+          61128
+        ],
+        "itemName": [
+          "一级敏捷赋灵符（黄阶）",
+          "二级敏捷赋灵符（黄阶）",
+          "三级敏捷赋灵符（黄阶）",
+          "四级敏捷赋灵符（黄阶）",
+          "五级敏捷赋灵符（黄阶）",
+          "六级敏捷赋灵符（黄阶）",
+          "七级敏捷赋灵符（黄阶）",
+          "八级敏捷赋灵符（黄阶）",
+          "九级敏捷赋灵符（黄阶）",
+          "十级敏捷赋灵符（黄阶）",
+          "十一级敏捷赋灵符（黄阶）",
+          "十二级敏捷赋灵符（黄阶）"
+        ]
+      },
+      {
+        "type": 3,
+        "typeName": "黄阶赋灵符（智力）",
+        "icon": 100,
+        "itemId": [
+          61129,
+          61130,
+          61131,
+          61132,
+          61133,
+          61134,
+          61135,
+          61136,
+          61137,
+          61138,
+          61139,
+          61140
+        ],
+        "itemName": [
+          "一级智力赋灵符（黄阶）",
+          "二级智力赋灵符（黄阶）",
+          "三级智力赋灵符（黄阶）",
+          "四级智力赋灵符（黄阶）",
+          "五级智力赋灵符（黄阶）",
+          "六级智力赋灵符（黄阶）",
+          "七级智力赋灵符（黄阶）",
+          "八级智力赋灵符（黄阶）",
+          "九级智力赋灵符（黄阶）",
+          "十级智力赋灵符（黄阶）",
+          "十一级智力赋灵符（黄阶）",
+          "十二级智力赋灵符（黄阶）"
+        ]
+      },
+      {
+        "type": 4,
+        "typeName": "黄阶赋灵符（感知）",
+        "icon": 100,
+        "itemId": [
+          61141,
+          61142,
+          61143,
+          61144,
+          61145,
+          61146,
+          61147,
+          61148,
+          61149,
+          61150,
+          61151,
+          61152
+        ],
+        "itemName": [
+          "一级感知赋灵符（黄阶）",
+          "二级感知赋灵符（黄阶）",
+          "三级感知赋灵符（黄阶）",
+          "四级感知赋灵符（黄阶）",
+          "五级感知赋灵符（黄阶）",
+          "六级感知赋灵符（黄阶）",
+          "七级感知赋灵符（黄阶）",
+          "八级感知赋灵符（黄阶）",
+          "九级感知赋灵符（黄阶）",
+          "十级感知赋灵符（黄阶）",
+          "十一级感知赋灵符（黄阶）",
+          "十二级感知赋灵符（黄阶）"
+        ]
+      },
+      {
+        "type": 5,
+        "typeName": "玄阶赋灵符（力量）",
+        "icon": 101,
+        "itemId": [
+          61153,
+          61154,
+          61155,
+          61156,
+          61157,
+          61158,
+          61159,
+          61160,
+          61161,
+          61162,
+          61163,
+          61164
+        ],
+        "itemName": [
+          "一级力量赋灵符（玄阶）",
+          "二级力量赋灵符（玄阶）",
+          "三级力量赋灵符（玄阶）",
+          "四级力量赋灵符（玄阶）",
+          "五级力量赋灵符（玄阶）",
+          "六级力量赋灵符（玄阶）",
+          "七级力量赋灵符（玄阶）",
+          "八级力量赋灵符（玄阶）",
+          "九级力量赋灵符（玄阶）",
+          "十级力量赋灵符（玄阶）",
+          "十一级力量赋灵符（玄阶）",
+          "十二级力量赋灵符（玄阶）"
+        ]
+      },
+      {
+        "type": 6,
+        "typeName": "玄阶赋灵符（敏捷）",
+        "icon": 101,
+        "itemId": [
+          61165,
+          61166,
+          61167,
+          61168,
+          61169,
+          61170,
+          61171,
+          61172,
+          61173,
+          61174,
+          61175,
+          61176
+        ],
+        "itemName": [
+          "一级敏捷赋灵符（玄阶）",
+          "二级敏捷赋灵符（玄阶）",
+          "三级敏捷赋灵符（玄阶）",
+          "四级敏捷赋灵符（玄阶）",
+          "五级敏捷赋灵符（玄阶）",
+          "六级敏捷赋灵符（玄阶）",
+          "七级敏捷赋灵符（玄阶）",
+          "八级敏捷赋灵符（玄阶）",
+          "九级敏捷赋灵符（玄阶）",
+          "十级敏捷赋灵符（玄阶）",
+          "十一级敏捷赋灵符（玄阶）",
+          "十二级敏捷赋灵符（玄阶）"
+        ]
+      },
+      {
+        "type": 7,
+        "typeName": "玄阶赋灵符（智力）",
+        "icon": 101,
+        "itemId": [
+          61177,
+          61178,
+          61179,
+          61180,
+          61181,
+          61182,
+          61183,
+          61184,
+          61185,
+          61186,
+          61187,
+          61188
+        ],
+        "itemName": [
+          "一级智力赋灵符（玄阶）",
+          "二级智力赋灵符（玄阶）",
+          "三级智力赋灵符（玄阶）",
+          "四级智力赋灵符（玄阶）",
+          "五级智力赋灵符（玄阶）",
+          "六级智力赋灵符（玄阶）",
+          "七级智力赋灵符（玄阶）",
+          "八级智力赋灵符（玄阶）",
+          "九级智力赋灵符（玄阶）",
+          "十级智力赋灵符（玄阶）",
+          "十一级智力赋灵符（玄阶）",
+          "十二级智力赋灵符（玄阶）"
+        ]
+      },
+      {
+        "type": 8,
+        "typeName": "玄阶赋灵符（感知）",
+        "icon": 101,
+        "itemId": [
+          61189,
+          61190,
+          61191,
+          61192,
+          61193,
+          61194,
+          61195,
+          61196,
+          61197,
+          61198,
+          61199,
+          61200
+        ],
+        "itemName": [
+          "一级感知赋灵符（玄阶）",
+          "二级感知赋灵符（玄阶）",
+          "三级感知赋灵符（玄阶）",
+          "四级感知赋灵符（玄阶）",
+          "五级感知赋灵符（玄阶）",
+          "六级感知赋灵符（玄阶）",
+          "七级感知赋灵符（玄阶）",
+          "八级感知赋灵符（玄阶）",
+          "九级感知赋灵符（玄阶）",
+          "十级感知赋灵符（玄阶）",
+          "十一级感知赋灵符（玄阶）",
+          "十二级感知赋灵符（玄阶）"
+        ]
+      }
+    ]
+  },
+  "items": [
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61105,
+      "name": "一级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO6xAAALTgB+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAQAAAAEBAAEAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 2,
+      "powers": {
+        "1": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61106,
+      "name": "二级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO6yAAALTox+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAgAAAAEBAAEAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 3,
+      "powers": {
+        "1": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61107,
+      "name": "三级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO6zAAALTgl+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAwAAAAEBAAEABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 4,
+      "powers": {
+        "1": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61108,
+      "name": "四级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO60AAALVtt+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABAAAAAECAAEABQArAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 5,
+        "43": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 5,
+      "power2": 43,
+      "powerValue2": 1,
+      "powers": {
+        "1": 5,
+        "43": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61109,
+      "name": "五级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO61AAALTpR+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABQAAAAECAAEABgArAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 6,
+        "43": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 6,
+      "power2": 43,
+      "powerValue2": 1,
+      "powers": {
+        "1": 6,
+        "43": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61110,
+      "name": "六级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO62AAALUW1+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABgAAAAECAAEABwArAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 7,
+        "43": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 7,
+      "power2": 43,
+      "powerValue2": 1,
+      "powers": {
+        "1": 7,
+        "43": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61111,
+      "name": "七级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO63AAALTgN+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABwAAAAECAAEACAArAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 8,
+        "43": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 8,
+      "power2": 43,
+      "powerValue2": 1,
+      "powers": {
+        "1": 8,
+        "43": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61112,
+      "name": "八级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO64AAALUWt+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACAAAAAEDAAEACQArAAIALAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 9,
+        "43": 2,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 9,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 44,
+      "powerValue3": 2,
+      "powers": {
+        "1": 9,
+        "43": 2,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61113,
+      "name": "九级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO65AAALTl1+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACQAAAAEDAAEACgArAAIALAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 10,
+        "43": 2,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 10,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 44,
+      "powerValue3": 2,
+      "powers": {
+        "1": 10,
+        "43": 2,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61114,
+      "name": "十级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO66AAALU0F+p1Kbkc+NS3B1eyb/CJ7Eljb/CQAAAGQAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACgAAAAEDAAEACwArAAIALAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 11,
+        "43": 2,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 11,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 44,
+      "powerValue3": 2,
+      "powers": {
+        "1": 11,
+        "43": 2,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61115,
+      "name": "十一级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO67AAAMU0FOAH6nUpuRz41LcHV7Jv8InsSWNv8JAAAAZAAAJFKbkc9OS3leYlhcFGIQeV5l9k9/dSh2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAALAAAAAQMAAQAMACsAAgAsAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 12,
+        "43": 2,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 12,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 44,
+      "powerValue3": 2,
+      "powers": {
+        "1": 12,
+        "43": 2,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61116,
+      "name": "十二级力量赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 1,
+      "definitionBase64": "KwAAAO68AAAMU0FOjH6nUpuRz41LcHV7Jv8InsSWNv8JAAAAZAAAJFKbkc9OS3leYlhcFGIQeV5l9k9/dSh2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAAMAAAAAQQAAQANACsAAwAsAAMALwAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 13,
+        "43": 3,
+        "44": 3,
+        "47": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 13,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "power4": 47,
+      "powerValue4": 3,
+      "powers": {
+        "1": 13,
+        "43": 3,
+        "44": 3,
+        "47": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61117,
+      "name": "一级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO69AAALTgB+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAQAAAAIBAAUAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 2,
+      "powers": {
+        "5": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61118,
+      "name": "二级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO6+AAALTox+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAgAAAAIBAAUAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 3,
+      "powers": {
+        "5": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61119,
+      "name": "三级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO6/AAALTgl+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAwAAAAIBAAUABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 4,
+      "powers": {
+        "5": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61120,
+      "name": "四级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7AAAALVtt+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABAAAAAICAAUABQAsAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 5,
+        "44": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 5,
+      "power2": 44,
+      "powerValue2": 1,
+      "powers": {
+        "5": 5,
+        "44": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61121,
+      "name": "五级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7BAAALTpR+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABQAAAAICAAUABgAsAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 6,
+        "44": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 6,
+      "power2": 44,
+      "powerValue2": 1,
+      "powers": {
+        "5": 6,
+        "44": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61122,
+      "name": "六级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7CAAALUW1+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABgAAAAICAAUABwAsAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 7,
+        "44": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 7,
+      "power2": 44,
+      "powerValue2": 1,
+      "powers": {
+        "5": 7,
+        "44": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61123,
+      "name": "七级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7DAAALTgN+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABwAAAAICAAUACAAsAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 8,
+        "44": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 8,
+      "power2": 44,
+      "powerValue2": 1,
+      "powers": {
+        "5": 8,
+        "44": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61124,
+      "name": "八级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7EAAALUWt+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACAAAAAIDAAUACQAsAAIALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 9,
+        "44": 2,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 9,
+      "power2": 44,
+      "powerValue2": 2,
+      "power3": 47,
+      "powerValue3": 2,
+      "powers": {
+        "5": 9,
+        "44": 2,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61125,
+      "name": "九级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7FAAALTl1+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACQAAAAIDAAUACgAsAAIALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 10,
+        "44": 2,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 10,
+      "power2": 44,
+      "powerValue2": 2,
+      "power3": 47,
+      "powerValue3": 2,
+      "powers": {
+        "5": 10,
+        "44": 2,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61126,
+      "name": "十级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7GAAALU0F+p2VPY3eNS3B1eyb/CJ7Eljb/CQAAAGQAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACgAAAAIDAAUACwAsAAIALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 11,
+        "44": 2,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 11,
+      "power2": 44,
+      "powerValue2": 2,
+      "power3": 47,
+      "powerValue3": 2,
+      "powers": {
+        "5": 11,
+        "44": 2,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61127,
+      "name": "十一级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7HAAAMU0FOAH6nZU9jd41LcHV7Jv8InsSWNv8JAAAAZAAAKmVPY3dOS3leVMiP6mWvfsNOYHesjqtOS2cvZfZPf3Uoj8d2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAALAAAAAgMABQAMACwAAgAvAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 12,
+        "44": 2,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 12,
+      "power2": 44,
+      "powerValue2": 2,
+      "power3": 47,
+      "powerValue3": 2,
+      "powers": {
+        "5": 12,
+        "44": 2,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61128,
+      "name": "十二级敏捷赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 2,
+      "definitionBase64": "KwAAAO7IAAAMU0FOjH6nZU9jd41LcHV7Jv8InsSWNv8JAAAAZAAAKmVPY3dOS3leVMiP6mWvfsNOYHesjqtOS2cvZfZPf3Uoj8d2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAAMAAAAAgQABQANACwAAwAvAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 13,
+        "44": 3,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 13,
+      "power2": 44,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "power4": 48,
+      "powerValue4": 3,
+      "powers": {
+        "5": 13,
+        "44": 3,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61129,
+      "name": "一级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7JAAALTgB+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAEAAAADAQAHAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 2,
+      "powers": {
+        "7": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61130,
+      "name": "二级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7KAAALTox+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAIAAAADAQAHAAM=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 3,
+      "powers": {
+        "7": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61131,
+      "name": "三级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7LAAALTgl+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAMAAAADAQAHAAQ=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 4,
+      "powers": {
+        "7": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61132,
+      "name": "四级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7MAAALVtt+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAQAAAADAgAHAAUALwAB",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 5,
+        "47": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 5,
+      "power2": 47,
+      "powerValue2": 1,
+      "powers": {
+        "7": 5,
+        "47": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61133,
+      "name": "五级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7NAAALTpR+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAUAAAADAgAHAAYALwAB",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 6,
+        "47": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 6,
+      "power2": 47,
+      "powerValue2": 1,
+      "powers": {
+        "7": 6,
+        "47": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61134,
+      "name": "六级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7OAAALUW1+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAYAAAADAgAHAAcALwAB",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 7,
+        "47": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 7,
+      "power2": 47,
+      "powerValue2": 1,
+      "powers": {
+        "7": 7,
+        "47": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61135,
+      "name": "七级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7PAAALTgN+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAcAAAADAgAHAAgALwAB",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 8,
+        "47": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 8,
+      "power2": 47,
+      "powerValue2": 1,
+      "powers": {
+        "7": 8,
+        "47": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61136,
+      "name": "八级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7QAAALUWt+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAgAAAADAwAHAAkALwACADAAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 9,
+        "47": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 9,
+      "power2": 47,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "7": 9,
+        "47": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61137,
+      "name": "九级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7RAAALTl1+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAkAAAADAwAHAAoALwACADAAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 10,
+        "47": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 10,
+      "power2": 47,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "7": 10,
+        "47": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61138,
+      "name": "十级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7SAAALU0F+p2Z6UpuNS3B1eyb/CJ7Eljb/CQAAAGQAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAQABAAAAAAoAAAADAwAHAAsALwACADAAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 11,
+        "47": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 11,
+      "power2": 47,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "7": 11,
+        "47": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61139,
+      "name": "十一级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7TAAAMU0FOAH6nZnpSm41LcHV7Jv8InsSWNv8JAAAAZAAAI2Z6YWdOS3leedF/V2WvT391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACwAAAAMDAAcADAAvAAIAMAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 12,
+        "47": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 12,
+      "power2": 47,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "7": 12,
+        "47": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61140,
+      "name": "十二级智力赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 3,
+      "definitionBase64": "KwAAAO7UAAAMU0FOjH6nZnpSm41LcHV7Jv8InsSWNv8JAAAAZAAAI2Z6YWdOS3leedF/V2WvT391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAADAAAAAMEAAcADQArAAMALwADADAAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 13,
+        "43": 3,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 13,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "power4": 48,
+      "powerValue4": 3,
+      "powers": {
+        "7": 13,
+        "43": 3,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61141,
+      "name": "一级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7VAAALTgB+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAQAAAAQBAAkAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 2,
+      "powers": {
+        "9": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61142,
+      "name": "二级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7WAAALTox+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAgAAAAQBAAkAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 3,
+      "powers": {
+        "9": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61143,
+      "name": "三级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7XAAALTgl+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAAAwAAAAQBAAkABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 4,
+      "powers": {
+        "9": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61144,
+      "name": "四级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7YAAALVtt+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABAAAAAQCAAkABQAwAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 5,
+        "48": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 5,
+      "power2": 48,
+      "powerValue2": 1,
+      "powers": {
+        "9": 5,
+        "48": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61145,
+      "name": "五级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7ZAAALTpR+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABQAAAAQCAAkABgAwAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 6,
+        "48": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 6,
+      "power2": 48,
+      "powerValue2": 1,
+      "powers": {
+        "9": 6,
+        "48": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61146,
+      "name": "六级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7aAAALUW1+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABgAAAAQCAAkABwAwAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 7,
+        "48": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 7,
+      "power2": 48,
+      "powerValue2": 1,
+      "powers": {
+        "9": 7,
+        "48": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61147,
+      "name": "七级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7bAAALTgN+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAABwAAAAQCAAkACAAwAAE=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 8,
+        "48": 1
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 8,
+      "power2": 48,
+      "powerValue2": 1,
+      "powers": {
+        "9": 8,
+        "48": 1
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61148,
+      "name": "八级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7cAAALUWt+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACAAAAAQDAAkACQArAAIAMAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 9,
+        "43": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 9,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "9": 9,
+        "43": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61149,
+      "name": "九级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7dAAALTl1+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACQAAAAQDAAkACgArAAIAMAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 10,
+        "43": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 10,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "9": 10,
+        "43": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61150,
+      "name": "十级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7eAAALU0F+p2Efd+WNS3B1eyb/CJ7Eljb/CQAAAGQAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAIBAAEAAAAACgAAAAQDAAkACwArAAIAMAAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 11,
+        "43": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 11,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "9": 11,
+        "43": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61151,
+      "name": "十一级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7fAAAMU0FOAH6nYR935Y1LcHV7Jv8InsSWNv8JAAAAZAAAIYl/iX9fF2WvY6WJ5o/HdoSNS3B1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAALAAAABAMACQAMACsAAgAwAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 12,
+        "43": 2,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 12,
+      "power2": 43,
+      "powerValue2": 2,
+      "power3": 48,
+      "powerValue3": 2,
+      "powers": {
+        "9": 12,
+        "43": 2,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61152,
+      "name": "十二级感知赋灵符（黄阶）",
+      "bagIcon": 100,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 1,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 4,
+      "definitionBase64": "KwAAAO7gAAAMU0FOjH6nYR935Y1LcHV7Jv8InsSWNv8JAAAAZAAAIYl/iX9fF2WvY6WJ5o/HdoSNS3B1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgEAAQAAAAAMAAAABAQACQANACsAAwAsAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 13,
+        "43": 3,
+        "44": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 13,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "power4": 48,
+      "powerValue4": 3,
+      "powers": {
+        "9": 13,
+        "43": 3,
+        "44": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61153,
+      "name": "一级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7hAAALTgB+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAABxSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAIAAQAAAAABAAAABQEAAQAE",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 4
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 4,
+      "powers": {
+        "1": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61154,
+      "name": "二级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7iAAALTox+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAABxSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAIAAQAAAAACAAAABQEAAQAG",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 6
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 6,
+      "powers": {
+        "1": 6
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61155,
+      "name": "三级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7jAAALTgl+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAABxSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAIAAQAAAAADAAAABQEAAQAI",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 8
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 8,
+      "powers": {
+        "1": 8
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61156,
+      "name": "四级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7kAAALVtt+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAABxSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAIAAQAAAAAEAAAABQIAAQAKACsAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 10,
+        "43": 2
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 10,
+      "power2": 43,
+      "powerValue2": 2,
+      "powers": {
+        "1": 10,
+        "43": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61157,
+      "name": "五级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7lAAALTpR+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABQAAAAUCAAEADAArAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 12,
+        "43": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 12,
+      "power2": 43,
+      "powerValue2": 2,
+      "powers": {
+        "1": 12,
+        "43": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61158,
+      "name": "六级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7mAAALUW1+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABgAAAAUCAAEADgArAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 14,
+        "43": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 14,
+      "power2": 43,
+      "powerValue2": 2,
+      "powers": {
+        "1": 14,
+        "43": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61159,
+      "name": "七级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7nAAALTgN+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAABxSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAIAAQAAAAAHAAAABQIAAQAQACgAAg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 16,
+        "40": 2
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 16,
+      "power2": 40,
+      "powerValue2": 2,
+      "powers": {
+        "1": 16,
+        "40": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61160,
+      "name": "八级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7oAAALUWt+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACAAAAAUDAAEAEgArAAMALAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 18,
+        "43": 3,
+        "44": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 18,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "powers": {
+        "1": 18,
+        "43": 3,
+        "44": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61161,
+      "name": "九级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7pAAALTl1+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACQAAAAUDAAEAFAArAAMALAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 20,
+        "43": 3,
+        "44": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 20,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "powers": {
+        "1": 20,
+        "43": 3,
+        "44": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61162,
+      "name": "十级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7qAAALU0F+p1Kbkc+NS3B1eyb/CHOEljb/CQAAAGUAACRSm5HPTkt5XmJYXBRiEHleZfZPf3UodoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACgAAAAUDAAEAFgArAAMALAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 22,
+        "43": 3,
+        "44": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 22,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "powers": {
+        "1": 22,
+        "43": 3,
+        "44": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61163,
+      "name": "十一级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7rAAAMU0FOAH6nUpuRz41LcHV7Jv8Ic4SWNv8JAAAAZQAAJFKbkc9OS3leYlhcFGIQeV5l9k9/dSh2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgIAAQAAAAALAAAABQMAAQAYACsAAwAsAAM=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 24,
+        "43": 3,
+        "44": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 1,
+      "powerValue1": 24,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 44,
+      "powerValue3": 3,
+      "powers": {
+        "1": 24,
+        "43": 3,
+        "44": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61164,
+      "name": "十二级力量赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "力量之神托尔成神时使用的灵符，对装备赋灵后可获得属性加成",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 5,
+      "definitionBase64": "KwAAAO7sAAAMU0FOjH6nUpuRz41LcHV7Jv8Ic4SWNv8JAAAAZQAAHFKbkc9OS3leYlhcFGIQeV5l9k9/dSh2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAgABAAAAAAwAAAAFBAABABoAHwAEACcAAgArAAU=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "1": 26,
+        "31": 4,
+        "39": 2,
+        "43": 5
+      },
+      "spiritSource": "recorded-instance",
+      "power1": 1,
+      "powerValue1": 26,
+      "power2": 31,
+      "powerValue2": 4,
+      "power3": 39,
+      "powerValue3": 2,
+      "power4": 43,
+      "powerValue4": 5,
+      "powers": {
+        "1": 26,
+        "31": 4,
+        "39": 2,
+        "43": 5
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61165,
+      "name": "一级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7tAAALTgB+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAQAAAAYBAAUABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 4,
+      "powers": {
+        "5": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61166,
+      "name": "二级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7uAAALTox+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAgAAAAYBAAUABg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 6
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 6,
+      "powers": {
+        "5": 6
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61167,
+      "name": "三级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7vAAALTgl+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAwAAAAYBAAUACA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 8
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 8,
+      "powers": {
+        "5": 8
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61168,
+      "name": "四级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7wAAALVtt+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABAAAAAYCAAUACgAsAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 10,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 10,
+      "power2": 44,
+      "powerValue2": 2,
+      "powers": {
+        "5": 10,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61169,
+      "name": "五级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7xAAALTpR+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABQAAAAYCAAUADAAsAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 12,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 12,
+      "power2": 44,
+      "powerValue2": 2,
+      "powers": {
+        "5": 12,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61170,
+      "name": "六级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7yAAALUW1+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABgAAAAYCAAUADgAsAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 14,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 14,
+      "power2": 44,
+      "powerValue2": 2,
+      "powers": {
+        "5": 14,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61171,
+      "name": "七级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO7zAAALTgN+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABwAAAAYCAAUAEAAsAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 16,
+        "44": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 16,
+      "power2": 44,
+      "powerValue2": 2,
+      "powers": {
+        "5": 16,
+        "44": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61172,
+      "name": "八级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO70AAALUWt+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACAAAAAYDAAUAEgAsAAMALwAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 18,
+        "44": 3,
+        "47": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 18,
+      "power2": 44,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "powers": {
+        "5": 18,
+        "44": 3,
+        "47": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61173,
+      "name": "九级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO71AAALTl1+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACQAAAAYDAAUAFAAsAAMALwAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 20,
+        "44": 3,
+        "47": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 20,
+      "power2": 44,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "powers": {
+        "5": 20,
+        "44": 3,
+        "47": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61174,
+      "name": "十级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO72AAALU0F+p2VPY3eNS3B1eyb/CHOEljb/CQAAAGUAACplT2N3Tkt5XlTIj+plr37DTmB3rI6rTktnL2X2T391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACgAAAAYDAAUAFgAsAAMALwAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 22,
+        "44": 3,
+        "47": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 22,
+      "power2": 44,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "powers": {
+        "5": 22,
+        "44": 3,
+        "47": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61175,
+      "name": "十一级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO73AAAMU0FOAH6nZU9jd41LcHV7Jv8Ic4SWNv8JAAAAZQAAKmVPY3dOS3leVMiP6mWvfsNOYHesjqtOS2cvZfZPf3Uoj8d2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgIAAQAAAAALAAAABgMABQAYACwAAwAvAAM=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 24,
+        "44": 3,
+        "47": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 24,
+      "power2": 44,
+      "powerValue2": 3,
+      "power3": 47,
+      "powerValue3": 3,
+      "powers": {
+        "5": 24,
+        "44": 3,
+        "47": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61176,
+      "name": "十二级敏捷赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "敏捷之神哈迪斯练习瞬身之术时使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 6,
+      "definitionBase64": "KwAAAO74AAAMU0FOjH6nZU9jd41LcHV7Jv8Ic4SWNv8JAAAAZQAAKmVPY3dOS3leVMiP6mWvfsNOYHesjqtOS2cvZfZPf3Uoj8d2hHB1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgIAAQAAAAAMAAAABgQABQAaACwABAAvAAQAMAAE",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "5": 26,
+        "44": 4,
+        "47": 4,
+        "48": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 5,
+      "powerValue1": 26,
+      "power2": 44,
+      "powerValue2": 4,
+      "power3": 47,
+      "powerValue3": 4,
+      "power4": 48,
+      "powerValue4": 4,
+      "powers": {
+        "5": 26,
+        "44": 4,
+        "47": 4,
+        "48": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61177,
+      "name": "一级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO75AAALTgB+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAEAAAAHAQAHAAQ=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 4,
+      "powers": {
+        "7": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61178,
+      "name": "二级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO76AAALTox+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAIAAAAHAQAHAAY=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 6
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 6,
+      "powers": {
+        "7": 6
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61179,
+      "name": "三级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO77AAALTgl+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAMAAAAHAQAHAAg=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 8
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 8,
+      "powers": {
+        "7": 8
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61180,
+      "name": "四级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO78AAALVtt+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAQAAAAHAgAHAAoALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 10,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 10,
+      "power2": 47,
+      "powerValue2": 2,
+      "powers": {
+        "7": 10,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61181,
+      "name": "五级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO79AAALTpR+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAUAAAAHAgAHAAwALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 12,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 12,
+      "power2": 47,
+      "powerValue2": 2,
+      "powers": {
+        "7": 12,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61182,
+      "name": "六级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO7+AAALUW1+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAYAAAAHAgAHAA4ALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 14,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 14,
+      "power2": 47,
+      "powerValue2": 2,
+      "powers": {
+        "7": 14,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61183,
+      "name": "七级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO7/AAALTgN+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAcAAAAHAgAHABAALwAC",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 16,
+        "47": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 16,
+      "power2": 47,
+      "powerValue2": 2,
+      "powers": {
+        "7": 16,
+        "47": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61184,
+      "name": "八级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO8AAAALUWt+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAgAAAAHAwAHABIALwADADAAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 18,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 18,
+      "power2": 47,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "7": 18,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61185,
+      "name": "九级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO8BAAALTl1+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAkAAAAHAwAHABQALwADADAAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 20,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 20,
+      "power2": 47,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "7": 20,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61186,
+      "name": "十级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO8CAAALU0F+p2Z6UpuNS3B1eyb/CHOEljb/CQAAAGUAACNmemFnTkt5XnnRf1dlr09/dSiPx3aEcHV7Jv8MW/mIxVkHjUtwdVQOU++Dt1+XXF5gJ1KgYhAAClNVZzqIZVFoXF5gJzACAgABAAAAAAoAAAAHAwAHABYALwADADAAAw==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 22,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 22,
+      "power2": 47,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "7": 22,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61187,
+      "name": "十一级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO8DAAAMU0FOAH6nZnpSm41LcHV7Jv8Ic4SWNv8JAAAAZQAAI2Z6YWdOS3leedF/V2WvT391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACwAAAAcDAAcAGAAvAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 24,
+        "47": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 24,
+      "power2": 47,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "7": 24,
+        "47": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61188,
+      "name": "十二级智力赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "智慧之神科罗斯使用过的灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 7,
+      "definitionBase64": "KwAAAO8EAAAMU0FOjH6nZnpSm41LcHV7Jv8Ic4SWNv8JAAAAZQAAI2Z6YWdOS3leedF/V2WvT391KI/HdoRwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAADAAAAAcEAAcAGgArAAQALwAEADAABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "7": 26,
+        "43": 4,
+        "47": 4,
+        "48": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 7,
+      "powerValue1": 26,
+      "power2": 43,
+      "powerValue2": 4,
+      "power3": 47,
+      "powerValue3": 4,
+      "power4": 48,
+      "powerValue4": 4,
+      "powers": {
+        "7": 26,
+        "43": 4,
+        "47": 4,
+        "48": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61189,
+      "name": "一级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 1,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8FAAALTgB+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAQAAAAgBAAkABA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 4,
+      "powers": {
+        "9": 4
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61190,
+      "name": "二级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 2,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8GAAALTox+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAgAAAAgBAAkABg==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 6
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 6,
+      "powers": {
+        "9": 6
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61191,
+      "name": "三级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 3,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8HAAALTgl+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAAAwAAAAgBAAkACA==",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 8
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 8,
+      "powers": {
+        "9": 8
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61192,
+      "name": "四级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 4,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8IAAALVtt+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABAAAAAgCAAkACgAwAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 10,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 10,
+      "power2": 48,
+      "powerValue2": 2,
+      "powers": {
+        "9": 10,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61193,
+      "name": "五级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 5,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8JAAALTpR+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABQAAAAgCAAkADAAwAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 12,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 12,
+      "power2": 48,
+      "powerValue2": 2,
+      "powers": {
+        "9": 12,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61194,
+      "name": "六级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 6,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8KAAALUW1+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABgAAAAgCAAkADgAwAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 14,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 14,
+      "power2": 48,
+      "powerValue2": 2,
+      "powers": {
+        "9": 14,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61195,
+      "name": "七级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 7,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8LAAALTgN+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAABwAAAAgCAAkAEAAwAAI=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 16,
+        "48": 2
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 16,
+      "power2": 48,
+      "powerValue2": 2,
+      "powers": {
+        "9": 16,
+        "48": 2
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61196,
+      "name": "八级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 8,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8MAAALUWt+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACAAAAAgDAAkAEgArAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 18,
+        "43": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 18,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "9": 18,
+        "43": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61197,
+      "name": "九级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 9,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8NAAALTl1+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACQAAAAgDAAkAFAArAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 20,
+        "43": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 20,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "9": 20,
+        "43": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61198,
+      "name": "十级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 10,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8OAAALU0F+p2Efd+WNS3B1eyb/CHOEljb/CQAAAGUAACGJf4l/Xxdlr2OlieaPx3aEjUtwdXsm/wxb+YjFWQeNS3B1VA5T74O3X5dcXmAnUqBiEAAKU1VnOohlUWhcXmAnMAICAAEAAAAACgAAAAgDAAkAFgArAAMAMAAD",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 22,
+        "43": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 22,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "9": 22,
+        "43": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61199,
+      "name": "十一级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 11,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8PAAAMU0FOAH6nYR935Y1LcHV7Jv8Ic4SWNv8JAAAAZQAAIYl/iX9fF2WvY6WJ5o/HdoSNS3B1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgIAAQAAAAALAAAACAMACQAYACsAAwAwAAM=",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 24,
+        "43": 3,
+        "48": 3
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 24,
+      "power2": 43,
+      "powerValue2": 3,
+      "power3": 48,
+      "powerValue3": 3,
+      "powers": {
+        "9": 24,
+        "43": 3,
+        "48": 3
+      }
+    },
+    {
+      "illusion": [],
+      "type": 43,
+      "handBookItem": false,
+      "id": 61200,
+      "name": "十二级感知赋灵符（玄阶）",
+      "bagIcon": 101,
+      "info": "西西弗斯接触过的赋灵符，对装备赋灵后可获得属性加成\n单机补全属性。",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 1,
+      "decomCHest": false,
+      "seal_grade": 12,
+      "seal_type": 8,
+      "definitionBase64": "KwAAAO8QAAAMU0FOjH6nYR935Y1LcHV7Jv8Ic4SWNv8JAAAAZQAAIYl/iX9fF2WvY6WJ5o/HdoSNS3B1eyb/DFv5iMVZB41LcHVUDlPvg7dfl1xeYCdSoGIQAApTVWc6iGVRaFxeYCcwAgIAAQAAAAAMAAAACAQACQAaACsABAAsAAQAMAAE",
+      "sources": [
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 38970,
+          "at": "2026-09-21T00:10:56.896Z",
+          "connection": "main:9376.43",
+          "requestSeq": 38940,
+          "shopId": 50
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "protocol": 12004,
+          "sha256": "362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c",
+          "blob": "blobs/36/362014d71cf7f06e415cb959e71bdf9c9232aafe4dd3e4946d4287c44c42212c.bin",
+          "seq": 3812,
+          "at": "2026-09-21T01:37:41.205Z",
+          "connection": "main:9212.39",
+          "requestSeq": 3811,
+          "shopId": 50
+        }
+      ],
+      "spiritPowers": {
+        "9": 26,
+        "43": 4,
+        "44": 4,
+        "48": 4
+      },
+      "spiritSource": "local-extrapolation",
+      "power1": 9,
+      "powerValue1": 26,
+      "power2": 43,
+      "powerValue2": 4,
+      "power3": 44,
+      "powerValue3": 4,
+      "power4": 48,
+      "powerValue4": 4,
+      "powers": {
+        "9": 26,
+        "43": 4,
+        "44": 4,
+        "48": 4
+      }
+    }
+  ]
+}

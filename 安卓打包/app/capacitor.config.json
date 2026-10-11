@@ -1,0 +1,17 @@
+{
+  "appId": "net.worldol.offline",
+  "appName": "世界OL单机",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#000000",
+    "webContentsDebuggingEnabled": true
+  },
+  "server": {
+    "cleartext": true,
+    "allowNavigation": [
+      "127.0.0.1",
+      "localhost"
+    ]
+  }
+}

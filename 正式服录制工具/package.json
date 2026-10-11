@@ -1,0 +1,10 @@
+{
+  "name": "worldol-session-recorder",
+  "version": "1.7.1",
+  "private": true,
+  "main": "main.cjs",
+  "description": "Local recorder for a user-controlled WorldOL H5 play session",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs"
+  }
+}

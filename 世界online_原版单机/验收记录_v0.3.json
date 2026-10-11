@@ -1,0 +1,353 @@
+{
+  "version": "0.3.0",
+  "recordedAt": "2026-09-19T23:10:10.754Z",
+  "source": "社区攻略；非官方配置，未核实与 v305 完全一致",
+  "sourceURL": "https://github.com/treefuture/world-online/tree/main/JSON_Data",
+  "sourceSnapshots": [
+    {
+      "file": "GitHub数据快照/vocationalSkills.json",
+      "sha256": "e0c8530e73eb096bd340a99159d504200b5bb064641b9b27ca4711b772327949"
+    },
+    {
+      "file": "公开数据快照/equipmentAtlas.json",
+      "sha256": "98237637b16bb44bbaf1845ef6f20d397dcc74ff286e3bd6c4f5882d5d4b6ab2"
+    }
+  ],
+  "counts": {
+    "skills": 94,
+    "skillLevels": 1457,
+    "swords": 14,
+    "skippedCandidates": 99
+  },
+  "tests": {
+    "passed": 17,
+    "failed": 0,
+    "command": "runtime/node.exe --test tests/core.test.mjs tests/game.test.mjs tests/restoration.test.mjs tests/service.test.mjs",
+    "coverage": [
+      "真实 v305 角色、NPC、任务、怪物、技能、物品、商店解析器",
+      "全部 1457 个技能等级逐级比对原客户端生命法力计算",
+      "旧存档增量迁移；满包失败无副作用；装备交换；重复学习拒绝",
+      "本地 WebSocket 创建、进入、购买、学习、重新进入后持久化",
+      "奖励异步回调之前属性推送不重复经验；幻化空目录；免费修理"
+    ]
+  },
+  "browserAcceptance": {
+    "tool": "内置浏览器可见页面交互和 DOM 诊断",
+    "observed": [
+      "技能导师原版商店出现，跨职业学习成功",
+      "逐月54 学会 20 个被动技能，青铜剑穿戴生效，完成 4 场战斗和 3 段本地委托",
+      "商店展示 14 把剑，购买青铜剑花费 20 铜币，背包从 1 件变为 2 件",
+      "原版界面显示装备成功、装备卸下成功、背包已整理",
+      "更新后商店验收角色双持青铜剑，拥有 2 个被动技能；首个任务经验显示 20"
+    ],
+    "lastObservedDOM": {
+      "role": 1003,
+      "hp": 195,
+      "mp": 160,
+      "hpMax": 195,
+      "mpMax": 160,
+      "coins": 230,
+      "level": 1,
+      "exp": 20,
+      "attributes": [
+        10,
+        10,
+        11,
+        10,
+        10
+      ],
+      "skills": [
+        {
+          "id": 3100,
+          "level": 1
+        },
+        {
+          "id": 3101,
+          "level": 1
+        }
+      ],
+      "inventory": [
+        {
+          "id": 800000,
+          "slot": 8
+        },
+        {
+          "id": 800000,
+          "slot": 10
+        },
+        {
+          "id": 800015,
+          "slot": 31
+        }
+      ]
+    },
+    "serverAtRecording": {
+      "role": {
+        "sex": 1,
+        "race": 1,
+        "job": 3,
+        "icon1": "2240667",
+        "icon2": "0",
+        "icon3": "0",
+        "name": "商店验收",
+        "id": 1003,
+        "accountId": 3,
+        "level": 1,
+        "vipLevel2": 0,
+        "mapId": 1,
+        "x": 10,
+        "y": 20,
+        "mapName": "新手村",
+        "status": 0,
+        "createdAt": "2026-09-19T22:59:01.631Z",
+        "exp": 20,
+        "expMax": 100,
+        "hp": 195,
+        "mp": 160,
+        "coins": 230,
+        "quests": {
+          "active": {
+            "9002": {
+              "kills": 0,
+              "acceptedAt": "2026-09-19T23:07:38.651Z"
+            }
+          },
+          "completed": [
+            9001
+          ]
+        },
+        "battles": {
+          "wins": 0,
+          "losses": 0,
+          "kills": {},
+          "cooldowns": {}
+        },
+        "inventory": [
+          {
+            "itemId": 800000,
+            "slot": 10,
+            "quantity": 1
+          },
+          {
+            "itemId": 800000,
+            "slot": 8,
+            "quantity": 1
+          },
+          {
+            "itemId": 800015,
+            "slot": 31,
+            "quantity": 1
+          }
+        ],
+        "skills": {
+          "3100": 1,
+          "3101": 1
+        },
+        "restoration": {
+          "starterIssued": true
+        }
+      },
+      "calculated": {
+        "base": [
+          10,
+          10,
+          11,
+          10,
+          10
+        ],
+        "hp": 195,
+        "mp": 160
+      }
+    },
+    "completedCombatRole": {
+      "sex": 1,
+      "race": 1,
+      "job": 3,
+      "icon1": "2240667",
+      "icon2": "0",
+      "icon3": "0",
+      "name": "逐月54",
+      "id": 1002,
+      "accountId": 2,
+      "level": 3,
+      "vipLevel2": 0,
+      "mapId": 1,
+      "x": 19,
+      "y": 19,
+      "mapName": "新手村",
+      "status": 0,
+      "createdAt": "2026-09-19T22:53:01.546Z",
+      "exp": 30,
+      "expMax": 300,
+      "hp": 514,
+      "mp": 265,
+      "coins": 1550,
+      "quests": {
+        "active": {},
+        "completed": [
+          9001,
+          9002,
+          9003
+        ]
+      },
+      "battles": {
+        "wins": 4,
+        "losses": 0,
+        "kills": {
+          "701": 2,
+          "702": 2
+        },
+        "cooldowns": {
+          "701": 1789858610833,
+          "702": 1789858617510,
+          "703": 1789858634066
+        },
+        "last": {
+          "token": 2053962358,
+          "group": 703,
+          "result": 2,
+          "rounds": 1,
+          "time": "2026-09-19T22:57:14.480Z",
+          "reward": {
+            "exp": 50,
+            "coins": 60,
+            "levels": 0
+          }
+        }
+      },
+      "inventory": [
+        {
+          "itemId": 800000,
+          "slot": 8,
+          "quantity": 1
+        }
+      ],
+      "skills": {
+        "3100": 1,
+        "3101": 1,
+        "3102": 1,
+        "3103": 1,
+        "3104": 1,
+        "3105": 1,
+        "3106": 1,
+        "3107": 1,
+        "3108": 1,
+        "3109": 1,
+        "3110": 1,
+        "3111": 1,
+        "3112": 1,
+        "3113": 1,
+        "3114": 1,
+        "3116": 1,
+        "3117": 1,
+        "3118": 1,
+        "3119": 1,
+        "4019": 1
+      },
+      "restoration": {
+        "starterIssued": true
+      }
+    }
+  },
+  "deployment": {
+    "backup": "F:\\世界OL项目\\世界online_原版单机\\backups\\deploy_v03_20260920_070624",
+    "services": [
+      {
+        "port": 8775,
+        "pid": 35580,
+        "version": "0.3.0",
+        "projectRoot": "F:\\世界OL项目\\世界online_原版单机",
+        "missing": [],
+        "unknown": [],
+        "roles": [
+          {
+            "id": 1001,
+            "name": "小蜜",
+            "level": 1
+          },
+          {
+            "id": 1002,
+            "name": "单机预习",
+            "level": 1
+          }
+        ]
+      },
+      {
+        "port": 8776,
+        "pid": 29300,
+        "version": "0.3.0",
+        "projectRoot": "F:\\世界OL项目\\世界online_原版单机",
+        "missing": [],
+        "unknown": [],
+        "roles": [
+          {
+            "id": 1001,
+            "name": "青岚57",
+            "level": 1
+          },
+          {
+            "id": 1002,
+            "name": "青岚95",
+            "level": 1
+          }
+        ]
+      },
+      {
+        "port": 8778,
+        "pid": 35704,
+        "version": "0.3.0",
+        "projectRoot": "F:\\世界OL项目\\世界online_原版单机",
+        "missing": [],
+        "unknown": [
+          27401,
+          17017,
+          29000,
+          29002,
+          29004,
+          20300,
+          25009,
+          31227,
+          11031,
+          20400,
+          22000,
+          22101,
+          10521,
+          15506,
+          14551,
+          28401,
+          28417
+        ],
+        "roles": [
+          {
+            "id": 1001,
+            "name": "远山21",
+            "level": 3
+          },
+          {
+            "id": 1002,
+            "name": "逐月54",
+            "level": 3
+          },
+          {
+            "id": 1003,
+            "name": "商店验收",
+            "level": 1
+          }
+        ]
+      }
+    ],
+    "startupMigration": {
+      "preservedRoles": 7,
+      "comparison": "逐一比较备份中的已有字段与启动快照；mapName 为派生显示名，日期字符串按同一时刻规范化，避免 PowerShell 序列化毫秒格式差异。"
+    },
+    "originalResources": "client/ 未改动"
+  },
+  "limits": [
+    "社区 H5 资料，尚未证实与 v305 完全一致；非官方服务器数据",
+    "仅被动技能；不含主动/自动技能和宠物效果",
+    "仅基础单手剑，无强化、套装、鉴定、绑定或真实物品图标映射",
+    "任务、NPC 布置、价格和免费学习条件为本地规则",
+    "邮件、城市、好友等原在线功能尚未接入，仍可能超时",
+    "耐久损耗未持久化；本地免费修理"
+  ]
+}

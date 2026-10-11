@@ -1,0 +1,60 @@
+{
+  "revision": "recorded-world-travel-links-20260922-v1",
+  "capture": "2026-09-22T14-39-01-824Z_7f51cb",
+  "audit": {
+    "schema": "worldol.capture.prefix-audit.v1",
+    "snapshot": true,
+    "checkedAt": "2026-09-22T14:44:00.761Z",
+    "cutoffSeq": 6967,
+    "cutoffAt": "2026-09-22T14:43:54.709Z",
+    "events": 6967,
+    "wsSent": 245,
+    "wsReceived": 204,
+    "cleanEnd": false,
+    "integrityPassed": true,
+    "errors": [],
+    "truncatedTail": false,
+    "uniqueBlobs": 937,
+    "verifiedBytes": 32429780,
+    "captureGaps": [],
+    "networkFailures": []
+  },
+  "links": [
+    {
+      "directoryId": 56,
+      "mapId": 35,
+      "name": "蒂卡尔",
+      "requestSeq": 1151,
+      "requestSHA256": "bbb897089023b786615a39ab8b7b858795173dfebd801e53a153833adc01d96c",
+      "responseSeq": 1152,
+      "responseSHA256": "7f31c18b16791d1ec009fffad5216e8a0a350b3ea7f1bd4f91c9e42e7c127470"
+    },
+    {
+      "directoryId": 39,
+      "mapId": 14,
+      "name": "新月古镇广场",
+      "requestSeq": 1637,
+      "requestSHA256": "bcd598c416abf4b102dd92d80f19ad8100d82ca407038c760af4a393b450b858",
+      "responseSeq": 1638,
+      "responseSHA256": "6f4530773aa378c4c7d5723b8a6ad4af1747b6bb0469b130cfdfcb25286a8c21"
+    },
+    {
+      "directoryId": 50,
+      "mapId": 824,
+      "name": "紫禁城",
+      "requestSeq": 3587,
+      "requestSHA256": "021c76f2bcf8b36bb711772e852362d67651966729240d98cf1a9fb6fb043c82",
+      "responseSeq": 3588,
+      "responseSHA256": "edfddd1e6cf68d0387c9aef58fd9c207261c597588bee060222ef6d0d6064153"
+    },
+    {
+      "directoryId": 18,
+      "mapId": 260,
+      "name": "太阳神遗迹",
+      "requestSeq": 6673,
+      "requestSHA256": "3bbcaa56c164116d53e165f0a570cfc5e85d1df6b184af149446f07c61b6ac11",
+      "responseSeq": 6674,
+      "responseSHA256": "213142f7ad7efdd17377bcce12acf7cd11e1c092956ec52bfce20d3994d1f612"
+    }
+  ]
+}

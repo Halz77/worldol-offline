@@ -1,0 +1,283 @@
+import {Writer} from './codec.mjs';
+import {restored,equipment,skills,ITEM_SHOP,SKILL_SHOP,IGNORE_REQUIREMENT_ITEM_ID,availableSkills,buyItem,equip,unequip,learn,clampVitals,activeSkills,reconcileSkillSettings,jobBooks,changeJob} from './restoration.mjs';
+import {skillPacket,skillChanges,skillUpdate,skillList,bagPacket,shopItem,itemPacket} from './restoration-packets.mjs';
+import {OFFICIAL_SHOP,officialItems} from './official-data.mjs';
+import {playerDetail} from './world.mjs';
+import {activePet,petAttributes} from './pet-state.mjs';
+import {petMentorSkills,learnPetMentorSkill} from './pet-mentors.mjs';
+import {useMedicine,discardItem,sellItem,sellItems,bindItem,consumeItem} from './bag-actions.mjs';
+import {automaticSkillSlots} from './automatic-skills.mjs';
+import {healthUpdate} from './game-packets.mjs';
+import {careers} from './career-skills.mjs';
+import {supplyShopById} from './supply-shops.mjs';
+import {applyLootDelivery} from './loot.mjs';
+import {recordActivity} from './daily-activity.mjs';
+import {notifyDaily} from './daily-service.mjs';
+import {nativeCommerce} from './native-commerce-data.mjs';
+import {selectablePetEggs,soldPetItem} from './pet-catalog.mjs';
+import {localEnchantments} from './enchantment-data.mjs';
+import {spiritRules,spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
+import {appearanceShops,appearanceByItemId,applyAppearance} from './local-fashion.mjs';
+// 美容院的「更换发型 / 更换脸型 / 全新发型」在原版里也是普通道具商店（51 / 52 / 55），
+// 但卖的不是装备，而是**买下即生效**的造型道具：客户端读到购买回包的状态位 2 就调用
+// updateHair / updateFace 改写自己的外观位域（icon1 的发型 7..10 位 / 脸型 13..16 位），
+// 道具不进背包。这三个商店的商品清单从来没有采集到——shopID 51/52/55 只出现在 NPC
+// 定义里，12004 的采集记录只有 VIP 商店那一份——所以按「世界OL_源码」下的发型/脸型
+// 贴图本地还原一套（见 lib/local-fashion.mjs，编号落在原版的 40100+ / 40200+ 号段）。
+export const APPEARANCE_SHOPS=new Map(appearanceShops.map(s=>[s.id,s.name]));
+export function shopItems(id){
+ const appearance=appearanceShops.find(s=>s.id===id);
+ if(appearance)return appearance.items.map(itemId=>{const item=equipment.get(itemId);if(!item)throw Error('美容院造型道具资料未就绪：'+itemId);return item;});
+ const recorded=nativeCommerce.vipShops.find(s=>s.id===id);
+ if(recorded){
+    const ids=[...new Set([...spiritRules.boxIds,...localEnchantments.map(e=>e.id),787,40002,781,1200,...recorded.items.map(x=>x.id)])];
+  return ids.map(itemId=>{const item=equipment.get(itemId);if(!item)throw Error('VIP商品资料未就绪：'+itemId);return item;}).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id));
+ }
+ if([2000,2002,2003,2004].includes(id))return [...spiritRules.boxIds.map(id=>equipment.get(id)),...localEnchantments.map(e=>equipment.get(e.id))];
+ if(id===917)return selectablePetEggs.map(egg=>equipment.get(egg.id));
+ if(id===ITEM_SHOP)return restored.equipment.filter(e=>e.id!==IGNORE_REQUIREMENT_ITEM_ID);
+ if(id===OFFICIAL_SHOP)return [...officialItems.keys()].map(id=>equipment.get(id)).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id)&&!isSpiritBox(e.id));
+ return supplyShopById.get(id)?.items.map(id=>equipment.get(id));
+}
+const operations=new Set([12001,12003,12004,12005,12006,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010]);
+export function handleRestoration(type,r,context,{store,send,log}){
+ if(!operations.has(type)||!context.role)return false;
+ const p=context.role;let shop;
+ try{
+  if(context.battle)throw Error('请先结束战斗再管理装备和技能。');
+  if(type===12004){shop=r.short();const list=shopItems(shop);if(!list)throw Error('这个商店尚未接入。可到新月繁华之都（20,18）的装备与补给商人处查看。');const w=new Writer().byte(0).short(list.length);list.forEach((e,i)=>shopItem(w,e,i));send(type,w);return true;}
+  if(type===12005){
+   shop=r.short();const id=r.int(),quantity=r.byte()&255,country=r.bool(),e=shopItems(shop)?.find(e=>e.id===id);
+   if(country||!e)throw Error('无效商品或本地商店。');
+   // 造型道具走原版的「购买即使用」：回状态位 2，客户端会立刻 updateHair/updateFace
+   // 并 refreshWorldSprite，道具不落背包。服务端必须同步改 icon1 并存盘，否则重登
+   // 或刷新角色列表时造型会退回去。
+   const appearance=appearanceByItemId.get(id);
+   if(appearance){
+    if(quantity!==1)throw Error('造型道具请逐个更换。');
+    const price=Math.max(0,e.localPrice||0);
+    if((p.coins||0)<price)throw Error('铜币不足。');
+    const previous={icon1:p.icon1,coins:p.coins};
+    p.icon1=applyAppearance(p.icon1,appearance);p.coins-=price;
+    try{store.save();}catch(error){Object.assign(p,previous);throw error;}
+    send(type,new Writer().byte(2).int(p.gold||0).int(p.silver||0).int(p.coins).short(-1).short(-1));
+    log('appearance-changed',{role:p.id,shop,id,kind:appearance.kind,style:appearance.style,color:appearance.color,icon1:p.icon1});
+    return true;
+   }
+   if((e.stackNum||1)<=1&&quantity!==1)throw Error('装备请逐件领取。');
+   const previous={inventory:p.inventory,coins:p.coins};
+   buyItem(p,id,quantity);try{store.save();}catch(error){Object.assign(p,previous);throw error;}
+   send(type,new Writer().byte(0).int(id).short(shop).byte(quantity).int(p.gold||0).int(p.silver||0).int(p.coins).short(-1).short(-1));if(e.type===41)for(const item of p.inventory.filter(i=>i.itemId===id&&i.slot>=30))send(17603,itemPacket(new Writer().short(item.slot),item));log('item-bought',{role:p.id,shop,id,quantity});return true;
+  }
+  if(type===12001){
+   const waitType=r.byte(),action=r.byte(),slot=r.short(),quantity=r.int();
+   if(action===1){const dest=r.byte();r.bool();r.byte();if(waitType!==9||quantity!==1)throw Error('无效穿戴请求。');const before=activeSkills(p);equip(p,slot,dest);store.save();send(type,skillChanges(new Writer().byte(9).byte(0),p,before));}
+   else if(action===2){r.bool();r.byte();if(waitType!==17||quantity!==1)throw Error('无效卸下请求。');const before=activeSkills(p);unequip(p,slot);store.save();send(type,skillChanges(new Writer().byte(17),p,before));}
+   else if(action===3){
+    r.bool();r.byte();
+    // 转职书用原版的 BAG_CHANGE_JOB(18) 等待类型；成功后要回 PlayerDetail + 技能列表，
+    // 客户端会据此刷新角色面板（含新职业）并替换整个技能栏。
+    const instance=p.inventory.find(i=>i.slot===slot),job=jobBooks.get(instance?.itemId);
+    if(job===undefined){
+     if(waitType!==0)throw Error('这种道具的使用规则尚未恢复。');
+     useMedicine(p,slot,quantity);store.save();send(17601,healthUpdate(p));
+    }else{
+     if(waitType!==18)throw Error('无效的转职请求。');
+     if(quantity!==1)throw Error('转职书请逐本使用。');
+     const before=structuredClone(p);let itemId;
+     try{changeJob(p,job);itemId=consumeItem(p,slot,1).itemId;store.save();}
+     catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+     send(type,skillList(playerDetail(new Writer().byte(18),p),p));
+     // 选角界面的职业文字取自角色列表（icon1 的位域），changeJob 已经把 job 和位域一起改掉了，
+     // 回到选角界面时客户端会自己重新取一次列表，因此这里不再主动推送 10001：
+     // 推的时候角色列表视图往往是隐藏的（_view 已被回收），反而会让客户端在解析通知时抛出异常。
+     log('job-changed',{role:p.id,itemId,job:p.job});
+    }
+   }
+   else if(action===4){
+    const id=r.int();r.bool();r.byte();if(waitType!==20)throw Error('无效丢弃请求。');
+    const previous=p.inventory;discardItem(p,slot,id,quantity);
+    try{store.save();}catch(error){p.inventory=previous;throw error;}
+    send(type,new Writer().byte(20));
+   }
+   else if(action===7){r.bool();r.byte();if(waitType!==7||quantity!==1)throw Error('无效绑定请求。');bindItem(p,slot);store.save();send(type,new Writer().byte(7));if(slot<30)send(14011,skillUpdate(new Writer(),p));}
+   else throw Error('这项道具操作尚未恢复。');
+   log('equipment-changed',{role:p.id,action,slot,inventory:p.inventory});return true;
+  }
+  if(type===12003){
+   const before=structuredClone(p);let delivery;
+   try{p.inventory.filter(x=>x.slot>=30).sort((a,b)=>a.itemId-b.itemId||a.slot-b.slot).forEach((x,i)=>x.slot=30+i);delivery=applyLootDelivery(p);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   send(type,bagPacket(new Writer().byte(0).int(p.mapId).byte(p.x).byte(p.y).int(16),p));
+   if(delivery.added.length||delivery.pending.length)send(10509,new Writer().byte(2).string(delivery.pending.length?'尚有掉落待领取，请继续腾出背包空间后整理。':'待领取的战斗掉落已全部放入背包。'));
+   return true;
+  }
+  if(type===12006){
+   r.short();const id=r.int(),slot=r.short(),quantity=r.byte()&255,before=structuredClone(p);
+   try{sellItem(p,slot,id,quantity);recordActivity(p,22);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   send(type,new Writer().byte(0).int(p.coins));notifyDaily(p,send);return true;
+  }
+  // No items are automatically marked as junk. The native bag selection is
+  // submitted separately by 12037 and remains the authority for what to sell.
+  if(type===12036){send(type,new Writer().short(0));return true;}
+  if(type===12037){
+   const count=r.short();if(count<1||count>300)throw Error('请选择要出售的背包道具。');
+   const items=Array.from({length:count},()=>({id:r.int(),slot:r.short(),quantity:r.short()}));
+   if(r.pos!==r.b.length)throw Error('出售列表格式有误，请重新选择道具。');
+   const before=structuredClone(p);let total;
+   try{total=sellItems(p,items);recordActivity(p,22);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   const w=new Writer().short(items.length);for(const item of items)w.int(item.id).short(item.quantity).short(item.slot);
+   send(type,w.int(p.gold||0).int(p.silver||0).int(p.coins).int(total));notifyDaily(p,send);
+   log('items-sold',{role:p.id,items,total,coins:p.coins});return true;
+  }
+  if(type===14001){
+   shop=r.short();const petShop=shop>=2000&&shop<4000,pet=petShop?activePet(p):null,list=petShop?petMentorSkills(pet,shop):availableSkills(p,shop);if(!list.length)throw Error('这个导师尚未接入。');
+   if(petShop)context.petMentor={shop,uid:pet.uid};
+   if(list.length>127)throw Error('导师列表超出原版协议范围。');
+   const w=new Writer().short(shop).byte(list.length).byte(careers.maxLearned);for(const s of list)skillPacket(w,s,true).byte(s.levels.at(-1).level);send(type,w);return true;
+  }
+  if(type===14002){
+   shop=r.short();const id=r.int(),level=r.byte(),country=r.bool();if(country)throw Error('本地不开放国家技能商店。');
+   if(shop>=2000&&shop<4000){
+    const pet=activePet(p);if(!pet||context.petMentor?.shop!==shop||context.petMentor.uid!==pet.uid)throw Error('出战宠物已变化，请重新打开导师。');
+    const before=structuredClone(pet);let learned;
+    try{learned=learnPetMentorSkill(pet,shop,id,level);const max=petAttributes(p,pet);pet.hp=Math.min(pet.hp,max.hp);pet.mp=Math.min(pet.mp,max.mp);store.save();}catch(error){for(const k of Object.keys(pet))if(!(k in before))delete pet[k];Object.assign(pet,before);throw error;}
+    const w=new Writer().byte(0).int(id).int(pet.sp||0).int(p.gold||0).int(p.silver||0).int(p.coins),next=learned.levels.find(s=>s.level===level+1);
+    w.byte(next?1:0);if(next)skillPacket(w,{...learned,...next},true);skillPacket(w.bool(true),learned).byte(0);send(type,w);log('pet-mentor-learned',{role:p.id,pet:pet.uid,id,level});return true;
+   }
+    const before=structuredClone(p);let s;
+    try{
+     for(let nextLevel=(p.skills[id]||0)+1;nextLevel<=level;nextLevel++)s=learn(p,shop,id,nextLevel);
+     if(!s)throw Error('该技能已达到目标等级。');
+     store.save();
+    }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   const w=new Writer().byte(0).int(id).int(p.skillPoints||0).int(p.gold||0).int(p.silver||0).int(p.coins),next=s.levels.find(x=>x.level===level+1);
+   w.byte(next?1:0);if(next)skillPacket(w,{...s,...next},true);
+   const effective=activeSkills(p).find(s=>s.id===id);skillPacket(w.bool(true),effective).byte(effective.addLevel||0);send(type,w);log('skill-learned',{role:p.id,id,name:s.name,level});return true;
+  }
+  if([14004,14005,14009,14010].includes(type)){
+   const target=r.byte(),id=r.int(),subject=target===0?p:target===1?activePet(p):null,s=target===0?activeSkills(p).find(s=>s.id===id):subject?.skills.find(s=>s.id===id);
+   if(!subject||!s)throw Error('没有这个已学习或装备附带的技能。');
+   const primary=target===0?'initiativeSkillId':'initiativeSkill',automatic=target===0?'autoSkillIds':'autoSkills';
+   const previousPrimary=subject[primary],previousAutomatic=subject[automatic];
+   try{
+    if(type===14009){if(s.type!==3)throw Error('请选择主动技能。');subject[primary]=id;}
+    if(type===14010)subject[primary]=-1;
+    if(type===14004||type===14005){
+     if(s.type!==2)throw Error('请选择自动技能。');
+     const slots=automaticSkillSlots(subject[automatic],target===0?activeSkills(p):subject.skills);
+     if(type===14004&&!slots.includes(id)){const slot=slots.indexOf(0);if(slot<0)slots.push(id);else slots[slot]=id;}
+     subject[automatic]=type===14005?slots.filter(x=>x!==id).concat(slots.includes(id)?[0]:[]):slots;
+    }
+    store.save();
+   }catch(error){subject[primary]=previousPrimary;subject[automatic]=previousAutomatic;throw error;}
+   const w=new Writer().byte(0);
+   if(type===14004||type===14005){w.byte(subject[automatic].length);for(const skillId of subject[automatic])w.short(skillId);}
+   send(type,w);return true;
+  }
+  if(type===14003||type===14006){
+    const id=r.int();
+    const target=r.byte();
+
+    // target:
+    // 0 = 人物技能
+    // 1 = 出战宠物技能
+    if(target!==0 && target!==1)
+        throw Error('无效的技能目标。');
+
+    const pet=target===1 ? activePet(p) : null;
+
+    if(target===0){
+        // 人物技能
+        if(!p.skills[id] || !skills.has(id))
+            throw Error('没有这个角色技能。');
+    }else{
+        // 宠物技能
+        if(!pet)
+            throw Error('没有出战宠物。');
+
+        const petSkill=pet.skills?.find(s=>s.id===id);
+
+        if(!petSkill)
+            throw Error('没有这个宠物技能。');
+    }
+
+    // 暂时只支持完整遗忘。
+    if(type===14006)
+        throw Error('请使用完整遗忘后重新学习；逐级遗忘尚未接入。');
+
+    if(target===0){
+        // ===== 人物技能 =====
+        delete p.skills[id];
+
+        reconcileSkillSettings(p);
+        clampVitals(p);
+
+        store.save();
+
+        const w=new Writer()
+            .byte(0)
+            .int(id)
+            .int(p.skillPoints||0)
+            .int(p.gold||0)
+            .int(p.silver||0)
+            .int(p.coins)
+            .bool(false);
+
+        send(type,w);
+
+        if(activeSkills(p).some(s=>s.id===id))
+            send(14011,skillUpdate(new Writer(),p));
+
+        log('skill-forgotten',{
+            role:p.id,
+            target:'player',
+            id
+        });
+
+    }else{
+        // ===== 宠物技能 =====
+        const index=pet.skills.findIndex(s=>s.id===id);
+
+        if(index<0)
+            throw Error('没有这个宠物技能。');
+
+        pet.skills.splice(index,1);
+
+        // 如果被遗忘的技能正好是自动技能，
+        // 一起从自动技能栏删除。
+        if(Array.isArray(pet.autoSkills))
+            pet.autoSkills=pet.autoSkills.filter(skillId=>skillId!==id);
+
+        // 如果是主动技能，也清掉主动技能设置。
+        if(pet.initiativeSkill===id)
+            pet.initiativeSkill=-1;
+
+        store.save();
+
+        const w=new Writer()
+            .byte(0)
+            .int(id)
+            .int(pet.sp||0)
+            .int(p.gold||0)
+            .int(p.silver||0)
+            .int(p.coins)
+            .bool(false);
+
+        send(type,w);
+
+        log('skill-forgotten',{
+            role:p.id,
+            target:'pet',
+            pet:pet.uid,
+            id
+        });
+    }
+
+    return true;
+}
+ }catch(error){const w=new Writer();if(type===14001)w.short(shop||0);if(type===12036||type===12037)w.short(-1);else w.byte(-1);send(type,w.string(error.message));log('restoration-rejected',{role:p.id,type,error:error.message});}
+ return true;
+}

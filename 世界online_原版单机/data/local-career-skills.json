@@ -1,0 +1,4074 @@
+{
+ "schema": 1,
+ "revision": "local-career-skills-20261007-v1",
+ "note": "国家专属技能（原版单机新增）。单独成文件是为了让上游 data/career-skills.json 保持原样——那份数据是 tests/career-skills.test.mjs 的验收契约（470 个技能、每个 1–22 级）。shops 补齐了对应职业的全部导师商店；「防御战术（劈砍）」「防御战术（穿刺）」额外挂到 9 个职业技能所，即「任意技能所都能学」。这些技能的原版等级上限是 20 级。",
+ "levelCap": 20,
+ "skills": [
+  {
+   "id": 465,
+   "key": "progression:country-shop:1512:465",
+   "sourceId": 465,
+   "name": "驯兽战斗",
+   "profession": "侠客",
+   "category": "被动",
+   "type": 1,
+   "native": true,
+   "job": 1,
+   "shop": 1301,
+   "shops": [
+    1301,
+    1512,
+    304,
+    308,
+    400,
+    1101
+   ],
+   "levels": [
+    {
+     "id": 465,
+     "level": 1,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 1,
+     "power2": 93,
+     "powerValue2": 1,
+     "power3": 90,
+     "powerValue3": 1,
+     "isLearnByBook": false,
+     "wireBase64": "AdEBAAAEmm9RfWIYZZcBAAAAAACmAAEAXQABAFoAAQA=",
+     "sp": 10,
+     "money1": 0,
+     "money2": 0,
+     "money3": 1000,
+     "reqJob": 1,
+     "reqLevel": 1,
+     "maxLevel": 20,
+     "sources": [
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 88334,
+       "protocol": 14001,
+       "sha256": "aaaadb864ac088aab22c3eaa3ce53a4753b9a83b433e06f5a810f8cbe4589065",
+       "blob": "blobs/aa/aaaadb864ac088aab22c3eaa3ce53a4753b9a83b433e06f5a810f8cbe4589065.bin",
+       "shopId": 1512,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 7750,
+       "protocol": 14001,
+       "sha256": "aaaadb864ac088aab22c3eaa3ce53a4753b9a83b433e06f5a810f8cbe4589065",
+       "blob": "blobs/aa/aaaadb864ac088aab22c3eaa3ce53a4753b9a83b433e06f5a810f8cbe4589065.bin",
+       "shopId": 1512,
+       "origin": "shop"
+      }
+     ],
+     "native": true,
+     "reconstructed": false,
+     "origin": "official-definition",
+     "powers": [
+      [
+       166,
+       1
+      ],
+      [
+       93,
+       1
+      ],
+      [
+       90,
+       1
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 2,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物2%几率为其承受伤害\n宠物体质+2%\n宠物生命上限+2%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 2,
+     "power2": 93,
+     "powerValue2": 2,
+     "power3": 90,
+     "powerValue3": 2,
+     "isLearnByBook": false,
+     "wireBase64": "AdECAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADIAJQAKW6ByaXUfVH1OCpZQACsAMgAlAACmAAIAXQACAFoAAgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       2
+      ],
+      [
+       93,
+       2
+      ],
+      [
+       90,
+       2
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 3,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物3%几率为其承受伤害\n宠物体质+3%\n宠物生命上限+3%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 3,
+     "power2": 93,
+     "powerValue2": 3,
+     "power3": 90,
+     "powerValue3": 3,
+     "isLearnByBook": false,
+     "wireBase64": "AdEDAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADMAJQAKW6ByaXUfVH1OCpZQACsAMwAlAACmAAMAXQADAFoAAwA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       3
+      ],
+      [
+       93,
+       3
+      ],
+      [
+       90,
+       3
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 4,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物4%几率为其承受伤害\n宠物体质+4%\n宠物生命上限+4%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 4,
+     "power2": 93,
+     "powerValue2": 4,
+     "power3": 90,
+     "powerValue3": 4,
+     "isLearnByBook": false,
+     "wireBase64": "AdEEAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA0ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADQAJQAKW6ByaXUfVH1OCpZQACsANAAlAACmAAQAXQAEAFoABAA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       4
+      ],
+      [
+       93,
+       4
+      ],
+      [
+       90,
+       4
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 5,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物5%几率为其承受伤害\n宠物体质+5%\n宠物生命上限+5%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 5,
+     "power2": 93,
+     "powerValue2": 5,
+     "power3": 90,
+     "powerValue3": 5,
+     "isLearnByBook": false,
+     "wireBase64": "AdEFAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA1ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADUAJQAKW6ByaXUfVH1OCpZQACsANQAlAACmAAUAXQAFAFoABQA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       5
+      ],
+      [
+       93,
+       5
+      ],
+      [
+       90,
+       5
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 6,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物6%几率为其承受伤害\n宠物体质+6%\n宠物生命上限+6%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 6,
+     "power2": 93,
+     "powerValue2": 6,
+     "power3": 90,
+     "powerValue3": 6,
+     "isLearnByBook": false,
+     "wireBase64": "AdEGAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA2ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADYAJQAKW6ByaXUfVH1OCpZQACsANgAlAACmAAYAXQAGAFoABgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       6
+      ],
+      [
+       93,
+       6
+      ],
+      [
+       90,
+       6
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 7,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物7%几率为其承受伤害\n宠物体质+7%\n宠物生命上限+7%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 7,
+     "power2": 93,
+     "powerValue2": 7,
+     "power3": 90,
+     "powerValue3": 7,
+     "isLearnByBook": false,
+     "wireBase64": "AdEHAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA3ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADcAJQAKW6ByaXUfVH1OCpZQACsANwAlAACmAAcAXQAHAFoABwA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       7
+      ],
+      [
+       93,
+       7
+      ],
+      [
+       90,
+       7
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 8,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物8%几率为其承受伤害\n宠物体质+8%\n宠物生命上限+8%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 8,
+     "power2": 93,
+     "powerValue2": 8,
+     "power3": 90,
+     "powerValue3": 8,
+     "isLearnByBook": false,
+     "wireBase64": "AdEIAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA4ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADgAJQAKW6ByaXUfVH1OCpZQACsAOAAlAACmAAgAXQAIAFoACAA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       8
+      ],
+      [
+       93,
+       8
+      ],
+      [
+       90,
+       8
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 9,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物9%几率为其承受伤害\n宠物体质+9%\n宠物生命上限+9%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 9,
+     "power2": 93,
+     "powerValue2": 9,
+     "power3": 90,
+     "powerValue3": 9,
+     "isLearnByBook": false,
+     "wireBase64": "AdEJAAAEmm9RfWIYZZcBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA5ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpT1ONKAArADkAJQAKW6ByaXUfVH1OCpZQACsAOQAlAACmAAkAXQAJAFoACQA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       9
+      ],
+      [
+       93,
+       9
+      ],
+      [
+       90,
+       9
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 10,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物10%几率为其承受伤害\n宠物体质+10%\n宠物生命上限+10%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 10,
+     "power2": 93,
+     "powerValue2": 10,
+     "power3": 90,
+     "powerValue3": 10,
+     "isLearnByBook": false,
+     "wireBase64": "AdEKAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADAAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQAwACUAClugcml1H1R9TgqWUAArADEAMAAlAACmAAoAXQAKAFoACgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       10
+      ],
+      [
+       93,
+       10
+      ],
+      [
+       90,
+       10
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 11,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物12%几率为其承受伤害\n宠物体质+12%\n宠物生命上限+12%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 12,
+     "power2": 93,
+     "powerValue2": 12,
+     "power3": 90,
+     "powerValue3": 12,
+     "isLearnByBook": false,
+     "wireBase64": "AdELAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADIAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQAyACUAClugcml1H1R9TgqWUAArADEAMgAlAACmAAwAXQAMAFoADAA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       12
+      ],
+      [
+       93,
+       12
+      ],
+      [
+       90,
+       12
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 12,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物13%几率为其承受伤害\n宠物体质+13%\n宠物生命上限+13%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 13,
+     "power2": 93,
+     "powerValue2": 13,
+     "power3": 90,
+     "powerValue3": 13,
+     "isLearnByBook": false,
+     "wireBase64": "AdEMAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADMAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQAzACUAClugcml1H1R9TgqWUAArADEAMwAlAACmAA0AXQANAFoADQA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       13
+      ],
+      [
+       93,
+       13
+      ],
+      [
+       90,
+       13
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 13,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物15%几率为其承受伤害\n宠物体质+15%\n宠物生命上限+15%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 15,
+     "power2": 93,
+     "powerValue2": 15,
+     "power3": 90,
+     "powerValue3": 15,
+     "isLearnByBook": false,
+     "wireBase64": "AdENAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADUAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQA1ACUAClugcml1H1R9TgqWUAArADEANQAlAACmAA8AXQAPAFoADwA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       15
+      ],
+      [
+       93,
+       15
+      ],
+      [
+       90,
+       15
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 14,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物16%几率为其承受伤害\n宠物体质+16%\n宠物生命上限+16%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 16,
+     "power2": 93,
+     "powerValue2": 16,
+     "power3": 90,
+     "powerValue3": 16,
+     "isLearnByBook": false,
+     "wireBase64": "AdEOAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADYAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQA2ACUAClugcml1H1R9TgqWUAArADEANgAlAACmABAAXQAQAFoAEAA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       16
+      ],
+      [
+       93,
+       16
+      ],
+      [
+       90,
+       16
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 15,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物18%几率为其承受伤害\n宠物体质+18%\n宠物生命上限+18%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 18,
+     "power2": 93,
+     "powerValue2": 18,
+     "power3": 90,
+     "powerValue3": 18,
+     "isLearnByBook": false,
+     "wireBase64": "AdEPAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADgAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQA4ACUAClugcml1H1R9TgqWUAArADEAOAAlAACmABIAXQASAFoAEgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       18
+      ],
+      [
+       93,
+       18
+      ],
+      [
+       90,
+       18
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 16,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物19%几率为其承受伤害\n宠物体质+19%\n宠物生命上限+19%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 19,
+     "power2": 93,
+     "powerValue2": 19,
+     "power3": 90,
+     "powerValue3": 19,
+     "isLearnByBook": false,
+     "wireBase64": "AdEQAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADkAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMQA5ACUAClugcml1H1R9TgqWUAArADEAOQAlAACmABMAXQATAFoAEwA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       19
+      ],
+      [
+       93,
+       19
+      ],
+      [
+       90,
+       19
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 17,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物21%几率为其承受伤害\n宠物体质+21%\n宠物生命上限+21%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 21,
+     "power2": 93,
+     "powerValue2": 21,
+     "power3": 90,
+     "powerValue3": 21,
+     "isLearnByBook": false,
+     "wireBase64": "AdERAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADEAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMgAxACUAClugcml1H1R9TgqWUAArADIAMQAlAACmABUAXQAVAFoAFQA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       21
+      ],
+      [
+       93,
+       21
+      ],
+      [
+       90,
+       21
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 18,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物22%几率为其承受伤害\n宠物体质+22%\n宠物生命上限+22%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 22,
+     "power2": 93,
+     "powerValue2": 22,
+     "power3": 90,
+     "powerValue3": 22,
+     "isLearnByBook": false,
+     "wireBase64": "AdESAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADIAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMgAyACUAClugcml1H1R9TgqWUAArADIAMgAlAACmABYAXQAWAFoAFgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       22
+      ],
+      [
+       93,
+       22
+      ],
+      [
+       90,
+       22
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 19,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物24%几率为其承受伤害\n宠物体质+24%\n宠物生命上限+24%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 24,
+     "power2": 93,
+     "powerValue2": 24,
+     "power3": 90,
+     "powerValue3": 24,
+     "isLearnByBook": false,
+     "wireBase64": "AdETAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADQAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMgA0ACUAClugcml1H1R9TgqWUAArADIANAAlAACmABgAXQAYAFoAGAA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       24
+      ],
+      [
+       93,
+       24
+      ],
+      [
+       90,
+       24
+      ]
+     ]
+    },
+    {
+     "id": 465,
+     "level": 20,
+     "name": "驯兽战斗",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物30%几率为其承受伤害\n宠物体质+30%\n宠物生命上限+30%",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 30,
+     "power2": 93,
+     "powerValue2": 30,
+     "power3": 90,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "AdEUAAAEmm9RfWIYZZcBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAzADAAJVHgc4dOOlF2Yn9T108kW7MAClugcmlPU40oACsAMwAwACUAClugcml1H1R9TgqWUAArADMAMAAlAACmAB4AXQAeAFoAHgA=",
+     "reqJob": 1,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       30
+      ],
+      [
+       93,
+       30
+      ],
+      [
+       90,
+       30
+      ]
+     ]
+    }
+   ],
+   "localCareer": true
+  },
+  {
+   "id": 652,
+   "key": "progression:country-shop:1712:652",
+   "sourceId": 652,
+   "name": "防御战术（劈砍）",
+   "profession": "战士",
+   "category": "被动",
+   "type": 1,
+   "native": true,
+   "job": 3,
+   "shop": 1303,
+   "shops": [
+    1303,
+    1712,
+    306,
+    310,
+    402,
+    1103,
+    1301,
+    1302,
+    1304,
+    1305,
+    1306,
+    1310,
+    1311,
+    1312
+   ],
+   "levels": [
+    {
+     "id": 652,
+     "level": 1,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物3%几率为其承受伤害\n劈砍防御力+3%\n劈砍防御力+30",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 3,
+     "power2": 31,
+     "powerValue2": 3,
+     "power3": 61,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "AowBAAAIljJfoWIYZy//CFKIeA3/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAApSiHgNljJfoVKbACsAMwAlAApSiHgNljJfoVKbACsAMwAwAACiAAMAHwADAD0AHgA=",
+     "sp": 200,
+     "money1": 120,
+     "money2": 0,
+     "money3": 500,
+     "reqJob": 3,
+     "reqLevel": 1,
+     "maxLevel": 20,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       3
+      ],
+      [
+       31,
+       3
+      ],
+      [
+       61,
+       30
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 2,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物3%几率为其承受伤害\n劈砍防御力+3%\n劈砍防御力+30",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 3,
+     "power2": 31,
+     "powerValue2": 3,
+     "power3": 61,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "AowCAAAIljJfoWIYZy//CFKIeA3/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAApSiHgNljJfoVKbACsAMwAlAApSiHgNljJfoVKbACsAMwAwAACiAAMAHwADAD0AHgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       162,
+       3
+      ],
+      [
+       31,
+       3
+      ],
+      [
+       61,
+       30
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 3,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物5%几率为其承受伤害\n劈砍防御力+5%\n劈砍防御力+50",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 5,
+     "power2": 31,
+     "powerValue2": 5,
+     "power3": 61,
+     "powerValue3": 50,
+     "isLearnByBook": false,
+     "wireBase64": "AowDAAAIljJfoWIYZy//CFKIeA3/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA1ACVR4HOHTjpRdmJ/U9dPJFuzAApSiHgNljJfoVKbACsANQAlAApSiHgNljJfoVKbACsANQAwAACiAAUAHwAFAD0AMgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       5
+      ],
+      [
+       31,
+       5
+      ],
+      [
+       61,
+       50
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 4,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物7%几率为其承受伤害\n劈砍防御力+7%\n劈砍防御力+70",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 7,
+     "power2": 31,
+     "powerValue2": 7,
+     "power3": 61,
+     "powerValue3": 70,
+     "isLearnByBook": false,
+     "wireBase64": "AowEAAAIljJfoWIYZy//CFKIeA3/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA3ACVR4HOHTjpRdmJ/U9dPJFuzAApSiHgNljJfoVKbACsANwAlAApSiHgNljJfoVKbACsANwAwAACiAAcAHwAHAD0ARgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       7
+      ],
+      [
+       31,
+       7
+      ],
+      [
+       61,
+       70
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 5,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物9%几率为其承受伤害\n劈砍防御力+9%\n劈砍防御力+90",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 9,
+     "power2": 31,
+     "powerValue2": 9,
+     "power3": 61,
+     "powerValue3": 90,
+     "isLearnByBook": false,
+     "wireBase64": "AowFAAAIljJfoWIYZy//CFKIeA3/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA5ACVR4HOHTjpRdmJ/U9dPJFuzAApSiHgNljJfoVKbACsAOQAlAApSiHgNljJfoVKbACsAOQAwAACiAAkAHwAJAD0AWgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       9
+      ],
+      [
+       31,
+       9
+      ],
+      [
+       61,
+       90
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 6,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物11%几率为其承受伤害\n劈砍防御力+11%\n劈砍防御力+110",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 11,
+     "power2": 31,
+     "powerValue2": 11,
+     "power3": 61,
+     "powerValue3": 110,
+     "isLearnByBook": false,
+     "wireBase64": "AowGAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAxADEAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAxADEAJQAKUoh4DZYyX6FSmwArADEAMQAwAACiAAsAHwALAD0AbgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       11
+      ],
+      [
+       31,
+       11
+      ],
+      [
+       61,
+       110
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 7,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物13%几率为其承受伤害\n劈砍防御力+13%\n劈砍防御力+130",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 13,
+     "power2": 31,
+     "powerValue2": 13,
+     "power3": 61,
+     "powerValue3": 130,
+     "isLearnByBook": false,
+     "wireBase64": "AowHAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAxADMAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAxADMAJQAKUoh4DZYyX6FSmwArADEAMwAwAACiAA0AHwANAD0AggA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       13
+      ],
+      [
+       31,
+       13
+      ],
+      [
+       61,
+       130
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 8,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物15%几率为其承受伤害\n劈砍防御力+15%\n劈砍防御力+150",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 15,
+     "power2": 31,
+     "powerValue2": 15,
+     "power3": 61,
+     "powerValue3": 150,
+     "isLearnByBook": false,
+     "wireBase64": "AowIAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAxADUAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAxADUAJQAKUoh4DZYyX6FSmwArADEANQAwAACiAA8AHwAPAD0AlgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       15
+      ],
+      [
+       31,
+       15
+      ],
+      [
+       61,
+       150
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 9,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物17%几率为其承受伤害\n劈砍防御力+17%\n劈砍防御力+170",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 17,
+     "power2": 31,
+     "powerValue2": 17,
+     "power3": 61,
+     "powerValue3": 170,
+     "isLearnByBook": false,
+     "wireBase64": "AowJAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAxADcAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAxADcAJQAKUoh4DZYyX6FSmwArADEANwAwAACiABEAHwARAD0AqgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       17
+      ],
+      [
+       31,
+       17
+      ],
+      [
+       61,
+       170
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 10,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物19%几率为其承受伤害\n劈砍防御力+19%\n劈砍防御力+190",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 19,
+     "power2": 31,
+     "powerValue2": 19,
+     "power3": 61,
+     "powerValue3": 190,
+     "isLearnByBook": false,
+     "wireBase64": "AowKAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAxADkAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAxADkAJQAKUoh4DZYyX6FSmwArADEAOQAwAACiABMAHwATAD0AvgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       162,
+       19
+      ],
+      [
+       31,
+       19
+      ],
+      [
+       61,
+       190
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 11,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物22%几率为其承受伤害\n劈砍防御力+21%\n劈砍防御力+216",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 22,
+     "power2": 31,
+     "powerValue2": 21,
+     "power3": 61,
+     "powerValue3": 216,
+     "isLearnByBook": false,
+     "wireBase64": "AowLAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAyADIAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAyADEAJQAKUoh4DZYyX6FSmwArADIAMQA2AACiABYAHwAVAD0A2AA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       22
+      ],
+      [
+       31,
+       21
+      ],
+      [
+       61,
+       216
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 12,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物25%几率为其承受伤害\n劈砍防御力+23%\n劈砍防御力+242",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 25,
+     "power2": 31,
+     "powerValue2": 23,
+     "power3": 61,
+     "powerValue3": 242,
+     "isLearnByBook": false,
+     "wireBase64": "AowMAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAyADUAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAyADMAJQAKUoh4DZYyX6FSmwArADIANAAyAACiABkAHwAXAD0A8gA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       25
+      ],
+      [
+       31,
+       23
+      ],
+      [
+       61,
+       242
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 13,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物28%几率为其承受伤害\n劈砍防御力+25%\n劈砍防御力+268",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 28,
+     "power2": 31,
+     "powerValue2": 25,
+     "power3": 61,
+     "powerValue3": 268,
+     "isLearnByBook": false,
+     "wireBase64": "AowNAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAyADgAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAyADUAJQAKUoh4DZYyX6FSmwArADIANgA4AACiABwAHwAZAD0BDAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       28
+      ],
+      [
+       31,
+       25
+      ],
+      [
+       61,
+       268
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 14,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物31%几率为其承受伤害\n劈砍防御力+27%\n劈砍防御力+294",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 31,
+     "power2": 31,
+     "powerValue2": 27,
+     "power3": 61,
+     "powerValue3": 294,
+     "isLearnByBook": false,
+     "wireBase64": "AowOAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAzADEAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAyADcAJQAKUoh4DZYyX6FSmwArADIAOQA0AACiAB8AHwAbAD0BJgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       31
+      ],
+      [
+       31,
+       27
+      ],
+      [
+       61,
+       294
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 15,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物35%几率为其承受伤害\n劈砍防御力+30%\n劈砍防御力+320",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 35,
+     "power2": 31,
+     "powerValue2": 30,
+     "power3": 61,
+     "powerValue3": 320,
+     "isLearnByBook": false,
+     "wireBase64": "AowPAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAzADUAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAzADAAJQAKUoh4DZYyX6FSmwArADMAMgAwAACiACMAHwAeAD0BQAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       35
+      ],
+      [
+       31,
+       30
+      ],
+      [
+       61,
+       320
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 16,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物38%几率为其承受伤害\n劈砍防御力+32%\n劈砍防御力+346",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 38,
+     "power2": 31,
+     "powerValue2": 32,
+     "power3": 61,
+     "powerValue3": 346,
+     "isLearnByBook": false,
+     "wireBase64": "AowQAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQAzADgAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAzADIAJQAKUoh4DZYyX6FSmwArADMANAA2AACiACYAHwAgAD0BWgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       38
+      ],
+      [
+       31,
+       32
+      ],
+      [
+       61,
+       346
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 17,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物41%几率为其承受伤害\n劈砍防御力+34%\n劈砍防御力+372",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 41,
+     "power2": 31,
+     "powerValue2": 34,
+     "power3": 61,
+     "powerValue3": 372,
+     "isLearnByBook": false,
+     "wireBase64": "AowRAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA0ADEAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAzADQAJQAKUoh4DZYyX6FSmwArADMANwAyAACiACkAHwAiAD0BdAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       41
+      ],
+      [
+       31,
+       34
+      ],
+      [
+       61,
+       372
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 18,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物44%几率为其承受伤害\n劈砍防御力+36%\n劈砍防御力+398",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 44,
+     "power2": 31,
+     "powerValue2": 36,
+     "power3": 61,
+     "powerValue3": 398,
+     "isLearnByBook": false,
+     "wireBase64": "AowSAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA0ADQAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAzADYAJQAKUoh4DZYyX6FSmwArADMAOQA4AACiACwAHwAkAD0BjgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       44
+      ],
+      [
+       31,
+       36
+      ],
+      [
+       61,
+       398
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 19,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到劈砍攻击时,所携带宠物47%几率为其承受伤害\n劈砍防御力+38%\n劈砍防御力+424",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 47,
+     "power2": 31,
+     "powerValue2": 38,
+     "power3": 61,
+     "powerValue3": 424,
+     "isLearnByBook": false,
+     "wireBase64": "AowTAAAIljJfoWIYZy//CFKIeA3/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11IwUoh4DWU7Uftl9gAsYkBkOl4mW6ByaQA0ADcAJVHgc4dOOlF2Yn9T108kW7MAClKIeA2WMl+hUpsAKwAzADgAJQAKUoh4DZYyX6FSmwArADQAMgA0AACiAC8AHwAmAD0BqAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       162,
+       47
+      ],
+      [
+       31,
+       38
+      ],
+      [
+       61,
+       424
+      ]
+     ]
+    },
+    {
+     "id": 652,
+     "level": 20,
+     "name": "防御战术（劈砍）",
+     "type": 1,
+     "info": "",
+     "skillWeapon": 0,
+     "power1": 162,
+     "powerValue1": 50,
+     "power2": 31,
+     "powerValue2": 40,
+     "power3": 61,
+     "powerValue3": 450,
+     "isLearnByBook": false,
+     "wireBase64": "AowUAAAIljJfoWIYZy//CFKIeA3/CQEAAAAAAKIAMgAfACgAPQHCAA==",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "sources": [
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 98734,
+       "protocol": 14001,
+       "sha256": "de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b",
+       "blob": "blobs/de/de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b.bin",
+       "shopId": 1712,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-19T23-46-03-133Z_d6e6ad",
+       "seq": 656,
+       "protocol": 2,
+       "sha256": "36e029ef2d43cedccadf6a247bbbbcfb9297bcbac432c9b9a71c647ca2d041fa",
+       "blob": "blobs/36/36e029ef2d43cedccadf6a247bbbbcfb9297bcbac432c9b9a71c647ca2d041fa.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+       "seq": 8374,
+       "protocol": 2,
+       "sha256": "d6da3b34d6d17f5487da637787feda42bcbef2574b58cfbfc07194b81f9e0879",
+       "blob": "blobs/d6/d6da3b34d6d17f5487da637787feda42bcbef2574b58cfbfc07194b81f9e0879.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 915,
+       "protocol": 2,
+       "sha256": "31e7040bd954a352e2ca90c5a4ba272c20b1d5752abd5758e865af0d62b55eef",
+       "blob": "blobs/31/31e7040bd954a352e2ca90c5a4ba272c20b1d5752abd5758e865af0d62b55eef.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 11923,
+       "protocol": 10503,
+       "sha256": "d6d6ba9a5a92edb09149012660defc5275c634c7efaa571d1e3cb1dada4f730b",
+       "blob": "blobs/d6/d6d6ba9a5a92edb09149012660defc5275c634c7efaa571d1e3cb1dada4f730b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 13651,
+       "protocol": 10503,
+       "sha256": "690745b7916a69254c5af29b1b0eb087a27fb0ca532f669830bea06fa3890005",
+       "blob": "blobs/69/690745b7916a69254c5af29b1b0eb087a27fb0ca532f669830bea06fa3890005.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 56640,
+       "protocol": 10503,
+       "sha256": "37f7b5b4bc4886e902b9ed86556a1422198ac6dbcb90384b52ca1bcb868b8925",
+       "blob": "blobs/37/37f7b5b4bc4886e902b9ed86556a1422198ac6dbcb90384b52ca1bcb868b8925.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 56710,
+       "protocol": 10503,
+       "sha256": "8ab27e17db5f45bd43ab6a06d86ab5d5c052edc99c7ed090557b3c6d796ca9b0",
+       "blob": "blobs/8a/8ab27e17db5f45bd43ab6a06d86ab5d5c052edc99c7ed090557b3c6d796ca9b0.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63358,
+       "protocol": 10503,
+       "sha256": "97f66329b3cd3d0e121d2fdf04ec6c485aa74b86a7d4cf2ceafc95fe64987c15",
+       "blob": "blobs/97/97f66329b3cd3d0e121d2fdf04ec6c485aa74b86a7d4cf2ceafc95fe64987c15.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63405,
+       "protocol": 10503,
+       "sha256": "0b6973e313bfbca55a6a8e4db6817ba76792893f6b9205c2518ec41a0ca3b323",
+       "blob": "blobs/0b/0b6973e313bfbca55a6a8e4db6817ba76792893f6b9205c2518ec41a0ca3b323.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63580,
+       "protocol": 10503,
+       "sha256": "8cec874b454d5b506647e6c5f9b07239ab8d73e29363aa208ae5b886ad41e058",
+       "blob": "blobs/8c/8cec874b454d5b506647e6c5f9b07239ab8d73e29363aa208ae5b886ad41e058.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 82269,
+       "protocol": 10503,
+       "sha256": "5ee60678dc1b428c47ed48085ee5b82ad4395546dc1af0ad06446018457246bc",
+       "blob": "blobs/5e/5ee60678dc1b428c47ed48085ee5b82ad4395546dc1af0ad06446018457246bc.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85420,
+       "protocol": 10503,
+       "sha256": "8ae32000d81d5efa35aff02c5f4b49e20e9383a02c3d9e8522ae32e99f8e2a0a",
+       "blob": "blobs/8a/8ae32000d81d5efa35aff02c5f4b49e20e9383a02c3d9e8522ae32e99f8e2a0a.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85450,
+       "protocol": 10503,
+       "sha256": "ed46acdf62e9b19fc94145188ed786c5661ac2a74b884d52672f9f2d01cd16ff",
+       "blob": "blobs/ed/ed46acdf62e9b19fc94145188ed786c5661ac2a74b884d52672f9f2d01cd16ff.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85465,
+       "protocol": 10503,
+       "sha256": "3d8db304a58cc3e32aab308134b4fed11b9cf6de1f2c24dd469e4b932c1f5729",
+       "blob": "blobs/3d/3d8db304a58cc3e32aab308134b4fed11b9cf6de1f2c24dd469e4b932c1f5729.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85482,
+       "protocol": 10503,
+       "sha256": "025a308c13cdcadcf52c0f44eb4713e680dbb22b872257ea895ea89edd085dfb",
+       "blob": "blobs/02/025a308c13cdcadcf52c0f44eb4713e680dbb22b872257ea895ea89edd085dfb.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85497,
+       "protocol": 10503,
+       "sha256": "369a7aa1e4e9003f8bb6b525c7c09f075292b6f65083e38b62c0500367941079",
+       "blob": "blobs/36/369a7aa1e4e9003f8bb6b525c7c09f075292b6f65083e38b62c0500367941079.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85526,
+       "protocol": 10503,
+       "sha256": "0dadd89b791d989b6b600f78eb4086cf215980ef4e8cda43a2ebb4b5d3cd4bf6",
+       "blob": "blobs/0d/0dadd89b791d989b6b600f78eb4086cf215980ef4e8cda43a2ebb4b5d3cd4bf6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86691,
+       "protocol": 10503,
+       "sha256": "b225ede1935e92efcd105544e42e539f3633050e8539e120182f276f41c231bb",
+       "blob": "blobs/b2/b225ede1935e92efcd105544e42e539f3633050e8539e120182f276f41c231bb.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86934,
+       "protocol": 10503,
+       "sha256": "c6594e5c1190943c3b00e3cf5740e7ccc556b6df5658c8948a571888f9c6bff2",
+       "blob": "blobs/c6/c6594e5c1190943c3b00e3cf5740e7ccc556b6df5658c8948a571888f9c6bff2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86958,
+       "protocol": 10503,
+       "sha256": "a28e9d1d9bbcc6ea9ea99c43f592d0cc4d79f21a520f67cda05a23866736b5df",
+       "blob": "blobs/a2/a28e9d1d9bbcc6ea9ea99c43f592d0cc4d79f21a520f67cda05a23866736b5df.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 87068,
+       "protocol": 10503,
+       "sha256": "dbb3bbf18df5a1da8f5f96b2c2f053edc8c8a66a5904a121494e94f7d7b66499",
+       "blob": "blobs/db/dbb3bbf18df5a1da8f5f96b2c2f053edc8c8a66a5904a121494e94f7d7b66499.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 87098,
+       "protocol": 10503,
+       "sha256": "d3d55c994b5dfee19c2152e3e69403a0a66f50e22e338340a87a1cca58a0a8f1",
+       "blob": "blobs/d3/d3d55c994b5dfee19c2152e3e69403a0a66f50e22e338340a87a1cca58a0a8f1.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 89295,
+       "protocol": 2,
+       "sha256": "c8f41bd655dfb30701297cbdb9f75301754a5e6468055713e2a0d685bcf49ef6",
+       "blob": "blobs/c8/c8f41bd655dfb30701297cbdb9f75301754a5e6468055713e2a0d685bcf49ef6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 91265,
+       "protocol": 10503,
+       "sha256": "b9ec1bbff7ad8ff1de86d0d8c1b5efa6b944a8c8380605564bdae8f2b0cdf7d3",
+       "blob": "blobs/b9/b9ec1bbff7ad8ff1de86d0d8c1b5efa6b944a8c8380605564bdae8f2b0cdf7d3.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 91491,
+       "protocol": 10503,
+       "sha256": "b6fd19b35d09f519255a3628b28700a43bc7a7eed9acc5a9b385450148a52a54",
+       "blob": "blobs/b6/b6fd19b35d09f519255a3628b28700a43bc7a7eed9acc5a9b385450148a52a54.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94691,
+       "protocol": 10503,
+       "sha256": "b9595d4b7a8207360d253fb16aa982f044aa30afd9fa67262ad58704ba131f0c",
+       "blob": "blobs/b9/b9595d4b7a8207360d253fb16aa982f044aa30afd9fa67262ad58704ba131f0c.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94803,
+       "protocol": 10503,
+       "sha256": "1e86a9900073cc03d529289a714e31ff0075587e46ac7e1a7835693e43f96772",
+       "blob": "blobs/1e/1e86a9900073cc03d529289a714e31ff0075587e46ac7e1a7835693e43f96772.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94908,
+       "protocol": 10503,
+       "sha256": "128b856324fd132b038e931fdb5c8b712e50431748582b4b533f60d13942ab84",
+       "blob": "blobs/12/128b856324fd132b038e931fdb5c8b712e50431748582b4b533f60d13942ab84.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 97811,
+       "protocol": 10503,
+       "sha256": "a349a67eaec8ccdd83944d6c93532a5e682e465604e06ab7e350144fb9d9b605",
+       "blob": "blobs/a3/a349a67eaec8ccdd83944d6c93532a5e682e465604e06ab7e350144fb9d9b605.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 97909,
+       "protocol": 10503,
+       "sha256": "460543dbe9755a31689f0492401d9425b579429c36bd99070276cb5b0ee6e024",
+       "blob": "blobs/46/460543dbe9755a31689f0492401d9425b579429c36bd99070276cb5b0ee6e024.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 98045,
+       "protocol": 10503,
+       "sha256": "88fd9a25c12a3b5403bd26b47051f3fef48ca737d93148bc6198293db75ba652",
+       "blob": "blobs/88/88fd9a25c12a3b5403bd26b47051f3fef48ca737d93148bc6198293db75ba652.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-21T01-33-38-380Z_0dc594",
+       "seq": 698,
+       "protocol": 2,
+       "sha256": "2eb150fb869cf94f8b820032b0823afd102e4f876ea15e50ddf1f0c842b93924",
+       "blob": "blobs/2e/2eb150fb869cf94f8b820032b0823afd102e4f876ea15e50ddf1f0c842b93924.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T00-04-45-983Z_72e12c",
+       "seq": 520,
+       "protocol": 2,
+       "sha256": "c6cde3d106e3ac7231b29c6823bcb729e1ba5ab815babaf7a4a104de0c1d366b",
+       "blob": "blobs/c6/c6cde3d106e3ac7231b29c6823bcb729e1ba5ab815babaf7a4a104de0c1d366b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T00-25-47-572Z_c936a4",
+       "seq": 537,
+       "protocol": 2,
+       "sha256": "8ad674c41065421ca88db77d9f73c5b527307c2e24513a5bb3ff8330b75aaea2",
+       "blob": "blobs/8a/8ad674c41065421ca88db77d9f73c5b527307c2e24513a5bb3ff8330b75aaea2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T01-10-13-330Z_601bdd",
+       "seq": 552,
+       "protocol": 2,
+       "sha256": "124c853ad248c1bdd8d0300d32f12eb7e292c2c9a55fab4e700291ee367567a7",
+       "blob": "blobs/12/124c853ad248c1bdd8d0300d32f12eb7e292c2c9a55fab4e700291ee367567a7.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-21-21-897Z_68e7c6",
+       "seq": 538,
+       "protocol": 2,
+       "sha256": "17033fe2c447454d52b79dd72986745a3654258b83c12049b04419d83d5af32b",
+       "blob": "blobs/17/17033fe2c447454d52b79dd72986745a3654258b83c12049b04419d83d5af32b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-51-27-600Z_452b8d",
+       "seq": 558,
+       "protocol": 2,
+       "sha256": "0103ab673d61d7d09f1ce3d47b8f6caf7cdf083ac51392a51d00d8e560e3c9e4",
+       "blob": "blobs/01/0103ab673d61d7d09f1ce3d47b8f6caf7cdf083ac51392a51d00d8e560e3c9e4.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-57-28-691Z_71489a",
+       "seq": 529,
+       "protocol": 2,
+       "sha256": "0a3a786d00d791c23c7ae2dd0e00349b6c475f4e5e1bbe36d58e320a982fe237",
+       "blob": "blobs/0a/0a3a786d00d791c23c7ae2dd0e00349b6c475f4e5e1bbe36d58e320a982fe237.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T03-26-27-594Z_3ac36c",
+       "seq": 859,
+       "protocol": 2,
+       "sha256": "0e0af477dca64dabc14da4c1e91847e13bc6b63052d536f1aa0439e099938de9",
+       "blob": "blobs/0e/0e0af477dca64dabc14da4c1e91847e13bc6b63052d536f1aa0439e099938de9.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 530,
+       "protocol": 2,
+       "sha256": "2138eb29e414463bd6591324a0ca326e8575344c79552d5474730d72150de4c7",
+       "blob": "blobs/21/2138eb29e414463bd6591324a0ca326e8575344c79552d5474730d72150de4c7.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 3186,
+       "protocol": 2,
+       "sha256": "8de886b0393ef483f4fad7889f3e6576ba99959f0f34a905b20957d3b49bec97",
+       "blob": "blobs/8d/8de886b0393ef483f4fad7889f3e6576ba99959f0f34a905b20957d3b49bec97.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 7048,
+       "protocol": 2,
+       "sha256": "55dfacbde83e8ed2810f776e7a833bb3d3c3ea787891cde2bd7fa6d84a07f9f8",
+       "blob": "blobs/55/55dfacbde83e8ed2810f776e7a833bb3d3c3ea787891cde2bd7fa6d84a07f9f8.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-16-53-928Z_516453",
+       "seq": 508,
+       "protocol": 2,
+       "sha256": "0c820b4dae9b3f6c33f5eb27982726b1070b59a199f8b129b1b18c7cf4ce752b",
+       "blob": "blobs/0c/0c820b4dae9b3f6c33f5eb27982726b1070b59a199f8b129b1b18c7cf4ce752b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-45-00-484Z_716322",
+       "seq": 548,
+       "protocol": 2,
+       "sha256": "118503d4bd4a16dd6b702cf7a25d40d12cfa0f77f94cf637cdbed3e953050b5e",
+       "blob": "blobs/11/118503d4bd4a16dd6b702cf7a25d40d12cfa0f77f94cf637cdbed3e953050b5e.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-45-00-484Z_716322",
+       "seq": 14264,
+       "protocol": 2,
+       "sha256": "db92305e6339f9a1e6d021e05e3813cd24d68cd5f3b68b1c74ee8a24bf47bcc6",
+       "blob": "blobs/db/db92305e6339f9a1e6d021e05e3813cd24d68cd5f3b68b1c74ee8a24bf47bcc6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 530,
+       "protocol": 2,
+       "sha256": "62da071ce0b3c3b5f04f4e63c48d8945014d241ac9463455402da3ccd48555d1",
+       "blob": "blobs/62/62da071ce0b3c3b5f04f4e63c48d8945014d241ac9463455402da3ccd48555d1.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 7760,
+       "protocol": 14001,
+       "sha256": "de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b",
+       "blob": "blobs/de/de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b.bin",
+       "shopId": 1712,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 11596,
+       "protocol": 2,
+       "sha256": "5864a62e9cce8998b398cf73de0465e2c687af4f2a154c01d11ebafca590189a",
+       "blob": "blobs/58/5864a62e9cce8998b398cf73de0465e2c687af4f2a154c01d11ebafca590189a.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 17427,
+       "protocol": 2,
+       "sha256": "42d15a077fb22f41221d16d117be8870e688c24de294d8743f8b241967684483",
+       "blob": "blobs/42/42d15a077fb22f41221d16d117be8870e688c24de294d8743f8b241967684483.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 21120,
+       "protocol": 2,
+       "sha256": "6bea48375f2db87f8effa1f5e71fd69fca05ca4b018efac24b1ad2f1d17ff4cf",
+       "blob": "blobs/6b/6bea48375f2db87f8effa1f5e71fd69fca05ca4b018efac24b1ad2f1d17ff4cf.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 577,
+       "protocol": 2,
+       "sha256": "03e1cf5aeee5ac37898bf01d7691f02e051f137538aa49e681d54cc3cad064b6",
+       "blob": "blobs/03/03e1cf5aeee5ac37898bf01d7691f02e051f137538aa49e681d54cc3cad064b6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 1880,
+       "protocol": 2,
+       "sha256": "8699aa57a828b2e817f70a872f88c0c33a5c7b2c29fcc523b95a7a127b542e3f",
+       "blob": "blobs/86/8699aa57a828b2e817f70a872f88c0c33a5c7b2c29fcc523b95a7a127b542e3f.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 5620,
+       "protocol": 2,
+       "sha256": "c3794cfc4078ecabc82f92d689d218a4c57027af20620379a756ea45793c0cfd",
+       "blob": "blobs/c3/c3794cfc4078ecabc82f92d689d218a4c57027af20620379a756ea45793c0cfd.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 6956,
+       "protocol": 2,
+       "sha256": "fbfc620a9fc8b90c0bada76fbff6505b3804b0a507053c8fb5ac6f409e65a02d",
+       "blob": "blobs/fb/fbfc620a9fc8b90c0bada76fbff6505b3804b0a507053c8fb5ac6f409e65a02d.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 13739,
+       "protocol": 2,
+       "sha256": "550894e6e3d9c245fad1bc3735adcc13a48d025febd3b12a23c6e80b110fdff3",
+       "blob": "blobs/55/550894e6e3d9c245fad1bc3735adcc13a48d025febd3b12a23c6e80b110fdff3.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 29186,
+       "protocol": 2,
+       "sha256": "7536a70ceb25c9ee3335bd84f6bddfc199f0a59d67400756505895643dacb683",
+       "blob": "blobs/75/7536a70ceb25c9ee3335bd84f6bddfc199f0a59d67400756505895643dacb683.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 33679,
+       "protocol": 2,
+       "sha256": "75dc736024b7106ca8576f86110f84a1dc73c213acc0e93e8bd1df9a9af234fc",
+       "blob": "blobs/75/75dc736024b7106ca8576f86110f84a1dc73c213acc0e93e8bd1df9a9af234fc.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 39375,
+       "protocol": 2,
+       "sha256": "2585e1b6166c8c238f37f9b47b5d62ccbf5affe87e4c2232788490ff1125709f",
+       "blob": "blobs/25/2585e1b6166c8c238f37f9b47b5d62ccbf5affe87e4c2232788490ff1125709f.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T08-30-30-051Z_ba112d",
+       "seq": 862,
+       "protocol": 2,
+       "sha256": "ae182ca00f9cead678c365a8f82df2fac28792ef58b3d851626dad397d5a3614",
+       "blob": "blobs/ae/ae182ca00f9cead678c365a8f82df2fac28792ef58b3d851626dad397d5a3614.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T09-25-09-984Z_99508b",
+       "seq": 421,
+       "protocol": 2,
+       "sha256": "0b8ee17ee599445a47826803c9c83610817893718b553a7a5b4357865f5aae61",
+       "blob": "blobs/0b/0b8ee17ee599445a47826803c9c83610817893718b553a7a5b4357865f5aae61.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T09-25-09-984Z_99508b",
+       "seq": 2604,
+       "protocol": 2,
+       "sha256": "2a0b15586437b7f58b124cd34260e645587246155328976cb144ab365247b497",
+       "blob": "blobs/2a/2a0b15586437b7f58b124cd34260e645587246155328976cb144ab365247b497.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 491,
+       "protocol": 2,
+       "sha256": "77499d4a5e8163339293ccf843a6b7de325d172775919e3fe40f9cc17aff7ce4",
+       "blob": "blobs/77/77499d4a5e8163339293ccf843a6b7de325d172775919e3fe40f9cc17aff7ce4.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 1026,
+       "protocol": 2,
+       "sha256": "abcf88189469eb65852a5179232dd9d421511df872be315dcf30caccf78965de",
+       "blob": "blobs/ab/abcf88189469eb65852a5179232dd9d421511df872be315dcf30caccf78965de.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 3420,
+       "protocol": 2,
+       "sha256": "b92d82b0b90096b6b1a3e062c5a80ffe334590942adddc68701d522fa2ea18e2",
+       "blob": "blobs/b9/b92d82b0b90096b6b1a3e062c5a80ffe334590942adddc68701d522fa2ea18e2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-47-07-895Z_06eb50",
+       "seq": 615,
+       "protocol": 2,
+       "sha256": "dba73bbbd9c1f855de6e6d8bdd895d1021e1dfe35245d5cf0341bef4b67a0c20",
+       "blob": "blobs/db/dba73bbbd9c1f855de6e6d8bdd895d1021e1dfe35245d5cf0341bef4b67a0c20.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T11-20-46-182Z_e60de5",
+       "seq": 467,
+       "protocol": 2,
+       "sha256": "80f29e6bb6d291cdbc0a5f240c24f6c0f1a9ba1c918101d50cf0fde76d4fab40",
+       "blob": "blobs/80/80f29e6bb6d291cdbc0a5f240c24f6c0f1a9ba1c918101d50cf0fde76d4fab40.bin",
+       "origin": "learned-definition"
+      }
+     ],
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       162,
+       50
+      ],
+      [
+       31,
+       40
+      ],
+      [
+       61,
+       450
+      ]
+     ]
+    }
+   ],
+   "localCareer": true
+  },
+  {
+   "id": 653,
+   "key": "progression:country-shop:1712:653",
+   "sourceId": 653,
+   "name": "防御战术（穿刺）",
+   "profession": "战士",
+   "category": "被动",
+   "type": 1,
+   "native": true,
+   "job": 3,
+   "shop": 1303,
+   "shops": [
+    1303,
+    1712,
+    306,
+    310,
+    402,
+    1103,
+    1301,
+    1302,
+    1304,
+    1305,
+    1306,
+    1310,
+    1311,
+    1312
+   ],
+   "levels": [
+    {
+     "id": 653,
+     "level": 1,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物3%几率为其承受伤害\n穿刺防御力+3%\n穿刺防御力+30",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 3,
+     "power2": 32,
+     "powerValue2": 3,
+     "power3": 62,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0BAAAIljJfoWIYZy//CHp/Ujr/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAAp6f1I6ljJfoVKbACsAMwAlAAp6f1I6ljJfoVKbACsAMwAwAACjAAMAIAADAD4AHgA=",
+     "sp": 200,
+     "money1": 120,
+     "money2": 0,
+     "money3": 500,
+     "reqJob": 3,
+     "reqLevel": 1,
+     "maxLevel": 20,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       3
+      ],
+      [
+       32,
+       3
+      ],
+      [
+       62,
+       30
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 2,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物3%几率为其承受伤害\n穿刺防御力+3%\n穿刺防御力+30",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 3,
+     "power2": 32,
+     "powerValue2": 3,
+     "power3": 62,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0CAAAIljJfoWIYZy//CHp/Ujr/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAAp6f1I6ljJfoVKbACsAMwAlAAp6f1I6ljJfoVKbACsAMwAwAACjAAMAIAADAD4AHgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       163,
+       3
+      ],
+      [
+       32,
+       3
+      ],
+      [
+       62,
+       30
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 3,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物5%几率为其承受伤害\n穿刺防御力+5%\n穿刺防御力+50",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 5,
+     "power2": 32,
+     "powerValue2": 5,
+     "power3": 62,
+     "powerValue3": 50,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0DAAAIljJfoWIYZy//CHp/Ujr/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA1ACVR4HOHTjpRdmJ/U9dPJFuzAAp6f1I6ljJfoVKbACsANQAlAAp6f1I6ljJfoVKbACsANQAwAACjAAUAIAAFAD4AMgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       5
+      ],
+      [
+       32,
+       5
+      ],
+      [
+       62,
+       50
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 4,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物7%几率为其承受伤害\n穿刺防御力+7%\n穿刺防御力+70",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 7,
+     "power2": 32,
+     "powerValue2": 7,
+     "power3": 62,
+     "powerValue3": 70,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0EAAAIljJfoWIYZy//CHp/Ujr/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA3ACVR4HOHTjpRdmJ/U9dPJFuzAAp6f1I6ljJfoVKbACsANwAlAAp6f1I6ljJfoVKbACsANwAwAACjAAcAIAAHAD4ARgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       7
+      ],
+      [
+       32,
+       7
+      ],
+      [
+       62,
+       70
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 5,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物9%几率为其承受伤害\n穿刺防御力+9%\n穿刺防御力+90",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 9,
+     "power2": 32,
+     "powerValue2": 9,
+     "power3": 62,
+     "powerValue3": 90,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0FAAAIljJfoWIYZy//CHp/Ujr/CQEAADhTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA5ACVR4HOHTjpRdmJ/U9dPJFuzAAp6f1I6ljJfoVKbACsAOQAlAAp6f1I6ljJfoVKbACsAOQAwAACjAAkAIAAJAD4AWgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       9
+      ],
+      [
+       32,
+       9
+      ],
+      [
+       62,
+       90
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 6,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物11%几率为其承受伤害\n穿刺防御力+11%\n穿刺防御力+110",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 11,
+     "power2": 32,
+     "powerValue2": 11,
+     "power3": 62,
+     "powerValue3": 110,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0GAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAxADEAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAxADEAJQAKen9SOpYyX6FSmwArADEAMQAwAACjAAsAIAALAD4AbgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       11
+      ],
+      [
+       32,
+       11
+      ],
+      [
+       62,
+       110
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 7,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物13%几率为其承受伤害\n穿刺防御力+13%\n穿刺防御力+130",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 13,
+     "power2": 32,
+     "powerValue2": 13,
+     "power3": 62,
+     "powerValue3": 130,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0HAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAxADMAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAxADMAJQAKen9SOpYyX6FSmwArADEAMwAwAACjAA0AIAANAD4AggA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       13
+      ],
+      [
+       32,
+       13
+      ],
+      [
+       62,
+       130
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 8,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物15%几率为其承受伤害\n穿刺防御力+15%\n穿刺防御力+150",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 15,
+     "power2": 32,
+     "powerValue2": 15,
+     "power3": 62,
+     "powerValue3": 150,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0IAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAxADUAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAxADUAJQAKen9SOpYyX6FSmwArADEANQAwAACjAA8AIAAPAD4AlgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       15
+      ],
+      [
+       32,
+       15
+      ],
+      [
+       62,
+       150
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 9,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物17%几率为其承受伤害\n穿刺防御力+17%\n穿刺防御力+170",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 17,
+     "power2": 32,
+     "powerValue2": 17,
+     "power3": 62,
+     "powerValue3": 170,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0JAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAxADcAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAxADcAJQAKen9SOpYyX6FSmwArADEANwAwAACjABEAIAARAD4AqgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       17
+      ],
+      [
+       32,
+       17
+      ],
+      [
+       62,
+       170
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 10,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物19%几率为其承受伤害\n穿刺防御力+19%\n穿刺防御力+190",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 19,
+     "power2": 32,
+     "powerValue2": 19,
+     "power3": 62,
+     "powerValue3": 190,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0KAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAxADkAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAxADkAJQAKen9SOpYyX6FSmwArADEAOQAwAACjABMAIAATAD4AvgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       163,
+       19
+      ],
+      [
+       32,
+       19
+      ],
+      [
+       62,
+       190
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 11,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物22%几率为其承受伤害\n穿刺防御力+21%\n穿刺防御力+216",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 22,
+     "power2": 32,
+     "powerValue2": 21,
+     "power3": 62,
+     "powerValue3": 216,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0LAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAyADIAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAyADEAJQAKen9SOpYyX6FSmwArADIAMQA2AACjABYAIAAVAD4A2AA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       22
+      ],
+      [
+       32,
+       21
+      ],
+      [
+       62,
+       216
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 12,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物25%几率为其承受伤害\n穿刺防御力+23%\n穿刺防御力+242",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 25,
+     "power2": 32,
+     "powerValue2": 23,
+     "power3": 62,
+     "powerValue3": 242,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0MAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAyADUAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAyADMAJQAKen9SOpYyX6FSmwArADIANAAyAACjABkAIAAXAD4A8gA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       25
+      ],
+      [
+       32,
+       23
+      ],
+      [
+       62,
+       242
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 13,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物28%几率为其承受伤害\n穿刺防御力+25%\n穿刺防御力+268",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 28,
+     "power2": 32,
+     "powerValue2": 25,
+     "power3": 62,
+     "powerValue3": 268,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0NAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAyADgAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAyADUAJQAKen9SOpYyX6FSmwArADIANgA4AACjABwAIAAZAD4BDAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       28
+      ],
+      [
+       32,
+       25
+      ],
+      [
+       62,
+       268
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 14,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物31%几率为其承受伤害\n穿刺防御力+27%\n穿刺防御力+294",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 31,
+     "power2": 32,
+     "powerValue2": 27,
+     "power3": 62,
+     "powerValue3": 294,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0OAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAzADEAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAyADcAJQAKen9SOpYyX6FSmwArADIAOQA0AACjAB8AIAAbAD4BJgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       31
+      ],
+      [
+       32,
+       27
+      ],
+      [
+       62,
+       294
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 15,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物35%几率为其承受伤害\n穿刺防御力+30%\n穿刺防御力+320",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 35,
+     "power2": 32,
+     "powerValue2": 30,
+     "power3": 62,
+     "powerValue3": 320,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0PAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAzADUAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAzADAAJQAKen9SOpYyX6FSmwArADMAMgAwAACjACMAIAAeAD4BQAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       35
+      ],
+      [
+       32,
+       30
+      ],
+      [
+       62,
+       320
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 16,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物38%几率为其承受伤害\n穿刺防御力+32%\n穿刺防御力+346",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 38,
+     "power2": 32,
+     "powerValue2": 32,
+     "power3": 62,
+     "powerValue3": 346,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0QAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQAzADgAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAzADIAJQAKen9SOpYyX6FSmwArADMANAA2AACjACYAIAAgAD4BWgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       38
+      ],
+      [
+       32,
+       32
+      ],
+      [
+       62,
+       346
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 17,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物41%几率为其承受伤害\n穿刺防御力+34%\n穿刺防御力+372",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 41,
+     "power2": 32,
+     "powerValue2": 34,
+     "power3": 62,
+     "powerValue3": 372,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0RAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA0ADEAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAzADQAJQAKen9SOpYyX6FSmwArADMANwAyAACjACkAIAAiAD4BdAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       41
+      ],
+      [
+       32,
+       34
+      ],
+      [
+       62,
+       372
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 18,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物44%几率为其承受伤害\n穿刺防御力+36%\n穿刺防御力+398",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 44,
+     "power2": 32,
+     "powerValue2": 36,
+     "power3": 62,
+     "powerValue3": 398,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0SAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA0ADQAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAzADYAJQAKen9SOpYyX6FSmwArADMAOQA4AACjACwAIAAkAD4BjgA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       44
+      ],
+      [
+       32,
+       36
+      ],
+      [
+       62,
+       398
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 19,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到穿刺攻击时,所携带宠物47%几率为其承受伤害\n穿刺防御力+38%\n穿刺防御力+424",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 47,
+     "power2": 32,
+     "powerValue2": 38,
+     "power3": 62,
+     "powerValue3": 424,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0TAAAIljJfoWIYZy//CHp/Ujr/CQEAADtTVWc6kc1e+v8IVCt5PlM6jURlmU4OY6h7l/8JAApT11Iwen9SOmU7Uftl9gAsYkBkOl4mW6ByaQA0ADcAJVHgc4dOOlF2Yn9T108kW7MACnp/UjqWMl+hUpsAKwAzADgAJQAKen9SOpYyX6FSmwArADQAMgA0AACjAC8AIAAmAD4BqAA=",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       163,
+       47
+      ],
+      [
+       32,
+       38
+      ],
+      [
+       62,
+       424
+      ]
+     ]
+    },
+    {
+     "id": 653,
+     "level": 20,
+     "name": "防御战术（穿刺）",
+     "type": 1,
+     "info": "",
+     "skillWeapon": 0,
+     "power1": 163,
+     "powerValue1": 50,
+     "power2": 32,
+     "powerValue2": 40,
+     "power3": 62,
+     "powerValue3": 450,
+     "isLearnByBook": false,
+     "wireBase64": "Ao0UAAAIljJfoWIYZy//CHp/Ujr/CQEAAAAAAKMAMgAgACgAPgHCAA==",
+     "reqJob": 3,
+     "reqLevel": 1,
+     "sources": [
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 98734,
+       "protocol": 14001,
+       "sha256": "de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b",
+       "blob": "blobs/de/de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b.bin",
+       "shopId": 1712,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-19T23-46-03-133Z_d6e6ad",
+       "seq": 656,
+       "protocol": 2,
+       "sha256": "36e029ef2d43cedccadf6a247bbbbcfb9297bcbac432c9b9a71c647ca2d041fa",
+       "blob": "blobs/36/36e029ef2d43cedccadf6a247bbbbcfb9297bcbac432c9b9a71c647ca2d041fa.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+       "seq": 8374,
+       "protocol": 2,
+       "sha256": "d6da3b34d6d17f5487da637787feda42bcbef2574b58cfbfc07194b81f9e0879",
+       "blob": "blobs/d6/d6da3b34d6d17f5487da637787feda42bcbef2574b58cfbfc07194b81f9e0879.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 915,
+       "protocol": 2,
+       "sha256": "31e7040bd954a352e2ca90c5a4ba272c20b1d5752abd5758e865af0d62b55eef",
+       "blob": "blobs/31/31e7040bd954a352e2ca90c5a4ba272c20b1d5752abd5758e865af0d62b55eef.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 11923,
+       "protocol": 10503,
+       "sha256": "d6d6ba9a5a92edb09149012660defc5275c634c7efaa571d1e3cb1dada4f730b",
+       "blob": "blobs/d6/d6d6ba9a5a92edb09149012660defc5275c634c7efaa571d1e3cb1dada4f730b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 13651,
+       "protocol": 10503,
+       "sha256": "690745b7916a69254c5af29b1b0eb087a27fb0ca532f669830bea06fa3890005",
+       "blob": "blobs/69/690745b7916a69254c5af29b1b0eb087a27fb0ca532f669830bea06fa3890005.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 56640,
+       "protocol": 10503,
+       "sha256": "37f7b5b4bc4886e902b9ed86556a1422198ac6dbcb90384b52ca1bcb868b8925",
+       "blob": "blobs/37/37f7b5b4bc4886e902b9ed86556a1422198ac6dbcb90384b52ca1bcb868b8925.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 56710,
+       "protocol": 10503,
+       "sha256": "8ab27e17db5f45bd43ab6a06d86ab5d5c052edc99c7ed090557b3c6d796ca9b0",
+       "blob": "blobs/8a/8ab27e17db5f45bd43ab6a06d86ab5d5c052edc99c7ed090557b3c6d796ca9b0.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63358,
+       "protocol": 10503,
+       "sha256": "97f66329b3cd3d0e121d2fdf04ec6c485aa74b86a7d4cf2ceafc95fe64987c15",
+       "blob": "blobs/97/97f66329b3cd3d0e121d2fdf04ec6c485aa74b86a7d4cf2ceafc95fe64987c15.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63405,
+       "protocol": 10503,
+       "sha256": "0b6973e313bfbca55a6a8e4db6817ba76792893f6b9205c2518ec41a0ca3b323",
+       "blob": "blobs/0b/0b6973e313bfbca55a6a8e4db6817ba76792893f6b9205c2518ec41a0ca3b323.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 63580,
+       "protocol": 10503,
+       "sha256": "8cec874b454d5b506647e6c5f9b07239ab8d73e29363aa208ae5b886ad41e058",
+       "blob": "blobs/8c/8cec874b454d5b506647e6c5f9b07239ab8d73e29363aa208ae5b886ad41e058.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 82269,
+       "protocol": 10503,
+       "sha256": "5ee60678dc1b428c47ed48085ee5b82ad4395546dc1af0ad06446018457246bc",
+       "blob": "blobs/5e/5ee60678dc1b428c47ed48085ee5b82ad4395546dc1af0ad06446018457246bc.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85420,
+       "protocol": 10503,
+       "sha256": "8ae32000d81d5efa35aff02c5f4b49e20e9383a02c3d9e8522ae32e99f8e2a0a",
+       "blob": "blobs/8a/8ae32000d81d5efa35aff02c5f4b49e20e9383a02c3d9e8522ae32e99f8e2a0a.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85450,
+       "protocol": 10503,
+       "sha256": "ed46acdf62e9b19fc94145188ed786c5661ac2a74b884d52672f9f2d01cd16ff",
+       "blob": "blobs/ed/ed46acdf62e9b19fc94145188ed786c5661ac2a74b884d52672f9f2d01cd16ff.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85465,
+       "protocol": 10503,
+       "sha256": "3d8db304a58cc3e32aab308134b4fed11b9cf6de1f2c24dd469e4b932c1f5729",
+       "blob": "blobs/3d/3d8db304a58cc3e32aab308134b4fed11b9cf6de1f2c24dd469e4b932c1f5729.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85482,
+       "protocol": 10503,
+       "sha256": "025a308c13cdcadcf52c0f44eb4713e680dbb22b872257ea895ea89edd085dfb",
+       "blob": "blobs/02/025a308c13cdcadcf52c0f44eb4713e680dbb22b872257ea895ea89edd085dfb.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85497,
+       "protocol": 10503,
+       "sha256": "369a7aa1e4e9003f8bb6b525c7c09f075292b6f65083e38b62c0500367941079",
+       "blob": "blobs/36/369a7aa1e4e9003f8bb6b525c7c09f075292b6f65083e38b62c0500367941079.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 85526,
+       "protocol": 10503,
+       "sha256": "0dadd89b791d989b6b600f78eb4086cf215980ef4e8cda43a2ebb4b5d3cd4bf6",
+       "blob": "blobs/0d/0dadd89b791d989b6b600f78eb4086cf215980ef4e8cda43a2ebb4b5d3cd4bf6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86691,
+       "protocol": 10503,
+       "sha256": "b225ede1935e92efcd105544e42e539f3633050e8539e120182f276f41c231bb",
+       "blob": "blobs/b2/b225ede1935e92efcd105544e42e539f3633050e8539e120182f276f41c231bb.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86934,
+       "protocol": 10503,
+       "sha256": "c6594e5c1190943c3b00e3cf5740e7ccc556b6df5658c8948a571888f9c6bff2",
+       "blob": "blobs/c6/c6594e5c1190943c3b00e3cf5740e7ccc556b6df5658c8948a571888f9c6bff2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 86958,
+       "protocol": 10503,
+       "sha256": "a28e9d1d9bbcc6ea9ea99c43f592d0cc4d79f21a520f67cda05a23866736b5df",
+       "blob": "blobs/a2/a28e9d1d9bbcc6ea9ea99c43f592d0cc4d79f21a520f67cda05a23866736b5df.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 87068,
+       "protocol": 10503,
+       "sha256": "dbb3bbf18df5a1da8f5f96b2c2f053edc8c8a66a5904a121494e94f7d7b66499",
+       "blob": "blobs/db/dbb3bbf18df5a1da8f5f96b2c2f053edc8c8a66a5904a121494e94f7d7b66499.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 87098,
+       "protocol": 10503,
+       "sha256": "d3d55c994b5dfee19c2152e3e69403a0a66f50e22e338340a87a1cca58a0a8f1",
+       "blob": "blobs/d3/d3d55c994b5dfee19c2152e3e69403a0a66f50e22e338340a87a1cca58a0a8f1.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 89295,
+       "protocol": 2,
+       "sha256": "c8f41bd655dfb30701297cbdb9f75301754a5e6468055713e2a0d685bcf49ef6",
+       "blob": "blobs/c8/c8f41bd655dfb30701297cbdb9f75301754a5e6468055713e2a0d685bcf49ef6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 91265,
+       "protocol": 10503,
+       "sha256": "b9ec1bbff7ad8ff1de86d0d8c1b5efa6b944a8c8380605564bdae8f2b0cdf7d3",
+       "blob": "blobs/b9/b9ec1bbff7ad8ff1de86d0d8c1b5efa6b944a8c8380605564bdae8f2b0cdf7d3.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 91491,
+       "protocol": 10503,
+       "sha256": "b6fd19b35d09f519255a3628b28700a43bc7a7eed9acc5a9b385450148a52a54",
+       "blob": "blobs/b6/b6fd19b35d09f519255a3628b28700a43bc7a7eed9acc5a9b385450148a52a54.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94691,
+       "protocol": 10503,
+       "sha256": "b9595d4b7a8207360d253fb16aa982f044aa30afd9fa67262ad58704ba131f0c",
+       "blob": "blobs/b9/b9595d4b7a8207360d253fb16aa982f044aa30afd9fa67262ad58704ba131f0c.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94803,
+       "protocol": 10503,
+       "sha256": "1e86a9900073cc03d529289a714e31ff0075587e46ac7e1a7835693e43f96772",
+       "blob": "blobs/1e/1e86a9900073cc03d529289a714e31ff0075587e46ac7e1a7835693e43f96772.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 94908,
+       "protocol": 10503,
+       "sha256": "128b856324fd132b038e931fdb5c8b712e50431748582b4b533f60d13942ab84",
+       "blob": "blobs/12/128b856324fd132b038e931fdb5c8b712e50431748582b4b533f60d13942ab84.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 97811,
+       "protocol": 10503,
+       "sha256": "a349a67eaec8ccdd83944d6c93532a5e682e465604e06ab7e350144fb9d9b605",
+       "blob": "blobs/a3/a349a67eaec8ccdd83944d6c93532a5e682e465604e06ab7e350144fb9d9b605.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 97909,
+       "protocol": 10503,
+       "sha256": "460543dbe9755a31689f0492401d9425b579429c36bd99070276cb5b0ee6e024",
+       "blob": "blobs/46/460543dbe9755a31689f0492401d9425b579429c36bd99070276cb5b0ee6e024.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 98045,
+       "protocol": 10503,
+       "sha256": "88fd9a25c12a3b5403bd26b47051f3fef48ca737d93148bc6198293db75ba652",
+       "blob": "blobs/88/88fd9a25c12a3b5403bd26b47051f3fef48ca737d93148bc6198293db75ba652.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-21T01-33-38-380Z_0dc594",
+       "seq": 698,
+       "protocol": 2,
+       "sha256": "2eb150fb869cf94f8b820032b0823afd102e4f876ea15e50ddf1f0c842b93924",
+       "blob": "blobs/2e/2eb150fb869cf94f8b820032b0823afd102e4f876ea15e50ddf1f0c842b93924.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T00-04-45-983Z_72e12c",
+       "seq": 520,
+       "protocol": 2,
+       "sha256": "c6cde3d106e3ac7231b29c6823bcb729e1ba5ab815babaf7a4a104de0c1d366b",
+       "blob": "blobs/c6/c6cde3d106e3ac7231b29c6823bcb729e1ba5ab815babaf7a4a104de0c1d366b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T00-25-47-572Z_c936a4",
+       "seq": 537,
+       "protocol": 2,
+       "sha256": "8ad674c41065421ca88db77d9f73c5b527307c2e24513a5bb3ff8330b75aaea2",
+       "blob": "blobs/8a/8ad674c41065421ca88db77d9f73c5b527307c2e24513a5bb3ff8330b75aaea2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T01-10-13-330Z_601bdd",
+       "seq": 552,
+       "protocol": 2,
+       "sha256": "124c853ad248c1bdd8d0300d32f12eb7e292c2c9a55fab4e700291ee367567a7",
+       "blob": "blobs/12/124c853ad248c1bdd8d0300d32f12eb7e292c2c9a55fab4e700291ee367567a7.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-21-21-897Z_68e7c6",
+       "seq": 538,
+       "protocol": 2,
+       "sha256": "17033fe2c447454d52b79dd72986745a3654258b83c12049b04419d83d5af32b",
+       "blob": "blobs/17/17033fe2c447454d52b79dd72986745a3654258b83c12049b04419d83d5af32b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-51-27-600Z_452b8d",
+       "seq": 558,
+       "protocol": 2,
+       "sha256": "0103ab673d61d7d09f1ce3d47b8f6caf7cdf083ac51392a51d00d8e560e3c9e4",
+       "blob": "blobs/01/0103ab673d61d7d09f1ce3d47b8f6caf7cdf083ac51392a51d00d8e560e3c9e4.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T02-57-28-691Z_71489a",
+       "seq": 529,
+       "protocol": 2,
+       "sha256": "0a3a786d00d791c23c7ae2dd0e00349b6c475f4e5e1bbe36d58e320a982fe237",
+       "blob": "blobs/0a/0a3a786d00d791c23c7ae2dd0e00349b6c475f4e5e1bbe36d58e320a982fe237.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T03-26-27-594Z_3ac36c",
+       "seq": 859,
+       "protocol": 2,
+       "sha256": "0e0af477dca64dabc14da4c1e91847e13bc6b63052d536f1aa0439e099938de9",
+       "blob": "blobs/0e/0e0af477dca64dabc14da4c1e91847e13bc6b63052d536f1aa0439e099938de9.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 530,
+       "protocol": 2,
+       "sha256": "2138eb29e414463bd6591324a0ca326e8575344c79552d5474730d72150de4c7",
+       "blob": "blobs/21/2138eb29e414463bd6591324a0ca326e8575344c79552d5474730d72150de4c7.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 3186,
+       "protocol": 2,
+       "sha256": "8de886b0393ef483f4fad7889f3e6576ba99959f0f34a905b20957d3b49bec97",
+       "blob": "blobs/8d/8de886b0393ef483f4fad7889f3e6576ba99959f0f34a905b20957d3b49bec97.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-06-42-892Z_7256c4",
+       "seq": 7048,
+       "protocol": 2,
+       "sha256": "55dfacbde83e8ed2810f776e7a833bb3d3c3ea787891cde2bd7fa6d84a07f9f8",
+       "blob": "blobs/55/55dfacbde83e8ed2810f776e7a833bb3d3c3ea787891cde2bd7fa6d84a07f9f8.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-16-53-928Z_516453",
+       "seq": 508,
+       "protocol": 2,
+       "sha256": "0c820b4dae9b3f6c33f5eb27982726b1070b59a199f8b129b1b18c7cf4ce752b",
+       "blob": "blobs/0c/0c820b4dae9b3f6c33f5eb27982726b1070b59a199f8b129b1b18c7cf4ce752b.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-45-00-484Z_716322",
+       "seq": 548,
+       "protocol": 2,
+       "sha256": "118503d4bd4a16dd6b702cf7a25d40d12cfa0f77f94cf637cdbed3e953050b5e",
+       "blob": "blobs/11/118503d4bd4a16dd6b702cf7a25d40d12cfa0f77f94cf637cdbed3e953050b5e.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T04-45-00-484Z_716322",
+       "seq": 14264,
+       "protocol": 2,
+       "sha256": "db92305e6339f9a1e6d021e05e3813cd24d68cd5f3b68b1c74ee8a24bf47bcc6",
+       "blob": "blobs/db/db92305e6339f9a1e6d021e05e3813cd24d68cd5f3b68b1c74ee8a24bf47bcc6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 530,
+       "protocol": 2,
+       "sha256": "62da071ce0b3c3b5f04f4e63c48d8945014d241ac9463455402da3ccd48555d1",
+       "blob": "blobs/62/62da071ce0b3c3b5f04f4e63c48d8945014d241ac9463455402da3ccd48555d1.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 7760,
+       "protocol": 14001,
+       "sha256": "de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b",
+       "blob": "blobs/de/de285807beb302f6ddc8b8ede807784bee944d9799b1efbee4575aee2aab779b.bin",
+       "shopId": 1712,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 11596,
+       "protocol": 2,
+       "sha256": "5864a62e9cce8998b398cf73de0465e2c687af4f2a154c01d11ebafca590189a",
+       "blob": "blobs/58/5864a62e9cce8998b398cf73de0465e2c687af4f2a154c01d11ebafca590189a.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 17427,
+       "protocol": 2,
+       "sha256": "42d15a077fb22f41221d16d117be8870e688c24de294d8743f8b241967684483",
+       "blob": "blobs/42/42d15a077fb22f41221d16d117be8870e688c24de294d8743f8b241967684483.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 21120,
+       "protocol": 2,
+       "sha256": "6bea48375f2db87f8effa1f5e71fd69fca05ca4b018efac24b1ad2f1d17ff4cf",
+       "blob": "blobs/6b/6bea48375f2db87f8effa1f5e71fd69fca05ca4b018efac24b1ad2f1d17ff4cf.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 577,
+       "protocol": 2,
+       "sha256": "03e1cf5aeee5ac37898bf01d7691f02e051f137538aa49e681d54cc3cad064b6",
+       "blob": "blobs/03/03e1cf5aeee5ac37898bf01d7691f02e051f137538aa49e681d54cc3cad064b6.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 1880,
+       "protocol": 2,
+       "sha256": "8699aa57a828b2e817f70a872f88c0c33a5c7b2c29fcc523b95a7a127b542e3f",
+       "blob": "blobs/86/8699aa57a828b2e817f70a872f88c0c33a5c7b2c29fcc523b95a7a127b542e3f.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 5620,
+       "protocol": 2,
+       "sha256": "c3794cfc4078ecabc82f92d689d218a4c57027af20620379a756ea45793c0cfd",
+       "blob": "blobs/c3/c3794cfc4078ecabc82f92d689d218a4c57027af20620379a756ea45793c0cfd.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 6956,
+       "protocol": 2,
+       "sha256": "fbfc620a9fc8b90c0bada76fbff6505b3804b0a507053c8fb5ac6f409e65a02d",
+       "blob": "blobs/fb/fbfc620a9fc8b90c0bada76fbff6505b3804b0a507053c8fb5ac6f409e65a02d.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 13739,
+       "protocol": 2,
+       "sha256": "550894e6e3d9c245fad1bc3735adcc13a48d025febd3b12a23c6e80b110fdff3",
+       "blob": "blobs/55/550894e6e3d9c245fad1bc3735adcc13a48d025febd3b12a23c6e80b110fdff3.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 29186,
+       "protocol": 2,
+       "sha256": "7536a70ceb25c9ee3335bd84f6bddfc199f0a59d67400756505895643dacb683",
+       "blob": "blobs/75/7536a70ceb25c9ee3335bd84f6bddfc199f0a59d67400756505895643dacb683.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 33679,
+       "protocol": 2,
+       "sha256": "75dc736024b7106ca8576f86110f84a1dc73c213acc0e93e8bd1df9a9af234fc",
+       "blob": "blobs/75/75dc736024b7106ca8576f86110f84a1dc73c213acc0e93e8bd1df9a9af234fc.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T07-26-00-172Z_ffdca2",
+       "seq": 39375,
+       "protocol": 2,
+       "sha256": "2585e1b6166c8c238f37f9b47b5d62ccbf5affe87e4c2232788490ff1125709f",
+       "blob": "blobs/25/2585e1b6166c8c238f37f9b47b5d62ccbf5affe87e4c2232788490ff1125709f.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T08-30-30-051Z_ba112d",
+       "seq": 862,
+       "protocol": 2,
+       "sha256": "ae182ca00f9cead678c365a8f82df2fac28792ef58b3d851626dad397d5a3614",
+       "blob": "blobs/ae/ae182ca00f9cead678c365a8f82df2fac28792ef58b3d851626dad397d5a3614.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T09-25-09-984Z_99508b",
+       "seq": 421,
+       "protocol": 2,
+       "sha256": "0b8ee17ee599445a47826803c9c83610817893718b553a7a5b4357865f5aae61",
+       "blob": "blobs/0b/0b8ee17ee599445a47826803c9c83610817893718b553a7a5b4357865f5aae61.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T09-25-09-984Z_99508b",
+       "seq": 2604,
+       "protocol": 2,
+       "sha256": "2a0b15586437b7f58b124cd34260e645587246155328976cb144ab365247b497",
+       "blob": "blobs/2a/2a0b15586437b7f58b124cd34260e645587246155328976cb144ab365247b497.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 491,
+       "protocol": 2,
+       "sha256": "77499d4a5e8163339293ccf843a6b7de325d172775919e3fe40f9cc17aff7ce4",
+       "blob": "blobs/77/77499d4a5e8163339293ccf843a6b7de325d172775919e3fe40f9cc17aff7ce4.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 1026,
+       "protocol": 2,
+       "sha256": "abcf88189469eb65852a5179232dd9d421511df872be315dcf30caccf78965de",
+       "blob": "blobs/ab/abcf88189469eb65852a5179232dd9d421511df872be315dcf30caccf78965de.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-42-33-374Z_de1ea6",
+       "seq": 3420,
+       "protocol": 2,
+       "sha256": "b92d82b0b90096b6b1a3e062c5a80ffe334590942adddc68701d522fa2ea18e2",
+       "blob": "blobs/b9/b92d82b0b90096b6b1a3e062c5a80ffe334590942adddc68701d522fa2ea18e2.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T10-47-07-895Z_06eb50",
+       "seq": 615,
+       "protocol": 2,
+       "sha256": "dba73bbbd9c1f855de6e6d8bdd895d1021e1dfe35245d5cf0341bef4b67a0c20",
+       "blob": "blobs/db/dba73bbbd9c1f855de6e6d8bdd895d1021e1dfe35245d5cf0341bef4b67a0c20.bin",
+       "origin": "learned-definition"
+      },
+      {
+       "capture": "2026-09-22T11-20-46-182Z_e60de5",
+       "seq": 467,
+       "protocol": 2,
+       "sha256": "80f29e6bb6d291cdbc0a5f240c24f6c0f1a9ba1c918101d50cf0fde76d4fab40",
+       "blob": "blobs/80/80f29e6bb6d291cdbc0a5f240c24f6c0f1a9ba1c918101d50cf0fde76d4fab40.bin",
+       "origin": "learned-definition"
+      }
+     ],
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       163,
+       50
+      ],
+      [
+       32,
+       40
+      ],
+      [
+       62,
+       450
+      ]
+     ]
+    }
+   ],
+   "localCareer": true
+  },
+  {
+   "id": 757,
+   "key": "progression:country-shop:1612:757",
+   "sourceId": 757,
+   "name": "灵兽守护",
+   "profession": "修真",
+   "category": "被动",
+   "type": 1,
+   "native": true,
+   "job": 2,
+   "shop": 1302,
+   "shops": [
+    1302,
+    1612,
+    307,
+    311,
+    403,
+    1102
+   ],
+   "levels": [
+    {
+     "id": 757,
+     "level": 1,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 1,
+     "power2": 90,
+     "powerValue2": 1,
+     "power3": 11,
+     "powerValue3": 10,
+     "isLearnByBook": false,
+     "wireBase64": "AvUBAAAEcHVRfVuIYqQBAAAAAACmAAEAWgABAAsACgA=",
+     "sp": 5,
+     "money1": 0,
+     "money2": 0,
+     "money3": 500,
+     "reqJob": 2,
+     "reqLevel": 1,
+     "maxLevel": 20,
+     "sources": [
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 88422,
+       "protocol": 14001,
+       "sha256": "13403ffa353ed548d1497122812b1b1e66e60f5d83f849a89ebb854c25e0aa38",
+       "blob": "blobs/13/13403ffa353ed548d1497122812b1b1e66e60f5d83f849a89ebb854c25e0aa38.bin",
+       "shopId": 1612,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 92161,
+       "protocol": 14001,
+       "sha256": "357a82d5f3cc927d3dc7ea8fc3ff0e4a6e2e2c73c03fb7d98033a6f13e3b55f3",
+       "blob": "blobs/35/357a82d5f3cc927d3dc7ea8fc3ff0e4a6e2e2c73c03fb7d98033a6f13e3b55f3.bin",
+       "shopId": 1612,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-20T23-27-15-970Z_874aae",
+       "seq": 98471,
+       "protocol": 14001,
+       "sha256": "c2c04cecde01b119df4ac5d285f64ff6706423d38e4fd9b2ad50439fa6cacf59",
+       "blob": "blobs/c2/c2c04cecde01b119df4ac5d285f64ff6706423d38e4fd9b2ad50439fa6cacf59.bin",
+       "shopId": 1612,
+       "origin": "shop"
+      },
+      {
+       "capture": "2026-09-22T05-19-35-998Z_ceb0c9",
+       "seq": 7756,
+       "protocol": 14001,
+       "sha256": "c2c04cecde01b119df4ac5d285f64ff6706423d38e4fd9b2ad50439fa6cacf59",
+       "blob": "blobs/c2/c2c04cecde01b119df4ac5d285f64ff6706423d38e4fd9b2ad50439fa6cacf59.bin",
+       "shopId": 1612,
+       "origin": "shop"
+      }
+     ],
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       1
+      ],
+      [
+       90,
+       1
+      ],
+      [
+       11,
+       10
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 2,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物2%几率为其承受伤害\n宠物生命上限+2%\n生命上限+30",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 2,
+     "power2": 90,
+     "powerValue2": 2,
+     "power3": 11,
+     "powerValue3": 30,
+     "isLearnByBook": false,
+     "wireBase64": "AvUCAAAEcHVRfVuIYqQBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwAyACUACnUfVH1OCpZQACsAMwAwAACmAAIAWgACAAsAHgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       2
+      ],
+      [
+       90,
+       2
+      ],
+      [
+       11,
+       30
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 3,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物3%几率为其承受伤害\n宠物生命上限+3%\n生命上限+50",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 3,
+     "power2": 90,
+     "powerValue2": 3,
+     "power3": 11,
+     "powerValue3": 50,
+     "isLearnByBook": false,
+     "wireBase64": "AvUDAAAEcHVRfVuIYqQBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAzACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwAzACUACnUfVH1OCpZQACsANQAwAACmAAMAWgADAAsAMgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       3
+      ],
+      [
+       90,
+       3
+      ],
+      [
+       11,
+       50
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 4,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物4%几率为其承受伤害\n宠物生命上限+4%\n生命上限+70",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 4,
+     "power2": 90,
+     "powerValue2": 4,
+     "power3": 11,
+     "powerValue3": 70,
+     "isLearnByBook": false,
+     "wireBase64": "AvUEAAAEcHVRfVuIYqQBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA0ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA0ACUACnUfVH1OCpZQACsANwAwAACmAAQAWgAEAAsARgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       4
+      ],
+      [
+       90,
+       4
+      ],
+      [
+       11,
+       70
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 5,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物5%几率为其承受伤害\n宠物生命上限+5%\n生命上限+90",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 5,
+     "power2": 90,
+     "powerValue2": 5,
+     "power3": 11,
+     "powerValue3": 90,
+     "isLearnByBook": false,
+     "wireBase64": "AvUFAAAEcHVRfVuIYqQBAAA2U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA1ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA1ACUACnUfVH1OCpZQACsAOQAwAACmAAUAWgAFAAsAWgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       5
+      ],
+      [
+       90,
+       5
+      ],
+      [
+       11,
+       90
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 6,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物6%几率为其承受伤害\n宠物生命上限+6%\n生命上限+110",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 6,
+     "power2": 90,
+     "powerValue2": 6,
+     "power3": 11,
+     "powerValue3": 110,
+     "isLearnByBook": false,
+     "wireBase64": "AvUGAAAEcHVRfVuIYqQBAAA3U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA2ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA2ACUACnUfVH1OCpZQACsAMQAxADAAAKYABgBaAAYACwBuAA==",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       6
+      ],
+      [
+       90,
+       6
+      ],
+      [
+       11,
+       110
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 7,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物7%几率为其承受伤害\n宠物生命上限+7%\n生命上限+130",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 7,
+     "power2": 90,
+     "powerValue2": 7,
+     "power3": 11,
+     "powerValue3": 130,
+     "isLearnByBook": false,
+     "wireBase64": "AvUHAAAEcHVRfVuIYqQBAAA3U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA3ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA3ACUACnUfVH1OCpZQACsAMQAzADAAAKYABwBaAAcACwCCAA==",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       7
+      ],
+      [
+       90,
+       7
+      ],
+      [
+       11,
+       130
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 8,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物8%几率为其承受伤害\n宠物生命上限+8%\n生命上限+150",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 8,
+     "power2": 90,
+     "powerValue2": 8,
+     "power3": 11,
+     "powerValue3": 150,
+     "isLearnByBook": false,
+     "wireBase64": "AvUIAAAEcHVRfVuIYqQBAAA3U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA4ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA4ACUACnUfVH1OCpZQACsAMQA1ADAAAKYACABaAAgACwCWAA==",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       8
+      ],
+      [
+       90,
+       8
+      ],
+      [
+       11,
+       150
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 9,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物9%几率为其承受伤害\n宠物生命上限+9%\n生命上限+170",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 9,
+     "power2": 90,
+     "powerValue2": 9,
+     "power3": 11,
+     "powerValue3": 170,
+     "isLearnByBook": false,
+     "wireBase64": "AvUJAAAEcHVRfVuIYqQBAAA3U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQA5ACVR4HOHTjpRdmJ/U9dPJFuzAApboHJpdR9UfU4KllAAKwA5ACUACnUfVH1OCpZQACsAMQA3ADAAAKYACQBaAAkACwCqAA==",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       9
+      ],
+      [
+       90,
+       9
+      ],
+      [
+       11,
+       170
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 10,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物10%几率为其承受伤害\n宠物生命上限+10%\n生命上限+190",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 10,
+     "power2": 90,
+     "powerValue2": 10,
+     "power3": 11,
+     "powerValue3": 190,
+     "isLearnByBook": false,
+     "wireBase64": "AvUKAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADAAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEAMAAlAAp1H1R9TgqWUAArADEAOQAwAACmAAoAWgAKAAsAvgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       10
+      ],
+      [
+       90,
+       10
+      ],
+      [
+       11,
+       190
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 11,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物12%几率为其承受伤害\n宠物生命上限+12%\n生命上限+220",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 12,
+     "power2": 90,
+     "powerValue2": 12,
+     "power3": 11,
+     "powerValue3": 220,
+     "isLearnByBook": false,
+     "wireBase64": "AvULAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADIAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEAMgAlAAp1H1R9TgqWUAArADIAMgAwAACmAAwAWgAMAAsA3AA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       12
+      ],
+      [
+       90,
+       12
+      ],
+      [
+       11,
+       220
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 12,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物13%几率为其承受伤害\n宠物生命上限+13%\n生命上限+250",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 13,
+     "power2": 90,
+     "powerValue2": 13,
+     "power3": 11,
+     "powerValue3": 250,
+     "isLearnByBook": false,
+     "wireBase64": "AvUMAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADMAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEAMwAlAAp1H1R9TgqWUAArADIANQAwAACmAA0AWgANAAsA+gA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       13
+      ],
+      [
+       90,
+       13
+      ],
+      [
+       11,
+       250
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 13,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物15%几率为其承受伤害\n宠物生命上限+15%\n生命上限+280",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 15,
+     "power2": 90,
+     "powerValue2": 15,
+     "power3": 11,
+     "powerValue3": 280,
+     "isLearnByBook": false,
+     "wireBase64": "AvUNAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADUAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEANQAlAAp1H1R9TgqWUAArADIAOAAwAACmAA8AWgAPAAsBGAA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       15
+      ],
+      [
+       90,
+       15
+      ],
+      [
+       11,
+       280
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 14,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物16%几率为其承受伤害\n宠物生命上限+16%\n生命上限+310",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 16,
+     "power2": 90,
+     "powerValue2": 16,
+     "power3": 11,
+     "powerValue3": 310,
+     "isLearnByBook": false,
+     "wireBase64": "AvUOAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADYAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEANgAlAAp1H1R9TgqWUAArADMAMQAwAACmABAAWgAQAAsBNgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       16
+      ],
+      [
+       90,
+       16
+      ],
+      [
+       11,
+       310
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 15,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物18%几率为其承受伤害\n宠物生命上限+18%\n生命上限+358",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 18,
+     "power2": 90,
+     "powerValue2": 18,
+     "power3": 11,
+     "powerValue3": 358,
+     "isLearnByBook": false,
+     "wireBase64": "AvUPAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAxADgAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADEAOAAlAAp1H1R9TgqWUAArADMANQA4AACmABIAWgASAAsBZgA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       18
+      ],
+      [
+       90,
+       18
+      ],
+      [
+       11,
+       358
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 16,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物21%几率为其承受伤害\n宠物生命上限+21%\n生命上限+407",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 21,
+     "power2": 90,
+     "powerValue2": 21,
+     "power3": 11,
+     "powerValue3": 407,
+     "isLearnByBook": false,
+     "wireBase64": "AvUQAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADEAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADIAMQAlAAp1H1R9TgqWUAArADQAMAA3AACmABUAWgAVAAsBlwA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       21
+      ],
+      [
+       90,
+       21
+      ],
+      [
+       11,
+       407
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 17,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物23%几率为其承受伤害\n宠物生命上限+23%\n生命上限+455",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 23,
+     "power2": 90,
+     "powerValue2": 23,
+     "power3": 11,
+     "powerValue3": 455,
+     "isLearnByBook": false,
+     "wireBase64": "AvURAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADMAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADIAMwAlAAp1H1R9TgqWUAArADQANQA1AACmABcAWgAXAAsBxwA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       23
+      ],
+      [
+       90,
+       23
+      ],
+      [
+       11,
+       455
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 18,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物25%几率为其承受伤害\n宠物生命上限+25%\n生命上限+503",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 25,
+     "power2": 90,
+     "powerValue2": 25,
+     "power3": 11,
+     "powerValue3": 503,
+     "isLearnByBook": false,
+     "wireBase64": "AvUSAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADUAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADIANQAlAAp1H1R9TgqWUAArADUAMAAzAACmABkAWgAZAAsB9wA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       25
+      ],
+      [
+       90,
+       25
+      ],
+      [
+       11,
+       503
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 19,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物28%几率为其承受伤害\n宠物生命上限+28%\n生命上限+552",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 28,
+     "power2": 90,
+     "powerValue2": 28,
+     "power3": 11,
+     "powerValue3": 552,
+     "isLearnByBook": false,
+     "wireBase64": "AvUTAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAyADgAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADIAOAAlAAp1H1R9TgqWUAArADUANQAyAACmABwAWgAcAAsCKAA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": true,
+     "origin": "estimated",
+     "powers": [
+      [
+       166,
+       28
+      ],
+      [
+       90,
+       28
+      ],
+      [
+       11,
+       552
+      ]
+     ]
+    },
+    {
+     "id": 757,
+     "level": 20,
+     "name": "灵兽守护",
+     "type": 1,
+     "info": "单机重建（含社区资料与推算）\n受到攻击时,所携带宠物30%几率为其承受伤害\n宠物生命上限+30%\n生命上限+600",
+     "skillWeapon": 0,
+     "power1": 166,
+     "powerValue1": 30,
+     "power2": 90,
+     "powerValue2": 30,
+     "power3": 11,
+     "powerValue3": 600,
+     "isLearnByBook": false,
+     "wireBase64": "AvUUAAAEcHVRfVuIYqQBAAA5U1VnOpHNXvr/CFQreT5TOo1EZZlODmOoe5f/CQAKU9dSMGU7Uftl9gAsYkBkOl4mW6ByaQAzADAAJVHgc4dOOlF2Yn9T108kW7MAClugcml1H1R9TgqWUAArADMAMAAlAAp1H1R9TgqWUAArADYAMAAwAACmAB4AWgAeAAsCWAA=",
+     "reqJob": 2,
+     "reqLevel": 1,
+     "native": true,
+     "reconstructed": false,
+     "origin": "community-h5",
+     "powers": [
+      [
+       166,
+       30
+      ],
+      [
+       90,
+       30
+      ],
+      [
+       11,
+       600
+      ]
+     ]
+    }
+   ],
+   "localCareer": true
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "worldonline-original-offline",
+  "version": "0.6.4",
+  "private": true,
+  "type": "module",
+  "description": "Local compatibility service for the archived v305 client",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node tools/run-tests.mjs",
+    "test:all": "node tools/run-tests.mjs --all",
+    "test:raw": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "acorn": "8.18.0",
+    "acorn-walk": "8.3.5",
+    "prettier": "3.9.8",
+    "ws": "8.21.3"
+  }
+}

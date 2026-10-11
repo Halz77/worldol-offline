@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {SaveStore} from '../lib/store.mjs';
+import {normalizeRole,hpMax,mpMax} from '../lib/content.mjs';
+const root=fileURLToPath(new URL('..',import.meta.url));
+const directory=path.join(root,'recordings-qa-saves-20260921');
+if(fs.existsSync(directory))throw Error('QA save exists; retained.');
+const store=new SaveStore(directory),account=store.account('recordings-qa');
+const p=store.create(account,{name:'录制还原验收',sex:1,race:0,job:1,icon1:'2240667',icon2:'0',icon3:'0'});
+Object.assign(p,{level:97,mapId:19,x:21,y:18,inventory:[],vipLevel2:9});normalizeRole(p);p.hp=hpMax(p);p.mp=mpMax(p);store.save();
+console.log(JSON.stringify({directory,role:p.name,level:p.level}));

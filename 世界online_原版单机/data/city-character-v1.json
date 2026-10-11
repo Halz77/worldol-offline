@@ -1,0 +1,8341 @@
+{
+  "revision": "recorded-city-character-v2-20260922",
+  "talents": [
+    {
+      "rankId": 1,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "迅雷攻势",
+      "icon": "icon_tf_gj1",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 1
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 1,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "迅雷攻势",
+      "icon": "icon_tf_gj1",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 1,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "迅雷攻势",
+      "icon": "icon_tf_gj1",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 4,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 1,
+      "rankLevel": 4,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "迅雷攻势",
+      "icon": "icon_tf_gj1",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 2,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "神速领域",
+      "icon": "icon_tf_gj2",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 53,
+          "v": 50
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 2,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "神速领域",
+      "icon": "icon_tf_gj2",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 53,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 2,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "神速领域",
+      "icon": "icon_tf_gj2",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 4,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 53,
+          "v": 200
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 2,
+      "rankLevel": 4,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "神速领域",
+      "icon": "icon_tf_gj2",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 53,
+          "v": 300
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 3,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "兵器领悟",
+      "icon": "icon_tf_gj3",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 58,
+          "v": 200
+        },
+        {
+          "k": 59,
+          "v": 200
+        },
+        {
+          "k": 60,
+          "v": 200
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 3,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 0,
+      "name": "兵器领悟",
+      "icon": "icon_tf_gj3",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 58,
+          "v": 300
+        },
+        {
+          "k": 59,
+          "v": 300
+        },
+        {
+          "k": 60,
+          "v": 300
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 4,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "清波销魂",
+      "icon": "icon_tf_gj4",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 4,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 57,
+          "v": 50
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 4,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "清波销魂",
+      "icon": "icon_tf_gj4",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 57,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 4,
+      "rankLevel": 4,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "清波销魂",
+      "icon": "icon_tf_gj4",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 57,
+          "v": 120
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 5,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "热能附魔",
+      "icon": "icon_tf_gj5",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 4,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 30,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 5,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "热能附魔",
+      "icon": "icon_tf_gj5",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 30,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 5,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "热能附魔",
+      "icon": "icon_tf_gj5",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 30,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 5,
+      "rankLevel": 4,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "热能附魔",
+      "icon": "icon_tf_gj5",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 30,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 6,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "绝对之雷矛",
+      "icon": "icon_tf_gj6",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 56,
+          "v": 30
+        },
+        {
+          "k": 54,
+          "v": 30
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 6,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "绝对之雷矛",
+      "icon": "icon_tf_gj6",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5200,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "天攻卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 12,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 56,
+          "v": 70
+        },
+        {
+          "k": 54,
+          "v": 70
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 7,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 0,
+      "name": "破甲吐焰",
+      "icon": "icon_tf_gj7",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 100
+        },
+        {
+          "k": 69,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 7,
+      "rankLevel": 3,
+      "unlockLevel": 50,
+      "type": 0,
+      "name": "破甲吐焰",
+      "icon": "icon_tf_gj7",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 300
+        },
+        {
+          "k": 69,
+          "v": 300
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 8,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 0,
+      "name": "天罚",
+      "icon": "icon_tf_gj8",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 169,
+          "v": 200
+        },
+        {
+          "k": 171,
+          "v": 150
+        },
+        {
+          "k": 172,
+          "v": 150
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 9,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 0,
+      "name": "红莲魔剑",
+      "icon": "icon_tf_gj9",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 39,
+          "v": 8
+        },
+        {
+          "k": 69,
+          "v": 300
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 10,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "划空坠陨",
+      "icon": "icon_tf_gj10",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 27,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 10,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "划空坠陨",
+      "icon": "icon_tf_gj10",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 27,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 11,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "战意循环",
+      "icon": "icon_tf_gj11",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 73,
+          "v": 150
+        },
+        {
+          "k": 74,
+          "v": 150
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 11,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "战意循环",
+      "icon": "icon_tf_gj11",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 73,
+          "v": 300
+        },
+        {
+          "k": 74,
+          "v": 300
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 12,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "重击训练",
+      "icon": "icon_tf_gj12",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 28,
+          "v": 4
+        },
+        {
+          "k": 29,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 12,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "重击训练",
+      "icon": "icon_tf_gj12",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 28,
+          "v": 7
+        },
+        {
+          "k": 29,
+          "v": 7
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 12,
+      "rankLevel": 3,
+      "unlockLevel": 70,
+      "type": 0,
+      "name": "重击训练",
+      "icon": "icon_tf_gj12",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5201,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天攻-异化卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 28,
+          "v": 10
+        },
+        {
+          "k": 29,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 13,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "钝器破坏",
+      "icon": "icon_tf_gj13",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 170,
+          "v": 200
+        },
+        {
+          "k": 168,
+          "v": 200
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 14,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "防御破碎",
+      "icon": "icon_tf_gj14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 76,
+          "v": 1
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 14,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "防御破碎",
+      "icon": "icon_tf_gj14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 76,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 14,
+      "rankLevel": 3,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "防御破碎",
+      "icon": "icon_tf_gj14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 76,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 15,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "格斗术",
+      "icon": "icon_tf_gj15",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 1,
+          "v": 10
+        },
+        {
+          "k": 5,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 15,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "格斗术",
+      "icon": "icon_tf_gj15",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 1,
+          "v": 25
+        },
+        {
+          "k": 5,
+          "v": 25
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 15,
+      "rankLevel": 4,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "格斗术",
+      "icon": "icon_tf_gj15",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 1,
+          "v": 75
+        },
+        {
+          "k": 5,
+          "v": 75
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 16,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "流樱雪飞",
+      "icon": "icon_tf_gj16",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 89,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 17,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "寰宇天际",
+      "icon": "icon_tf_gj17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 92,
+          "v": 3
+        },
+        {
+          "k": 94,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 17,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "寰宇天际",
+      "icon": "icon_tf_gj17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 92,
+          "v": 6
+        },
+        {
+          "k": 94,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 17,
+      "rankLevel": 3,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "寰宇天际",
+      "icon": "icon_tf_gj17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 92,
+          "v": 12
+        },
+        {
+          "k": 94,
+          "v": 12
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 18,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "禅心意",
+      "icon": "icon_tf_gj18",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 95,
+          "v": 3
+        },
+        {
+          "k": 96,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 18,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "禅心意",
+      "icon": "icon_tf_gj18",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 4,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 95,
+          "v": 6
+        },
+        {
+          "k": 96,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 18,
+      "rankLevel": 3,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "禅心意",
+      "icon": "icon_tf_gj18",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 95,
+          "v": 9
+        },
+        {
+          "k": 96,
+          "v": 9
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 18,
+      "rankLevel": 4,
+      "unlockLevel": 90,
+      "type": 0,
+      "name": "禅心意",
+      "icon": "icon_tf_gj18",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5202,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天攻-神化卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 95,
+          "v": 15
+        },
+        {
+          "k": 96,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 19,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "狂野生长",
+      "icon": "icon_tf_fy11",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 11,
+          "v": 500
+        },
+        {
+          "k": 3,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 19,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "狂野生长",
+      "icon": "icon_tf_fy11",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 11,
+          "v": 800
+        },
+        {
+          "k": 3,
+          "v": 20
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 19,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "狂野生长",
+      "icon": "icon_tf_fy11",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 11,
+          "v": 1200
+        },
+        {
+          "k": 3,
+          "v": 30
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 20,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "不灭意志",
+      "icon": "icon_tf_fy9",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 12,
+          "v": 6
+        },
+        {
+          "k": 65,
+          "v": 30
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 20,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "不灭意志",
+      "icon": "icon_tf_fy9",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 12,
+          "v": 9
+        },
+        {
+          "k": 65,
+          "v": 50
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 20,
+      "rankLevel": 4,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "不灭意志",
+      "icon": "icon_tf_fy9",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 12,
+          "v": 15
+        },
+        {
+          "k": 65,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 21,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "残风行影",
+      "icon": "icon_tf_fy10",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 55,
+          "v": 40
+        },
+        {
+          "k": 11,
+          "v": 500
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 21,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "残风行影",
+      "icon": "icon_tf_fy10",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 55,
+          "v": 90
+        },
+        {
+          "k": 11,
+          "v": 1000
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 22,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "黑夜荆棘",
+      "icon": "icon_tf_fy18",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 71,
+          "v": 50
+        },
+        {
+          "k": 41,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 22,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "黑夜荆棘",
+      "icon": "icon_tf_fy18",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 71,
+          "v": 150
+        },
+        {
+          "k": 41,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 22,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "黑夜荆棘",
+      "icon": "icon_tf_fy18",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 71,
+          "v": 250
+        },
+        {
+          "k": 41,
+          "v": 12
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 23,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "危机感知",
+      "icon": "icon_tf_fy15",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 72,
+          "v": 50
+        },
+        {
+          "k": 70,
+          "v": 400
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 23,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "危机感知",
+      "icon": "icon_tf_fy15",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 72,
+          "v": 150
+        },
+        {
+          "k": 70,
+          "v": 600
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 23,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "危机感知",
+      "icon": "icon_tf_fy15",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 72,
+          "v": 250
+        },
+        {
+          "k": 70,
+          "v": 800
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 24,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "上弦之月",
+      "icon": "icon_tf_fy3",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 64,
+          "v": 60
+        },
+        {
+          "k": 64,
+          "v": 20
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 24,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "上弦之月",
+      "icon": "icon_tf_fy3",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 64,
+          "v": 120
+        },
+        {
+          "k": 64,
+          "v": 60
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 24,
+      "rankLevel": 4,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "上弦之月",
+      "icon": "icon_tf_fy3",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5203,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "天防卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 64,
+          "v": 150
+        },
+        {
+          "k": 64,
+          "v": 80
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 25,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "伤害架势",
+      "icon": "icon_tf_fy14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 67,
+          "v": 50
+        },
+        {
+          "k": 37,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 25,
+      "rankLevel": 3,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "伤害架势",
+      "icon": "icon_tf_fy14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 67,
+          "v": 250
+        },
+        {
+          "k": 37,
+          "v": 12
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 26,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "体格硬化",
+      "icon": "icon_tf_fy13",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 61,
+          "v": 500
+        },
+        {
+          "k": 62,
+          "v": 500
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 26,
+      "rankLevel": 2,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "体格硬化",
+      "icon": "icon_tf_fy13",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 61,
+          "v": 1000
+        },
+        {
+          "k": 62,
+          "v": 1000
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 26,
+      "rankLevel": 3,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "体格硬化",
+      "icon": "icon_tf_fy13",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 61,
+          "v": 1500
+        },
+        {
+          "k": 62,
+          "v": 1500
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 27,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "完美格挡",
+      "icon": "icon_tf_fy17",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 178,
+          "v": 1
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 28,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "通透",
+      "icon": "icon_tf_fy12",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 68,
+          "v": 80
+        },
+        {
+          "k": 38,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 28,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "通透",
+      "icon": "icon_tf_fy12",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 68,
+          "v": 120
+        },
+        {
+          "k": 38,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 29,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "怪异抗性",
+      "icon": "icon_tf_fy16",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 63,
+          "v": 800
+        },
+        {
+          "k": 33,
+          "v": 7
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 29,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "怪异抗性",
+      "icon": "icon_tf_fy16",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 63,
+          "v": 1500
+        },
+        {
+          "k": 33,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 30,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "下弦之月",
+      "icon": "icon_tf_fy7",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 70,
+          "v": 400
+        },
+        {
+          "k": 40,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 30,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "下弦之月",
+      "icon": "icon_tf_fy7",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5204,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防-铁卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 70,
+          "v": 600
+        },
+        {
+          "k": 40,
+          "v": 9
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 31,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 1,
+      "name": "新月-朔",
+      "icon": "icon_tf_fy1",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 90,
+          "v": 20
+        },
+        {
+          "k": 91,
+          "v": 20
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 32,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 1,
+      "name": "残月",
+      "icon": "icon_tf_fy2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 93,
+          "v": 4
+        },
+        {
+          "k": 94,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 32,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 1,
+      "name": "残月",
+      "icon": "icon_tf_fy2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 93,
+          "v": 8
+        },
+        {
+          "k": 94,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 32,
+      "rankLevel": 3,
+      "unlockLevel": 80,
+      "type": 1,
+      "name": "残月",
+      "icon": "icon_tf_fy2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 93,
+          "v": 15
+        },
+        {
+          "k": 94,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 33,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 1,
+      "name": "亏凸月",
+      "icon": "icon_tf_fy4",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 162,
+          "v": 15
+        },
+        {
+          "k": 163,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 34,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "满月-望",
+      "icon": "icon_tf_fy5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 164,
+          "v": 4
+        },
+        {
+          "k": 165,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 34,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "满月-望",
+      "icon": "icon_tf_fy5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 164,
+          "v": 8
+        },
+        {
+          "k": 165,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 34,
+      "rankLevel": 3,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "满月-望",
+      "icon": "icon_tf_fy5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 164,
+          "v": 15
+        },
+        {
+          "k": 165,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 35,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "盈凸月",
+      "icon": "icon_tf_fy6",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 35,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 35,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "盈凸月",
+      "icon": "icon_tf_fy6",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 35,
+          "v": 40
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 36,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 1,
+      "name": "峨眉月",
+      "icon": "icon_tf_fy8",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5205,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天防-金卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 142,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 37,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "立春",
+      "icon": "icon_tf_ty1",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 77,
+          "v": 100
+        },
+        {
+          "k": 77,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 37,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "立春",
+      "icon": "icon_tf_ty1",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 77,
+          "v": 250
+        },
+        {
+          "k": 77,
+          "v": 250
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 37,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "立春",
+      "icon": "icon_tf_ty1",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 77,
+          "v": 400
+        },
+        {
+          "k": 77,
+          "v": 400
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 38,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "雨水",
+      "icon": "icon_tf_ty2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 78,
+          "v": 100
+        },
+        {
+          "k": 78,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 38,
+      "rankLevel": 2,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "雨水",
+      "icon": "icon_tf_ty2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 78,
+          "v": 250
+        },
+        {
+          "k": 78,
+          "v": 250
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 38,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "雨水",
+      "icon": "icon_tf_ty2",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 78,
+          "v": 400
+        },
+        {
+          "k": 78,
+          "v": 400
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 39,
+      "rankLevel": 1,
+      "unlockLevel": 10,
+      "type": 2,
+      "name": "惊蛰",
+      "icon": "icon_tf_ty3",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 13,
+          "v": 800
+        },
+        {
+          "k": 14,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 40,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "春分",
+      "icon": "icon_tf_ty4",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 7,
+          "v": 10
+        },
+        {
+          "k": 8,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 40,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "春分",
+      "icon": "icon_tf_ty4",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 7,
+          "v": 40
+        },
+        {
+          "k": 8,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 41,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "谷雨",
+      "icon": "icon_tf_ty5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 9,
+          "v": 10
+        },
+        {
+          "k": 10,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 41,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "谷雨",
+      "icon": "icon_tf_ty5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1041,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "1级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的细微魔力粉尘。",
+          "type": 29,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 9,
+          "v": 25
+        },
+        {
+          "k": 10,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 41,
+      "rankLevel": 3,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "谷雨",
+      "icon": "icon_tf_ty5",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 9,
+          "v": 40
+        },
+        {
+          "k": 10,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 42,
+      "rankLevel": 1,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "小满",
+      "icon": "icon_tf_ty7",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 25,
+          "v": 4
+        },
+        {
+          "k": 138,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 42,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "小满",
+      "icon": "icon_tf_ty7",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5206,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "天通壹型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店购买、跨服4星副本奖励中随机开出、每日签到中获取、精准推送商店中购买",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 25,
+          "v": 8
+        },
+        {
+          "k": 138,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 43,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "芒种",
+      "icon": "icon_tf_ty6",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 90,
+          "v": 3
+        },
+        {
+          "k": 91,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 43,
+      "rankLevel": 2,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "芒种",
+      "icon": "icon_tf_ty6",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 90,
+          "v": 6
+        },
+        {
+          "k": 91,
+          "v": 6
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 43,
+      "rankLevel": 4,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "芒种",
+      "icon": "icon_tf_ty6",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 20,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 90,
+          "v": 15
+        },
+        {
+          "k": 91,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 44,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "夏至",
+      "icon": "icon_tf_ty9",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 1,
+          "v": 40
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 45,
+      "rankLevel": 1,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "大暑",
+      "icon": "icon_tf_ty8",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 31,
+          "v": 5
+        },
+        {
+          "k": 32,
+          "v": 5
+        },
+        {
+          "k": 33,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 45,
+      "rankLevel": 2,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "大暑",
+      "icon": "icon_tf_ty8",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 31,
+          "v": 10
+        },
+        {
+          "k": 32,
+          "v": 10
+        },
+        {
+          "k": 33,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 45,
+      "rankLevel": 3,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "大暑",
+      "icon": "icon_tf_ty8",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5207,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天通贰型卷轴",
+          "bagIcon": "26",
+          "info": "可在商店、推送活动中进行购买。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1042,
+          "itemCount": 15,
+          "icon": "0",
+          "name": "2级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的魔力颗粒。",
+          "type": 29,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 31,
+          "v": 15
+        },
+        {
+          "k": 32,
+          "v": 15
+        },
+        {
+          "k": 33,
+          "v": 15
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 46,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "白露",
+      "icon": "icon_tf_ty10",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 1
+        },
+        {
+          "k": 24,
+          "v": 1
+        },
+        {
+          "k": 26,
+          "v": 1
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 46,
+      "rankLevel": 4,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "白露",
+      "icon": "icon_tf_ty10",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 8
+        },
+        {
+          "k": 24,
+          "v": 8
+        },
+        {
+          "k": 26,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 47,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "秋分",
+      "icon": "icon_tf_ty11",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1043,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "3级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的小块魔力碎片。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 100
+        },
+        {
+          "k": 45,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 47,
+      "rankLevel": 3,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "秋分",
+      "icon": "icon_tf_ty11",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 500
+        },
+        {
+          "k": 45,
+          "v": 10
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 48,
+      "rankLevel": 1,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "寒露",
+      "icon": "icon_tf_ty12",
+      "maxLv": 1,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 64,
+          "v": 100
+        },
+        {
+          "k": 65,
+          "v": 100
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 49,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "霜降",
+      "icon": "icon_tf_ty13",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 134,
+          "v": 3
+        },
+        {
+          "k": 58,
+          "v": 50
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 49,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "霜降",
+      "icon": "icon_tf_ty13",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 134,
+          "v": 8
+        },
+        {
+          "k": 58,
+          "v": 200
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 50,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "立冬",
+      "icon": "icon_tf_ty14",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 135,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 51,
+      "rankLevel": 1,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "大雪",
+      "icon": "icon_tf_ty15",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1044,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 133,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 51,
+      "rankLevel": 3,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "大雪",
+      "icon": "icon_tf_ty15",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 133,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 52,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "冬至",
+      "icon": "icon_tf_ty16",
+      "maxLv": 4,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 191,
+          "v": 1
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 53,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "小寒",
+      "icon": "icon_tf_ty17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 175,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 53,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "小寒",
+      "icon": "icon_tf_ty17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 175,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 53,
+      "rankLevel": 3,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "小寒",
+      "icon": "icon_tf_ty17",
+      "maxLv": 3,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 175,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 54,
+      "rankLevel": 1,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "大寒",
+      "icon": "icon_tf_ty18",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1045,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "5级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是50级装备分解后获取的完整魔力元素。",
+          "type": 29,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 136,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 54,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "大寒",
+      "icon": "icon_tf_ty18",
+      "maxLv": 2,
+      "items": [
+        {
+          "itemId": 5208,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "天通叁型卷轴",
+          "bagIcon": "26",
+          "info": "",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 5209,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "异能觉醒石",
+          "bagIcon": "33",
+          "info": "",
+          "type": 25,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "attrib": [
+        {
+          "k": 136,
+          "v": 8
+        }
+      ],
+      "info": ""
+    }
+  ],
+  "artifact": {
+    "stages": [
+      {
+        "power": 0,
+        "name": "黄金甲",
+        "stage": 1,
+        "exp": 0,
+        "needExp": 100,
+        "lvCost": [
+          {
+            "itemId": 61000,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "冶炼石",
+            "bagIcon": "89",
+            "info": "可用于提升神器的阶数。",
+            "type": 29,
+            "grade": 3,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ]
+      },
+      {
+        "power": 0,
+        "name": "启示录",
+        "stage": 4,
+        "exp": 0,
+        "needExp": 100
+      }
+    ],
+    "skills": [
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 173,
+            "v": 10
+          },
+          {
+            "k": 170,
+            "v": 10
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61001,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "元素技能书",
+            "bagIcon": "90",
+            "info": "可用于对神器元素技能的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 173,
+            "v": 10
+          },
+          {
+            "k": 170,
+            "v": 10
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 173,
+            "v": 400
+          },
+          {
+            "k": 170,
+            "v": 400
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 24,
+            "v": 1
+          },
+          {
+            "k": 26,
+            "v": 1
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61001,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "元素技能书",
+            "bagIcon": "90",
+            "info": "可用于对神器元素技能的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 24,
+            "v": 1
+          },
+          {
+            "k": 26,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 24,
+            "v": 20
+          },
+          {
+            "k": 26,
+            "v": 15
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 27,
+            "v": 1
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61001,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "元素技能书",
+            "bagIcon": "90",
+            "info": "可用于对神器元素技能的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 27,
+            "v": 1
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 27,
+            "v": 10
+          },
+          {
+            "k": 130,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 39,
+            "v": 1
+          },
+          {
+            "k": 141,
+            "v": 1
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61001,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "元素技能书",
+            "bagIcon": "90",
+            "info": "可用于对神器元素技能的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 39,
+            "v": 1
+          },
+          {
+            "k": 141,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 39,
+            "v": 10
+          },
+          {
+            "k": 141,
+            "v": 20
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      }
+    ],
+    "decorations": [
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 2,
+            "v": 1
+          },
+          {
+            "k": 28,
+            "v": 1
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 2,
+            "v": 1
+          },
+          {
+            "k": 28,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 2,
+            "v": 3
+          },
+          {
+            "k": 28,
+            "v": 3
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 2,
+            "v": 3
+          },
+          {
+            "k": 28,
+            "v": 3
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 2,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 2,
+            "v": 3
+          },
+          {
+            "k": 28,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 2,
+            "v": 10
+          },
+          {
+            "k": 28,
+            "v": 10
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 2,
+            "v": 11
+          },
+          {
+            "k": 28,
+            "v": 11
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 6,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 2,
+            "v": 11
+          },
+          {
+            "k": 28,
+            "v": 11
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 2,
+            "v": 20
+          },
+          {
+            "k": 28,
+            "v": 20
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 6,
+            "v": 1
+          },
+          {
+            "k": 29,
+            "v": 1
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 6,
+            "v": 1
+          },
+          {
+            "k": 29,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 6,
+            "v": 3
+          },
+          {
+            "k": 29,
+            "v": 3
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 6,
+            "v": 3
+          },
+          {
+            "k": 29,
+            "v": 3
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 2,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 6,
+            "v": 3
+          },
+          {
+            "k": 29,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 6,
+            "v": 4
+          },
+          {
+            "k": 29,
+            "v": 4
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 6,
+            "v": 4
+          },
+          {
+            "k": 29,
+            "v": 4
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 2,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 6,
+            "v": 4
+          },
+          {
+            "k": 29,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 6,
+            "v": 5
+          },
+          {
+            "k": 29,
+            "v": 5
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 6,
+            "v": 6
+          },
+          {
+            "k": 29,
+            "v": 6
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 3,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 6,
+            "v": 6
+          },
+          {
+            "k": 29,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 6,
+            "v": 9
+          },
+          {
+            "k": 29,
+            "v": 9
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 6,
+            "v": 10
+          },
+          {
+            "k": 29,
+            "v": 10
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 3,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 6,
+            "v": 10
+          },
+          {
+            "k": 29,
+            "v": 10
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 6,
+            "v": 20
+          },
+          {
+            "k": 29,
+            "v": 20
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 0,
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 8,
+            "v": 1
+          },
+          {
+            "k": 30,
+            "v": 1
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 1,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "attribute": [],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 1,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 30
+          },
+          {
+            "k": 8,
+            "v": 1
+          },
+          {
+            "k": 30,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 8,
+            "v": 3
+          },
+          {
+            "k": 30,
+            "v": 3
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 8,
+            "v": 3
+          },
+          {
+            "k": 30,
+            "v": 3
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 2,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 8,
+            "v": 3
+          },
+          {
+            "k": 30,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 8,
+            "v": 6
+          },
+          {
+            "k": 30,
+            "v": 6
+          }
+        ],
+        "attributeNext": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 8,
+            "v": 7
+          },
+          {
+            "k": 30,
+            "v": 7
+          }
+        ],
+        "lvCost": [
+          {
+            "itemId": 61002,
+            "itemCount": 3,
+            "icon": "0",
+            "name": "贵金属",
+            "bagIcon": "91",
+            "info": "可用于对神器装饰的提升。",
+            "type": 29,
+            "grade": 2,
+            "fashIcons": {
+              "fashIcon1": "0",
+              "fashIcon2": "0",
+              "fashIcon3": "0"
+            }
+          }
+        ],
+        "recorded": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 8,
+            "v": 7
+          },
+          {
+            "k": 30,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": false,
+        "pending": true
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 20,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1200
+          },
+          {
+            "k": 8,
+            "v": 20
+          },
+          {
+            "k": 30,
+            "v": 20
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": [],
+        "recorded": true
+      }
+    ]
+  },
+  "schemas": {
+    "c2s_Talent_Learn": {
+      "1": {
+        "name": "rankId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "rankLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_Talent_List": {
+      "1": {
+        "name": "talents",
+        "type": "Talent",
+        "message": true,
+        "repeated": true
+      },
+      "2": {
+        "name": "nextTalents",
+        "type": "Talent",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "Talent": {
+      "1": {
+        "name": "rankId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "rankLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "unlockLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "icon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "maxLv",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "items",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      },
+      "9": {
+        "name": "attrib",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "10": {
+        "name": "info",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "itemInfo": {
+      "1": {
+        "name": "itemId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "itemCount",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "icon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "bagIcon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "info",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "grade",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "9": {
+        "name": "fashIcons",
+        "type": "fashionIcon",
+        "message": true,
+        "repeated": false
+      },
+      "10": {
+        "name": "hasLock",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "11": {
+        "name": "hasAcquired",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "12": {
+        "name": "effectId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "13": {
+        "name": "haveNum",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "14": {
+        "name": "hasSelect",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "15": {
+        "name": "hasHelp",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "16": {
+        "name": "uuid",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "17": {
+        "name": "expireTime",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "18": {
+        "name": "price",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "fashionIcon": {
+      "1": {
+        "name": "fashIcon1",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "fashIcon2",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "fashIcon3",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "Attrib": {
+      "1": {
+        "name": "k",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "v",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_Talent_Learn": {
+      "1": {
+        "name": "attrib",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "2": {
+        "name": "nextTalent",
+        "type": "Talent",
+        "message": true,
+        "repeated": false
+      }
+    },
+    "s2c_ArtifactInfo": {
+      "1": {
+        "name": "info",
+        "type": "ArtifactInfo",
+        "message": true,
+        "repeated": false
+      }
+    },
+    "ArtifactInfo": {
+      "1": {
+        "name": "power",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "stage",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "exp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "needExp",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "lvCost",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "s2c_ArtifactSkill": {
+      "1": {
+        "name": "info",
+        "type": "ArtifactSkillInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "ArtifactSkillInfo": {
+      "1": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "lv",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "attribute",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "6": {
+        "name": "attributeNext",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "7": {
+        "name": "lvCost",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "s2c_ArtifactDecorate": {
+      "1": {
+        "name": "info",
+        "type": "ArtifactDecorateInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "ArtifactDecorateInfo": {
+      "1": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "lv",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "attribute",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "6": {
+        "name": "attributeNext",
+        "type": "Attrib",
+        "message": true,
+        "repeated": true
+      },
+      "7": {
+        "name": "lvCost",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "c2s_ArtifactUp": {
+      "1": {
+        "name": "opt",
+        "type": "int32"
+      }
+    },
+    "c2s_ArtifactSkillUp": {
+      "1": {
+        "name": "type",
+        "type": "int32"
+      }
+    },
+    "c2s_ArtifactDecorateUp": {
+      "1": {
+        "name": "type",
+        "type": "int32"
+      }
+    },
+    "s2c_ArtifactUp": {
+      "3": {
+        "name": "info",
+        "type": "ArtifactInfo",
+        "message": true
+      }
+    },
+    "s2c_ArtifactSkillUp": {
+      "1": {
+        "name": "info",
+        "type": "ArtifactSkillInfo",
+        "message": true,
+        "repeated": false
+      },
+      "2": {
+        "name": "power",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_ArtifactDecorateUp": {
+      "1": {
+        "name": "info",
+        "type": "ArtifactDecorateInfo",
+        "message": true,
+        "repeated": false
+      },
+      "2": {
+        "name": "power",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    }
+  },
+  "sources": [
+    {
+      "protocol": 10511,
+      "sources": [
+        {
+          "capture": "2026-09-20T01-15-00-654Z_dc48ca",
+          "seq": 11573,
+          "sha256": "09569b8c227fd41c936d398ab0a83d3b2a998b0516ad9fa89177bd1ca94f75a9",
+          "blob": "blobs/09/09569b8c227fd41c936d398ab0a83d3b2a998b0516ad9fa89177bd1ca94f75a9.bin"
+        },
+        {
+          "capture": "2026-09-20T01-15-00-654Z_dc48ca",
+          "seq": 12423,
+          "sha256": "09569b8c227fd41c936d398ab0a83d3b2a998b0516ad9fa89177bd1ca94f75a9",
+          "blob": "blobs/09/09569b8c227fd41c936d398ab0a83d3b2a998b0516ad9fa89177bd1ca94f75a9.bin"
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "seq": 4417,
+          "sha256": "50768d73debc47f4e1e3edaefcaf7fb3d84fdfde5f40ee3bc22af810528f7320",
+          "blob": "blobs/50/50768d73debc47f4e1e3edaefcaf7fb3d84fdfde5f40ee3bc22af810528f7320.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 19353,
+          "sha256": "50768d73debc47f4e1e3edaefcaf7fb3d84fdfde5f40ee3bc22af810528f7320",
+          "blob": "blobs/50/50768d73debc47f4e1e3edaefcaf7fb3d84fdfde5f40ee3bc22af810528f7320.bin"
+        }
+      ]
+    },
+    {
+      "protocol": 27302,
+      "sources": [
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 1995,
+          "sha256": "16c32aea82aec5421f9a6a8cd8c541600b1b8a030e907e1c9cfbb3351667b5fd",
+          "blob": "blobs/16/16c32aea82aec5421f9a6a8cd8c541600b1b8a030e907e1c9cfbb3351667b5fd.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 6943,
+          "sha256": "dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a",
+          "blob": "blobs/dc/dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 7817,
+          "sha256": "dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a",
+          "blob": "blobs/dc/dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 11059,
+          "sha256": "dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a",
+          "blob": "blobs/dc/dcdfc29fe7757c10e99b5981925502c163c118b3a70900141e7f487918d6307a.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 9874,
+          "sha256": "40761bec29d7d339d57e82ffbafe554b59a6ab7bcd2e882d82df2091ee14703a",
+          "blob": "blobs/40/40761bec29d7d339d57e82ffbafe554b59a6ab7bcd2e882d82df2091ee14703a.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 10589,
+          "sha256": "6aeee31684d544e8f8097489ab9cdc79d71b474679beef40a2825635fa7735f1",
+          "blob": "blobs/6a/6aeee31684d544e8f8097489ab9cdc79d71b474679beef40a2825635fa7735f1.bin"
+        },
+        {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 3695,
+          "sha256": "630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1",
+          "blob": "blobs/63/630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1.bin"
+        },
+        {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 4265,
+          "sha256": "630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1",
+          "blob": "blobs/63/630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1.bin"
+        },
+        {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 4640,
+          "sha256": "630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1",
+          "blob": "blobs/63/630c707bde7c3a3ecd2cbd6bdcde7e0f6964f750c5c884c046e94f1b57732ab1.bin"
+        }
+      ]
+    },
+    {
+      "protocol": 29001,
+      "sources": [
+        {
+          "capture": "2026-09-19T23-46-03-133Z_d6e6ad",
+          "seq": 771,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 8519,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 1059,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 89389,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "seq": 774,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 874,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 12930,
+          "sha256": "de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646",
+          "blob": "blobs/de/de64952c7f671a370ce8f0083deb9db8e1996f0f9e2be7167fbe132583bec646.bin"
+        },
+        {
+          "capture": "2026-09-20T01-15-00-654Z_dc48ca",
+          "seq": 1321,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-20T03-32-21-056Z_1d4df6",
+          "seq": 835,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-20T03-42-11-539Z_d8c050",
+          "seq": 681,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-20T04-31-01-488Z_7cfec3",
+          "seq": 724,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-20T14-58-37-867Z_50e9cd",
+          "seq": 660,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 677,
+          "sha256": "8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327",
+          "blob": "blobs/8f/8f00db07fb0167fe2c74f0e16a3f8009b95d0e0184c4aaf66a4ffc332da21327.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 1996,
+          "sha256": "2a7b9c1b4b2fad4bdea0fed8abc91bdcb044ef8824b067c747eafea6e399c3f2",
+          "blob": "blobs/2a/2a7b9c1b4b2fad4bdea0fed8abc91bdcb044ef8824b067c747eafea6e399c3f2.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 6944,
+          "sha256": "181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f",
+          "blob": "blobs/18/181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 7818,
+          "sha256": "181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f",
+          "blob": "blobs/18/181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 11060,
+          "sha256": "181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f",
+          "blob": "blobs/18/181ccff594726ff467bb1e63c84f18a9c50edc66e27f9acf398d172345c1bf5f.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 9875,
+          "sha256": "89b0d07a48fb48839023baa911d626603c971e588b6f21e18b8fda8af6df922d",
+          "blob": "blobs/89/89b0d07a48fb48839023baa911d626603c971e588b6f21e18b8fda8af6df922d.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 10590,
+          "sha256": "ee15202bdcfb6774268b9ca44a16497cea99f842f5806c741772586d1d1e9bfe",
+          "blob": "blobs/ee/ee15202bdcfb6774268b9ca44a16497cea99f842f5806c741772586d1d1e9bfe.bin"
+        }
+      ]
+    },
+    {
+      "protocol": 29003,
+      "sources": [
+        {
+          "capture": "2026-09-19T23-46-03-133Z_d6e6ad",
+          "seq": 772,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T01-15-00-654Z_dc48ca",
+          "seq": 1323,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T03-32-21-056Z_1d4df6",
+          "seq": 836,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T03-42-11-539Z_d8c050",
+          "seq": 693,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T04-31-01-488Z_7cfec3",
+          "seq": 725,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T14-58-37-867Z_50e9cd",
+          "seq": 676,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 691,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 8527,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 1063,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 89390,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "seq": 775,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 875,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 12933,
+          "sha256": "0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac",
+          "blob": "blobs/0f/0fc19438e3c73c406c37ccbc77d290aa54740cced86b7d49e888b6361dec60ac.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 1997,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 6945,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 7819,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 9876,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 10591,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 11061,
+          "sha256": "77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e",
+          "blob": "blobs/77/77c2d181d981768edfb960db2329f2597ceb16eb3bb420d11045af7aa546fb7e.bin"
+        }
+      ]
+    },
+    {
+      "protocol": 29005,
+      "sources": [
+        {
+          "capture": "2026-09-19T23-46-03-133Z_d6e6ad",
+          "seq": 780,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 8532,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 1070,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-20T23-27-15-970Z_874aae",
+          "seq": 89409,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-21T01-33-38-380Z_0dc594",
+          "seq": 776,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 899,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 12943,
+          "sha256": "03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf",
+          "blob": "blobs/03/03957f83e6a4b55107e075a33c0200e8d48548086017fb97fc914e94707f5baf.bin"
+        },
+        {
+          "capture": "2026-09-20T01-15-00-654Z_dc48ca",
+          "seq": 1327,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-20T03-32-21-056Z_1d4df6",
+          "seq": 837,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-20T03-42-11-539Z_d8c050",
+          "seq": 713,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-20T04-31-01-488Z_7cfec3",
+          "seq": 738,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-20T14-58-37-867Z_50e9cd",
+          "seq": 681,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-20T15-38-00-452Z_eb21b9",
+          "seq": 702,
+          "sha256": "3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b",
+          "blob": "blobs/3b/3be6bb9c64f0bc287f52b8ffd43b1993617205db05b5c180f28e453e4c2e4a2b.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 1998,
+          "sha256": "a0700a9f3b4afe018399ab5b3a0e4fc7771d09fac3030e62006cd9c8e0d0e3b9",
+          "blob": "blobs/a0/a0700a9f3b4afe018399ab5b3a0e4fc7771d09fac3030e62006cd9c8e0d0e3b9.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 6946,
+          "sha256": "c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504",
+          "blob": "blobs/c3/c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 7820,
+          "sha256": "c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504",
+          "blob": "blobs/c3/c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 11062,
+          "sha256": "c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504",
+          "blob": "blobs/c3/c30a83a9eb3175ee0582587de4a97235b85bad1af565fca3292ced0c77fec504.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 9877,
+          "sha256": "8484da197eef9c04db310ae1ca420de955ba3f7966d609a8ca21ea3c78253d29",
+          "blob": "blobs/84/8484da197eef9c04db310ae1ca420de955ba3f7966d609a8ca21ea3c78253d29.bin"
+        },
+        {
+          "capture": "2026-09-21T03-25-20-121Z_8d8469",
+          "seq": 10592,
+          "sha256": "e39a0ad7d9ceeaa9d38fce446e008cfc2b9059e06757722d285c25d99f5e8798",
+          "blob": "blobs/e3/e39a0ad7d9ceeaa9d38fce446e008cfc2b9059e06757722d285c25d99f5e8798.bin"
+        }
+      ]
+    }
+  ]
+}

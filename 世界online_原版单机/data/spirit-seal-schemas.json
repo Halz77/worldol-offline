@@ -1,0 +1,396 @@
+{
+  "s2c_SealInfo": {
+    "1": {
+      "name": "leftCostItem",
+      "type": "itemInfo",
+      "message": true,
+      "repeated": false
+    },
+    "2": {
+      "name": "rightCostItem",
+      "type": "itemInfo",
+      "message": true,
+      "repeated": false
+    },
+    "3": {
+      "name": "chisealCostGold",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "setUpCostGold",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "5": {
+      "name": "takeOffCostGold",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "6": {
+      "name": "takeOffCostItem",
+      "type": "itemInfo",
+      "message": true,
+      "repeated": false
+    },
+    "7": {
+      "name": "infos",
+      "type": "sealItemInfo",
+      "message": true,
+      "repeated": true
+    },
+    "8": {
+      "name": "absorbValue",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "c2s_ChiselSeal": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "s2c_ChiselSeal": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "addBasePower",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "c2s_SealSetUp": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "costItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "5": {
+      "name": "costItemPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "s2c_SealSetUp": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "costItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "5": {
+      "name": "costItemPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "6": {
+      "name": "costItemGrade",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "7": {
+      "name": "costItemIcon",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "8": {
+      "name": "attrs",
+      "type": "Attrib",
+      "message": true,
+      "repeated": true
+    }
+  },
+  "c2s_SealTakeOff": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "s2c_SealTakeOff": {
+    "1": {
+      "name": "equipSlotPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "equipItemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "sealPos",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "itemInfo": {
+    "1": {
+      "name": "itemId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "itemCount",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "icon",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "name",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "5": {
+      "name": "bagIcon",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "6": {
+      "name": "info",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "7": {
+      "name": "type",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "8": {
+      "name": "grade",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "9": {
+      "name": "fashIcons",
+      "type": "fashionIcon",
+      "message": true,
+      "repeated": false
+    },
+    "10": {
+      "name": "hasLock",
+      "type": "bool",
+      "message": false,
+      "repeated": false
+    },
+    "11": {
+      "name": "hasAcquired",
+      "type": "bool",
+      "message": false,
+      "repeated": false
+    },
+    "12": {
+      "name": "effectId",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "13": {
+      "name": "haveNum",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "14": {
+      "name": "hasSelect",
+      "type": "bool",
+      "message": false,
+      "repeated": false
+    },
+    "15": {
+      "name": "hasHelp",
+      "type": "bool",
+      "message": false,
+      "repeated": false
+    },
+    "16": {
+      "name": "uuid",
+      "type": "int64",
+      "message": false,
+      "repeated": false
+    },
+    "17": {
+      "name": "expireTime",
+      "type": "int64",
+      "message": false,
+      "repeated": false
+    },
+    "18": {
+      "name": "price",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "sealItemInfo": {
+    "1": {
+      "name": "type",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "typeName",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "icon",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "4": {
+      "name": "itemId",
+      "type": "int32",
+      "message": false,
+      "repeated": true
+    },
+    "5": {
+      "name": "itemName",
+      "type": "string",
+      "message": false,
+      "repeated": true
+    }
+  },
+  "Attrib": {
+    "1": {
+      "name": "k",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "v",
+      "type": "int32",
+      "message": false,
+      "repeated": false
+    }
+  },
+  "fashionIcon": {
+    "1": {
+      "name": "fashIcon1",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "2": {
+      "name": "fashIcon2",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    },
+    "3": {
+      "name": "fashIcon3",
+      "type": "string",
+      "message": false,
+      "repeated": false
+    }
+  }
+}

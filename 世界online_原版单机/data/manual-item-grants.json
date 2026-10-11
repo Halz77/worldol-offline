@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "enchantments": [
+    {
+      "illusion": [],
+      "type": 28,
+      "handBookItem": false,
+      "id": 8590,
+      "name": "7级力量附魔",
+      "bagIcon": 26,
+      "info": "需要附魔点700；附魔范围头部、胸、裤，附魔成功后附魔道具消失",
+      "grade": 2,
+      "autoBinding": 0,
+      "stackNum": 99,
+      "decomCHest": false,
+      "reqLv": 50,
+      "ownTime": 0,
+      "durMax": 0,
+      "price": 100,
+      "round": 0,
+      "area": -1,
+      "power1": 181,
+      "powerValue1": 700,
+      "power2": 1,
+      "powerValue2": 50,
+      "vipLevelReq": 0,
+      "power3": 168,
+      "powerValue3": 100,
+      "needShowRate": false,
+      "definitionBase64": "HAAAACGOAAAGADd+p1Kbkc+WRJtUAAAAGgAAH5cAiYGWRJtUcLkANwAwADD/G5ZEm1SDA1b0WTSQ6DABgPgwAYjk/wyWRJtUYhBSn1QOlkSbVJBTUXdtiFkxAgBjADIAAAAAAAAAAAAKAP8AtQK8AAEAMgAAqABkAA==",
+      "shop": 23100,
+      "moneyType": 11,
+      "materials": [
+        {
+          "name": "6级力量附魔",
+          "grade": 2,
+          "quantity": 2,
+          "id": 8555
+        },
+        {
+          "name": "基础魔石",
+          "grade": 3,
+          "quantity": 10,
+          "id": 1063
+        },
+        {
+          "name": "5级魔力结晶",
+          "grade": 4,
+          "quantity": 3,
+          "id": 1045
+        }
+      ],
+      "combineItemId": -1,
+      "enchantType": 121,
+      "enchantNeed": 700,
+      "source": {
+        "capture": "2026-09-21T03-25-20-121Z_8d8469",
+        "seq": 3375,
+        "protocol": 11503,
+        "sha256": "ae8d3f734a42bfe148cf035b50d74d061d60e46cf5d0474957d180934cfeb0ba",
+        "blob": "blobs/ae/ae8d3f734a42bfe148cf035b50d74d061d60e46cf5d0474957d180934cfeb0ba.bin"
+      }
+    }
+  ],
+  "gems": {
+    "strength4": {
+      "name": "加4力量宝石（单机直装）",
+      "power1": 1,
+      "powerValue1": 4,
+      "origin": "user-request"
+    }
+  }
+}

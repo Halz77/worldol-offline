@@ -1,0 +1,124 @@
+{
+  "revision": "home-catalogs-20260922-v1",
+  "lottery": {
+    "source": {
+      "capture": "2026-09-22T08-30-30-051Z_ba112d",
+      "seq": 6332,
+      "protocol": 11106,
+      "sha256": "59fe1b801da07834b0e626d8ef087c361573b37f54cbe08c4c45105675e17fad",
+      "blob": "blobs/59/59fe1b801da07834b0e626d8ef087c361573b37f54cbe08c4c45105675e17fad.bin"
+    },
+    "description": "连续登录 loginDay 天，获得 luckDrawCount 次抽奖",
+    "vipDescription": "VIP抽奖机会+1",
+    "moneyType": 11,
+    "price": 50,
+    "discount": 0.9,
+    "messages": [
+      "1-2天",
+      "2次",
+      "3-4天",
+      "3次",
+      "5天以上",
+      "4次+"
+    ],
+    "rewards": [
+      {
+        "id": 100144,
+        "name": "炎灵(1天）",
+        "quantity": 1
+      },
+      {
+        "id": 30015,
+        "name": "女仆宠物蛋",
+        "quantity": 1
+      },
+      {
+        "id": 1100,
+        "name": "木制武器箱子",
+        "quantity": 1
+      },
+      {
+        "id": 26001,
+        "name": "引路者",
+        "quantity": 1
+      },
+      {
+        "id": 352,
+        "name": "活力药草",
+        "quantity": 20
+      },
+      {
+        "id": 414,
+        "name": "加1体质宝石(绑）",
+        "quantity": 1
+      },
+      {
+        "id": 418,
+        "name": "加2敏捷宝石(绑）",
+        "quantity": 1
+      },
+      {
+        "id": 453,
+        "name": "智力药水(1小时)",
+        "quantity": 1
+      },
+      {
+        "id": 25000,
+        "name": "控制破坏者-天蝎座",
+        "quantity": 1
+      },
+      {
+        "id": 1420,
+        "name": "战士秘卷盒",
+        "quantity": 1
+      },
+      {
+        "id": 352,
+        "name": "活力药草",
+        "quantity": 20
+      },
+      {
+        "id": 25001,
+        "name": "沙漠之鹰-天秤座",
+        "quantity": 1
+      },
+      {
+        "id": 100141,
+        "name": "白虎(1天)",
+        "quantity": 1
+      },
+      {
+        "id": 352,
+        "name": "活力药草",
+        "quantity": 10
+      },
+      {
+        "id": 352,
+        "name": "活力药草",
+        "quantity": 20
+      },
+      {
+        "currency": 5,
+        "quantity": 5,
+        "description": "金叶 x 5"
+      }
+    ],
+    "probabilities": null,
+    "drawPending": true
+  },
+  "mine": {
+    "source": {
+      "capture": "2026-09-20T23-27-15-970Z_874aae",
+      "seq": 65899,
+      "protocol": 31301,
+      "sha256": "368526c808b878dc41b6671ed07e9728a9a5eb0b261805e8af70910bfd6dd856",
+      "blob": "blobs/36/368526c808b878dc41b6671ed07e9728a9a5eb0b261805e8af70910bfd6dd856.bin"
+    },
+    "pointCount": 5,
+    "combatPending": true,
+    "fightBuyPrice": 200,
+    "searchBuyPrice": 20,
+    "fightSum": 5,
+    "searchSum": 20
+  }
+}

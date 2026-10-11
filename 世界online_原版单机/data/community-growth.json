@@ -1,0 +1,2866 @@
+{
+  "provenance": {
+    "repository": "https://github.com/treefuture/world-online",
+    "commit": "221f8cf5af5f72314db08862cb5e1e1c16439f96",
+    "files": {
+      "talent.json": "8593b81e87d3dd7e4fccbd8d0d8c2a8f97462ff0f83319b94480b2501af0c7b9",
+      "artifact.json": "44b6612137ea9f65cfb5a340f9302f40dec44155123d6fac83788ae00cbd8ed0",
+      "enchantAttribute.json": "11eb09807b5872714e0838b27a453e4e628b454ab082f784ac5916e875e973a7"
+    },
+    "policy": "Captured attributes take precedence. Missing levels use appletsTalent/artifact. All costs are locally waived."
+  },
+  "talents": [
+    {
+      "rankId": 4,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 0,
+      "name": "清波销魂",
+      "icon": "icon_tf_gj4",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 57,
+          "v": 80
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 7,
+      "rankLevel": 2,
+      "unlockLevel": 50,
+      "type": 0,
+      "name": "破甲吐焰",
+      "icon": "icon_tf_gj7",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 200
+        },
+        {
+          "k": 69,
+          "v": 200
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 15,
+      "rankLevel": 3,
+      "unlockLevel": 80,
+      "type": 0,
+      "name": "格斗术",
+      "icon": "icon_tf_gj15",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 1,
+          "v": 45
+        },
+        {
+          "k": 5,
+          "v": 45
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 20,
+      "rankLevel": 3,
+      "unlockLevel": 10,
+      "type": 1,
+      "name": "不灭意志",
+      "icon": "icon_tf_fy9",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 12,
+          "v": 12
+        },
+        {
+          "k": 65,
+          "v": 80
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 24,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 1,
+      "name": "上弦之月",
+      "icon": "icon_tf_fy3",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 64,
+          "v": 130
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 25,
+      "rankLevel": 2,
+      "unlockLevel": 50,
+      "type": 1,
+      "name": "伤害架势",
+      "icon": "icon_tf_fy14",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 67,
+          "v": 150
+        },
+        {
+          "k": 37,
+          "v": 9
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 30,
+      "rankLevel": 3,
+      "unlockLevel": 70,
+      "type": 1,
+      "name": "下弦之月",
+      "icon": "icon_tf_fy7",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 70,
+          "v": 800
+        },
+        {
+          "k": 40,
+          "v": 12
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 40,
+      "rankLevel": 2,
+      "unlockLevel": 30,
+      "type": 2,
+      "name": "春分",
+      "icon": "icon_tf_ty4",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 7,
+          "v": 25
+        },
+        {
+          "k": 8,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 43,
+      "rankLevel": 3,
+      "unlockLevel": 50,
+      "type": 2,
+      "name": "芒种",
+      "icon": "icon_tf_ty6",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 90,
+          "v": 9
+        },
+        {
+          "k": 91,
+          "v": 9
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 46,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "白露",
+      "icon": "icon_tf_ty10",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 3
+        },
+        {
+          "k": 24,
+          "v": 3
+        },
+        {
+          "k": 26,
+          "v": 3
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 46,
+      "rankLevel": 3,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "白露",
+      "icon": "icon_tf_ty10",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 23,
+          "v": 5
+        },
+        {
+          "k": 24,
+          "v": 5
+        },
+        {
+          "k": 26,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 47,
+      "rankLevel": 2,
+      "unlockLevel": 70,
+      "type": 2,
+      "name": "秋分",
+      "icon": "icon_tf_ty11",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 75,
+          "v": 300
+        },
+        {
+          "k": 45,
+          "v": 5
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 50,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "立冬",
+      "icon": "icon_tf_ty14",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 135,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 50,
+      "rankLevel": 3,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "立冬",
+      "icon": "icon_tf_ty14",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 135,
+          "v": 8
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 51,
+      "rankLevel": 2,
+      "unlockLevel": 80,
+      "type": 2,
+      "name": "大雪",
+      "icon": "icon_tf_ty15",
+      "maxLv": 3,
+      "items": [],
+      "attrib": [
+        {
+          "k": 133,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 52,
+      "rankLevel": 2,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "冬至",
+      "icon": "icon_tf_ty16",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 191,
+          "v": 2
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 52,
+      "rankLevel": 3,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "冬至",
+      "icon": "icon_tf_ty16",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 191,
+          "v": 4
+        }
+      ],
+      "info": ""
+    },
+    {
+      "rankId": 52,
+      "rankLevel": 4,
+      "unlockLevel": 90,
+      "type": 2,
+      "name": "冬至",
+      "icon": "icon_tf_ty16",
+      "maxLv": 4,
+      "items": [],
+      "attrib": [
+        {
+          "k": 191,
+          "v": 8
+        }
+      ],
+      "info": ""
+    }
+  ],
+  "artifact": {
+    "skills": [
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 173,
+            "v": 20
+          },
+          {
+            "k": 170,
+            "v": 20
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 173,
+            "v": 30
+          },
+          {
+            "k": 170,
+            "v": 30
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 173,
+            "v": 40
+          },
+          {
+            "k": 170,
+            "v": 40
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 173,
+            "v": 50
+          },
+          {
+            "k": 170,
+            "v": 50
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 173,
+            "v": 60
+          },
+          {
+            "k": 170,
+            "v": 60
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 173,
+            "v": 70
+          },
+          {
+            "k": 170,
+            "v": 70
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 173,
+            "v": 80
+          },
+          {
+            "k": 170,
+            "v": 80
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 173,
+            "v": 90
+          },
+          {
+            "k": 170,
+            "v": 90
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 173,
+            "v": 100
+          },
+          {
+            "k": 170,
+            "v": 100
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 173,
+            "v": 120
+          },
+          {
+            "k": 170,
+            "v": 120
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 173,
+            "v": 140
+          },
+          {
+            "k": 170,
+            "v": 140
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 173,
+            "v": 160
+          },
+          {
+            "k": 170,
+            "v": 160
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 173,
+            "v": 180
+          },
+          {
+            "k": 170,
+            "v": 180
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 173,
+            "v": 200
+          },
+          {
+            "k": 170,
+            "v": 200
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 173,
+            "v": 220
+          },
+          {
+            "k": 170,
+            "v": 220
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 780
+          },
+          {
+            "k": 173,
+            "v": 240
+          },
+          {
+            "k": 170,
+            "v": 240
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 173,
+            "v": 260
+          },
+          {
+            "k": 170,
+            "v": 260
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "地",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 173,
+            "v": 300
+          },
+          {
+            "k": 170,
+            "v": 300
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 24,
+            "v": 1
+          },
+          {
+            "k": 26,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 24,
+            "v": 2
+          },
+          {
+            "k": 26,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 24,
+            "v": 2
+          },
+          {
+            "k": 26,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 24,
+            "v": 3
+          },
+          {
+            "k": 26,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 24,
+            "v": 3
+          },
+          {
+            "k": 26,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 24,
+            "v": 4
+          },
+          {
+            "k": 26,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 24,
+            "v": 4
+          },
+          {
+            "k": 26,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 24,
+            "v": 5
+          },
+          {
+            "k": 26,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 24,
+            "v": 5
+          },
+          {
+            "k": 26,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 24,
+            "v": 6
+          },
+          {
+            "k": 26,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 24,
+            "v": 7
+          },
+          {
+            "k": 26,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 24,
+            "v": 8
+          },
+          {
+            "k": 26,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 24,
+            "v": 9
+          },
+          {
+            "k": 26,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 24,
+            "v": 10
+          },
+          {
+            "k": 26,
+            "v": 8
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 24,
+            "v": 11
+          },
+          {
+            "k": 26,
+            "v": 8
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 24,
+            "v": 12
+          },
+          {
+            "k": 26,
+            "v": 9
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 24,
+            "v": 13
+          },
+          {
+            "k": 26,
+            "v": 9
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "水",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 24,
+            "v": 15
+          },
+          {
+            "k": 26,
+            "v": 10
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 27,
+            "v": 1
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 27,
+            "v": 2
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 27,
+            "v": 2
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 27,
+            "v": 3
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 27,
+            "v": 3
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 27,
+            "v": 4
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 27,
+            "v": 4
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 27,
+            "v": 5
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 27,
+            "v": 5
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 27,
+            "v": 6
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 27,
+            "v": 6
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 27,
+            "v": 7
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 27,
+            "v": 7
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 27,
+            "v": 8
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 27,
+            "v": 8
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 27,
+            "v": 9
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 27,
+            "v": 9
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "火",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 27,
+            "v": 10
+          },
+          {
+            "k": 130,
+            "v": 0
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 39,
+            "v": 1
+          },
+          {
+            "k": 141,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 39,
+            "v": 2
+          },
+          {
+            "k": 141,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 39,
+            "v": 2
+          },
+          {
+            "k": 141,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 5,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 150
+          },
+          {
+            "k": 39,
+            "v": 3
+          },
+          {
+            "k": 141,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 6,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 180
+          },
+          {
+            "k": 39,
+            "v": 3
+          },
+          {
+            "k": 141,
+            "v": 3
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 39,
+            "v": 4
+          },
+          {
+            "k": 141,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 39,
+            "v": 4
+          },
+          {
+            "k": 141,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 39,
+            "v": 5
+          },
+          {
+            "k": 141,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 39,
+            "v": 5
+          },
+          {
+            "k": 141,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 39,
+            "v": 6
+          },
+          {
+            "k": 141,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 39,
+            "v": 6
+          },
+          {
+            "k": 141,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 39,
+            "v": 7
+          },
+          {
+            "k": 141,
+            "v": 8
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 39,
+            "v": 7
+          },
+          {
+            "k": 141,
+            "v": 9
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 39,
+            "v": 8
+          },
+          {
+            "k": 141,
+            "v": 10
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 39,
+            "v": 8
+          },
+          {
+            "k": 141,
+            "v": 11
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 39,
+            "v": 9
+          },
+          {
+            "k": 141,
+            "v": 12
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 39,
+            "v": 9
+          },
+          {
+            "k": 141,
+            "v": 13
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 4,
+        "name": "风",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 39,
+            "v": 10
+          },
+          {
+            "k": 141,
+            "v": 15
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      }
+    ],
+    "decorations": [
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 2,
+            "v": 1
+          },
+          {
+            "k": 28,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 2,
+            "v": 2
+          },
+          {
+            "k": 28,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 2,
+            "v": 2
+          },
+          {
+            "k": 28,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 2,
+            "v": 4
+          },
+          {
+            "k": 28,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 2,
+            "v": 4
+          },
+          {
+            "k": 28,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 2,
+            "v": 5
+          },
+          {
+            "k": 28,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 2,
+            "v": 5
+          },
+          {
+            "k": 28,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 11,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 360
+          },
+          {
+            "k": 2,
+            "v": 6
+          },
+          {
+            "k": 28,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 2,
+            "v": 7
+          },
+          {
+            "k": 28,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 2,
+            "v": 8
+          },
+          {
+            "k": 28,
+            "v": 8
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 2,
+            "v": 9
+          },
+          {
+            "k": 28,
+            "v": 9
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 2,
+            "v": 12
+          },
+          {
+            "k": 28,
+            "v": 12
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 2,
+            "v": 13
+          },
+          {
+            "k": 28,
+            "v": 13
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 1,
+        "name": "镶嵌",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 2,
+            "v": 15
+          },
+          {
+            "k": 28,
+            "v": 15
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 6,
+            "v": 1
+          },
+          {
+            "k": 29,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 6,
+            "v": 2
+          },
+          {
+            "k": 29,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 6,
+            "v": 2
+          },
+          {
+            "k": 29,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 6,
+            "v": 5
+          },
+          {
+            "k": 29,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 12,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 420
+          },
+          {
+            "k": 6,
+            "v": 6
+          },
+          {
+            "k": 29,
+            "v": 6
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 6,
+            "v": 7
+          },
+          {
+            "k": 29,
+            "v": 7
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 6,
+            "v": 11
+          },
+          {
+            "k": 29,
+            "v": 11
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 6,
+            "v": 12
+          },
+          {
+            "k": 29,
+            "v": 12
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 6,
+            "v": 13
+          },
+          {
+            "k": 29,
+            "v": 13
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 2,
+        "name": "底座",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 6,
+            "v": 15
+          },
+          {
+            "k": 29,
+            "v": 15
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 2,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 60
+          },
+          {
+            "k": 8,
+            "v": 1
+          },
+          {
+            "k": 30,
+            "v": 1
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 3,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 90
+          },
+          {
+            "k": 8,
+            "v": 2
+          },
+          {
+            "k": 30,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 4,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 120
+          },
+          {
+            "k": 8,
+            "v": 2
+          },
+          {
+            "k": 30,
+            "v": 2
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 7,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 210
+          },
+          {
+            "k": 8,
+            "v": 4
+          },
+          {
+            "k": 30,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 8,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 240
+          },
+          {
+            "k": 8,
+            "v": 4
+          },
+          {
+            "k": 30,
+            "v": 4
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 9,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 270
+          },
+          {
+            "k": 8,
+            "v": 5
+          },
+          {
+            "k": 30,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 10,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 300
+          },
+          {
+            "k": 8,
+            "v": 5
+          },
+          {
+            "k": 30,
+            "v": 5
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 13,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 480
+          },
+          {
+            "k": 8,
+            "v": 8
+          },
+          {
+            "k": 30,
+            "v": 8
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 14,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 540
+          },
+          {
+            "k": 8,
+            "v": 9
+          },
+          {
+            "k": 30,
+            "v": 9
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 15,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 600
+          },
+          {
+            "k": 8,
+            "v": 10
+          },
+          {
+            "k": 30,
+            "v": 10
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 16,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 720
+          },
+          {
+            "k": 8,
+            "v": 11
+          },
+          {
+            "k": 30,
+            "v": 11
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 17,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 840
+          },
+          {
+            "k": 8,
+            "v": 12
+          },
+          {
+            "k": 30,
+            "v": 12
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 18,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 960
+          },
+          {
+            "k": 8,
+            "v": 13
+          },
+          {
+            "k": 30,
+            "v": 13
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      },
+      {
+        "type": 3,
+        "name": "镀层",
+        "lv": 19,
+        "attribute": [
+          {
+            "k": 11,
+            "v": 1080
+          },
+          {
+            "k": 8,
+            "v": 15
+          },
+          {
+            "k": 30,
+            "v": 15
+          }
+        ],
+        "attributeNext": [],
+        "lvCost": []
+      }
+    ]
+  },
+  "enchantments": [
+    {
+      "id": 9308001,
+      "name": "8级力量附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 1,
+          "v": 65
+        },
+        {
+          "k": 168,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308002,
+      "name": "8级体质附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 3,
+          "v": 65
+        },
+        {
+          "k": 65,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308003,
+      "name": "8级敏捷附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 5,
+          "v": 65
+        },
+        {
+          "k": 173,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308004,
+      "name": "8级智力附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 7,
+          "v": 65
+        },
+        {
+          "k": 169,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308005,
+      "name": "8级感知附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 9,
+          "v": 65
+        },
+        {
+          "k": 172,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308006,
+      "name": "8级状态抵抗附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 64,
+          "v": 50
+        },
+        {
+          "k": 172,
+          "v": 200
+        }
+      ]
+    },
+    {
+      "id": 9308007,
+      "name": "8级洞察附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 68,
+          "v": 50
+        },
+        {
+          "k": 171,
+          "v": 200
+        }
+      ]
+    },
+    {
+      "id": 9308008,
+      "name": "8级反击附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 71,
+          "v": 100
+        },
+        {
+          "k": 65,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308009,
+      "name": "8级反馈附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 72,
+          "v": 100
+        },
+        {
+          "k": 65,
+          "v": 150
+        }
+      ]
+    },
+    {
+      "id": 9308010,
+      "name": "8级武伤附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 141,
+          "v": 5
+        },
+        {
+          "k": 168,
+          "v": 200
+        }
+      ]
+    },
+    {
+      "id": 9308011,
+      "name": "8级穿透附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 45,
+          "v": 5
+        },
+        {
+          "k": 169,
+          "v": 200
+        }
+      ]
+    },
+    {
+      "id": 9308012,
+      "name": "8级命中附魔",
+      "level": 8,
+      "attributes": [
+        {
+          "k": 54,
+          "v": 50
+        },
+        {
+          "k": 173,
+          "v": 200
+        }
+      ]
+    }
+  ]
+}

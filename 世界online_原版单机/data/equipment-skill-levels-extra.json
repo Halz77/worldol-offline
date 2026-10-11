@@ -1,0 +1,51 @@
+{
+ "schema": 1,
+ "revision": "equipment-skill-levels-extra-20261008-v1",
+ "note": "装备自带技能的「录不到的高等级」补齐。\ndata/equipment-skill-levels.json 是从原版客户端抓包录制的（513 个技能 / 828 条等级记录），\n部分技能只录到装备实际出现过的等级，例如「天魔无视」只有 11 级；\n可两枚同名戒指叠起来就是 22 级，缺 12–22 级的定义会让叠加后的等级停在上限。\n这里按技能名从社区资料（data/references/world-online-221f8cf/vocationalSkills.json）里\n取同名技能的更高等级，用 lib/reference-fields.mjs 的 power 编号表转成原版字段，\n并要求「效果编号集合与已录最高等级完全一致」才采纳，避免同名不同技能串味。\n生成 wireBase64 的编码器与录制完全一致（同等级定义可逐字节复现）。",
+ "source": {
+  "file": "data/references/world-online-221f8cf/vocationalSkills.json",
+  "sha256": "73661556a2504a26ed71031cdf8dfe092839527e9ecb9d754950740a24cbd353"
+ },
+ "counts": {
+  "skills": 1,
+  "levels": 1
+ },
+ "skills": [
+  {
+   "id": 6553,
+   "levels": [
+    {
+     "id": 6553,
+     "level": 22,
+     "name": "天魔无视",
+     "type": 1,
+     "skillWeapon": 0,
+     "power1": 169,
+     "powerValue1": 200,
+     "power2": 171,
+     "powerValue2": 400,
+     "power3": 172,
+     "powerValue3": 300,
+     "native": true,
+     "powers": [
+      [
+       169,
+       200
+      ],
+      [
+       171,
+       400
+      ],
+      [
+       172,
+       300
+      ]
+     ],
+     "wireBase64": "GZkWAAAEWSmbVGXgicYBAAAAAACpAMgAqwGQAKwBLAA=",
+     "origin": "community-reference",
+     "reference": "data/references/world-online-221f8cf/vocationalSkills.json"
+    }
+   ]
+  }
+ ]
+}

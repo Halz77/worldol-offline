@@ -1,0 +1,111 @@
+{
+  "revision": "recorded-pets-20260923",
+  "generatedAt": "2026-09-23T13:55:36.508Z",
+  "captures": [
+    {
+      "id": "2026-09-21T03-25-20-121Z_8d8469",
+      "events": 43035,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 0,
+        "samples": 3,
+        "skills": 120
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-21T17-27-45-814Z_ffa608",
+      "events": 5373,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 1,
+        "samples": 9,
+        "skills": 41
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-21T18-32-50-161Z_65a258",
+      "events": 1898,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 0,
+        "samples": 1,
+        "skills": 27
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-22T07-26-00-172Z_ffdca2",
+      "events": 43244,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 143,
+        "samples": 0,
+        "skills": 269
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-23T05-38-29-839Z_5f9ce7",
+      "events": 4332,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 0,
+        "samples": 1,
+        "skills": 17
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-23T12-09-10-187Z_8c465e",
+      "events": 12180,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 143,
+        "samples": 9,
+        "skills": 402
+      },
+      "parseErrors": 0
+    },
+    {
+      "id": "2026-09-23T13-39-11-394Z_43a9d0",
+      "events": 2858,
+      "integrityPassed": true,
+      "cleanEnd": true,
+      "version": 305,
+      "counts": {
+        "pets": 0,
+        "samples": 3,
+        "skills": 39
+      },
+      "parseErrors": 0
+    }
+  ],
+  "added": {
+    "petSkills": 161,
+    "petSnapshots": 27
+  },
+  "assets": [],
+  "conflicts": [],
+  "totals": {
+    "pets": 143,
+    "petCatalog": 143,
+    "petSkills": 456,
+    "petEquipment": 35,
+    "petEggs": 16,
+    "petSnapshots": 50
+  }
+}

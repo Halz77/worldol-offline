@@ -1,0 +1,5110 @@
+{
+  "revision": "preserve-newbie-midnight-v3-20260925",
+  "resetPolicy": {
+    "zone": "Asia/Shanghai",
+    "hour": 0,
+    "scope": "all-except-newbie-missions",
+    "activeMissions": "preserve-newbie-clear-others",
+    "origin": "user-requested daily reset at Shanghai midnight; preserve beginner completion history and active objectives"
+  },
+  "legacy": {
+    "conditions": [
+      {
+        "id": 1,
+        "content": "每日登陆",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": true
+      },
+      {
+        "id": 2,
+        "content": "领取在线奖励",
+        "count": 8,
+        "value": 20,
+        "pathFinding": false,
+        "supported": false
+      },
+      {
+        "id": 3,
+        "content": "完成日常任务",
+        "count": 20,
+        "value": 30,
+        "pathFinding": true,
+        "direction": 2,
+        "mapId": 2800,
+        "npcId": 3071,
+        "npcName": "日常任务NPC",
+        "supported": true
+      },
+      {
+        "id": 5,
+        "content": "强化一件装备",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": true
+      },
+      {
+        "id": 6,
+        "content": "分解一件装备",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": false
+      },
+      {
+        "id": 12,
+        "content": "与玩家决斗",
+        "count": 5,
+        "value": 20,
+        "pathFinding": false,
+        "supported": false
+      },
+      {
+        "id": 13,
+        "content": "在商城购买一件商品",
+        "count": 1,
+        "value": 30,
+        "pathFinding": false,
+        "supported": false
+      },
+      {
+        "id": 14,
+        "content": "参加竞技场",
+        "count": 3,
+        "value": 30,
+        "pathFinding": true,
+        "direction": 1,
+        "mapId": 824,
+        "npcId": 110,
+        "npcName": "天下武斗竞技场",
+        "supported": false
+      },
+      {
+        "id": 15,
+        "content": "参加怪物攻城",
+        "count": 3,
+        "value": 30,
+        "pathFinding": true,
+        "direction": 1,
+        "mapId": 824,
+        "npcId": 0,
+        "npcName": "紫金公主",
+        "supported": false
+      },
+      {
+        "id": 16,
+        "content": "完成押镖任务或英雄挑战",
+        "count": 5,
+        "value": 20,
+        "pathFinding": true,
+        "direction": 1,
+        "mapId": 906,
+        "npcId": 20,
+        "npcName": "护送任务",
+        "supported": false
+      },
+      {
+        "id": 17,
+        "content": "充值任意数额",
+        "count": 1,
+        "value": 50,
+        "pathFinding": false,
+        "supported": false
+      },
+      {
+        "id": 18,
+        "content": "使用熔炉",
+        "count": 1,
+        "value": 30,
+        "pathFinding": true,
+        "direction": 1,
+        "mapId": 824,
+        "npcId": 55,
+        "npcName": "熔炉商人",
+        "supported": false
+      },
+      {
+        "id": 19,
+        "content": "完成每日答题",
+        "count": 20,
+        "value": 20,
+        "pathFinding": true,
+        "direction": 1,
+        "mapId": 2800,
+        "npcId": 12,
+        "npcName": "成就商人",
+        "supported": false
+      },
+      {
+        "id": 21,
+        "content": "打开一次礼盒或装备箱",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": true
+      },
+      {
+        "id": 22,
+        "content": "在商店出售一次道具",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": true
+      },
+      {
+        "id": 24,
+        "content": "获得3场战斗胜利",
+        "count": 3,
+        "value": 50,
+        "pathFinding": false,
+        "supported": true
+      },
+      {
+        "id": 25,
+        "content": "鉴定一件装备",
+        "count": 1,
+        "value": 20,
+        "pathFinding": false,
+        "supported": true
+      }
+    ],
+    "rewards": [
+      {
+        "threshold": 100,
+        "items": [
+          {
+            "id": 40001,
+            "quantity": 1,
+            "name": "鉴定卷轴(绑）",
+            "definitionBase64": "HAAAAJxBAAAHknRbmlN3j3QAKH7R/wkAAABPAAASVyiAzFMFj9uITIjFWQeSdFuaZfb/DJcAiYFPf3UoknRbmlN3AQFjAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAAA"
+          }
+        ],
+        "gold": 0,
+        "silver": 0,
+        "coins": 0,
+        "source": {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 5105,
+          "protocol": 14553,
+          "sha256": "a281e5167c1df1a79ac03737ed4b8238c0348b383fc729aa3913f4819b6c12a9"
+        }
+      },
+      {
+        "threshold": 200,
+        "items": [
+          {
+            "id": 40008,
+            "quantity": 1,
+            "name": "野外修理卷",
+            "definitionBase64": "HAAAAJxIAAAFkc5ZFk/udAZTdwAAAB0AABNPf3UoU+9Pf46rTgpiQGcJXfKIxVkHcmlUwYAQTkVbjFFoYGJZDQQBYwAAAAAAAAAAAAAAZAD/AAAAAAAAAAAAAA=="
+          }
+        ],
+        "gold": 0,
+        "silver": 0,
+        "coins": 0,
+        "source": {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 5115,
+          "protocol": 14553,
+          "sha256": "ab49eb7792c3fb5fca3dbc2eb421c9dd6c6ce2ca5e5ee8853923cfc104e1491d"
+        }
+      },
+      {
+        "threshold": 300,
+        "items": [
+          {
+            "id": 40051,
+            "quantity": 1,
+            "name": "万能钥匙(绑）",
+            "definitionBase64": "IQAAAJxzAAAHTgeA/ZSlUxkAKH7R/wkAAAATAAAWU+9fAFQvVAR5zVude7EwAmJTXwBbnXuxZfb/DE8agepSqE9/dSiL5ZSlUxkBAWMAAAAAZA=="
+          }
+        ],
+        "gold": 0,
+        "silver": 0,
+        "coins": 0,
+        "source": {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 5119,
+          "protocol": 14553,
+          "sha256": "a036f0cf4169f312799e5c61073bfddd9b5e32e269b324050a12cb20956ad94b"
+        }
+      },
+      {
+        "threshold": 400,
+        "items": [
+          {
+            "id": 60002,
+            "quantity": 1,
+            "name": "对应等级装备盒（稀有）",
+            "definitionBase64": "HAAAAOpiAAALW/lelHtJfqeIxVkHdtL/CHoAZwn/CQAAAAcAABlT74O3X5dzqVu2g7dfl3k8dtJl9ntJfqd2hHoAZwmIxVkHMAIAMgAwAC0ANQAwfqcwAgIBAQAAAAAAAAAAAAAAZAAAAGQHOwBnAAEAAA=="
+          }
+        ],
+        "gold": 0,
+        "silver": 0,
+        "coins": 0,
+        "source": {
+          "capture": "2026-09-21T17-27-45-814Z_ffa608",
+          "seq": 5121,
+          "protocol": 14553,
+          "sha256": "4e5c92e20f7b05de7f2bfc30abc2885e3c185c7246275abff2a835facf94e336"
+        }
+      }
+    ],
+    "source": {
+      "capture": "2026-09-21T17-27-45-814Z_ffa608",
+      "seq": 5103,
+      "protocol": 14551,
+      "sha256": "a221ab650c1d3cca6b5de39c23f794627fe65374b5a71f3dc47fa116622b0ad5"
+    },
+    "vipBonus": {
+      "status": "pending",
+      "value": 0
+    }
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "name": "沙漠探险",
+      "icon": "fuben_pic_1",
+      "itemID": [
+        {
+          "itemId": 1300,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1301,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1302,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1303,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级重型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1340,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(木）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1341,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(石）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1342,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(矿）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1304,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合10-25级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 20,
+      "frequency": 2,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 5,
+      "px": 19,
+      "py": 20,
+      "npcID": 50,
+      "proposal": 1,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 1,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 2,
+      "name": "初级组英雄挑战常规赛",
+      "icon": "fuben_pic_7",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 732,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级英雄挑战勋章",
+          "bagIcon": "20",
+          "info": "英雄大赛的奖励物品，大赛后可兑换奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1315,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合45-50级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1316,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合40-50级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 25,
+      "frequency": 2,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 262,
+      "px": 15,
+      "py": 16,
+      "npcID": 2,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 2,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 3,
+      "name": "高级组英雄挑战常规赛",
+      "icon": "fuben_pic_7",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 733,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "高级英雄挑战勋章",
+          "bagIcon": "20",
+          "info": "英雄大赛的奖励物品，大赛后可兑换奖励。",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1335,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级服饰盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1336,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级防具盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 35,
+      "frequency": 2,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 25,
+      "mapId": 262,
+      "px": 23,
+      "py": 12,
+      "npcID": 0,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 3,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 4,
+      "name": "团队混战英雄挑战常规赛",
+      "icon": "fuben_pic_7",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 733,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "高级英雄挑战勋章",
+          "bagIcon": "20",
+          "info": "英雄大赛的奖励物品，大赛后可兑换奖励。",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 732,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级英雄挑战勋章",
+          "bagIcon": "20",
+          "info": "英雄大赛的奖励物品，大赛后可兑换奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1336,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级防具盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1335,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级服饰盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 40,
+      "frequency": 2,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 25,
+      "mapId": 262,
+      "px": 21,
+      "py": 15,
+      "npcID": 3,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 4,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 5,
+      "name": "美女节",
+      "icon": "fuben_pic_6",
+      "itemID": [
+        {
+          "itemId": 1044,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "4级魔力结晶",
+          "bagIcon": "32",
+          "info": "这是一些装备分解后获取的大份魔力精华。",
+          "type": 29,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1054,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "魔纹线",
+          "bagIcon": "34",
+          "info": "合成用的素材，可在日常任务以及副本中开启奖励盒子获取",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 15128,
+          "itemCount": 1,
+          "icon": "6075",
+          "name": "美女节时装(2天)",
+          "bagIcon": "11",
+          "info": "",
+          "type": 12,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "3961651200",
+            "fashIcon2": "10",
+            "fashIcon3": "1979131"
+          }
+        }
+      ],
+      "proposalLevel": 30,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 263,
+      "px": 28,
+      "py": 26,
+      "npcID": 15,
+      "proposal": 1,
+      "progressSum": 12,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 5,
+      "linkage": {
+        "terminal": 1132,
+        "missionIds": [
+          2599,
+          1126,
+          1127,
+          1134,
+          1128,
+          1129,
+          1130,
+          1135,
+          1131,
+          1136,
+          1133,
+          1132
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 43572,
+        "after": 45907
+      },
+      "pending": ""
+    },
+    {
+      "id": 6,
+      "name": "植树节活动",
+      "icon": "fuben_pic_4",
+      "itemID": [
+        {
+          "itemId": 40043,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "宠物经验卷(30000）",
+          "bagIcon": "29",
+          "info": "使用可使目前所携带宠物获得30000经验,宠物等级无法超过人物等级",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 40001,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "鉴定卷轴(绑）",
+          "bagIcon": "79",
+          "info": "在背包进行装备鉴定时，需要使用鉴定卷",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": -2,
+          "itemCount": 5,
+          "icon": "",
+          "name": "",
+          "bagIcon": "",
+          "info": "",
+          "type": 0,
+          "grade": 3
+        }
+      ],
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 824,
+      "px": 15,
+      "py": 18,
+      "npcID": 22,
+      "proposal": 0,
+      "progressSum": 6,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 6,
+      "linkage": {
+        "terminal": 1147,
+        "missionIds": [
+          2799,
+          1137,
+          1138,
+          1139,
+          1140,
+          1147
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 45907,
+        "after": 49023
+      },
+      "pending": ""
+    },
+    {
+      "id": 7,
+      "name": "秀才杜时雨",
+      "icon": "fuben_pic_2",
+      "itemID": [
+        {
+          "itemId": 1335,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级服饰盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1336,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级防具盒",
+          "bagIcon": "7",
+          "info": "可获取适合45-50级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": -2,
+          "itemCount": 30,
+          "icon": "",
+          "name": "",
+          "bagIcon": "",
+          "info": "",
+          "type": 0,
+          "grade": 3
+        },
+        {
+          "itemId": 13512,
+          "itemCount": 1,
+          "icon": "5003",
+          "name": "冰雪披风",
+          "bagIcon": "151",
+          "info": "",
+          "type": 5,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1344,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "中级材料箱(石）",
+          "bagIcon": "7",
+          "info": "箱子里装了不少的建筑材料",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1343,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "中级材料箱(木）",
+          "bagIcon": "7",
+          "info": "箱子里装了不少的建筑材料",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 5,
+      "px": 31,
+      "py": 26,
+      "npcID": 60,
+      "proposal": 0,
+      "progressSum": 15,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 7,
+      "linkage": {
+        "terminal": 1164,
+        "missionIds": [
+          2811,
+          1149,
+          1150,
+          1151,
+          1152,
+          1165,
+          1153,
+          1155,
+          1163,
+          1156,
+          1154,
+          1161,
+          1162,
+          1160,
+          1164
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 49023,
+        "after": 52192
+      },
+      "pending": ""
+    },
+    {
+      "id": 8,
+      "name": "围剿血烟佣兵团",
+      "icon": "fuben_pic_3",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 7,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1330,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级服饰盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1331,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "40级防具盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1332,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级轻型武器盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1377,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "血烟营地奖励",
+          "bagIcon": "7",
+          "info": "完成血烟营地所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 824,
+      "px": 15,
+      "py": 18,
+      "npcID": 22,
+      "proposal": 0,
+      "progressSum": 6,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 8,
+      "linkage": {
+        "terminal": 2754,
+        "missionIds": [
+          2750,
+          2751,
+          2752,
+          2753,
+          2754,
+          2755
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 52192,
+        "after": 55951
+      },
+      "pending": ""
+    },
+    {
+      "id": 9,
+      "name": "暴力女（55级以上）",
+      "icon": "fuben_pic_41",
+      "itemID": [
+        {
+          "itemId": 40001,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "鉴定卷轴(绑）",
+          "bagIcon": "79",
+          "info": "在背包进行装备鉴定时，需要使用鉴定卷",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 40021,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "装备强化卷(绑）",
+          "bagIcon": "82",
+          "info": "在背包中使用的物品。",
+          "type": 33,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 55,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 50,
+      "mapId": 14,
+      "px": 14,
+      "py": 7,
+      "npcID": 74,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 9,
+      "linkage": {
+        "terminal": 2756,
+        "missionIds": [
+          2756
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 102376,
+        "after": 103956
+      },
+      "pending": ""
+    },
+    {
+      "id": 10,
+      "name": "暴力女（60级以下）",
+      "icon": "fuben_pic_41",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 40,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 50,
+      "mapId": 14,
+      "px": 14,
+      "py": 7,
+      "npcID": 74,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 10,
+      "linkage": {
+        "terminal": 2757,
+        "missionIds": [
+          2757
+        ],
+        "evidence": "recorded-series-and-terminal"
+      },
+      "pending": ""
+    },
+    {
+      "id": 11,
+      "name": "太阳城护送任务-团队",
+      "icon": "fuben_pic_7",
+      "itemID": [
+        {
+          "itemId": 1304,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合10-25级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1300,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1301,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 10,
+      "frequency": 2,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 906,
+      "px": 10,
+      "py": 8,
+      "npcID": 20,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 11,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 12,
+      "name": "太阳城护送任务-个人",
+      "icon": "fuben_pic_7",
+      "itemID": [
+        {
+          "itemId": 1340,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(木）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1341,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(石）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1342,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "初级材料箱(矿）",
+          "bagIcon": "7",
+          "info": "箱子里装了少量的建筑材料",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 15,
+      "frequency": 3,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 906,
+      "px": 10,
+      "py": 8,
+      "npcID": 20,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 12,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 13,
+      "name": "怪物攻城",
+      "icon": "fuben_pic_8",
+      "proposalLevel": 52,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 824,
+      "px": 35,
+      "py": 9,
+      "npcID": 0,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 1,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "每日活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 13,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 14,
+      "name": "建筑大师",
+      "icon": "fuben_pic_9",
+      "proposalLevel": 50,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 19,
+      "px": 10,
+      "py": 22,
+      "npcID": 10,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 2,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "竞技休闲",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 14,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 15,
+      "name": "记忆大考验",
+      "icon": "fuben_pic_10",
+      "proposalLevel": 50,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 19,
+      "px": 15,
+      "py": 25,
+      "npcID": 11,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 2,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "竞技休闲",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 15,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 16,
+      "name": "天空竞技场•承云之巅",
+      "icon": "fuben_pic_11",
+      "proposalLevel": 60,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 824,
+      "px": 28,
+      "py": 13,
+      "npcID": 110,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 2,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "竞技休闲",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 16,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 17,
+      "name": "趣味答题",
+      "icon": "fuben_pic_10",
+      "proposalLevel": 35,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 263,
+      "px": 17,
+      "py": 28,
+      "npcID": 9,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 2,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "竞技休闲",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 17,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 18,
+      "name": "低级雷斯林",
+      "icon": "fuben_pic_13",
+      "proposalLevel": 35,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 257,
+      "px": 14,
+      "py": 8,
+      "npcID": 10,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 18,
+      "linkage": {
+        "terminal": 2557,
+        "missionIds": [
+          2557
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 55951,
+        "after": 56762
+      },
+      "pending": ""
+    },
+    {
+      "id": 19,
+      "name": "中级雷斯林",
+      "icon": "fuben_pic_13",
+      "proposalLevel": 45,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 257,
+      "px": 14,
+      "py": 8,
+      "npcID": 10,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 19,
+      "linkage": {
+        "terminal": 2558,
+        "missionIds": [
+          2558
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 55951,
+        "after": 56762
+      },
+      "pending": ""
+    },
+    {
+      "id": 20,
+      "name": "高级雷斯林",
+      "icon": "fuben_pic_13",
+      "proposalLevel": 55,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 257,
+      "px": 14,
+      "py": 8,
+      "npcID": 10,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 20,
+      "linkage": {
+        "terminal": 2565,
+        "missionIds": [
+          2565
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 55951,
+        "after": 56762
+      },
+      "pending": ""
+    },
+    {
+      "id": 21,
+      "name": "月牙洞窟深处",
+      "icon": "fuben_pic_31",
+      "itemID": [
+        {
+          "itemId": 1053,
+          "itemCount": 3,
+          "icon": "0",
+          "name": "炎之元素",
+          "bagIcon": "34",
+          "info": "失魂沙漠可获取的自然元素，用以合成使用。",
+          "type": 29,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1054,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "魔纹线",
+          "bagIcon": "34",
+          "info": "合成用的素材，可在日常任务以及副本中开启奖励盒子获取",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1316,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合40-50级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1315,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "50级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合45-50级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 50,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 824,
+      "px": 16,
+      "py": 17,
+      "npcID": 22,
+      "proposal": 0,
+      "progressSum": 5,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 21,
+      "linkage": {
+        "terminal": 2772,
+        "missionIds": [
+          2774,
+          2770,
+          2771,
+          2772,
+          2773
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 58544,
+        "after": 60772
+      },
+      "pending": ""
+    },
+    {
+      "id": 22,
+      "name": "微笑南瓜",
+      "icon": "fuben_pic_17",
+      "itemID": [
+        {
+          "itemId": 1381,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "万圣节的恶梦奖励",
+          "bagIcon": "7",
+          "info": "完成万圣节的恶梦所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 716,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 50,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 263,
+      "px": 5,
+      "py": 18,
+      "npcID": 10,
+      "proposal": 0,
+      "progressSum": 5,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 22,
+      "linkage": {
+        "terminal": 3042,
+        "missionIds": [
+          3038,
+          3039,
+          3040,
+          3041,
+          3042
+        ],
+        "evidence": "recorded-series-and-terminal"
+      },
+      "pending": ""
+    },
+    {
+      "id": 23,
+      "name": "高难单人",
+      "icon": "fuben_pic_16",
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 262,
+      "px": 24,
+      "py": 12,
+      "npcID": 0,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 23,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 24,
+      "name": "高难单人小组",
+      "icon": "fuben_pic_16",
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 262,
+      "px": 24,
+      "py": 12,
+      "npcID": 0,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 24,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 25,
+      "name": "高难团队混战",
+      "icon": "fuben_pic_16",
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 262,
+      "px": 20,
+      "py": 15,
+      "npcID": 3,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 25,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 26,
+      "name": "高难团队小组",
+      "icon": "fuben_pic_16",
+      "proposalLevel": 50,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 262,
+      "px": 20,
+      "py": 15,
+      "npcID": 3,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 26,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 27,
+      "name": "葬送佣兵团",
+      "icon": "fuben_pic_16",
+      "itemID": [
+        {
+          "itemId": 823,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "紫禁城功勋章(葬送战役)",
+          "bagIcon": "20",
+          "info": "葬送佣兵团战役中获取的功勋，可以兑换奖励。",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 60,
+      "frequency": 1,
+      "openLevel": 60,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 824,
+      "px": 15,
+      "py": 17,
+      "npcID": 22,
+      "proposal": 1,
+      "progressSum": 3,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 27,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 28,
+      "name": "高难古龙-多拉斯",
+      "icon": "fuben_pic_18",
+      "proposalLevel": 60,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 100,
+      "mapId": 262,
+      "px": 29,
+      "py": 5,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 1,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 28,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 29,
+      "name": "紫云山刑天",
+      "icon": "fuben_pic_14",
+      "itemID": [
+        {
+          "itemId": 1457,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "紫云山最终奖励",
+          "bagIcon": "7",
+          "info": "完成紫云山最终任务所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 65,
+      "frequency": 1,
+      "openLevel": 65,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 825,
+      "px": 3,
+      "py": 29,
+      "npcID": 2,
+      "proposal": 1,
+      "progressSum": 48,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 29,
+      "linkage": {
+        "terminal": 1706,
+        "missionIds": [
+          1552,
+          1554,
+          1555,
+          1556,
+          1557,
+          1558,
+          1559,
+          1660,
+          1661,
+          1662,
+          1663,
+          1664,
+          1666,
+          1667,
+          1677,
+          1679,
+          1680,
+          1681,
+          1665,
+          1672,
+          1673,
+          1674,
+          1675,
+          1676,
+          1682,
+          1683,
+          1684,
+          1704,
+          1685,
+          1686,
+          1687,
+          1689,
+          1688,
+          1693,
+          1690,
+          1691,
+          1692,
+          1694,
+          1695,
+          1696,
+          1697,
+          1698,
+          1699,
+          1700,
+          1701,
+          1705,
+          1706
+        ],
+        "evidence": "recorded-series-and-terminal"
+      },
+      "pending": ""
+    },
+    {
+      "id": 30,
+      "name": "刺杀行动",
+      "icon": "fuben_pic_15",
+      "itemID": [
+        {
+          "itemId": 1376,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "刺杀行动初级奖励",
+          "bagIcon": "7",
+          "info": "完成刺杀行动所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1333,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级重型武器盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1332,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级轻型武器盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1383,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "刺杀行动中级奖励",
+          "bagIcon": "7",
+          "info": "完成刺杀行动所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1334,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级秘宝盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1454,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "刺杀行动最终奖励",
+          "bagIcon": "7",
+          "info": "完成刺杀行动最终任务所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 65,
+      "frequency": 1,
+      "openLevel": 65,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 5,
+      "px": 35,
+      "py": 24,
+      "npcID": 51,
+      "proposal": 1,
+      "progressSum": 20,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 30,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 31,
+      "name": "玛雅副本",
+      "icon": "fuben_pic_22",
+      "itemID": [
+        {
+          "itemId": 40023,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "高级鉴定卷轴(绑）",
+          "bagIcon": "80",
+          "info": "在背包进行装备鉴定时，需要使用鉴定卷",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1536,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "神使的谢礼",
+          "bagIcon": "28",
+          "info": "可随机开出一些消耗品以及神秘陨石碎片、5级魔力结晶等材料。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 80,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 960,
+      "px": 7,
+      "py": 24,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 35,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 31,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 32,
+      "name": "云若寺",
+      "icon": "fuben_pic_2",
+      "itemID": [
+        {
+          "itemId": 100669,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "长老的谢礼",
+          "bagIcon": "7",
+          "info": "攻略云若寺副本的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 80,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 411,
+      "px": 43,
+      "py": 37,
+      "npcID": 2,
+      "proposal": 0,
+      "progressSum": 22,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 32,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 33,
+      "name": "晴菜与精灵",
+      "icon": "fuben_pic_19",
+      "itemID": [
+        {
+          "itemId": 1546,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "晴菜的谢礼（初级）",
+          "bagIcon": "28",
+          "info": "可随机开出各类消耗品",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 824,
+      "px": 8,
+      "py": 8,
+      "npcID": 94,
+      "proposal": 0,
+      "progressSum": 22,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 33,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 34,
+      "name": "幻兽副本",
+      "icon": "fuben_pic_20",
+      "itemID": [
+        {
+          "itemId": 1535,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "幻羽宝箱",
+          "bagIcon": "28",
+          "info": "有几率开出康乃馨进化石、侠客装备制造书、御风套部件等物品。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 300,
+      "mapId": 829,
+      "px": 12,
+      "py": 36,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 29,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 34,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 35,
+      "name": "火焰副本",
+      "icon": "fuben_pic_21",
+      "itemID": [
+        {
+          "itemId": 1500,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "绯红秘宝箱",
+          "bagIcon": "7",
+          "info": "可随机开出各种神秘道具的宝箱，是绯红火龙的秘宝",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 300,
+      "mapId": 974,
+      "px": 7,
+      "py": 8,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 35,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 35,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 36,
+      "name": "机械城副本",
+      "icon": "fuben_pic_23",
+      "itemID": [
+        {
+          "itemId": 1530,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "撼地者东哥的神秘宝箱（锁）",
+          "bagIcon": "28",
+          "info": "有几率开出流星岁月系列戒指以及六耳宠物蛋、高级合成材料、消耗物品等等。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 6128,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "宠物装备盒（传说）",
+          "bagIcon": "7",
+          "info": "有3%概率获得传说品质的宠物装备。",
+          "type": 28,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 960,
+      "px": 8,
+      "py": 6,
+      "npcID": 20,
+      "proposal": 0,
+      "progressSum": 39,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 36,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 37,
+      "name": "晴菜与精灵后续",
+      "icon": "fuben_pic_19",
+      "itemID": [
+        {
+          "itemId": 1654,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "红莲邂逅者宝箱",
+          "bagIcon": "28",
+          "info": "攻略晴菜与精灵后续副本的奖励",
+          "type": 28,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 458,
+      "px": 20,
+      "py": 31,
+      "npcID": 2,
+      "proposal": 1,
+      "progressSum": 23,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 37,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 38,
+      "name": "精灵之森后续",
+      "icon": "fuben_pic_24",
+      "itemID": [
+        {
+          "itemId": 100836,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "神秘森林宝箱",
+          "bagIcon": "7",
+          "info": "精灵之森后续副本的最终奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 418,
+      "px": 29,
+      "py": 21,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 61,
+      "type": 3,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "挑战副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 38,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 39,
+      "name": "精灵之森",
+      "icon": "fuben_pic_24",
+      "itemID": [
+        {
+          "itemId": 1360,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "精灵森林初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1300,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "20级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1361,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "精灵森林中级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1305,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "30级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1362,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "精灵森林高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1310,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "40级服饰箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级法师、修真者的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 15,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": 784,
+      "value": 0,
+      "mapId": 254,
+      "px": 24,
+      "py": 4,
+      "npcID": 101,
+      "proposal": 1,
+      "progressSum": 62,
+      "type": 5,
+      "prosper": 200,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 39,
+      "linkage": {
+        "terminal": 784,
+        "missionIds": [
+          720,
+          721,
+          722,
+          723,
+          724,
+          725,
+          726,
+          727,
+          728,
+          729,
+          730,
+          731,
+          703,
+          732,
+          736,
+          737,
+          665,
+          738,
+          739,
+          740,
+          663,
+          741,
+          662,
+          742,
+          749,
+          743,
+          748,
+          744,
+          745,
+          746,
+          664,
+          747,
+          696,
+          750,
+          751,
+          753,
+          752,
+          754,
+          755,
+          756,
+          757,
+          758,
+          778,
+          759,
+          760,
+          761,
+          762,
+          763,
+          764,
+          765,
+          769,
+          770,
+          771,
+          772,
+          773,
+          774,
+          775,
+          776,
+          781,
+          782,
+          783,
+          784,
+          777,
+          785
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 3756,
+        "after": 9739
+      },
+      "pending": ""
+    },
+    {
+      "id": 40,
+      "name": "汉王古墓",
+      "icon": "fuben_pic_27",
+      "itemID": [
+        {
+          "itemId": 1369,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "汉王古墓初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1303,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级重型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1304,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合10-25级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1370,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "汉王古墓中级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1308,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "30级重型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1309,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "30级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1371,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "汉王古墓高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1313,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级重型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1314,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 20,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": 438,
+      "value": 0,
+      "mapId": 5,
+      "px": 29,
+      "py": 13,
+      "npcID": 37,
+      "proposal": 1,
+      "progressSum": 52,
+      "type": 5,
+      "prosper": 200,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 40,
+      "linkage": {
+        "terminal": 438,
+        "missionIds": [
+          451,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          389,
+          388,
+          441,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          442,
+          443,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          405,
+          406,
+          408,
+          409,
+          411,
+          412,
+          444,
+          413,
+          414,
+          415,
+          416,
+          417,
+          445,
+          448,
+          446,
+          449,
+          447,
+          450,
+          418,
+          419,
+          420,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 9739,
+        "after": 14458
+      },
+      "pending": ""
+    },
+    {
+      "id": 41,
+      "name": "月牙山",
+      "icon": "fuben_pic_26",
+      "itemID": [
+        {
+          "itemId": 1363,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "月牙山初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1301,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "20级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1364,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "月牙山中级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1306,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "30级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1365,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "月牙山高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1312,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "40级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 5,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 25,
+      "frequency": 1,
+      "openLevel": 25,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 22,
+      "px": 8,
+      "py": 28,
+      "npcID": 1,
+      "proposal": 1,
+      "progressSum": 58,
+      "type": 5,
+      "prosper": 300,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 41,
+      "linkage": {
+        "terminal": 37,
+        "missionIds": [
+          301,
+          310,
+          331,
+          304,
+          303,
+          305,
+          315,
+          306,
+          309,
+          1,
+          334,
+          307,
+          335,
+          324,
+          333,
+          38,
+          312,
+          338,
+          313,
+          318,
+          317,
+          321,
+          320,
+          314,
+          319,
+          323,
+          325,
+          337,
+          336,
+          316,
+          374,
+          326,
+          330,
+          340,
+          329,
+          341,
+          342,
+          343,
+          375,
+          376,
+          6,
+          344,
+          355,
+          356,
+          327,
+          357,
+          359,
+          360,
+          363,
+          365,
+          364,
+          7,
+          366,
+          367,
+          368,
+          369,
+          370,
+          373,
+          377,
+          380,
+          37,
+          371,
+          372
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 14458,
+        "after": 19017
+      },
+      "pending": ""
+    },
+    {
+      "id": 42,
+      "name": "封印墓地",
+      "icon": "fuben_pic_25",
+      "itemID": [
+        {
+          "itemId": 1366,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "封印古墓初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1302,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合15-25级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1304,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "20级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合10-25级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1367,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "封印古墓中级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1307,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "30级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1309,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "30级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合25-35级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1368,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "封印古墓高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1312,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1314,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 6,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 27,
+      "frequency": 1,
+      "openLevel": 27,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 914,
+      "px": 31,
+      "py": 16,
+      "npcID": 101,
+      "proposal": 1,
+      "progressSum": 58,
+      "type": 5,
+      "prosper": 300,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 42,
+      "linkage": {
+        "terminal": 871,
+        "missionIds": [
+          801,
+          802,
+          803,
+          804,
+          805,
+          814,
+          855,
+          806,
+          807,
+          808,
+          809,
+          810,
+          813,
+          815,
+          816,
+          818,
+          817,
+          820,
+          821,
+          822,
+          823,
+          824,
+          825,
+          826,
+          827,
+          828,
+          829,
+          831,
+          832,
+          833,
+          834,
+          835,
+          836,
+          837,
+          838,
+          839,
+          840,
+          842,
+          845,
+          846,
+          849,
+          851,
+          853,
+          847,
+          848,
+          850,
+          859,
+          860,
+          861,
+          862,
+          863,
+          864,
+          870,
+          865,
+          866,
+          867,
+          868,
+          871,
+          852,
+          854
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 19017,
+        "after": 23516
+      },
+      "pending": ""
+    },
+    {
+      "id": 43,
+      "name": "绝望冰原",
+      "icon": "fuben_pic_28",
+      "itemID": [
+        {
+          "itemId": 1372,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "绝望冰原初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1373,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "绝望冰原高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 6120,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "1级经验素材",
+          "bagIcon": "33",
+          "info": "用于宠物装备升级，可提供100点经验。",
+          "type": 42,
+          "grade": 0,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 6125,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "宠物装备盒（精致）",
+          "bagIcon": "7",
+          "info": "有10%概率获得精致品质的宠物装备。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 30,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": 556,
+      "value": 0,
+      "mapId": 920,
+      "px": 8,
+      "py": 5,
+      "npcID": 101,
+      "proposal": 1,
+      "progressSum": 49,
+      "type": 5,
+      "prosper": 500,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 43,
+      "linkage": {
+        "terminal": 556,
+        "missionIds": [
+          500,
+          502,
+          503,
+          504,
+          501,
+          505,
+          506,
+          509,
+          510,
+          546,
+          511,
+          513,
+          514,
+          515,
+          516,
+          518,
+          519,
+          520,
+          523,
+          524,
+          525,
+          526,
+          527,
+          528,
+          529,
+          530,
+          547,
+          531,
+          532,
+          533,
+          534,
+          535,
+          536,
+          537,
+          538,
+          548,
+          539,
+          549,
+          540,
+          543,
+          550,
+          542,
+          551,
+          541,
+          552,
+          553,
+          544,
+          545,
+          554,
+          555,
+          556
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 23516,
+        "after": 27323
+      },
+      "pending": ""
+    },
+    {
+      "id": 44,
+      "name": "夜语森林",
+      "icon": "fuben_pic_5",
+      "itemID": [
+        {
+          "itemId": 1314,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级秘宝礼包(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用戒指、项链、护符、披风的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1312,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级轻型武器箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 35,
+      "frequency": 1,
+      "openLevel": 35,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 263,
+      "px": 28,
+      "py": 26,
+      "npcID": 15,
+      "proposal": 1,
+      "progressSum": 7,
+      "type": 5,
+      "prosper": 500,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 44,
+      "linkage": {
+        "terminal": 2574,
+        "missionIds": [
+          2575,
+          2548,
+          2549,
+          2550,
+          2570,
+          2571,
+          2572,
+          2573,
+          2574
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 27323,
+        "after": 29273
+      },
+      "pending": ""
+    },
+    {
+      "id": 45,
+      "name": "失魂沙漠",
+      "icon": "fuben_pic_29",
+      "itemID": [
+        {
+          "itemId": 1374,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "失魂沙漠初级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1375,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "失魂沙漠高级奖励",
+          "bagIcon": "7",
+          "info": "完成阶段任务所获得的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 8,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 40,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": 41,
+      "value": 0,
+      "mapId": 5,
+      "px": 15,
+      "py": 11,
+      "npcID": 44,
+      "proposal": 1,
+      "progressSum": 52,
+      "type": 5,
+      "prosper": 800,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 45,
+      "linkage": {
+        "terminal": 41,
+        "missionIds": [
+          3021,
+          3022,
+          3023,
+          3024,
+          3025,
+          3026,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          1500,
+          1501,
+          1502,
+          1503,
+          1505,
+          12,
+          13,
+          1506,
+          1507,
+          8,
+          9,
+          14,
+          15,
+          1550,
+          1514,
+          1515,
+          1516,
+          17,
+          1517,
+          1518,
+          18,
+          1551,
+          19,
+          79,
+          80,
+          1519,
+          20,
+          21,
+          22,
+          26,
+          24,
+          25,
+          27,
+          29,
+          30,
+          31,
+          32,
+          41
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 29935,
+        "after": 36051
+      },
+      "pending": ""
+    },
+    {
+      "id": 46,
+      "name": "远古森林",
+      "icon": "fuben_pic_30",
+      "itemID": [
+        {
+          "itemId": 716,
+          "itemCount": 2,
+          "icon": "0",
+          "name": "世界骑士勋章",
+          "bagIcon": "20",
+          "info": "代表你对世界贡献的骑士勋章，可前往个人城市-城市守卫中兑换/c00FF00金叶/p奖励。",
+          "type": 25,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 718,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "无双任务卷",
+          "bagIcon": "29",
+          "info": "使用城市繁荣度兑换或充值赠送，可以参加城市中的各级无双任务。",
+          "type": 25,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1311,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级防具箱(锁)",
+          "bagIcon": "28",
+          "info": "可获取适合35-45级战士、侠客的防具。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 100789,
+          "itemCount": 10,
+          "icon": "0",
+          "name": "灵魂火焰盒⑧",
+          "bagIcon": "7",
+          "info": "灵魂火焰是伙伴升级所需道具，当抽卡获得已有伙伴时自动转化为灵魂火焰。该盒子开出必得10个灵魂火焰。",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 45,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": 634,
+      "value": 0,
+      "mapId": 926,
+      "px": 24,
+      "py": 6,
+      "npcID": 101,
+      "proposal": 1,
+      "progressSum": 65,
+      "type": 5,
+      "prosper": 800,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "日常副本",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 46,
+      "linkage": {
+        "terminal": 634,
+        "missionIds": [
+          570,
+          571,
+          572,
+          573,
+          574,
+          575,
+          576,
+          577,
+          578,
+          579,
+          580,
+          581,
+          582,
+          583,
+          584,
+          585,
+          586,
+          587,
+          588,
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          595,
+          596,
+          597,
+          598,
+          599,
+          600,
+          601,
+          602,
+          603,
+          604,
+          605,
+          606,
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          613,
+          614,
+          615,
+          616,
+          617,
+          628,
+          629,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624,
+          625,
+          626,
+          627,
+          630,
+          631,
+          632,
+          633,
+          634
+        ],
+        "evidence": "completion-transition",
+        "capture": "2026-09-20T23-27-15-970Z_874aae",
+        "before": 36051,
+        "after": 43572
+      },
+      "pending": ""
+    },
+    {
+      "id": 47,
+      "name": "紫云山刑天",
+      "icon": "fuben_pic_14",
+      "itemID": [
+        {
+          "itemId": 1457,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "紫云山最终奖励",
+          "bagIcon": "7",
+          "info": "完成紫云山最终任务所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 65,
+      "frequency": 1,
+      "openLevel": 65,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 825,
+      "px": 3,
+      "py": 29,
+      "npcID": 2,
+      "proposal": 1,
+      "progressSum": 0,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 29,
+      "linkage": {
+        "terminal": 1706,
+        "missionIds": [
+          1552,
+          1554,
+          1555,
+          1556,
+          1557,
+          1558,
+          1559,
+          1660,
+          1661,
+          1662,
+          1663,
+          1664,
+          1666,
+          1667,
+          1677,
+          1679,
+          1680,
+          1681,
+          1665,
+          1672,
+          1673,
+          1674,
+          1675,
+          1676,
+          1682,
+          1683,
+          1684,
+          1704,
+          1685,
+          1686,
+          1687,
+          1689,
+          1688,
+          1693,
+          1690,
+          1691,
+          1692,
+          1694,
+          1695,
+          1696,
+          1697,
+          1698,
+          1699,
+          1700,
+          1701,
+          1705,
+          1706
+        ],
+        "evidence": "recorded-series-and-terminal"
+      },
+      "pending": ""
+    },
+    {
+      "id": 48,
+      "name": "刺杀行动",
+      "icon": "fuben_pic_15",
+      "itemID": [
+        {
+          "itemId": 1376,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "刺杀行动初级奖励",
+          "bagIcon": "7",
+          "info": "完成刺杀行动所获得的奖励",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1333,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级重型武器盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用的大剑、重刀、长柄、重弩、重型。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1332,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "40级轻型武器盒",
+          "bagIcon": "7",
+          "info": "可获取适合35-45级使用的轻剑、轻刀、轻弩、法杖、弓。有机会获得史诗装备。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 65,
+      "frequency": 1,
+      "openLevel": 65,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 5,
+      "px": 35,
+      "py": 24,
+      "npcID": 51,
+      "proposal": 1,
+      "progressSum": 0,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 30,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 49,
+      "name": "云若寺",
+      "icon": "fuben_pic_2",
+      "itemID": [
+        {
+          "itemId": 100669,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "长老的谢礼",
+          "bagIcon": "7",
+          "info": "攻略云若寺副本的奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 80,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 411,
+      "px": 43,
+      "py": 37,
+      "npcID": 2,
+      "proposal": 0,
+      "progressSum": 22,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 32,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 50,
+      "name": "玛雅副本",
+      "icon": "fuben_pic_22",
+      "itemID": [
+        {
+          "itemId": 40023,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "高级鉴定卷轴(绑）",
+          "bagIcon": "80",
+          "info": "在背包进行装备鉴定时，需要使用鉴定卷",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 1536,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "神使的谢礼",
+          "bagIcon": "28",
+          "info": "可随机开出一些消耗品以及神秘陨石碎片、5级魔力结晶等材料。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 80,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 960,
+      "px": 7,
+      "py": 24,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 35,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 31,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 51,
+      "name": "晴菜与精灵",
+      "icon": "fuben_pic_19",
+      "itemID": [
+        {
+          "itemId": 1546,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "晴菜的谢礼（初级）",
+          "bagIcon": "28",
+          "info": "可随机开出各类消耗品",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 200,
+      "mapId": 824,
+      "px": 8,
+      "py": 8,
+      "npcID": 94,
+      "proposal": 0,
+      "progressSum": 22,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 33,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 52,
+      "name": "幻兽副本",
+      "icon": "fuben_pic_20",
+      "itemID": [
+        {
+          "itemId": 1535,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "幻羽宝箱",
+          "bagIcon": "28",
+          "info": "有几率开出康乃馨进化石、侠客装备制造书、御风套部件等物品。",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 300,
+      "mapId": 829,
+      "px": 12,
+      "py": 36,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 29,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 34,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 53,
+      "name": "火焰副本",
+      "icon": "fuben_pic_21",
+      "itemID": [
+        {
+          "itemId": 1500,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "绯红秘宝箱",
+          "bagIcon": "7",
+          "info": "可随机开出各种神秘道具的宝箱，是绯红火龙的秘宝",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 85,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 300,
+      "mapId": 974,
+      "px": 7,
+      "py": 8,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 35,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 35,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 54,
+      "name": "精灵之森后续",
+      "icon": "fuben_pic_24",
+      "itemID": [
+        {
+          "itemId": 100836,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "神秘森林宝箱",
+          "bagIcon": "7",
+          "info": "精灵之森后续副本的最终奖励",
+          "type": 28,
+          "grade": 2,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 418,
+      "px": 29,
+      "py": 21,
+      "npcID": 1,
+      "proposal": 0,
+      "progressSum": 61,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 38,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 55,
+      "name": "机械城副本",
+      "icon": "fuben_pic_23",
+      "itemID": [
+        {
+          "itemId": 1530,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "撼地者东哥的神秘宝箱（锁）",
+          "bagIcon": "28",
+          "info": "有几率开出流星岁月系列戒指以及六耳宠物蛋、高级合成材料、消耗物品等等。",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        },
+        {
+          "itemId": 6128,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "宠物装备盒（传说）",
+          "bagIcon": "7",
+          "info": "有3%概率获得传说品质的宠物装备。",
+          "type": 28,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 960,
+      "px": 8,
+      "py": 6,
+      "npcID": 20,
+      "proposal": 0,
+      "progressSum": 39,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 36,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    },
+    {
+      "id": 56,
+      "name": "晴菜与精灵后续",
+      "icon": "fuben_pic_19",
+      "itemID": [
+        {
+          "itemId": 1654,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "红莲邂逅者宝箱",
+          "bagIcon": "28",
+          "info": "攻略晴菜与精灵后续副本的奖励",
+          "type": 28,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "proposalLevel": 90,
+      "frequency": 1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 500,
+      "mapId": 458,
+      "px": 20,
+      "py": 31,
+      "npcID": 2,
+      "proposal": 1,
+      "progressSum": 23,
+      "type": 7,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "推荐任务",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 37,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 57,
+      "name": "跨服副本",
+      "icon": "fuben_pic_35",
+      "proposalLevel": 90,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 0,
+      "px": 0,
+      "py": 0,
+      "npcID": 0,
+      "proposal": 1,
+      "progressSum": 0,
+      "type": 6,
+      "prosper": 0,
+      "shopid": 11315,
+      "missionIdname": "0",
+      "typeName": "跨服活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 57,
+      "linkage": null,
+      "pending": "目标地图尚未采集"
+    },
+    {
+      "id": 58,
+      "name": "跨服打榜",
+      "icon": "fuben_pic_11",
+      "proposalLevel": 50,
+      "frequency": -1,
+      "openLevel": 0,
+      "missionId": -1,
+      "value": 0,
+      "mapId": 824,
+      "px": 16,
+      "py": 11,
+      "npcID": 56,
+      "proposal": 0,
+      "progressSum": 0,
+      "type": 6,
+      "prosper": 0,
+      "shopid": 0,
+      "missionIdname": "0",
+      "typeName": "跨服活动",
+      "grade": 0,
+      "combatPower": 0,
+      "canonicalId": 58,
+      "linkage": null,
+      "pending": "完整任务链或完成规则待定"
+    }
+  ],
+  "activeRewards": [
+    {
+      "id": 1,
+      "itemInfo": [
+        {
+          "itemId": -3,
+          "itemCount": 50000,
+          "icon": "",
+          "name": "",
+          "bagIcon": "",
+          "info": "",
+          "type": 0,
+          "grade": 1
+        }
+      ],
+      "needValue": 100
+    },
+    {
+      "id": 2,
+      "itemInfo": [
+        {
+          "itemId": 40006,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "宠物经验卷(30000）",
+          "bagIcon": "29",
+          "info": "使用可使目前所携带宠物获得30000经验,宠物等级无法超过人物等级",
+          "type": 28,
+          "grade": 3,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "needValue": 200
+    },
+    {
+      "id": 3,
+      "itemInfo": [
+        {
+          "itemId": 40021,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "装备强化卷(绑）",
+          "bagIcon": "82",
+          "info": "在背包中使用的物品。",
+          "type": 33,
+          "grade": 4,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "needValue": 400
+    },
+    {
+      "id": 4,
+      "itemInfo": [
+        {
+          "itemId": 40051,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "万能钥匙(绑）",
+          "bagIcon": "19",
+          "info": "可开启各种宝箱。打开宝箱时，会自动使用该钥匙",
+          "type": 33,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "needValue": 600
+    },
+    {
+      "id": 5,
+      "itemInfo": [
+        {
+          "itemId": 40023,
+          "itemCount": 1,
+          "icon": "0",
+          "name": "高级鉴定卷轴(绑）",
+          "bagIcon": "80",
+          "info": "在背包进行装备鉴定时，需要使用鉴定卷",
+          "type": 28,
+          "grade": 1,
+          "fashIcons": {
+            "fashIcon1": "0",
+            "fashIcon2": "0",
+            "fashIcon3": "0"
+          }
+        }
+      ],
+      "needValue": 800
+    }
+  ],
+  "sources": [
+    {
+      "capture": "2026-09-21T17-27-45-814Z_ffa608",
+      "seq": 4958,
+      "protocol": 22106,
+      "sha256": "76c2fea92bb13677c15f31518b83e0434f671f3a76612baab0ae8c5447a75da3"
+    }
+  ],
+  "schemas": {
+    "s2c_TaskInfo": {
+      "1": {
+        "name": "info",
+        "type": "TaskInfo",
+        "message": true,
+        "repeated": true
+      },
+      "2": {
+        "name": "activeInfo",
+        "type": "TaskActive",
+        "message": true,
+        "repeated": false
+      }
+    },
+    "TaskInfo": {
+      "1": {
+        "name": "id",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "icon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "itemID",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      },
+      "6": {
+        "name": "proposalLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "frequency",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "finishTImes",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "9": {
+        "name": "openLevel",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "10": {
+        "name": "missionId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "11": {
+        "name": "value",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "12": {
+        "name": "mapId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "13": {
+        "name": "px",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "14": {
+        "name": "py",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "15": {
+        "name": "npcID",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "16": {
+        "name": "proposal",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "17": {
+        "name": "missionIdFinish",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "18": {
+        "name": "status",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "19": {
+        "name": "progress",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "20": {
+        "name": "progressSum",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "21": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "22": {
+        "name": "prosper",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "23": {
+        "name": "findMisId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "24": {
+        "name": "findMisSta",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "25": {
+        "name": "findMapId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "26": {
+        "name": "findPx",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "27": {
+        "name": "findPy",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "28": {
+        "name": "shopid",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "29": {
+        "name": "missionIdname",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "30": {
+        "name": "typeName",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "31": {
+        "name": "grade",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "32": {
+        "name": "combatPower",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "33": {
+        "name": "teamNum",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "34": {
+        "name": "isMatch",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "35": {
+        "name": "hasTeam",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "itemInfo": {
+      "1": {
+        "name": "itemId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "itemCount",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "icon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "name",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "5": {
+        "name": "bagIcon",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "6": {
+        "name": "info",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "7": {
+        "name": "type",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "8": {
+        "name": "grade",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "9": {
+        "name": "fashIcons",
+        "type": "fashionIcon",
+        "message": true,
+        "repeated": false
+      },
+      "10": {
+        "name": "hasLock",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "11": {
+        "name": "hasAcquired",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "12": {
+        "name": "effectId",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "13": {
+        "name": "haveNum",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "14": {
+        "name": "hasSelect",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "15": {
+        "name": "hasHelp",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      },
+      "16": {
+        "name": "uuid",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "17": {
+        "name": "expireTime",
+        "type": "int64",
+        "message": false,
+        "repeated": false
+      },
+      "18": {
+        "name": "price",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "fashionIcon": {
+      "1": {
+        "name": "fashIcon1",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "fashIcon2",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      },
+      "3": {
+        "name": "fashIcon3",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "TaskActive": {
+      "1": {
+        "name": "activeValue",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "info",
+        "type": "TaskActiveInfo",
+        "message": true,
+        "repeated": true
+      }
+    },
+    "TaskActiveInfo": {
+      "1": {
+        "name": "id",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "itemInfo",
+        "type": "itemInfo",
+        "message": true,
+        "repeated": true
+      },
+      "3": {
+        "name": "needValue",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "4": {
+        "name": "hasReward",
+        "type": "bool",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "c2s_TaskActiveReward": {
+      "1": {
+        "name": "id",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      }
+    },
+    "s2c_TaskActiveReward": {
+      "1": {
+        "name": "rs",
+        "type": "int32",
+        "message": false,
+        "repeated": false
+      },
+      "2": {
+        "name": "rsDesc",
+        "type": "string",
+        "message": false,
+        "repeated": false
+      }
+    }
+  }
+}

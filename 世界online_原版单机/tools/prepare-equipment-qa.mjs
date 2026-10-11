@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('..',import.meta.url));
+const status=await(await fetch('http://127.0.0.1:8779/api/status')).json();
+if(path.resolve(status.projectRoot)!==path.resolve(root))throw Error('Wrong project');
+const role=structuredClone(status.characters.find(c=>c.id===1001));
+role.name='装备功能验收';role.accountId=1;
+role.inventory=[{itemId:2056,slot:30,quantity:1,bound:true},{itemId:40001,slot:31,quantity:5},{itemId:40021,slot:32,quantity:12},{itemId:414,slot:33,quantity:24},{itemId:2026,slot:7,quantity:1,bound:true}];
+role.initiativeSkillId=-1;role.hp=500;role.mp=500;delete role.pendingIdentification;
+const folder=path.join(root,'equipment-qa-saves');
+if(fs.existsSync(path.join(folder,'world.json')))throw Error('QA save already exists; retained');
+fs.mkdirSync(folder,{recursive:true});
+fs.writeFileSync(path.join(folder,'world.json'),JSON.stringify({schema:1,nextAccount:2,nextRole:1002,accounts:[{id:1,name:'equipment-qa',lastRoleId:1001}],characters:[role]},null,2));
+console.log(JSON.stringify({main:status.pid,qaSave:folder,role:role.name}));

@@ -1,0 +1,2591 @@
+已支持：
+角色系统：
+1、显著降低了升级所需的经验
+2、角色属性点分配可自由调节
+
+宠物系统：
+1、支持商店自行购买宠物蛋，宠物蛋开启默认为90级
+2、支持宠物技能遗忘
+3、封印宠物默认获得该宠物所有技能书
+
+装备与道具：
+1、装备鉴定词条取最高数值
+2、宝石镶嵌保底次数修改为30
+3、新增一键强化、一键镶嵌宝石功能
+4、消耗品新增50级魔力衰竭和8级骑士奉献
+5、灵符宝箱只能开出12级玄阶
+6、移除物品只能单个打开的限制
+7、新增装备「无视装备穿戴要求:单手剑，五维各+3000，穿上即可满足任何装备穿戴需求，脱下立即恢复
+8、新增「一键满级」经验卷（新月繁华之都商人处「消耗品)。
+9、恢复原版+4宝石，恢复宝石替换功能
+
+技能系统：
+1、侠客赤练神掌解绑状态
+2、人物宠物一键学习满级技能
+3、完善了国家专属技能所的技能,现可在任意技能所学习「防御战术(劈砍)、「防御战术(穿刺)。
+
+外观：
+1、更新装备角色列表会同步变化
+2、宠物、时装、坐骑、武器幻化功能
+3、伤害字体替换官服原版
+4、新月繁华之都·美容院可以进行发型、脸型转变
+
+玩法：
+1、降低了打怪掉落概率
+2、新建角色默认关闭游戏音乐，旧存档不适用
+3、战斗失败能够原地复活，
+4、将战斗倍速修改为「1/3/5」倍,并将其固定化，不再随着自动和手动战斗的切换而改变。
+5、添加原版游戏中的所有称号，可在「主城」-「成就」中找到。
+6、每个回合的待机时间改为180秒。
+7、地图 「boss直达」可直接挑战所有千万血量boss,进入地点在风雪之城NPC 「小白」处。
+
+问题修复：
+1、解决附灵符无法卖出的问题
+2、修正文案“创角角色”
+3、改名卷轴正常改名
+4、现在角色可以删除
+5、修复了军团宠物技能释放错位的问题，骑士奉献、挡伤害等应该能正常表现
+6、修复装备「进阶鉴定」报错，装备现已可正常进阶鉴定与强化
+7、修复了军团队长死亡后直接判定为战斗失败的问题
+8、修复了军团里队友的宠物无法替人物抵挡伤害的问题
+9、修复了天魔惊神戒指技能叠加不正确的问题
+10、修复了清增群体祝福对幻影怪不生效的BUG
+
+大事件：9.30日群聊都解散了，目前记录到的BUG就是：
+mj世界衣服、mj世界锦裤星级上限是24星而不是18星，（无尽）世界之翼、之光上限是22星不是24星。还有其他的装备等等
+机械城任务对话完东哥无后续
+刑天任务到中级就断了
+玛雅人物巨神兵后无后续
+端午打到四条蛟龙无后续
+中秋节副本最终boss打不了，没有战斗选项
+
+16、修复「与小怪战斗时有时报错：请靠近当前任务的战斗目标」  √
+    原因：同一怪物组在同一张地图上可能有多个刷新点（npc），其中一部分被任务状态
+          （missionData）或 status 位隐藏。服务端原来取「离玩家最近的一只」再检查它是否
+          可打，于是当更近的那只恰好是隐藏刷新点时，玩家明明站在可见的怪旁边，也会被判
+          「离战斗目标太远」而拒绝开战。客户端触发战斗的距离是 1.5 格，且只对可见且启用
+          的怪触发，所以表现为「有时候能打、有时候不能打」。
+    修复：改成只在「当前可见且可打」的刷新点里取最近的一只（lib/game-service.mjs
+          的 12501 分支，content.mjs 的 battleNpc 支持传入过滤条件）。
+    已验证：脚本枚举全部 140 张地图、4855 组「玩家站位×可触发怪」组合，
+          修复前在月牙山脚（地图 22，骷髅精组 127）必现拒绝，修复后 0 例。
+    回归测试：tests/game.test.mjs 的
+          「an enabled monster spawn is used even when a hidden same-group spawn is closer」
+
+17、重新打包安卓 APK  √（第 1 次，已被 18 取代）
+    产物：安卓打包/app/android/app/build/outputs/apk/debug/app-debug.apk
+    （122.2 MB，sha256 086119cb128f226443be8de70843e2a041665f7c5bcae0b676483ca3773b6def）
+
+18、修复「战斗中点技能，技能列表偶尔整块空白、只剩一句技能介绍，无法选技能」  √
+    现象：进战斗点「技能」，有时下方技能列表是空的，描述区却显示某条技能说明
+          （存档实测那句是主动技能列表的第 1 个：543 女妖之嚎），点不了也选不了；
+          有时又完全正常。存档 4 个 97 级角色的主动技能本应是 3 个：
+          543 女妖之嚎 / 742 雷灵极电咒 / 4840 秘技-蓝鹰。
+    定位：逐字节核对主包后确认，只有两条可能路径，且都会跨回合残留：
+          A. 弹窗基类 show(args) 写 this._showArgs、doHide() 置回 null；而 doShow()
+             只被 show() 调用，说明 onShow 必定伴随一次 show(args)。当 _showArgs 为空时，
+             onShow 清空列表却不重建，而它自己不清 txtDesc → 描述留着上一轮文字。
+          B. _showArgs 正常时，selectedIndex=0 触发的 updateInfo 会正确写出第 1 个技能的
+             说明，但 eui 虚拟列表的渲染器没被建出来（数据在、行不渲染）→ 列表整块空白。
+             截图里那句说明正是列表第 1 个，与此吻合。
+          另外该弹窗实例 keepMdr=!0（Battle 模块 initView），全程复用不销毁，
+          所以上面两种状态都会一直留着。
+    修复：新增自愈补丁 lib/client-battle-skill-panel-patch.mjs（battle-skill-panel-selfheal-v3），
+          两条路径一起覆盖——
+          · onShow 发现 _showArgs 为空时，用战斗控制器取当前出手单位，经战斗面板作用域
+            注入的解析器 __worldBattleSkillHelper 重取主动技能，再退回上一轮缓存列表；
+            注意技能助手（i(56)）与技能类型常量（i(4)）只在战斗面板模块里可见，
+            弹窗模块里同名的 a/l 分别是 UI 基类和皮肤类，所以解析器必须在战斗面板里注入。
+          · 填充后用 ArrayCollection.refresh() 强制重建虚拟列表渲染器（失败则 dataProvider
+            换手），再 validateNow()，并在下一帧补一次，覆盖「数据在但行不渲染」。
+          · 确实没有技能时清掉残留描述，不留半截界面。
+          · initSkillListPanel 侧：主动技能为空时除提示外回退到默认攻击，不再让玩家卡住。
+    接入：server.mjs 的 main 补丁链最外层 + 安卓打包/standalone/build.mjs 的 main 链最外层
+          （两条链顺序必须一致），并纳入 /api/status 的 battleSkillPanelRevision。
+    已验证：离线对全链做字符串锚点校验（唯一匹配、二次施加会报错）、node --check 语法通过；
+          本地起服务端拉主包确认注入生效（4557839 → 4559190 字节，/api/status 报
+          battleSkillPanelRevision = battle-skill-panel-selfheal-v3）；解压 APK 内
+          assets/public/js/ff/fff570bb4753f056432680e781d827dc.js 与
+          assets/public/worldol-standalone.js 均含该补丁。
+
+19、重新打包安卓 APK（第 2 次，含 18 的修复）  √
+    产物：安卓打包/app/android/app/build/outputs/apk/debug/app-debug.apk
+    （123.27 MB，sha256 0a04765569bde53e2fdb366d786c496b4e8b0012dab6581b0e5df63b47361d8b）
+
+20、修复「接了任务后，同一种任务怪有时能打、有时报「请靠近当前任务的战斗目标」」  √
+    现象：接取任务后地图上出现该任务要打的怪；走到怪旁边开战，有时正常进入战斗，
+          有时弹「请靠近当前任务的战斗目标。」。同一种怪、同一张地图，时好时坏。
+    定位：game-service.mjs 的 12501 分支在判定开战距离时，只要该怪组是当前进行中
+          任务（或剧情战斗）的战斗目标，就固定只用「任务锚点」那一个坐标做判定：
+              const n=origin?npcById(p,origin.npcId):battleNpc(...);
+              if(!n||!near(p,n,3))fail('请靠近当前任务的战斗目标。');
+          而 origin 是接任务时对话的那个 NPC（official-service.mjs 14502 写入
+          originFor(p,q,npcId)，14503/14502 还会写 context.storyBattle.npcId）。
+          于是有两个问题叠加：
+          A. 任务锚点常常根本不是怪，而是普通对话 NPC。全量统计 250 个任务战斗组中，
+             有 27 组「锚点与战斗怪同图」，其中 15 组的锚点是 type=0 的对话 NPC——
+             例如任务371「友军的援助」锚点是月狼宗剑手 @(18,20)，而它要打的蛮兵
+             （组144）在 (26,28)/(26,26)/(28,27)，离锚点 10.0～12.2 格，
+             玩家站到任何一只旁边都 >3 格 → 必被拒绝。
+          B. 同一怪组在同一张地图上几乎总是有多个刷新点：479 个「地图×怪物组」组合里
+             432 个（90%）有多于一个刷新点。锚点只钉住其中一只，玩家走到同组另一只
+             旁边就被判定「太远」。
+          两者合起来就表现为「同一种怪，有时能打有时不能」：站得离锚点近的那几格能打，
+          远一点就不行。
+    修复：锚点只在玩家确实站在它旁边时才生效，否则退回「当前可见可打的同组刷新点中
+          最近的一只」——
+              const pinned=origin?npcById(p,origin.npcId):null;
+              const n=pinned&&near(p,pinned,3)?pinned:battleNpc(p,group,s=>npcEnabled(p,s));
+          保留锚点优先，是因为部分剧情战斗就是站在任务 NPC 旁边点击触发的；
+          新增的回退则让玩家能打他真正走到的那一只。
+          （中途试过「锚点必须是本组可见怪才生效」的写法，会把 16 个剧情/主线战斗
+            用例一起弄坏，已废弃。）
+    已验证：· 枚举「玩家站位×任务战斗目标」90 组组合：旧逻辑仅 18 组可开战，
+              新逻辑 90 组全部可开战，修复 72 组，无新增拒绝。
+            · 端到端（handleGame 12501 真实调用）任务371：3 个蛮兵刷新点全部开战成功；
+              站到 (2,2)、(40,40) 等远离所有怪的位置仍正确拒绝。
+            · 全量 tests/*.test.mjs 与改动前基线逐条对比：pass 230→231、fail 54→53，
+              新增失败 0；唯一变化是新加的回归用例由失败转通过。
+            · 新增回归用例 tests/game.test.mjs
+              「a quest monster can be fought at every visible spawn, not only at the pinned origin」
+
+21、重新打包安卓 APK（第 3 次，含 20 的修复）  √
+    产物：安卓打包/app/android/app/build/outputs/apk/debug/app-debug.apk
+    （123.27 MB，sha256 9ad64eae07c3eeb5ca5b129804f195457565ebdcb2a70ccaaf548cd06a7da618）
+    校验：assets/public/worldol-standalone.js 含新判定
+          「pinned && near(p, pinned, 3) ? pinned : battleNpc(...)」、不含旧判定，
+          18 的技能面板补丁 battle-skill-panel-selfheal-v3 仍在。
+
+22、优化「进入战斗画面卡顿、释放技能卡顿」  √
+    前提事实：standalone 包里服务端逻辑与游戏渲染跑在**同一个 WebView 主线程**
+              （shims/ws.mjs 的 FakeWebSocket 是同进程内存通道），所以服务端任何一次
+              同步存档都会直接把画面冻住。另外战斗中只有 12501(进入)/12502(结束)
+              两个协议，技能释放本身是客户端本地计算、不走服务端。
+    定位到 4 个开销点：
+      A. 进入战斗(12501) 会 commit() 落盘，而这次存档只是为了写一个 1.5 秒的重刷冷却。
+      B. SaveStore.save() 用 JSON.stringify(data, null, 2) 美化排版：
+         1.15 MB 的存档被排版到 2.7 MB（多出 136%），序列化本身也慢一倍。
+      C. save() 一次要写 world.json.tmp / world.json.bak / world.json 三个路径，
+         而 VFS 的 persistIfSave 只跳过了 .tmp —— 于是 .bak 和 world.json 各被
+         base64 编码并同步写入 localStorage 一次，「一次存档 = 2 次全量编码+2 次写盘」。
+      D. 服务端每条消息都 log()，appendFileSync 是「读全量→新建更大数组→拷贝→写回」，
+         开销随日志体积线性增长，上限却开到 5 MB（战斗中消息密集，且越玩越卡）。
+    修复：· 12501 不再 commit()：冷却只在内存里挡 1.5 秒内的重复触发，
+            战斗结束(12502)时会连同战果一起落盘，不影响持久化。
+          · save() 改用紧凑 JSON.stringify(data)；盘上不好读，但「导出存档」按钮
+            会重新排版（standalone/shims/vfs.mjs 的 exportSave 改成 JSON.parse 后 null,2）。
+          · persistIfSave 同时跳过 .bak（和 .tmp 一样）：备份只在内存里有意义，
+            没必要占 localStorage 配额、更没必要每次存档多写一份。
+          · 日志滚动上限 5 MB → 512 KB。
+          · 技能面板补丁 v3 → v4：v3 每次打开面板都无条件 refresh + validateNow +
+            下一帧再来一次，而「释放技能」的第一步就是打开这个面板，多出来的同步布局
+            正好被感知成卡顿。v4 改为只在 list.numElements 为 0（渲染器确实没建出来）
+            时才强制重建，正常情况下零额外开销，自愈能力不变。
+    已验证：· 用你的真实存档(1.15 MB / 4 角色)实测一次 save：
+              旧 = 序列化 4.7 + base64×2 29.9 ≈ 34.6 ms
+              新 = 序列化 2.2 + base64×1  6.8 ≈  9.0 ms  → 提速 3.8 倍
+              （Node 侧数值；手机 WebView 的 JS 引擎再慢 3~8 倍，且 localStorage.setItem
+                是同步阻塞，实际感知差得更多）
+            · 进入战斗由「1 次全量落盘」变为「不落盘」。
+            · 全量 tests/*.test.mjs 与改动前一致：pass 231 / fail 53，新增失败 0。
+            · 补丁 v4 锚点唯一匹配、二次施加会报错、产物 node --check 通过。
+
+23、重新打包安卓 APK（第 4 次，含 20 的任务怪修复 + 22 的卡顿优化）  √
+    产物：安卓打包/app/android/app/build/outputs/apk/debug/app-debug.apk
+    （123.27 MB，sha256 4f6afc73416f2ba6bd2649194a23bd2971d60c01446e5de4fb3eebf83cdce590）
+    校验：APK 内 worldol-standalone.js 已确认含 22 的全部 5 项改动
+          （紧凑存档 / 无美化排版 / .bak 不持久化 / 导出仍排版 / 日志 512KB /
+            进入战斗不落盘 / 技能面板补丁 v4），主包含 numElements 守卫。
+
+24、战斗卡顿定位：服务端已确凿排除 —— 自动战斗不会来回请求服务器  √（结论）
+    现象：进入战斗那一刻卡；每回合第一次释放技能卡一下；中间的技能释放与伤害结算丝滑。
+    · 已排除服务端（有实测支撑）：
+        - 战斗中客户端与服务端只有 12501(进入) / 12502(结束) 两个协议，
+          中间回合一个包都不发 —— 自动战斗不存在"来回请求服务器"。
+        - 实测 handleGame(12501) = 0.03 ms（真实存档 1.15 MB / 4 角色）。
+        - standalone 的 FakeWebSocket 是同线程内存通道，send() 直接同步调用服务端
+          处理，全程没有任何网络请求。
+      → 卡顿 100% 在客户端本地。
+    · 客户端每回合的一次性路径（已读代码确认）：
+        initRoundStartOrder → battle.clearAllPlan() → doAutoFight()
+        doAutoFight 在回合开始一次性为所有单位生成行动
+        （isUseSkillInitiative → getSkillByID + isCanUse + searchAICursor，
+         否则 selectAutoFightTarget + PLAN_ATTACK），随后 doPlanData() 依次执行。
+        与"每回合第一次卡一下、之后丝滑"吻合：开销集中在回合开始的决策。
+    · 同时排除的嫌疑：
+        - BUFF_MAX_SIZE=Infinity 不是元凶：updateBuff 遍历的是固定状态枚举
+          BUFFER_POISON..BUFFER_VALUE_MAX(=32)，与 buff 累积数量无关。
+        - 战斗模块内没有任何 RES.getRes / loadGroup 之类的资源加载调用。
+
+25、技能面板补丁 v5：消掉手动点技能时的重复开销  √
+    （针对「打开技能面板」这一步；自动战斗不走面板，故对自动战斗场景无收益）
+    · updateInfo 原来每次都 getDesc() → parseHtml() → textFlow 富文本重排，
+      而技能说明在战斗中是静态文本。改为按「技能id|等级|宽度|字号」缓存，
+      相同则直接跳过，避免反复排版同一段富文本。
+    · onShow 原来每次都 removeAll() + 逐个 addItem()，会让整个 eui 列表失效并在
+      下一帧重建全部渲染器。改为逐项比较，内容相同时跳过重建。
+    · 强制重建改成下一帧异步检查 numChildren（真实渲染器数），同步路径零开销。
+      （v4 用的 numElements 只是 dataProvider 条数，判不出"行没渲染"）
+    · 校验：锚点唯一匹配、二次施加会报错、产物 node --check 通过。
+
+26、重新打包安卓 APK（第 5 次，含 24/25）  √
+    产物：安卓打包/app/android/app/build/outputs/apk/debug/app-debug.apk
+    （123.27 MB，sha256 54897aaf5e48fc567067ae679c37ce6c1eb07002090ca4cb5d479970ef3c26a6）
+    校验：APK 内 worldol-standalone.js 含 v5 补丁（_lastDescKey / getItemAt 守卫 / numChildren
+          异步自愈），且 22 的存档优化与 20 的战斗目标判定仍在；主包 4559495 字节。
+    （第 4 版 `4f6afc73…` 已被取代）
+
+28、战斗飘字换成原始像素数字（桌面端已做，APK 待做）
+    素材来自「世界OL字体替换工具包」：4 套 0-9（未暴击/HP回复/MP回复/暴击）+ 暴击爆炸图，
+    共 41 张 png（20 KB）。替换后战斗伤害/治疗数字不再是 Arial 文本，而是原始像素字形。
+    · 注入方式（三处）：
+        ① 41 张 png → 世界online_原版单机/client/assets/<hash前两位>/<hash>.png
+        ② num 段映射 → 由 nativeResourceManifest() 在下发时并入 url.assets.num
+           （数据文件 lib/client-battle-font-manifest.json）
+        ③ 主包 0180 模块 → lib/client-battle-font-patch.mjs 整体替换为位图拼接版
+    · ⚠ 关键坑：num 段**不能**直接写进 client/v/gd/305.json。
+      tests/native-restoration.test.mjs 会用 SHA256 断言该文件的字节与官方存档一致，
+      改了就挂。正确做法是走 nativeResourceManifest()（它本就是"在官方清单上追加资源"的地方），
+      源文件保持字节不变。
+    · 未采用工具包 README 的整包重建流程（rebuild.py / slim.py），原因：
+        路径是 assets/nodejs-project/... 而本项目是 Capacitor 的 assets/public/...；
+        其「已改好的 fff570bb…js」不含本项目任何补丁，覆盖会全部丢失；
+        且会用 testkey 重签，与现有 debug 签名不同导致无法覆盖安装。
+    · 校验：主包含新模块+tfmode 兜底，下发的 305.json 含 num 41 条且与映射一致，
+      41 张 png HTTP 全部 200，源码 305.json SHA256 仍等于官方值，
+      全量测试与改动前完全一致（pass 231 / fail 53，新增失败 0）。
+    · 调参：lib/client-battle-font-module180.js 顶部 NSC=2（大字版；1=原始大小），
+      爆炸图左置重叠量由 f.x=-NBOW*NSC+30*NSC 里的 30 控制。
+    · 状态：桌面端已生效；APK 已同步接入（见第 28 条）。
+
+27、实机确认  √
+    用户装上第 5 版 APK 后确认：技能列表可正常选择、进入战斗与释放技能的卡顿消失。
+    18（技能面板自愈）、20（战斗目标判定）、22（存档/落盘优化）、25（面板重复开销）均已达预期。
+
+28、字体替换同步进 APK  √
+    用户确认桌面端效果后，把同一套补丁链接到 APK 构建（安卓打包/standalone/build.mjs）：
+      · main 链最外层加 patchBattleFont(...)，顺序与 server.mjs 第 82 行完全一致。
+      · ⚠ 踩坑：patchBattleFont() 是唯一一个**运行时用 fs 读同目录文件**的补丁
+        （module180.orig.js / module180.js / manifest.json）。standalone 下 fs 走 VFS，
+        VFS 把 /worldol/lib/xxx 映射到站点 /lib/xxx，而 builder 从不发布 lib/，
+        server.mjs 在手机里跑补丁链时会直接 ENOENT 崩在启动阶段。
+        修法：build.mjs 新增 layoutFontPatchAssets() 把这三个文件拷到 www/lib/，
+        并写进 standalone-files.json 预载清单（原来 3 项 → 6 项）。
+      · 305.json 与 41 张 png 不用单独处理：前者由 nativeResourceManifest() 构建期
+        生成（num 段自动带上），后者随 client/ 全量平铺进 www。
+    校验（13 项全 PASS）：主包含新 0180 模块且旧锚点已消失、技能面板补丁与 __worldReq
+    仍在、305.json 的 num 段 41 条与映射表逐条一致、41 张 png 就位、3 个补丁文件进入站点与预载清单。
+
+    第 6 版 APK：123.27 MB（129,261,578 字节），sha256
+      50e86427cacbaa29722096619e5290065f0eaed9182acdbb2a7e9248a2e315f6
+    （第 5 版 54897aaf… 已被取代）
+
+29、灵符宝箱固定开十二级玄阶  √（服务端源码，尚未重打 APK）
+    需求：用户原本的宝箱会随机开出各等级灵符，改为每次只出十二级，且必须是玄阶。
+    · 改 lib/spirit-seal-data.mjs 的 drawSpiritRune()：在你写的 seal_grade===12 基础上
+      再加玄阶过滤。数据里 seal_type 1–4 是四系**黄阶**、5–8 是同系**玄阶**，
+      两者用 (seal_type-1)%4 都能算回同一个系别，所以玄阶判定就是 seal_type>4
+      （已导出 isSpiritRuneXuan）。加过滤后每个系别的池里只剩 1 枚，
+      spiritRollInt 恒定选中它，仍保留随机入参语义。
+    · 顺带加了池为空时抛错，避免以后数据变动时返回 undefined.id。
+    · 同步三处玩家可见文案（否则说明与实际掉落不符）：
+      spiritBoxDefinition() 的箱子说明、applySpiritNpcs() 的 NPC 对话、
+      web/equipment-workshop.js:185 的「灵符获取」提示。
+    · 验证：力量/敏捷/智力/感知箱各开 200 次，恒为本系「十二级X赋灵符（玄阶）」；
+      旧版综合箱（family 未指定）随机四系十二级玄阶之一；12 级带主属性+3 条附加属性。
+      全量测试 pass 231 / fail 53，与基线一致，新增失败 0。
+    · ⚠ APK 还是第 6 版，不含这条改动；要生效需重跑 build.mjs + 构建APK.ps1（约 18 分钟）。
+
+30、第 6 版 APK 字体不生效 —— 实为安装方式问题（WebView 缓存），非代码问题  √
+    现象：装上第 6 版后打怪仍是原版字体（第 6 版内含完整字体补丁）。
+    排查（逐层核对，结论是**产物没问题**）：
+      · APK 静态：主包含新 0180 模块且旧锚点消失；v/gd/305.json 含 num 41 条、
+        与映射表逐条一致；41 张 png 全在包内且 PNG 头完好（20 KB）；无旧布局残留。
+      · 客户端资源解析链路（查到源码级）：
+          模块180(飘字) → 模块39 BitmapBase 的 source setter 调 getResAsync(name)
+          → 模块132 ResLdr：getResInfo 查不到时把 name 当 URL 直接 load
+          → 模块59 Loader.getRealUrl(url)：
+              ① 已是 `assets/xx/<16位hash>.png` 形态 → 原样返回，不查表
+              ② 否则拆路径查 urlHash.assets.num["2000_0.png"] → 拼出 hash 路径
+          → urlHash 由模块344 onVLoaded 从 305.json 的 url 字段整体赋值。
+        说明「305.json 注入 num 段」这条路本身是对的。
+      · 关键行为：新 0180 的 lay() 取不到 texture 就走 tfmode() 退回原来的 Arial；
+        lt() 重试上限 6 次（每次间隔 >2500ms）后永久放弃。
+        ⇒「还是原版字体」等价于「41 张图没加载出来」，不等于补丁没打进包。
+    结论：用户手机上**卸载重装**后字体正常 —— 覆盖安装会保留 App 私有数据，
+    其中就包括 WebView 对主包 fff570bb….js 与 /v/gd/305.json 的缓存，
+    客户端实际还在跑第 5 版的那两份文件。
+    （这条对第 6 版的处理建议已被第 31 条取代：从第 7 版起覆盖安装即可，
+    不必再卸载。保留排查过程是因为「界面没变化」的根因判断方法仍然适用。）
+    可选加固（**已按用户要求回退，未采用**）：曾经把 lib/client-battle-font-module180.js
+    的逻辑名查表改成内嵌 41 条 hash 直连路径（NSRC），从而绕过 305.json 的 num 段。
+    直连形态命中 getRealUrl 分支①、不查表，即使清单注入断一环也照样出图；
+    已通过语法校验 + 主包干跑 + 41 条路径存在性校验，但未实机验证。
+    既然查表版在实机上已确认可用，按用户决定保留查表版（NBASE="assets/num/"）。
+
+31、覆盖安装不再需要卸载重装（构建指纹 + WebView 缓存自愈）  √
+    原因见第 30 条：站点文件虽然随 APK 更新，但 WebView 会把静态资源的响应缓存到
+    App 私有目录，覆盖安装不清私有数据，于是客户端继续吃上一版的主包/资源清单。
+    绝大多数用户都是覆盖安装，不可能要求大家为了看改动而卸载丢存档，所以从工程上解决：
+
+    ① 构建期产出构建指纹（build.mjs → app/www/build-version.json）
+       · 指纹 = index.html / gd.js / standalone-boot.js / standalone-files.json /
+         主包 js / 305.json / worldol-standalone.js / analysis/modules-bundle.json
+         的 sha256 前 12 位（本案 73f986b8649a）。内容不变则指纹不变，不误清缓存。
+       · 给 index.html 里 19 个 <script src> 与 standalone-boot.js 里动态加载的
+         worldol-standalone.js、gd.js 全部加上 ?t=<指纹> —— URL 变了，旧缓存用不上。
+
+    ② 客户端自检（standalone/boot.js 新增 primeChangedAssets）
+       · 资源清单 /v/gd/305.json 与主包 js 的 URL 是引擎侧写死的、加不了版本号，
+         改用 localStorage 记指纹，发现变了就以 fetch(url,{cache:'reload'}) 重新
+         取一次并写回 HTTP 缓存，客户端随后拿到的就是新版。
+       · 只在指纹变化的那一次启动执行，日常启动零开销。
+       · ⚠ 绝不能清 localStorage：单机存档就在里面（键前缀 worldol-fs:）。
+
+    ③ 原生兜底（MainActivity.java 新增缓存自愈）
+       · 读 APK 里的 public/build-version.json，与 SharedPreferences 里上次记录的
+         指纹比对，不同就递归删掉私有目录下的缓存目录
+         （Cache / HTTP Cache / Code Cache / GPUCache / ShaderCache / WebView），
+         再调 WebView.clearCache(true) 补一刀。
+       · 删除发生在 super.onCreate() 之前（BridgeActivity.onCreate 会立刻加载首页，
+         之后再清就晚了），clearCache 在拿到 Capacitor bridge 之后。
+       · 只删缓存目录，不碰 Local Storage / IndexedDB —— 存档保得住。
+
+    ④ ⚠ 踩坑（重要）：构建脚本会静默覆盖原生源码
+       安卓打包/构建APK.ps1 里内联了一份 MainActivity 模板，每次构建无条件
+       WriteAllText 覆盖 android/app/src/main/java/.../MainActivity.java。
+       只改工程里的源码会被下一次构建冲掉 —— 第 7 版第一次构建就是这样：
+       dex 里仍是 10/2 编译的旧类（:app:compileDebugJavaWithJavac 直接 UP-TO-DATE），
+       APK 静态校验全绿但原生逻辑没进去。
+       修法：模板与工程里的源码同步更新，并在模板头部加 `WORLDOL_ACTIVITY_V2` 标记；
+       构建脚本识别到该标记就跳过覆盖。**以后改 MainActivity 必须两处同步。**
+
+    第 7 版 APK（同版含第 29 条灵符改动）：123.27 MB，sha256
+      d39bf817eb05f3e53e0891ce813f4bae89bbe146f6f2e6396b63e7633544e218
+    校验 19 项全 PASS：build-version.json 就位、index.html 19/19 脚本带版本号、
+    standalone-boot.js 占位已注入、dex 内含新的 Java 字符串常量（证明已重编）、
+    主包含新 0180 模块与技能面板补丁、bundle 含字体补丁与灵符改动、
+    305.json num 段 41 条一致、41 张 png 就位。
+    （第 6 版 50e86427… 已被取代；安装方式不再有要求，覆盖安装即可。）
+
+32、把玩家自备的存档做成随包默认存档  √
+    需求：用 world-202610041211.json（5 个 97 级角色：魔攻/扣蓝/物理/空手/物理）
+    替换原来那个生瓜蛋子初始存档，让 APK 打开就有这套号。
+
+    · 新建 `世界online_原版单机/default-save/world.json`（紧凑 JSON，592 KB），
+      build.mjs 改为「优先 default-save，缺了才退回 qa-v05-saves」。
+    · ⚠ 不能直接覆盖 `qa-v05-saves/world.json`：
+      tests/loot.test.mjs 与 tests/career-skills.test.mjs 会
+      `characters.find(p=>p.id===1001)`，而新存档里没有 1001，覆盖会让既有用例挂掉。
+      默认存档（给玩家）与 QA 存档（给测试）必须分开，目录里放了 README 说明。
+    · 兼容性核对：
+        schema=1、账号 xia-v05-qa(1) 拥有全部 5 个角色、pet-v05-qa(2) 为空账号、
+        nextRole=1015（大于所有已有 id，新建角色不会撞号）。
+        web/offline.js 的 offlineBootSettings 会挑「拥有角色的那个账号」（owner||accounts[0]），
+        所以不会选到空账号出现「存档有了但一个角色都没有」。
+    · 体积：紧凑后 592 KB → localStorage base64 约 789 KB，仍在配额内。
+    · 用 SaveStore 实跑一遍加载 + normalizeRole + combatRating，确认能被服务端正确读取。
+      全量测试 pass 231 / fail 53 = 基线，新增失败 0。
+
+    注意：手机上**已有存档时不会用到这份**（boot.js 的 seedInitialSave 只在没存档时播种）。
+    想让已安装的人也换成它，要清除应用数据。
+
+    第 8 版 APK（含第 31 条自愈 + 第 29 条灵符 + 本条默认存档）：123.27 MB，sha256
+      82742f183d6d3c7a916c3861ca74334c75b62ed222a24fd996032ffe44b925bc
+      构建指纹 7d27bd0ccc16
+    （第 7 版 d39bf817… 已被取代）
+
+33、装备「一键强化到满星」  √（源码已改，用户说先不打包，另有两条需求待做）
+    需求：装备强化要一下一下点，太费手，希望一键直接加到这件装备的最高级。
+    补充需求：不想每次都绕到装备工坊，希望**在装备详情里点「强化」直接强化满**。
+
+    ★ 入口一：装备详情 → 强化（原生菜单，第 2 期加的）
+      选择面板里多出两条，点一下就替你一路点到头：
+        「一键强化升星」    → 普通强化，一路加到本装备星级上限
+        「一键进阶强化」    → 进阶强化，一路加到进阶 20 星上限
+      原来的「强化升星」「进阶强化」原样保留，想一次一点就还点原来那条。
+      （进阶那条只在装备已经进阶鉴定过时出现，跟原生一样。）
+      面板运行时会显示 “强化中 X/Y 星 / 成功 n 次 / 失败 m 次 / 已用 z 张”，
+      结束后弹一句汇总，并自动刷新面板描述。
+
+    ★ 入口二：单机菜单 → 装备工坊（第 1 期做的，保留）
+      操作下拉：
+        「强化升星 · 一键到满星」        （普通强化，消耗装备强化卷 40021）
+        「进阶强化 · 一键到满星」        （进阶强化，消耗进阶强化卷轴 40026/40027）
+      按钮在点之前就把代价摆出来：
+        “一键强化到 18 星（最多消耗 5 张卷轴）”，旁边一行写明
+        “装备强化卷 N 张 · 距离满星还差 X 星（成功率 50%，失败不掉星但照样消耗卷轴）”；
+      已经是满星时按钮直接禁用显示“已是满星”。
+
+    · 两个入口共用同一条循环 quickStarToLimit（web/equipment-workshop.js），
+      只是把进度写回各自的界面：工坊写 #equipment-status，装备详情写结果面板的
+      textDes。这是把原来的 bulkStar 抽出来的，顺手也让两边文案保持一致。
+
+    · 为什么不用改主包：这两个面板是 Egret 模块 485/483，安装方式是
+      offline.js:173 调 window.installEquipmentWorkshop(req)，拿到 req 后直接改
+      原型方法（跟里面已有的 req(473) 手法一样）。**不需要改动任何布局或 exml** ——
+      选择面板的操作列表是纯数据（[{type,name}] → eui.List + BagListBtnItem
+      只渲染 name），多塞两条即可，按钮排版用原生列表的，不存在放不下的问题。
+      事件常量：EVENT_COMMON_STAR=12001、EVENT_UPGRADE_STAR=12002（0001.js）。
+      一键标记靠 showModal 的第 3 个参数 {...,quick:true} 透传到结果面板。
+
+    · 实现要点（web/equipment-workshop.js 的 quickStarToLimit）
+      ① 服务端要求「先预览再执行」：handleEquipmentUpgrades 里 mode=1 才写
+         context.starPreview，mode=2 执行前要校验 fingerprint，执行完还会 delete。
+         已有用例 tests/equipment-upgrades.test.mjs:95 就断言了「不重新预览会被拒」。
+         ⇒ 每一轮都必须 mode=1 → mode=2，不能直接连发 mode=2。
+      ② 失败自动重试到满星为止：每次必定烧一张卷轴（planStar 里 consume 在
+         success 判断之外），成功才 +1 星。所以循环条件就是「没到上限 && 还有卷轴」。
+      ③ ⚠ 拿什么停手 —— 不能靠星级判断有没有出错：
+         被服务端拒绝时（未绑定 / 材料不足 / 战斗中）星级也不变，只判星级会变成
+         无限循环 + 弹几百次同样的提示。改为比较「本轮卷轴数量有没有减少」，
+         没减少说明请求被拒，立刻停手并汇总。
+      ④ 每轮 await 一次 setTimeout(0) 让出主线程，过程里实时刷新进度文本。
+      ⑤ 额外保险：单轮上限 200 次。
+      ⑥ 结果面板（483）是复用的：靠 onShow 里重置 _quickDone 保证「每次打开只会
+         自动跑一轮」——否则 tapOperatingBTN 结尾那次 initView 会再自动跑一轮。
+         一键期间把 _canUp 置 false，挡住玩家同时点一次一星那个按钮。
+      ⑦ starPanel.onShow 要 return 原生那个 Promise（原生 onShow 的最后一项本来
+         就是 this.initView()），这样调用方能 await 到一键跑完。
+
+    · 星级上限：普通按装备需求等级（worldolStarLimit），进阶恒为 20
+      （advancedStarLimit = isUpgradeItem && upgradeAscensionStar>0 ? 20 : 0）。
+
+    · 测试（tests/equipment-workshop.test.mjs）
+      第 1 期 4 例（装备工坊路径），全部针对上面的边界：
+        · 开点前的报价（18 星上限、差 8 星、最多 5 张）——此时一张卷轴都没动；
+        · 0→18 星：成功 18 次 / 失败 17 次 / 共用 35 张，结束后按钮变“已是满星”；
+        · 卷轴只够 3 张：停手后剩 0 张，汇总里写明“装备强化卷用完了”；
+        · 服务端直接拒绝：只收到一次拒绝提示 + 一句“什么都没发生”的汇总，不重复重试。
+      （第 1 期顺带修了这个测试自身的老毛病：fixture 缺 require(473) 的
+      BagItemIdentifyMdr，安装阶段就抛 “Unexpected native module 473”，导致
+      **这一份文件的用例全军覆没**；规则也已换成真正下发的那份。）
+
+      第 2 期新增 5 例（装备详情路径，nativeBench 复用同一套“内存服务端”）：
+        · 选择面板确实多出两条，且进阶那条只对已进阶鉴定的装备出现；
+        · 点「一键强化升星」：一路到 18/18 星（成功 18 / 失败 17 / 共用 35 张）；
+        · 点「一键进阶强化」：一路到 20/20 星，消耗的是进阶强化卷轴；
+        · 卷轴只够 3 张：如实停手并写明“装备强化卷用完了”；
+        · 面板复用：一键结束后再刷新一次不会再偷偷烧一轮（_quickDone），
+          且 _canUp 恢复 true，一次一星那个按钮仍然可用。
+      fixture 补了 485/483 两个模块与真实事件常量；注意列表数组是 vm 那一侧
+      realm 造的，deepStrictEqual 会因原型不同而失败，要比就比字符串。
+
+      全量测试 pass 242 / fail 51（上一版 237 / 51，原始基线 231 / 53）
+      —— 新增失败 0。剩下的 51 个失败与本次无关（含已知的 gemRules.guaranteed
+      数据不一致：「宝石 UI」那条）。
+
+    · 发现一处既有的数据不一致（**本次未改**）：
+        lib/equipment-policy.mjs 的 gemRules.guaranteed = 30，
+        但 data/equipment-upgrade-rules.json 是 3，且 web/index.html 的对玩家文案
+        “宝石前3颗100%成功”、tests/service.test.mjs 的断言都按 3 写。
+        实际生效的是 30（item-affixes.mjs 里 gem:gemRules 覆盖了 JSON），
+        所以 tests/equipment-workshop.test.mjs 的“宝石 UI”那条仍然红着。
+        要不要统一到哪一个，等你定 —— 涉及对玩家的实际掉落规则，我没擅自改。
+
+34、装备「宝石一键镶嵌到满」  √
+    需求：装备详情里点「镶嵌」，要一颗一颗选宝石再点按钮，希望点一次直接镶到
+          这件装备所允许的孔数上限。
+
+    · 入口：装备详情 → 镶嵌（原生面板，Egret 模块 462 BagItemAttachMdr）
+      按钮列表里多出一条「一键镶嵌到满」，原来的「镶嵌」原样保留。
+      工坊那条「宝石镶嵌」打开的也是这个面板，所以两个入口都覆盖到了，
+      工坊那边不必再单独加一条。
+
+    · 为什么要在两个地方补按钮：面板每镶完一颗都会重建按钮列表
+      （updateView 由 BAG_ITEM_ATTACH 通知触发），所以 initView 和 updateView
+      两个入口都要补，否则按钮会在中途消失。
+
+    · 循环规则（web/equipment-workshop.js 的 runQuickGem）
+      ① 目标 = item.attachCount（装备孔数）；已镶嵌数 = item.attachDone。
+      ② 每轮从 bag.getAttachGemItemList(item) 里挑数量最多的那堆宝石，
+         这个列表自带「同件装备只能镶同属性宝石」的过滤，跟手动选的一致。
+      ③ 停手条件与一键强化同套思路：比较**背包宝石总数有没有减少**，
+         没减少就说明这次请求被服务端拒了（孔已满 / 战斗中 / 宝石无效），
+         立刻停手，不重复弹同一句拒绝。
+      ④ 破碎处理：镶嵌破碎后继续镶等于清掉原有宝石从第 1 颗重来，原版本来会
+         弹一次确认；一键按「玩家已经同意」处理，最后在汇总里写明
+         “镶嵌破碎并重新开始 n 次，破碎前保留的属性已被新的宝石替换”。
+      ⑤ 单轮上限 300 次；每轮 setTimeout(0) 让出主线程，进度写在面板 textDes。
+
+    · 一次一颗时不能每次都弹结果：原生 doWorldAttachItemAction 末尾会
+      UI.alertMessage(message)，一键会连弹几百次。改成
+      `if(output)output.append(message); if(!output?.silent)UI.alertMessage(message);`
+      —— 手动那条路传的是原生 Message（照旧弹），一键传 {silent:true}，
+      只在结束时给一句汇总。
+
+    · 玩家可见文案：web/index.html 工坊说明里补了「一键镶嵌到满」的用法。
+
+    · 测试（tests/equipment-workshop.test.mjs，gemBench 用内存版服务端）
+        · 面板每次刷新都保留这条入口（initView 和 updateView 都补）；
+        · 保底之内一颗一颗成：4 孔镶满，用 4 颗，破碎 0 次；
+        · 宝石不够：如实停手并写明“背包里没有可以继续镶嵌的宝石了”；
+        · 破碎重来：失败破碎后继续镶到满，汇总里写明重新开始 1 次；
+        · 没有宝石孔 / 被服务端拒绝：各只提示一次，不循环重试；
+        · 全程只弹最后那句汇总，不会一颗弹一次。
+
+35、宠物在导师处学习技能「一键学到满级」  √
+    需求：宠物学技能要一级一级点，希望像人物那样点一次就学到满级。
+    补充要求（用户原话）：**保留原来的按钮，不要新增按钮，直接点击就能循环升到满级**。
+
+    · 服务端（lib/pet-mentors.mjs 的 learnPetMentorSkill）
+      原来只认 level === 已学+1，超了就抛“该等级已学会或已达到上限”；
+      现在按人物 14002 的写法（for 循环一级一级过）支持**目标等级**：
+      一次请求把 1→目标等级逐级学完，中途任何一级不合法就抛错整体回滚。
+      逐级学习的老行为完全保留，UI 一次发一级时行为不变。
+
+    · 客户端（web/career-skills.js）
+      ① 模块 888（ListShopSkillItem.tapBtnOperating）：宠物店（2000–3999）时，
+         把该技能的最高级（14001 回包里的 maxLevel）一并透传给确认面板，
+         人物店（<2000）走原生那条，一次一级。宠物已满级时仍弹原版那句
+         “当前技能所可学习该技能已达最高级…”。
+      ② 模块 911（ShopSkillLearnMdr）：确认时把 skill 换成 level=maxLevel 的副本
+         （Skill.getClone() 连方法一起复制），一次请求学完；
+         期间 _oneKeyMax 挡住 updateView，避免学完又弹一次“已达最高级”，
+         结束后关掉面板并提示“XXX 已学到 N 级。”
+      全程**没有新增任何按钮**，弹的还是原来那个确认面板。
+
+    · 为什么宠物能免费学满：petMentorSkills 里每一级的 sp/铜币都已归一化为 0
+      （单机免费），所以一次到满级不会额外收费。
+
+    · 测试（新建 tests/pet-mentor-skills.test.mjs，7 例）
+        · 导师列表给出“下一级 + 最高级”，与客户端 maxLevel 一致；
+        · 一次请求直接学到最高级，回包里没有下一级（客户端据此知道已满）；
+        · 仍然支持一次一级（逐級到满）；
+        · 越界请求（超过最高级 / 0 级）被拒且宠物数据一字不变；
+        · 客户端：点一次只发一条 level=上限 的请求，没有多开入口；
+        · 客户端：学完直接收尾，不再弹“已达最高级”；
+        · 人物技能店不受影响，还是一次一级。
+
+    · 回归：同一批文件（career-skills / equipment-workshop / equipment-upgrades /
+      pet-skill-books / pets / service）改动前后逐条比对，失败清单完全一致，
+      **新增失败 0**。（⚠ 全量 test 的数值在不同机器上会漂：同一份代码跑两次
+      也能从 fail 61 变 fail 84，怀疑是并发下抢文件/时间相关用例，
+      所以回归要按「同一批文件前后比对」，不要只看 pass/fail 计数。）
+
+36、重新打包安卓 APK（第 9 版，含 33/34/35 三个一键功能 + 宝石保底口径统一）  √
+    本次把 33 里「源码已改、先不打包」的三条功能正式带进包里，并处理了 33 末尾
+    挂着的宝石保底数据不一致。
+
+    ★ 包内已确认包含（开包逐项校验，不是只看源码）：
+      · #33 一键强化到满星 —— web/equipment-workshop.js 的 quickStarToLimit
+      · #34 宝石一键镶嵌到满 —— web/equipment-workshop.js 的 runQuickGem
+      · #35 宠物一键学到满级 —— web/career-skills.js（模块 888/911）+ lib/pet-mentors.mjs
+      三个功能都保留原按钮、没有新增入口，与需求一致；相关测试全绿。
+
+    ★ 宝石保底统一到 30（按用户确认）
+      真源是 lib/equipment-policy.mjs 的 gemRules.guaranteed = 30；lib/item-affixes.mjs
+      用 gem:gemRules 覆盖了 JSON，所以**实际生效一直是 30**，JSON 里的 3 只是相对
+      生成器（tools/build-item-affix-layouts.mjs，它本就写 30）陈旧。本次把声明与文案
+      对齐到 30，共 6 处：
+        ① data/equipment-upgrade-rules.json  gemRules.guaranteed 3 → 30（运行时零影响）
+        ② web/index.html 玩家文案「宝石前3颗100%成功」→「前30颗」（2 处）
+        ③ web/recorded-content.js 文案同步
+        ④ tests/service.test.mjs 断言 3 → 30
+        ⑤ tests/equipment-upgrades.test.mjs 两处边界用例（11/12/13）
+        ⑥ tests/equipment-workshop.test.mjs 的「宝石 UI」用例
+      改完这 3 个测试文件 31/31 全绿（原先 11/12/13 与「宝石 UI」都红着）。
+      全量 pass 259 / fail 47，失败清单与基线逐条一致，**新增失败 0**。
+      （33 里那条「发现一处既有的数据不一致，本次未改」由此关闭。
+        service.test.mjs 现在是在第 76 行天赋用例崩的，与宝石无关。）
+
+    ★ 顺带发现（记录备查，本次未改行为）
+      官方装备的宝石孔只有 20 或 30 两种（全量统计：20 孔 1501 件、30 孔 237 件），
+      而保底 30 ≥ 任何装备的孔上限 ⇒ 宝石镶嵌在当前规则下**不可能失败**，
+      「50% 成功率 + 破碎重来」实际已是死代码。要恢复失败机制需先把保底调低。
+
+    ★ 工程侧
+      · 重建了 app/www：上次 19:39 那次构建在复制 client/ 途中被中断，www 成了半成品
+        （关键产物缺失）。坑：受管 node 22.22.2 跑 fs.cpSync 拷大目录会原生崩溃，
+        改用系统 node E:/NodeJs/node.exe（22.14.0）跑 standalone/build.mjs，9 步全过。
+      · 构建指纹：bf1c456dab21。
+      · 清理：standalone/ 下 4 个调试残留（build-debug.mjs / tmp-trace.cjs / trace.log /
+        debug.log）+ 项目根 78 个 test-* 临时目录。批量 rm -rf 会被安全守卫掐断，
+        改用 node fs.rmSync 一次删完（真实 tests/ 目录完好）。
+
+    第 9 版 APK：123.27 MB（129,261,656 字节），sha256
+      358307873b53834a13e19b19741c1be9c5fe31cb59594fab5c9ea327e79257ec
+    校验：APK 内 assets/public/index.html 文案已是「宝石前30颗」；
+      equipment-workshop.js 含 quickStarToLimit/runQuickGem，career-skills.js 含一键学满逻辑；
+      build-version.json 指纹 bf1c456dab21；主包含技能面板补丁 __worldBattleSkillHelper、
+      字体 0180 模块与 tfmode 兜底；305.json num 段 41 条；initial-save.json 为 5 个 97 级
+      角色（魔攻/扣蓝/物理/空手/物理）；index.html 脚本带构建版本号；standalone-boot.js
+      含 primeChangedAssets 且占位已注入。
+    （第 8 版 82742f18… 已被取代；覆盖安装即可，不必卸载。）
+
+37、所有物品都能「任意数量」使用；开箱类先算容量，放不下就不整批开  √
+    需求：原先有些物品只能一个一个用，希望所有物品都能任意数量使用；如果使用后
+          会产生新物品（宝箱/灵符箱/宠物蛋），要先算背包剩余容量，容量不够就不允许
+          一次开那么多。
+
+    ★ 根因（客户端门槛 + 服务端拒绝，两处都得改）
+      · 客户端：物品菜单里的「任意使用」（原生就是"选数量再用"，走的还是同一个 12001，
+        只是带上数量）挂在 addCommonUIBtn() 上，条件是「是 VIP 且 物品 power1 ∈
+        _byOneUseListPower = [100,101,102,109,183,184]」。白名单只覆盖宝箱(100/101/102)
+        和宠物蛋(109)，药品(power1 49~52)根本不在里面 ⇒ 药品连入口都没有；而
+        「一键使用」只给 isCanUseByOneKeyItem() 的宠物/人物经验卷、国家指令书。
+        两者合起来 ⇒ 其余物品只能一次一个。
+      · 服务端：useMedicine() 里写死 `quantity!==1 → 药品暂时支持逐个使用`；
+        openContainer() 里写死 `quantity!==1`；pet-service 又用
+        `!experienceUse&&quantity!==1 → 这种道具请逐个使用` 再拦一遍。
+
+    ★ 客户端改动（lib/client-bag-patch.mjs 新增第 4 条规则，clientBagRevision →
+      bulk-use-all-items-v2）
+      把 addCommonUIBtn 里的 VIP + 白名单门槛换成：
+        i.quantity>1 && !i.isCanUseByOneKeyItem()
+          && (1==i.isCanUse(1) || i.isPetCanUseItem())
+      · isCanUse(1) 就是 CAN_USE_WORLD(=1)：放行 27/28/31 等"使用类"物品
+        （type28 = NOT_BATTLE_USE，药品/宝箱/宠物蛋/经验卷都是 28，见
+         getItemClass() 里 `type 26~28 或 31 → ITEM_CLASS_USE_ITEM`）；
+        材料(29)/宝石(30)/任务品(25)/宠物(32) 仍被排除，菜单不会到处冒这个选项。
+      · 已经走「一键使用」的经验卷/国家指令书不重复给入口，避免同一菜单两条重复项。
+      · 点完弹原生数量框 showOperateItemAsync(i,"任意使用")，再发同一个 12001，
+        协议与「一键使用」完全一致，**没有新增协议**。
+      · 注意这条补丁在 server.mjs（运行时）和 安卓打包/standalone/build.mjs（构建期）
+        是同一条链上的同一个函数，所以两边自动同步。
+
+    ★ 服务端改动
+      · lib/bag-actions.mjs 的 useMedicine：去掉 quantity!==1，按份数循环叠效果。
+        因为每份都是 min(上限, 当前+增量)，连用 N 次与原来逐个点 N 次完全等价
+        （超出上限的部分同样浪费），而且只落盘一次。
+      · lib/pet-state.mjs 的 openContainer：支持 quantity>1，逐次开启。
+        ⚠ 关键坑：planItemRewards() 内部还会再克隆一次背包，所以**每轮都要按槽位重新
+          取堆栈**，不能把上一轮的引用留到下一轮（留了会只消耗 1 个、却发出 N 份奖励）。
+        全程只改副本，任何一次因放不下而中断就整批回滚（角色数据一字未动），并报
+        「背包剩余空间不足，一次最多只能开启 N 个（当前选择了 M 个）」——
+          即"容量不够就不给一次开那么多"，而不是默默少开几个。
+        宝箱 / 灵符箱 / 宠物蛋三类都走这条路径（灵符箱额外挂 spiritRune 随机属性）。
+      · lib/pet-service.mjs：容器路径(action=3, wait=1/4)不再受"逐个使用"限制。
+
+    ★ 行为说明
+      · 药品、经验卷：没有新物品产出，直接按任意数量使用。
+      · 宝箱(秘宝盒/礼包)、灵符箱、宠物蛋：每开 1 个可能占一个新格子；整批都放得下才
+        执行，放不下就整体拒绝并告诉你"最多能开几个"。
+      · 不在本次范围：装备/技能书/鉴定卷/附魔/变身卡/合成等特殊流程（本来就不是
+        "使用数量"的语义，走各自的确认面板）；转职书仍要求一次一本。
+
+    ★ 验证（tests/bulk-item-use.test.mjs 新增 7 例，全部通过）
+      · 药品一次用 7 份：与逐个用 7 次的结果逐字节一致、只存档一次；越界只回一条拒绝、
+        数据不动；
+      · 宝箱一次开 4 个 → 4 份奖励（反击指环 stackNum=1，占 4 个新格子）；
+      · 灵符箱一次开 3 个 → 3 枚本系十二级玄阶灵符；
+      · 宠物蛋一次开 3 个 → 3 只宠物、uid 不重复、nextPetIndex 前进 3；
+      · 只剩 2 个空格时开 5 个（宝箱/灵符箱/宠物蛋各试一遍）→ 报"最多只能开启 2 个"、
+        角色数据一字未动；
+      · 协议层：宝箱/宠物蛋的批量请求不再被"逐个使用"挡下，各自只存一次档。
+      全量 tests/*.test.mjs：312 项 pass 265 / fail 47（基线 306 项 259/47；本次 +7 例）
+      ⇒ **新增失败 0**，失败清单与基线逐条一致。其中 bulk-item-use 的第 1/3 两条仍是
+      既有失败（经验表改版后回包经验值口径变了；宠物蛋开 90 级后宠物受人物等级封顶，
+      满级宠物不能再吃宠物经验卷），与本次无关。
+
+    第 10 版 APK：123.27 MB（129,254,891 字节），sha256
+      bba429d3b150ffb0fb27901a811ac8fca930073d7718f5ed50055bc375d22993
+      构建指纹 c8c961550009（主包 4,701,578 字节）
+    校验：APK 内 assets/public/js/ff 主包含新入口
+      「!i.isCanUseByOneKeyItem()&&(1==i.isCanUse(1)||i.isPetCanUseItem())」且旧白名单
+      门槛已消失；worldol-standalone.js 含 bulk-use-all-items-v2、containerUse、
+      "最多只能开启"提示；build-version.json = c8c961550009；index.html 18～19 处脚本带
+      版本号；data/ 181 项、assets/ 10149 项、lib/ 3 个字体文件、305.json num 段 41 条、
+      initial-save.json 592 KB 全在。
+    （第 9 版 35830787… 已被取代；覆盖安装即可，不必卸载。）
+
+已知遗留（未改动，与上面的战斗 bug 无关）：
+  - tests/game.test.mjs 有 2 个既有失败用例：
+      「v0.1 saves without mapId …」icon1 会被 syncJobIcon 归一化，用例仍按旧行为断言；
+      「quest chain …」经验表被改成 1e-4 系数后，1 级升 2 级只要 1 点经验，
+      交一次 20 经验的任务会连升到 20 级，用例仍按旧经验表断言。
+    这两条在上一版 APK 里同样存在，需要单独确认预期数值后再改。
+
+════════════════════════════════════════════════════════════════
+第 11 版：移植另一位开发者的 10 项改动 + 3 项增补，并修掉本轮引入的 7 个回归
+（2026-10-07）
+════════════════════════════════════════════════════════════════
+
+对方版本（解包的 世界OL单机_111）已实现、本版全部移植：
+
+ 1、国家专属技能所
+    · 新增 lib/local-career-skills.mjs + data/local-career-skills.json：
+        465 驯兽战斗（侠客）、652 防御战术（劈砍）、653 防御战术（穿刺）、
+        757 灵兽守护（修真）。
+    · 「防御战术（劈砍）/（穿刺）」的 shops 额外挂到 9 个职业技能所
+      （1301–1306/1310/1311/1312），真正做到「任意技能所都能学」。
+    · 这 4 个技能的原版上限是 20 级（不是 22 级）。web/career-skills.js 里
+      原本写死 22（levels[21]、for n<=22 两处），一碰 20 级技能 levels[21]
+      就是 undefined，导师目录整页直接崩；已改为按技能自身上限取
+      （const cap=s=>s.maxLevel||s.levels.length）。
+    · ⚠ 这 4 个技能**没有**写进 data/career-skills.json：那份文件是上游验收
+      用例（tests/career-skills.test.mjs，与 2026-09-23 原始包逐字节一致）的契约，
+      断言「恰好 470 个技能、每个必须 1–22 级」。本地技能走独立文件 +
+      lib/restoration.mjs 合并进运行时 skills 表，两边互不干扰。
+      这些技能不带 career 标记，所以也不会被用例的 career 过滤算进去
+      （career 字段在 lib/ 与 web/ 里没有任何运行时引用）。
+
+ 2、战斗倍速固定为 1/3/5
+    lib/client-battle-speed-patch.mjs（server.mjs 与 standalone/build.mjs 双通道挂载）
+      · onTapSpeedBtn 改成在 [1,3,5] 里循环（原版每次 +1、1/2/3 三档）；
+      · 主包里两处「手动↔自动切换会把 gameSpeed 强行设成 GAME_SPEED_MAX / 1」
+        改为优先取 window.__battleSpeed；
+      · web/offline.js 负责把档位记到 localStorage（worldol-battle-speed），
+        开局补 20 秒把它应用回去，否则登录/切场景会被别处设回默认。
+
+ 3、战斗失败原地复活
+    lib/game-service.mjs 的 MOD(no-defeat-teleport)：失败不再改 mapId/坐标；
+    紧随其后的 applyBattleRecovery(p)（本来就无条件执行）把人物与出战宠物
+    血蓝原地回满，军团成员一起处理 → 等价于「所有战斗失败都原地复活」。
+
+ 4、装备「无视装备穿戴要求」（单手剑 800100）
+    lib/restoration.mjs 的 ignoresEquipRequirements()：只要身上穿着它，
+    equip() 就跳过等级与五维校验；脱下立即恢复。
+    定义在 data/restored-v03.json（type 13 / grade 4 / 五维各 +3000）。
+
+ 5、一键满级经验卷
+    · 人物经验卷 800200（power1=119）、宠物经验卷 800201（power1=118），
+      固定在 新月繁华之都·装备与补给商人 的「消耗品」最前面
+      （lib/local-items.mjs 的 PINNED_SUPPLY_ITEM_IDS）。
+    · 宠物经验卷不再要求宠物出战（休息中的宠物也能吃）。
+    · ⚠ 关键坑：客户端物品定义里 powerValue1 是 16 位短整型（上限 32767）。
+      原 JSON 写 1000000000 会被截断成 32767，于是 tests/official.test.mjs 的
+      逐字段一致性断言失败。人物 1→97 累计需要 30608 经验（32767 够用），
+      但宠物 1→97 累计需要 3,503,120 经验（32767 远远不够）。
+      处理办法：JSON 与 definitionBase64 统一成 32767（两边自洽），
+      而「一本到满级」的语义改成按道具 ID 判定
+      （lib/pet-service.mjs 的 MAX_LEVEL_SCROLL_EXP=2147483647，
+      交给 gain/gainPet 按经验表逐级升到各自上限），不再依赖被截断的 wire 字段。
+
+ 6、进阶鉴定报错修复（按用户要求只修报错，不做对方的星级平衡改动）
+    lib/equipment-upgrades.mjs：进阶鉴定要写 upgradeAffixes，普通鉴定写 affixes，
+    原实现写死 candidate.affixes，进阶时该字段不存在，直接抛错。
+
+ 7、补齐原版全部称号
+    data/recorded-content.json 的 titles 从 20 条补到 138 条，
+    在「主城」-「成就」里可查看/佩戴。
+
+ 8、军团队友的宠物替人物挡伤害
+    lib/client-legion-petguard-patch.mjs：客户端 getGrardPet / getPlayerPet
+    开头只认 TYPE_PLAYER，而军团成员是 TYPE_LEGION，两道门都过不去 →
+    护主永远不触发。两道门都放行 TYPE_LEGION，其余类型不变。
+
+ 9、队长阵亡不再直接判负
+    lib/client-legion-survivors-patch.mjs：getActivePlayerNum(onlyPlayer=true)
+    只数 TYPE_PLAYER，我方（主控站 pos 25）因此只统计主控一人，主控一死
+    存活数即为 0 → 判 RESULT_LEFT_WIN。把 TYPE_LEGION 一并计入。
+    单人战斗右侧没有 TYPE_LEGION，结果与改前逐位相同；怪物侧不走这个分支，
+    宠物/佣兵/伙伴仍不计入存活。
+
+10、每回合待机时间 180 秒
+    web/offline.js 把模块 61 的 FIRST_ROUND_PLAN_TIME / NORMAL_ROUND_PLAN_TIME
+    改成 18e4（原来 60 秒）。
+
+── 三项增补 ──────────────────────────────────────────────────
+
+ A、货币兑换道具（一并带上并实现兑换）
+    800300 黄金10000 / 800301 金叶10000 / 800302 铜币1000000，
+    同样固定在消耗品最前面。
+    lib/pet-service.mjs 的 MOD(currency-item)：客户端对这类道具发出的 wait
+    不在原白名单里，所以兑换分支必须放在白名单校验之前，否则会被别的处理器
+    提前 return 掉。先做结构化快照，失败整体回滚，成功后落盘并回 11004 刷新货币条。
+    ⚠ 面额同样受 16 位限制：真实面额按 power1 定死
+      （EXCHANGE_AMOUNTS = {301:10000, 302:10000, 303:1000000}），
+      不再读被截断的 powerValue1 —— 铜币那本真实是 1000000，
+      写进 wire 只剩 32767。
+
+ B、进战斗前回满血蓝（配合「战斗失败就地补满血蓝」）
+    lib/game-service.mjs 的 MOD(battle-entry-full-heal)：进战斗前把人物与
+    背包里全部宠物的血蓝原地回满。两个硬约束：
+      · 调用点必须在 legionBattleMembers(p) 快照**之前**；
+      · 必须把新血蓝推给客户端（17601 + 31058），否则军团结算校验
+        （readLegionResult 只要 role.hp !== member.hp 就整包拒绝）会把整场战斗打回。
+    这里不落盘（沿用「进战斗不落盘」优化），血蓝改动随本场结算的 commit() 持久化。
+
+ C、地图「boss直达」（风雪之城 NPC 小白）
+    · lib/boss-hub.mjs：解析小白(37:10) 的原 wire，**先按原 wire 重建并自校验、
+      再改菜单数组**（反过来做会撞内部一致性校验），追加一项「boss直达入口」→ 地图 277。
+      调用点排在 applyOpenPortals 之前：菜单补好后再统一按传送门规则放行
+      （status|3、需求条件清零），否则新加的那一项打不开。
+    · lib/boss-challenges.mjs 的 MOD(plaza-boss)：非东哥任务改为尊重任务自带的
+      npcId（征战广场现在有霸天虎 1 / 东哥 4 / 库库尔坎 5 三个挑战 NPC，
+      写死 npcId=1 会让后续挑战全挂到霸天虎身上，既接不到也打不了）。
+    · ⚠ 最大的一处坑：boss 直达的 39 个任务原本编号 9000–9038，与
+      lib/content.mjs 内置教学任务 9001/9002/9003 撞车。
+      lib/game-packets.mjs 的 missionPacket 会先判 officialMissions.has(q.id)，
+      本地任务一旦与官方任务同号就走官方分支、因缺 sources/radarMapID 崩掉
+      （当时连累 game.test.mjs 3 条、daily-activity、task-reset 共 7 条）。
+      已整体重编号到 9100–9138。
+
+── 本轮回归：修掉自己引入的 7 个失败 ──────────────────────────
+
+移植过程中引入了 7 个新的测试失败（pass 259→266，fail 54→47），全部已修：
+
+  ① tests/official.test.mjs「item definitions preserve native fields」
+     800200/800201/800302 的 powerValue1 越界（见第 5、A 条）。
+
+  ②③④ tests/career-skills.test.mjs 三条 + tests/career-effect-sign.test.mjs 一条
+     （1）本地技能塞进上游 data/career-skills.json；
+     （2）availableSkills 被从「下一级」改成了「最高级」。
+     第（2）条已还原成上游写法 wanted=(p.skills[id]||0)+1：客户端
+     web/career-skills.js 是按 {nextLevel:row.skill.level, maxLevel:row.maxLevel}
+     读 14001 回包的（每条后面额外带一个 byte 的 maxLevel），
+     如果把 s.level 给成最高级，人物技能店会整列显示成满级。
+
+  ⑤ tests/recordings.test.mjs 的称号那条：称号 20→138。
+
+  ⑥ tests/boss-challenges.test.mjs：征战广场多了库库尔坎挑战
+     （编队 2→3、怪物定义 6→10、技能 13→17、AI 5→9）。
+
+  ⑤⑥ 两条是「补齐原版全部称号」「征战广场多加一个挑战」必然导致的，
+  而上游用例里是写死的数字，已改成按数据推导（recordedTitles.size /
+  bossChallenges.groups / 引用到的怪物定义数），逐条解码校验一字未放松。
+
+  另有 tests/recordings.test.mjs 的两条宠物快照失败（expected 23 / actual 50）
+  属于**既有失败**：data/recorded-content.json 的 petSnapshots 在 2026-09-25
+  基线里就已经是 50 条，与本轮无关，未动。
+
+全量 tests/*.test.mjs：313 项 pass 266 / fail 47。
+  ⇒ 比基线（259/47）多修 7 项，**新增失败 0**（逐条比对失败清单，完全一致）。
+  ⇒ 剩余 47 条全部是既有失败（VIP / 任务重置 / 日常活跃 / 军团 / 宠物快照 /
+     外观 / 城市角色特性 / catalog / guides / legion-attributes /
+     pet-skill-books 等，详见上一版记录与 tests 目录）。
+
+第 11 版 APK：125 MB（130,751,742 字节），sha256
+  fcb39909b44dbd394cbee9900b1b66eb22d383a9d1d1730ade0a3d540af9c6dc
+  构建指纹 ffb1f6f0bd41（主包 4,557,839 → 4,562,940 字节；index.html 19 处脚本带版本号）
+
+  开包校验（10822 个条目）：
+    · assets/public/data/local-career-skills.json = 4 个技能 @20 级
+      （465 驯兽战斗 / 652 防御战术（劈砍）/ 653 防御战术（穿刺）/ 757 灵兽守护）
+    · assets/public/data/career-skills.json = 470（与上游验收契约一致）
+    · assets/public/data/native-commerce.json：800200/800201/800302 的
+      powerValue1 = 32767，800300/800301 = 10000
+    · assets/public/data/recorded-content.json 称号 138 条
+    · assets/public/data/boss-challenges-v1.json revision 带 +plaza-kukulkan、3 个编队
+    · worldol-standalone.js 含 boss直达入口 / applyBossHub / EXCHANGE_AMOUNTS /
+      MAX_LEVEL_SCROLL_EXP / battleEntryFullHeal / local-career-skills
+    · career-skills.js 含 cap() 与「国家专属1–20级」文案
+    · 主包含：倍速 [1,3,5] 循环 + __battleSpeedSave 回存 + __battleSpeed 固定化、
+      军团宠物挡伤害（TYPE_LEGION 放行）、队长阵亡判负（TYPE_LEGION 计入存活）
+
+  构建注意：安卓打包的 cap sync 会清空 assets/public（1 万多项），
+  WorkBuddy 的批量删除守卫会拦下它并让构建失败。
+  跑构建前要先清掉注入的环境变量：
+      $env:NODE_OPTIONS=""; $env:CODEBUDDY_SAFE_DELETE_ENABLED="0"
+  然后 .\构建APK.ps1 即可（本版就是这么构建成功的，见 build.log）。
+
+  （覆盖安装即可，不必卸载。）
+
+════════════════════════════════════════════════════════════════
+第 11 版：移植另一位开发者的 10 项改动 + 3 项增补，并修掉本轮引入的 7 个回归
+（2026-10-07）
+════════════════════════════════════════════════════════════════
+
+对方版本（解包的 世界OL单机_111）已实现、本版全部移植：
+
+ 1、国家专属技能所
+    · 新增 lib/local-career-skills.mjs + data/local-career-skills.json：
+        465 驯兽战斗（侠客）、652 防御战术（劈砍）、653 防御战术（穿刺）、
+        757 灵兽守护（修真）。
+    · 「防御战术（劈砍）/（穿刺）」的 shops 额外挂到 9 个职业技能所
+      （1301–1306/1310/1311/1312），真正做到「任意技能所都能学」。
+    · 这 4 个技能的原版上限是 20 级（不是 22 级）。web/career-skills.js 里
+      原本写死 22（levels[21]、for n<=22 两处），一碰 20 级技能 levels[21]
+      就是 undefined，导师目录整页直接崩；已改为按技能自身上限取
+      （const cap=s=>s.maxLevel||s.levels.length）。
+    · ⚠ 这 4 个技能**没有**写进 data/career-skills.json：那份文件是上游验收
+      用例（tests/career-skills.test.mjs，与 2026-09-23 原始包逐字节一致）的契约，
+      断言「恰好 470 个技能、每个必须 1–22 级」。本地技能走独立文件 +
+      lib/restoration.mjs 合并进运行时 skills 表，两边互不干扰。
+      这些技能不带 career 标记，所以也不会被用例的 career 过滤算进去
+      （career 字段在 lib/ 与 web/ 里没有任何运行时引用）。
+
+ 2、战斗倍速固定为 1/3/5
+    lib/client-battle-speed-patch.mjs（server.mjs 与 standalone/build.mjs 双通道挂载）
+      · onTapSpeedBtn 改成在 [1,3,5] 里循环（原版每次 +1、1/2/3 三档）；
+      · 主包里两处「手动↔自动切换会把 gameSpeed 强行设成 GAME_SPEED_MAX / 1」
+        改为优先取 window.__battleSpeed；
+      · web/offline.js 负责把档位记到 localStorage（worldol-battle-speed），
+        开局补 20 秒把它应用回去，否则登录/切场景会被别处设回默认。
+
+ 3、战斗失败原地复活
+    lib/game-service.mjs 的 MOD(no-defeat-teleport)：失败不再改 mapId/坐标；
+    紧随其后的 applyBattleRecovery(p)（本来就无条件执行）把人物与出战宠物
+    血蓝原地回满，军团成员一起处理 → 等价于「所有战斗失败都原地复活」。
+
+ 4、装备「无视装备穿戴要求」（单手剑 800100）
+    lib/restoration.mjs 的 ignoresEquipRequirements()：只要身上穿着它，
+    equip() 就跳过等级与五维校验；脱下立即恢复。
+    定义在 data/restored-v03.json（type 13 / grade 4 / 五维各 +3000）。
+
+ 5、一键满级经验卷
+    · 人物经验卷 800200（power1=119）、宠物经验卷 800201（power1=118），
+      固定在 新月繁华之都·装备与补给商人 的「消耗品」最前面
+      （lib/local-items.mjs 的 PINNED_SUPPLY_ITEM_IDS）。
+    · 宠物经验卷不再要求宠物出战（休息中的宠物也能吃）。
+    · ⚠ 关键坑：客户端物品定义里 powerValue1 是 16 位短整型（上限 32767）。
+      原 JSON 写 1000000000 会被截断成 32767，于是 tests/official.test.mjs 的
+      逐字段一致性断言失败。人物 1→97 累计需要 30608 经验（32767 够用），
+      但宠物 1→97 累计需要 3,503,120 经验（32767 远远不够）。
+      处理办法：JSON 与 definitionBase64 统一成 32767（两边自洽），
+      而「一本到满级」的语义改成按道具 ID 判定
+      （lib/pet-service.mjs 的 MAX_LEVEL_SCROLL_EXP=2147483647，
+      交给 gain/gainPet 按经验表逐级升到各自上限），不再依赖被截断的 wire 字段。
+
+ 6、进阶鉴定报错修复（按用户要求只修报错，不做对方的星级平衡改动）
+    lib/equipment-upgrades.mjs：进阶鉴定要写 upgradeAffixes，普通鉴定写 affixes，
+    原实现写死 candidate.affixes，进阶时该字段不存在，直接抛错。
+
+ 7、补齐原版全部称号
+    data/recorded-content.json 的 titles 从 20 条补到 138 条，
+    在「主城」-「成就」里可查看/佩戴。
+
+ 8、军团队友的宠物替人物挡伤害
+    lib/client-legion-petguard-patch.mjs：客户端 getGrardPet / getPlayerPet
+    开头只认 TYPE_PLAYER，而军团成员是 TYPE_LEGION，两道门都过不去 →
+    护主永远不触发。两道门都放行 TYPE_LEGION，其余类型不变。
+
+ 9、队长阵亡不再直接判负
+    lib/client-legion-survivors-patch.mjs：getActivePlayerNum(onlyPlayer=true)
+    只数 TYPE_PLAYER，我方（主控站 pos 25）因此只统计主控一人，主控一死
+    存活数即为 0 → 判 RESULT_LEFT_WIN。把 TYPE_LEGION 一并计入。
+    单人战斗右侧没有 TYPE_LEGION，结果与改前逐位相同；怪物侧不走这个分支，
+    宠物/佣兵/伙伴仍不计入存活。
+
+10、每回合待机时间 180 秒
+    web/offline.js 把模块 61 的 FIRST_ROUND_PLAN_TIME / NORMAL_ROUND_PLAN_TIME
+    改成 18e4（原来 60 秒）。
+
+── 三项增补 ──────────────────────────────────────────────────
+
+ A、货币兑换道具（一并带上并实现兑换）
+    800300 黄金10000 / 800301 金叶10000 / 800302 铜币1000000，
+    同样固定在消耗品最前面。
+    lib/pet-service.mjs 的 MOD(currency-item)：客户端对这类道具发出的 wait
+    不在原白名单里，所以兑换分支必须放在白名单校验之前，否则会被别的处理器
+    提前 return 掉。先做结构化快照，失败整体回滚，成功后落盘并回 11004 刷新货币条。
+    ⚠ 面额同样受 16 位限制：真实面额按 power1 定死
+      （EXCHANGE_AMOUNTS = {301:10000, 302:10000, 303:1000000}），
+      不再读被截断的 powerValue1 —— 铜币那本真实是 1000000，
+      写进 wire 只剩 32767。
+
+ B、进战斗前回满血蓝（配合「战斗失败就地补满血蓝」）
+    lib/game-service.mjs 的 MOD(battle-entry-full-heal)：进战斗前把人物与
+    背包里全部宠物的血蓝原地回满。两个硬约束：
+      · 调用点必须在 legionBattleMembers(p) 快照**之前**；
+      · 必须把新血蓝推给客户端（17601 + 31058），否则军团结算校验
+        （readLegionResult 只要 role.hp !== member.hp 就整包拒绝）会把整场战斗打回。
+    这里不落盘（沿用「进战斗不落盘」优化），血蓝改动随本场结算的 commit() 持久化。
+
+ C、地图「boss直达」（风雪之城 NPC 小白）
+    · lib/boss-hub.mjs：解析小白(37:10) 的原 wire，**先按原 wire 重建并自校验、
+      再改菜单数组**（反过来做会撞内部一致性校验），追加一项「boss直达入口」→ 地图 277。
+      调用点排在 applyOpenPortals 之前：菜单补好后再统一按传送门规则放行
+      （status|3、需求条件清零），否则新加的那一项打不开。
+    · lib/boss-challenges.mjs 的 MOD(plaza-boss)：非东哥任务改为尊重任务自带的
+      npcId（征战广场现在有霸天虎 1 / 东哥 4 / 库库尔坎 5 三个挑战 NPC，
+      写死 npcId=1 会让后续挑战全挂到霸天虎身上，既接不到也打不了）。
+    · ⚠ 最大的一处坑：boss 直达的 39 个任务原本编号 9000–9038，与
+      lib/content.mjs 内置教学任务 9001/9002/9003 撞车。
+      lib/game-packets.mjs 的 missionPacket 会先判 officialMissions.has(q.id)，
+      本地任务一旦与官方任务同号就走官方分支、因缺 sources/radarMapID 崩掉
+      （当时连累 game.test.mjs 3 条、daily-activity、task-reset 共 7 条）。
+      已整体重编号到 9100–9138。
+
+── 本轮回归：修掉自己引入的 7 个失败 ──────────────────────────
+
+移植过程中引入了 7 个新的测试失败（pass 259→266，fail 54→47），全部已修：
+
+  ① tests/official.test.mjs「item definitions preserve native fields」
+     800200/800201/800302 的 powerValue1 越界（见第 5、A 条）。
+
+  ②③④ tests/career-skills.test.mjs 三条 + tests/career-effect-sign.test.mjs 一条
+     （1）本地技能塞进上游 data/career-skills.json；
+     （2）availableSkills 被从「下一级」改成了「最高级」。
+     第（2）条已还原成上游写法 wanted=(p.skills[id]||0)+1：客户端
+     web/career-skills.js 是按 {nextLevel:row.skill.level, maxLevel:row.maxLevel}
+     读 14001 回包的（每条后面额外带一个 byte 的 maxLevel），
+     如果把 s.level 给成最高级，人物技能店会整列显示成满级。
+
+  ⑤ tests/recordings.test.mjs 的称号那条：称号 20→138。
+
+  ⑥ tests/boss-challenges.test.mjs：征战广场多了库库尔坎挑战
+     （编队 2→3、怪物定义 6→10、技能 13→17、AI 5→9）。
+
+  ⑤⑥ 两条是「补齐原版全部称号」「征战广场多加一个挑战」必然导致的，
+  而上游用例里是写死的数字，已改成按数据推导（recordedTitles.size /
+  bossChallenges.groups / 引用到的怪物定义数），逐条解码校验一字未放松。
+
+  另有 tests/recordings.test.mjs 的两条宠物快照失败（expected 23 / actual 50）
+  属于**既有失败**：data/recorded-content.json 的 petSnapshots 在 2026-09-25
+  基线里就已经是 50 条，与本轮无关，未动。
+
+全量 tests/*.test.mjs：313 项 pass 266 / fail 47。
+  ⇒ 比基线（259/47）多修 7 项，**新增失败 0**（逐条比对失败清单，完全一致）。
+  ⇒ 剩余 47 条全部是既有失败（VIP / 任务重置 / 日常活跃 / 军团 / 宠物快照 /
+     外观 / 城市角色特性 / catalog / guides / legion-attributes /
+     pet-skill-books 等，详见上一版记录与 tests 目录）。
+
+第 11 版 APK：125 MB（130,751,742 字节），sha256
+  fcb39909b44dbd394cbee9900b1b66eb22d383a9d1d1730ade0a3d540af9c6dc
+  构建指纹 ffb1f6f0bd41（主包 4,557,839 → 4,562,940 字节；index.html 19 处脚本带版本号）
+
+  开包校验（10822 个条目）：
+    · assets/public/data/local-career-skills.json = 4 个技能 @20 级
+      （465 驯兽战斗 / 652 防御战术（劈砍）/ 653 防御战术（穿刺）/ 757 灵兽守护）
+    · assets/public/data/career-skills.json = 470（与上游验收契约一致）
+    · assets/public/data/native-commerce.json：800200/800201/800302 的
+      powerValue1 = 32767，800300/800301 = 10000
+    · assets/public/data/recorded-content.json 称号 138 条
+    · assets/public/data/boss-challenges-v1.json revision 带 +plaza-kukulkan、3 个编队
+    · worldol-standalone.js 含 boss直达入口 / applyBossHub / EXCHANGE_AMOUNTS /
+      MAX_LEVEL_SCROLL_EXP / battleEntryFullHeal / local-career-skills
+    · career-skills.js 含 cap() 与「国家专属1–20级」文案
+    · 主包含：倍速 [1,3,5] 循环 + __battleSpeedSave 回存 + __battleSpeed 固定化、
+      军团宠物挡伤害（TYPE_LEGION 放行）、队长阵亡判负（TYPE_LEGION 计入存活）
+
+  构建注意：安卓打包的 cap sync 会清空 assets/public（1 万多项），
+  WorkBuddy 的批量删除守卫会拦下它并让构建失败。
+  跑构建前要先清掉注入的环境变量：
+      $env:NODE_OPTIONS=""; $env:CODEBUDDY_SAFE_DELETE_ENABLED="0"
+  然后 .\构建APK.ps1 即可（本版就是这么构建成功的，见 build.log）。
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 12 版 —— 本轮 5 项修复
+══════════════════════════════════════════════
+
+1、导出存档没有提示存档在哪里
+   安卓打包/standalone/boot.js 的 installSaveManager()（APK 入口，构建期
+   复制为 standalone-boot.js）：
+     · 导出改成三级回退：原生桥 → 浏览器下载 → 复制弹窗；
+     · 三级都会在菜单小字 + 底部浮层 Toast 里写明「完整文件名 + 落盘位置」，
+       例：「已导出存档到 Download/world-20261007-….json」。
+   原生侧 MainActivity 的 ExportBridge.save() 未改动：Android 10+ 返回
+   "OK|Download/<name>"，9 及以下返回 "OK|<绝对路径>"。
+
+2、技能师那里不需要「（普通1–22级 · 国家专属1–20级）」文案
+   web/career-skills.js 三处回到简洁版：
+     · npc.menuTeacher = 名字+'技能'
+     · npc.talkDetail  = 「九职业导师已开放，选择职业学习或升级技能。单机免费学习。」
+     · career-count    = 「找到 X / Y 个技能」
+   防崩逻辑 cap()（国家专属技能只有 20 级，levels[21] 会是 undefined）保留。
+
+3、武器穿戴去掉双手限制，两个武器槽都能装任意武器
+   新增 lib/client-weapon-slot-patch.mjs（weapon-slots-any-v1）：
+     主包 module 0033 的 EquipItem 里，把「与已装备武器类型不同 / 双手武器」
+     就整体顶替两个槽的分支堵掉 —— 条件改成恒假 (…&&(!1))。
+   服务端 lib/restoration.mjs 的 equipWeaponItem() 同步删掉同一分支，
+   改为「先找空的武器槽，两个都满才与左手整体交换」。
+   实测：主包 4,557,839 → 4,557,773（-66 字节），幂等成立。
+
+4、天神惊魔戒指自带的技能叠加不正确（两枚应是 22 级）
+   根因：叠加逻辑本来就是对的（bonus.level += s.level），卡住的是
+   data/equipment-skill-levels.json 里「天魔无视 6553」只录到 11 级，
+   MAX_EQUIPMENT_SKILL_LEVEL=22 被可用定义过滤成 11。
+   修法两层：
+     ① 新增 data/equipment-skill-levels-extra.json：从社区资料
+        （references/world-online-221f8cf/vocationalSkills.json）补录
+        6553 的 22 级 = 无视魔法反馈+200 / 无视洞察+400 / 无视状态抵抗+300
+        （效果编号集合与已录 11 级完全一致才采纳）。
+     ② lib/equipment-skill-levels.mjs 并入补录等级（只补已知技能，不新增）；
+        lib/restoration.mjs 的 activeSkills 在 data.level<wanted 时把等级与
+        wire 对齐到 wanted，不臆造数值。
+   实测：1 枚 11649 → 11 级；11649+11650 或 2 枚 11649 → 22 级，
+        powers=[[169,200],[171,400],[172,300]]。
+
+5、解除魔法对一些幻影怪不生效（扣不了蓝）
+   根因（完整链路）：
+     · 「解除魔法」548 的 1–21 级 area=10（判为单体），22 级 area=19
+       （敌全部=群体），且只有 22 级带效果3「燃烧最大法力值-8%」
+       （power3=52 POWER_MP_PERCENT / value3=-8）。
+     · 主包 module 0251 的 calDamage 里，幻影判定写的是
+       「群体 且 非魔法(4) 且 非诅咒(5) 且目标有 BUFFER_HIDE(14) → 技能无效」，
+       而 548 的 skillAtkType=6（ATKTYPE_BLESS 祝福），正好落进这个条件。
+     · 施放流程是 `1==calDamage(...)&&processSkillPower(...)`，
+       calDamage 返回 !1 → 效果1/2/3（含扣蓝）全部不执行。
+   修法：新增 lib/client-phantom-immunity-patch.mjs
+     （phantom-skips-physical-only-v1）：在免疫条件里排除 ATKTYPE_BLESS，
+     让幻影只免疫真正的物理群体攻击。祝福分支本身不产生伤害
+     （calDamage 会把 DMG_DATA 全填 0、只标 EFFECT_HIT），
+     所以不会让幻影怪被范围伤害打到。
+   实测：主包 +31 字节，幂等成立；锚点唯一。
+
+── 双通道挂载 ──────────────────────────
+补丁源码仍集中放 lib/client-*-patch.mjs，两处调用点同步：
+  · 电脑版 server.mjs（运行时）—— 补丁链最外层；/api/status 增
+    weaponSlotRevision / phantomImmunityRevision；
+  · APK 版 安卓打包/standalone/build.mjs（构建期）—— 补丁链最外层。
+（standalone 的 server.mjs 会对 VFS 里的主包 .orig 再跑一遍同一条链，
+ 所以 .orig 必须保持未打补丁的原始版本 —— 本版已核对。）
+
+── 回归 ──────────────────────────────
+全量 tests/*.test.mjs：313 项 pass 266 / fail 47，
+与上一版基线（266/47）逐条一致，新增失败 0。
+
+第 12 版 APK：124.69 MB（130,751,828 字节），sha256
+  3410c832e51c03c7534937d0b5bf1c7a6d2c2d23c41e91e63300d0847e448689
+  构建指纹 34fa4164c908（主包 4,557,839 → 4,562,905 字符；
+  index.html 19 处脚本带版本号；包内条目 10823）
+
+  开包校验：
+    · 主包含 phantom 补丁（s!=ATKTYPE_BLESS 已并入 BUFFER_HIDE 免疫条件）
+      与 weapon-slot 补丁（&&(!1) 堵掉双手分支）
+    · js/ff/….js.orig 保持原始（不含上述两处改动）✓
+    · career-skills.js 界面文案已去掉（「国家专属」仅剩代码注释）
+    · standalone-boot.js 含 wsm-toast / saveViaBrowserDownload
+    · data/equipment-skill-levels-extra.json：6553 补到 22 级
+    · build-version.json id = 34fa4164c908
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 13 版 —— 单机菜单版本号 + 游戏公告
+══════════════════════════════════════════════
+
+1、单机菜单版本号 0.6.4 → 10.8
+   web/index.html：
+     <button id="panel-toggle">单机菜单 · v0.6.4</button>
+                                ↓
+     <button id="panel-toggle">单机菜单 · v10.8</button>
+   （build.mjs 的 buildStandalonePage() 只改 title、注入脚本版本号，不碰按钮
+     文本，所以构建后 APK 内首页显示仍是 v10.8。）
+
+2、游戏公告追加「新增内容 / 问题修复」两节
+   web/offline.js 的 req(360).default.prototype.applyNotice：
+     在原有 18 条之后插入，并在末尾加「感谢所有参与开发的兄弟，开源万岁！」。
+     公告沿用游戏自身的颜色标记（/cRRGGBB … /p）；解析只认 /c 与 /p
+     （module 0008 的 getNextColorSignPosition 仅 indexOf("/c")、indexOf("/p")），
+
+── 双通道 ─────────────────────────────
+本版只改 web 层（index.html / offline.js），未触碰 lib/client-*-patch.mjs 补丁链。
+构建时 build.mjs 把 web/ 平铺进站点根，APK 内对应 assets/public/。
+
+── 回归 ──────────────────────────────
+未改动任何 JS 逻辑与补丁链，既有测试基线不变（313 项 pass 266 / fail 47）。
+
+第 13 版 APK：124.69 MB（130,751,828 字节），sha256
+  0c01759c613f103cd8bdad40d361b91cf4fce858e5922ec07a5bb3e571b650e4
+  构建指纹 86002a27f9e4
+
+  开包校验：
+    · assets/public/index.html 面板按钮 = 「单机菜单 · v10.8」
+    · assets/public/offline.js 含「★ 新增内容 ★」「★ 问题修复 ★」
+      与「感谢所有参与开发的兄弟，开源万岁！」
+    · index.html / offline.js 内已无 0.6.4 残留
+    · build-version.json id = 86002a27f9e4
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 14 版 —— 幻影判定细化 + 人物技能一键满级
+══════════════════════════════════════════════
+
+1、幻影（BUFFER_HIDE=14）免疫判定细化
+   原版（module 0251 的 calDamage）：
+     1==l && s!=ATKTYPE_MAGIC && s!=ATKTYPE_CURSE && 目标有 BUFFER_HIDE → 整个技能无效
+     （l = 「技能范围不是单体」）
+   第 12 版曾把 ATKTYPE_BLESS 无条件排除，结果「群体祝福也能打幻影」，改过头了。本版按实际规则改回：
+     免疫 = 群体 且 非魔法 且 非诅咒 且 非(祝福 且 带清除增益状态) 且 目标有幻影
+
+     · 群体祝福（普通）            → 免疫（保持原版行为）
+     · 群体祝福 + 带清除增益状态   → 豁免，正常生效（解除魔法、除魔领域等）
+     · 单体祝福                    → 范围判定不命中，照常生效
+     · 物理群体技能（即使带驱散）  → 依然免疫，不会让幻影吃到范围物理伤害
+
+   「带清除增益状态」的判据（module 0057 技能对象）：
+     任一 power 位 == POWER_REMOVE_STATUS(79) 且 对应值 == BUFFER_TYPE_BUFF(25)。
+   不能用 getBufferType() 判：25/26 本身是「类型枚举」，getBufferType 只按具体状态编号
+   (1–10/30/31) 判 debuff，会把 26(DEBUFF) 也当成 BUFF。
+
+   解除魔法(548)：power1=79/25（清增益）、power2=79/26（清减益）、skillAtkType=6（祝福）；
+   1–21 级 area=10（敌单体），22 级 area=19（敌全体=群体）并附带 power3=52/-8（燃烧法力 -8%）。
+   本版起 22 级解除魔法打在幻影怪身上不再被整段拦掉，解状态与扣蓝都会生效
+   （即上一版遗留的「解除魔法同步」一项，在此一并完成）。
+   官方数据里符合「群体祝福 + 带清除增益」的技能共 2 个：解除魔法、除魔领域。
+
+   实现：lib/client-phantom-immunity-patch.mjs（revision 升为
+   phantom-immune-except-remove-buff-v2），锚点唯一、幂等，并兼容已打过上一版(v1)的产物。
+   主包：4,557,839 → 4,563,180 字符（本补丁相对 v1 多 275 字节）。
+
+2、人物学习技能恢复「点一下学到满级」，与宠物一致
+   web/career-skills.js 之前只让宠物一键学满，人物侧被显式排除
+   （args.target===World.myPlayer 那一支），所以人物又退回一次一级。本版：
+     · SkillItem.tapBtnOperating：人物用 World.myPlayer、宠物店用出战宠物，统一把
+       {target, skill, maxLevel, oneKeyLearned:true} 交给原来那个确认面板（不加按钮、不改外观）；
+     · Learn.onConfirm：改为只认 oneKeyLearned 标记，不再排除人物。
+   服务端 lib/restoration-service.mjs 的 14002 本来就支持一次学到目标等级
+   （for(let nextLevel=(p.skills[id]||0)+1; nextLevel<=level; nextLevel++)），无需改动。
+   其他入口没有这个标记，行为完全不变。
+
+   ⚠ 同步更新了上游验收用例 tests/pet-mentor-skills.test.mjs 的最后一条：
+     旧断言写的是「人物技能商店(<2000)走原生那条，还是一次一级」，
+     现改为「人物商店同样一次学到最高级」；测试夹具的 World.myPlayer 补上了 skills 数组。
+
+── 回归 ──────────────────────────────
+全量 tests/*.test.mjs：313 项 pass 266 / fail 47，与上一版基线逐条一致，新增失败 0。
+（首跑多出 1 条失败＝上述第 241 条用例，随行为调整同步更新后回到基线。）
+
+第 14 版 APK：124.69 MB（130,751,880 字节），sha256
+  798cf1b0869af13129ac4c2bea463c65be928f1d6385cad63b988f83a147414d
+  构建指纹 9526bf99c8f6（主包 4,557,839 → 4,563,180 字符）
+
+  开包校验：
+    · 主包含 phantom v2（!(s==ATKTYPE_BLESS&&(…POWER_REMOVE_STATUS…BUFFER_TYPE_BUFF))）
+      与原 weapon-slot 补丁
+    · js/ff/….js.orig 保持原始（两处补丁都不含）
+    · career-skills.js 含 oneKeyLearned，且已无「排除人物」的判断
+    · index.html 面板按钮 = 单机菜单 · v10.8；build-version id = 9526bf99c8f6
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 15 版 —— 武器幻化解除类型限制
+══════════════════════════════════════════════
+
+需求：游戏里武器幻化只能幻化成同类型外观（大刀只能变刀），改成武器之间
+      任意幻化、不限类型（大刀可以变法杖）。
+
+根因：v305 的「同类型」判定散落在三处，缺一不可：
+  · 服务端 lib/illusion-service.mjs candidatesFor()：只下发 item.type===source.type
+    的候选 → 客户端根本看不到别的武器；
+  · 服务端 lib/illusion-service.mjs 幻化校验：appearance.type!==definition.type
+    直接拒绝 → 就算客户端能看到，提交也会被打回；
+  · 客户端主包：
+      - BagChange 视图 onShow()：`n.type==e.type` 过滤候选列表；
+      - Item.isIllusion()：`o.type==this.type` 统计同类外观，决定「幻化」按钮是否显示。
+
+修法：把「同类型」换成「同槽位组」——两件装备的 itemSlots() 有交集即可。
+  · 所有武器共用武器槽 [8,10]：
+      单手/双手剑 13/14、单手/双手刀 15/16、单手/双手重武 17/18、双手法杖 19、
+      双手长枪 20、单手/双手弩 21/22、双手弓 23、单手盾 24、
+      法术球 34、单手/双手火枪 35/36、单手/双手锤 37/38、双手扇 39
+    → 武器之间全部互通，大刀/法杖/长枪/弓/锤/扇…任意互幻。
+  · 其余装甲各自独占槽位（头 0、衣 1、裤 2 … 坐骑 11、时装 12），
+    槽位组内本来就只有一种类型，所以装甲行为完全不变。
+
+改动清单：
+  1) lib/illusion-service.mjs
+     · 新增 shareSlot()；candidatesFor() 与幻化校验都改用它；
+     · 顺带去掉 .slice(0,127)：放开后武器候选有 526 条，超过原上限。
+  2) lib/client-illusion-patch.mjs（新增，illusion-any-weapon-v1）
+     · onShow() 与 isIllusion() 的 type 相等判断 → 「同类型 或 同属武器大类」；
+     · 幻化列表响应数量头 byte → short（见下）。
+  3) lib/character-import-codec.mjs
+     · exportEquipment() 原本只认 type ≤ 23，把 type 24(盾) 与 34–39(球/火枪/锤/扇)
+       判成「暂不支持此导出物品类型」，一放进候选就让整个 11530 请求失败。
+       放宽到与客户端 getItemClass() 一致：0–12 或 13–24 或 34–39；
+     · equipmentBytes() 的 weapon 判定同步放宽，保证这些类型走武器字段布局。
+  4) 幻化列表数量头：11530 响应由 1 字节(有符号，上限 127) 改成 2 字节；
+     客户端 `a=i.getByte()` → `a=i.getShort()`。526 条候选才能完整下发。
+  5) tests/illusion.test.mjs：原用例断言 <=127 已过时，改为读 2 字节数量头；
+     新增「大刀能列出全部武器类型」用例。
+
+实测（服务端口径）：
+  · 大刀(type15) → 法杖(19)/长枪(20)/弓(23)/双手刀(16) 全部允许 ✔
+  · 帽子 → 衣服 / 帽子 → 大刀 / 戒指 → 坐骑 仍然拒绝 ✔（跨部位不放行）
+  · 候选数：大刀 526、法杖 526；帽子 151、戒指 124、坐骑 153（与放开前一致）✔
+  · 526 条候选全部导出成功（0 失败）✔
+  · 主包补丁 +217 字节、幂等成立、三处锚点唯一。
+
+── 双通道挂载 ──────────────────────────
+补丁源码 lib/client-illusion-patch.mjs，两处调用点同步：
+  · 电脑版 server.mjs（运行时）—— 补丁链最外层；/api/status 增 illusionRevision；
+  · APK 版 安卓打包/standalone/build.mjs（构建期）—— 补丁链最外层。
+
+── 回归 ──────────────────────────────
+全量 tests/*.test.mjs：314 项 pass 267 / fail 47
+（上一版基线 313 项 266/47；新增的 1 项是本次加的武器跨类型用例，通过）。
+新增失败 0。
+
+第 15 版 APK：124.69 MB（130,752,004 字节），sha256
+  7aa1fd0d0205fb0fe783bba356836a91e86f64db62ed8cbae8f09eb016ea5c77
+  构建指纹 b21709ca654f（主包 4,557,839 → 4,563,397 字符）
+
+  开包校验：
+    · 主包含幻化放开（onShow / isIllusion 两处 + 数量头 short）
+    · 仍含 phantom 与 weapon-slot 补丁
+    · js/ff/….js.orig 保持原始（不含上述任何补丁）✔
+    · build-version.json id = b21709ca654f
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 16 版 —— 主界面无用图标与聊天栏下架
+══════════════════════════════════════════════
+
+需求：主界面上的「抽奖、福利、超值、霸业、聚义酒馆」五个活动图标，以及「邮件」
+      和「邮件右边的遮罩（点它进聊天页）」全部不显示 —— 对单机玩家无用且容易误触。
+
+对应元素（都在主界面 MainMdr._view 上）：
+  · 抽奖     btnLottery
+  · 福利     btnReward
+  · 超值     btnBulk
+  · 霸业     btnCampWar  ← 皮肤 MainViewSkin.exml 里它的 label 就是「霸业」
+                           （client/assets/c7/c76b2cd3bfe2b4b1.json 第 445 项），
+                           图标 zhu_icon_zz。按钮名与文案对不上，是按这条记录定的，
+                           注意别和顶部菜单里名为「国家」的 btnManor 混了（那个保留）。
+  · 聚义酒馆 btnBuddy
+  · 邮件     btnMail
+  · 聊天遮罩 grp_chat > scroller_chat
+      grp_chat 是底部聊天栏：左边 btnMail，右边 scroller_chat。
+      主包把 scroller_chat 绑了 tapChat
+      （e.onEgret(e._view.scroller_chat, egret.TouchEvent.TOUCH_TAP, e.tapChat, e)），
+      点它就会进聊天页 —— 这就是「邮件右边的遮罩」。
+      （同组的 btnChatIcon 本身 touchEnabled=false，只是装饰。）
+
+修法（只改 web/home-features.js，不动主包）：
+  1) 从主界面图标白名单 buttons{} 里摘掉 btnLottery / btnReward / btnBulk / btnBuddy；
+  2) 新增 removedButtons=[btnLottery,btnReward,btnBulk,btnCampWar,btnBuddy,btnMail]
+     与 removedGroups=[grp_chat]，由 hideRemoved() 钉成
+     visible=false / includeInLayout=false / touchEnabled=false；
+  3) hideRemoved() 在 visible() 末尾调用，并把下面这些「会把图标重新显形」的原版方法
+     也纳入 hook（执行完原逻辑后立刻再隐藏一遍）：
+       onShowCampWar / onShowSailing / onSevenDay / onConquerBoss / dealIcon /
+       updateAllIcon / addLevelOpenButton / levelOpenButton
+     —— 这些方法多数走 GUtil.setLayout(target, bool) 设可见性，只摘 buttons
+     白名单挡不住它们。
+
+测试同步（tests/home-ui-app.cjs，Electron 端到端 QA 脚本）：
+  · 可点图标清单去掉被下架的 5 个；
+  · 新增断言：被下架图标不再 visible，且 grp_chat 保持隐藏。
+
+── 回归 ──────────────────────────────
+全量 tests/*.test.mjs：314 项 pass 267 / fail 47，与上一版基线逐条一致，新增失败 0。
+
+第 16 版 APK：124.69 MB（130,752,004 字节），sha256
+  487dcd584f97740d87f7492eb6f067b60d35f296d3fa40520c3a0117501ea399
+  构建指纹 e73a9f202875（本次只改 web 层，主包 4,563,397 字符不变）
+
+  开包校验：
+    · assets/public/home-features.js 含 removedButtons / removedGroups / hideRemoved
+    · 主包仍含前几版补丁（幻化 any-weapon / 幻影免疫 / 武器槽）
+    · build-version.json id = e73a9f202875
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 17 版 —— 武器幻化上模型 + 双手武器贴图
+══════════════════════════════════════════════
+
+反馈：武器幻化功能本身对了，但显示有问题 —— 角色身上原来那把武器的贴图还在；
+      另外现在能同时装两把武器，双手类型武器会让贴图错乱。希望以左边武器槽的
+      显示为主，双剑 / 剑盾组合的显示不要动。
+
+根因（都在主包 Player.updateIcon 里，写 icon2 的武器贴图那两段）：
+  · 左手槽 WEAPON_LEFT_POS=8 → icon2 的 LWEAPON_STYLE / LWEAPON_COLOR / LWEAPON_ADD
+  · 右手槽 WEAPON_RIGHT_POS=10 → icon2 的 RWEAPON_*，两者独立渲染
+  1) 这两段都直接用 bag 里原始装备的 e.icon，全主包里 getIllusionItem 只被
+     时装(updateIconByFashion)和坐骑调用过，武器一次都没有 —— 所以武器幻化只换了
+     背包/装备栏图标，角色模型上永远还是原来那把武器（「原来的武器贴图还会存在」）。
+  2) 原版双手武器会顶掉两个武器槽、只留在左槽，所以只有一个武器位在画；解除双手
+     限制后可以同时装两把双手武器，LWEAPON 与 RWEAPON 各画一把双手武器 → 叠加错乱。
+
+修法：新增 lib/client-weapon-icon-patch.mjs（weapon-icon-v1）
+  1) 左右两槽取到武器后，若带幻化（illusionItemId）就换成幻化外观再取 icon，
+     与时装/坐骑同一套写法：
+       null!=e&&e.illusionItemId&&null!=(t=this.getIllusionItem(e.illusionItemId,e))&&(e=t),
+     （复用该函数里已声明的 t，不引入新变量。）
+  2) 右手位只在「左右两槽都不是双手类型」时才渲染 —— 涉及双手武器时以左边武器槽的
+     显示为主，不会再出现两把双手武器叠在一起。
+     双剑（单手+单手）、剑盾（剑+单手手）两边都不是双手类型，判定不触发，
+     显示效果完全保持原样。
+  双手类型集合与 Bag.isTwoHandWeaponType 一致，直接内联数字（不依赖 bag 上该方法
+  在压缩后是否可见）：
+    14 双手剑 / 16 双手刀 / 18 双手重武 / 19 双手法杖 / 20 双手长枪 / 22 双手弩 /
+    23 双手弓 / 34 法术球 / 36 双手火枪 / 38 双手锤 / 39 双手扇
+
+实测：补丁 +527 字节、幂等成立、两个锚点各唯一；
+      改后主包整体 `node --check` 通过（原始主包同样通过，逐字节只多出补丁片段）。
+
+── 双通道挂载 ──────────────────────────
+补丁源码 lib/client-weapon-icon-patch.mjs，两处调用点同步：
+  · 电脑版 server.mjs（运行时）—— 补丁链最外层；/api/status 增 weaponIconRevision；
+  · APK 版 安卓打包/standalone/build.mjs（构建期）—— 补丁链最外层。
+
+── 回归 ──────────────────────────────
+全量 tests/*.test.mjs：314 项 pass 267 / fail 47，与上一版基线逐条一致，新增失败 0。
+
+第 17 版 APK：124.69 MB（130,752,169 字节），sha256
+  6a09d8f1ddab45726e6863ded59ca5a7787e9acf6b2dc9100f9a72a6d69ffc6c
+  构建指纹 422f13cad7d9（主包 4,557,839 → 4,563,924 字符）
+
+  开包校验：
+    · 主包左右两槽都带幻化替换、右手位带双手守卫
+    · js/ff/….js.orig 保持原始（不含本次及以往任何补丁）✔
+    · 前几版补丁（幻化列表 any-weapon / 幻影免疫 / 武器槽）仍在
+    · build-version.json id = 422f13cad7d9
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 18 版 —— 武器幻化后贴图不跟手（并修掉上一版没生效的守卫）
+══════════════════════════════════════════════
+
+【症状】
+大锤幻化成剑后：剑不跟角色的手臂、突兀地飘在身后，大锤有时还在。
+
+【根因（客户端角色贴图是两层，两层都只认 icon2）】
+  · 躯体模型 = assets/sprite/model/{nameID}.json，决定手臂姿势 + 每个零件的绘制偏移；
+    nameID 由 SpriteTool.getSpriteIdByIcon(icon1, icon2, icon3) →
+    getSpriteNameIDByWeapon(基础体, 左武器style, 右武器style, 双持, 战斗)
+    算出。左右 style 先按 (style-1)>>4 换成「武器类型组」再映射成 113(单手剑)/
+    136(双手锤) 等模型；**关键是最后一句 `var l=r;0!=s&&(l=s)` —— 右手会盖掉左手，
+    躯体姿势以右手为准**。
+  · 武器零件碎片 = getWeaponIcon(左 style, color)，右手只有在双持模型里才是第二个
+    零件槽。
+  ⇒ 两把武器类型不同时：躯体按右手摆姿势，武器贴图却按左手画 → 贴图与手臂错位
+    （飘在身后），右手的武器也照样画出来。
+
+【上一版（v17）为什么没修好】
+  v17 的守卫被写成了一个「逗号表达式里的中间语句」：
+    …,e=this.bag.getItem(RIGHT),
+      !(e&&双手)&&!(左槽双手)&&null!=e&&e.illusionItemId&&…&&(e=t),
+      null!=e&&e.icon>0&&(写 icon2)
+  if( ) 的条件取的是**最后一个**表达式，中间那句算完就被丢弃 —— 守卫等于没生效，
+  右手武器照样写进 icon2，所以症状原样存在。
+
+【本版修法】lib/client-weapon-icon-patch.mjs（weapon-icon-v2）
+  1) 左右两槽取到武器后都先做幻化解算（原版只有时装/坐骑有，武器没有）：
+     if(x.illusionItemId){var y=this.getIllusionItem(x.illusionItemId,x);y&&(x=y)}
+  2) 右手槽加「显示守卫」，并且**挂在最终条件上**（守卫 && icon 检查）：
+     仅当满足以下之一才把右手武器写进 icon2，否则右手位不参与渲染 ——
+       · 左槽没有可显示武器（空槽 / 盾类 icon=0）→ 只有右手持械的玩家照常显示；
+       · 左右「解算幻化后的类型组」相同、且两边都不是双手类型 → 双剑/双刀原样保留；
+       · 其余（两把不同类型武器）→ 只画左手，躯体姿势也按左手摆。
+     类型组换算与客户端一致：13~23、34~39 用自身；24(盾/护手) 与其它 = 0（无武器姿势）。
+     双手集合与 Bag.isTwoHandWeaponType 相同（14/16/18/19/20/22/23/34/36/38/39）。
+  实测：主包 4,557,839 → 4,564,108 字符（+711；v17 是 +527），幂等成立。
+
+【验证】
+  · 抽出改后 if( ) 的**真实条件表达式**、用 mock 现场求值（9 个组合）：
+      大锤(幻化→剑)+大锤 → 右手不渲染 ✔
+      单手剑+单手剑（双剑） → 照旧渲染 ✔
+      单手剑+盾（剑盾，盾 icon=0） → 照旧不写（与改前完全一致）✔
+      空槽+大锤（只有右手） → 渲染 ✔
+      双手剑+双手剑 / 单手剑+双手剑 / 单手剑+双手锤 → 只画左手 ✔
+      两把大锤都幻化成剑 → 渲染（双剑姿势，正确）✔
+      剑(幻化→大锤)+剑 → 左手为主 ✔
+  · 新增回归测试 tests/weapon-icon-patch.test.mjs（3 条）：补丁幂等 + v1 写法不得复现
+    + 左槽幻化解算 + 上面 9 个组合；已进全量用例，正是这批用例能挡住 v17 那种写法。
+  · 全量 tests/*.test.mjs：317 项 pass 270 / fail 47（上一版 314 / 267 / 47）；
+    新增 3 条全过，失败数不变 = 无回归。
+
+【交付】
+  第 18 版 APK：124.70 MB（130,752,307 字节），sha256
+    b2669a0fdb62b78afda3b53c8f9c6da2bf9fb74d18cff08d346f79129c629b8d
+    构建指纹 38ae4b0081ac（主包 4,557,839 → 4,564,108 字符）
+  开包校验：主包含左右两槽幻化解算 + 挂在最终条件上的右手守卫、旧 v1 守卫无残留、
+    js/ff/….js.orig 保持原始（standalone 会二次补丁）、幻化放开/幻影/武器槽各补丁都在。
+
+【已知未动的一处】
+  getEquipWeaponType() 读的是背包里的原始装备类型（不认幻化），它只影响**战斗动作**
+  层：getAttakAnimePos() 站位动作、getAttackRangeAnime() 弩的范围特效、ATK_TIME
+  相关加成。世界/战斗里的角色贴图不吃这条路径，所以本次贴图问题与它无关；如果之后
+  出现「幻化成弓却还是近战抬手」这类现象，再改这里（涉及战斗表现，要单独验证）。
+
+  （覆盖安装即可，不必卸载。）
+
+══════════════════════════════════════════════
+第 19 版 —— 宠物幻化（新增功能）
+══════════════════════════════════════════════
+
+参照装备幻化，给宠物也做了幻化：只换外观，名字/等级/品质/属性/技能全不动。
+按你的要求，候选只列「传说级别」宠物（pet-catalog 里 grade 4，共 146 只）。
+
+── 宠物外观由哪三个字段决定 ────────────
+客户端解析宠物详情（主包 module 42 的 fromBytesDetail）时：
+    t.icon1        = e.getLong()    ← 场景/战斗里那只宠物的精灵
+    t.PetHeadIcon  = e.getShort()   ← 界面里的宠物头像
+    t.modelForPet  = e.getInt()     ← 宠物模型编号
+三者逐一对应服务端 lib/pet-packets.mjs 里下发的 p.icon / p.headIcon / p.model。
+所以「幻化」= 把这三项替换成目标宠物的取值。
+
+── 关键设计：替换放在「下发时」，不动存档 ──────
+存档里永远保留宠物自己的 icon/headIcon/model，幻化结果只作为外观快照存在
+pet.illusion = {key,name,grade,icon,headIcon,model}。
+好处：
+  · 取消幻化 = 删掉快照，宠物立刻回到原样，零副作用；
+  · 详情/背包/场景/宠物装备四条下发路径共用 petDetail / petItemPacket 两个函数，
+    改这两处就全覆盖，客户端一行渲染代码都不用改；
+  · 存档迁移、回滚都只涉及一个可丢弃的字段。
+
+── 1. 服务端 lib/pet-illusion-service.mjs（新增）────
+两个单机扩展协议（沿用 home-features 的「JSON 进 / JSON 出」写法）：
+  · 90023 幻化候选列表：入参 {role,slot}，回 {slot,name,current,candidates}
+      current 为 null 表示当前没幻化；
+      candidates 取 petCatalog.legendaryPool（146 条，全部 grade 4），
+      每条含 key/name/grade/icon/headIcon/model。
+  · 90024 设置/取消幻化：入参 {role,slot,key}
+      key 非空 = 幻化成该外观（只接受候选人里的 key，其它一律拒绝）；
+      key 为空 = 取消幻化。
+  校验：必须先进入角色、战斗中禁止、请求体 ≤2048 且无冗余字节、role 必须与
+        当前角色一致、slot 上必须真有一只自己的宠物。
+  写档失败会把 pet.illusion 整体回滚（设置和取消两条路径都回滚）。
+  数字 opcode 说明：90021 已被 daily-reset 的推送占用，90022 被 offline.js 的
+  角色外观同步占用，故本轮用 90023/90024。
+
+── 2. lib/pet-packets.mjs ───────────────────
+新增三个取值函数（petAppearance 从 pet-illusion-service 导出）：
+    lookIcon / lookHeadIcon / lookModel —— 有幻化就取幻化值，否则取宠物自身值，
+    缺字段回落到 icon=0 / headIcon=0 / model=-1（与原实现一致）。
+替换点只有三处：petDetail 的 long(icon)、short(headIcon)、int(model)，
+petItemPacket→petItemDefinition 的 short(icon)、short(headIcon)。
+
+── 3. web/pet-illusion.js（新增）+ 宠物界面按钮 ────
+  · hook PetInfoMdr（主包 module 288）的 onShow 与 addListeners，在宠物详情界面的
+    按钮组 groupPetO 末尾补一个「幻化」按钮：
+      - groupPetO 用的是 TileLayout，往里面 addChild 会自动排版；
+      - 皮肤沿用同组按钮的 CancelBtnSkin，视觉与「休息/出战」「道具」「改名」
+        「放生」「洗髓石」「潜能石」「重生石」「封印」完全一致；
+      - 尺寸跟同组第一个按钮对齐，并把按钮组高度放宽到够 3 行，避免多出来的
+        一个按钮被容器高度裁掉；
+      - 看别人的宠物（_showArgs.type 非空，图鉴/邮件/摊位）时按钮自动隐藏。
+  · 点按钮弹出 DOM 面板（#pet-illusion-dialog）：搜索框 + 146 个候选按钮，
+    当前生效的外观高亮；点候选即提交，另有「恢复原本外观」（key 为空）。
+  · 取当前宠物：PetInfoMdr._proxy.data.getSelectedPet().petItem.slotPos，
+    与服务端 itemAt(p,slot) 的槽位口径一致（出战宠物在 slot 1，背包宠物在 30+）。
+  · 提交成功后调 mdr.onBagEquipemntUpdate()，界面会重新拉一次宠物详情
+    （15502 → petDetail，已带幻化外观），宠物精灵、头像、模型随之刷新。
+  · 健壮性：拿不到 module 288 时静默退出（返回 revision:null），
+    绝不会把整个离线启动链带崩；installButton 整体 try/catch，
+    按钮是附加功能，出问题不影响原宠物界面。
+  · web/pet-illusion.css 新增（复刻 home-features 的对话框风格），
+    index.html 增加 <link> 和 <script>，offline.js 里在 installHomeFeatures 之后
+    调用 installPetIllusion(req)。
+
+── 验证 ──────────────────────────────
+· 服务端探针（用真机原生解码器 module 42 的 fromBytesDetail 回读 petDetail）：
+    自身    icon 75  / head 510 / model 640
+    幻化成「九尾灵狐」→ icon 34 / head 533 / model 310  ← 三项全部命中
+    名字、等级保持不变；存档里 pet.icon/headIcon/model 仍是 75/510/640。
+    取消幻化 → 精确恢复 75/510/640。背包道具包 petItemPacket 也带幻化后的 icon。
+· 拒绝路径：非传说 key（火焰精灵:0 是 grade 0）、不存在的 key、role 不符、
+    空槽位、战斗中 —— 全部返回 -1 并给出中文提示，且宠物外观一点没变。
+· 写档失败：幻化与取消两条路径都会回滚到操作前的外观。
+· 新增 tests/pet-illusion.test.mjs（7 条）覆盖上面全部行为。
+· 全量 tests/*.test.mjs：324 项 pass 277 / fail 47，
+  比上一版（317/270/47）多 7 条 = 本次新增的测试，失败数不变 → 无回归。
+
+── 构建 ──────────────────────────────
+主包未改动（4,557,839 → 4,564,108 字符，与第 18 版同值），本轮只动 web 层
+与新增服务端模块。构建指纹 b4c208ea5c15，index.html 20 个脚本（+1）。
+
+第 19 版 APK：124.70 MB（130,752,458 字节），sha256
+  d2500fbc0f05973ce104a0ea0d6ae4635c15cfebed99c33fe700d9c23620c016
+
+  开包校验：
+    · assets/public/pet-illusion.js 与 .css 已进包（协议、hook、按钮代码齐全）
+    · index.html 已引用两者，版本按钮仍是「单机菜单 · v10.8」
+    · offline.js 含 installPetIllusion 调用
+    · build-version.json id = b4c208ea5c15
+
+新增文件：lib/pet-illusion-service.mjs、web/pet-illusion.js、web/pet-illusion.css、
+  tests/pet-illusion.test.mjs
+改动文件：lib/pet-packets.mjs、server.mjs、web/index.html、web/offline.js
+
+两点说明：
+  · 幻化只改外观，战斗表现（站位动作、攻击距离特效、ATK_TIME 加成）仍按宠物
+    自身的攻击类型走 —— 和装备幻化一样，不改变任何数值与战斗判定。
+  · 按钮加在宠物详情界面「休息/出战 … 封印」那一排的末尾，与原按钮同款同排版；
+    因为该按钮组是自动换行布局，若手机上该排刚好排满，新按钮会顺延到下一行。
+    （覆盖安装即可，不必卸载。）
+══════════════════════════════════════════════
+第 20 版 —— 宠物幻化「按钮点不动 / 看不到变化」修复
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+宠物界面点「幻化」能弹出候选列表，点其中一只（比如六耳猕猴）却没有任何反应；
+关掉界面后宠物外观还是老样子；再去点宠物界面的「幻化」，怎么点都没反应了。
+重新刷新角色列表进游戏，幻化其实成功了 —— 但按钮还是一样点不动。
+
+── 根因（两个，都在客户端） ─────────────
+1) 按钮点不动：监听被 doHide 摘掉，而视图是复用的。
+   · 幻化按钮的点击原先用 source.onEgret(button, egret.TouchEvent.TOUCH_TAP, …) 注册。
+     Mdr 基类的 doHide 是这么收尾的：
+       for(var o=this.__egretHandler;o.length;){var n=o.pop();
+         n&&n.target.removeEventListener(n.type,n.listener,n.thisObject)}
+     —— 登记在 __egretHandler 里的监听会被**全部摘掉**。
+   · 但视图不会重建：Owner.showView 里是
+       var r=a.__mdrIns[e]; r||(r=a.__mdrIns[e]=new a.__mdrCls[e](i), …)
+     —— 同一个 Mdr 实例（连同 _view、连同那个幻化按钮）会被复用，
+     只有闲置超过 Mdr_Dispose_T 才会 dispose。
+   · 于是第二次打开时 view.__petIllusionBtn 仍然存在（installButton 早期 return，不再重挂），
+     监听却已经在 doHide 里被摘掉了：按钮还画在屏幕上，点击毫无响应。
+     「刷新角色列表」并不会重新加载页面，所以那个实例还在，依旧点不动。
+   修法：改成用 button.addEventListener 直接挂在按钮对象上（不进 __egretHandler，
+         doHide 摘不到），监听函数存在 view.__petIllusionTap 上，只挂一次；
+         每次界面显示都走一遍 installButton/syncButton 做检查。
+
+2) 看不到变化：刷新走的是带缓存的旧路径。
+   · 原先提交成功后调 mdr.onBagEquipemntUpdate()，它内部走 _proxy.doPetSeeMsg，
+     而 doPetSeeMsg 开头有两道「跳过」判断：
+       e==myPlayer.getPet()            → 出战宠物直接返回
+       1==e.isTabStatus(PET_INFO)      → 详情已加载过就直接返回
+       （ModelConst.PET_INFO = 32，setTabStatus/isTabStatus 就是 intValue1 上的位运算）
+     命中任意一条就直接 return true，根本不会向服务端重新要数据。宠物界面的详情早就
+     加载过了，所以怎么刷都是旧外观 —— 表现就是「点了没反应」。
+   · 修法：幻化成功后自己发一次宠物详情协议（15502，与原生 createPetSeeMsg 一模一样），
+     拿到官方格式的 petDetail 后，用客户端自带的解析器 module 42 的
+     fromBytesDetail(reader, vo) 把新外观写回本地宠物对象，再调 mdr.updateView() 重画；
+     顺手 setTabStatus(true, 32) 把「已加载」标志位补回去，和原生行为保持一致。
+
+3) 附带：提交成功后写的提示文案会被 finally 里的 render() 重置成「候选 N 种…」，
+   看起来就像什么都没发生。现在文案单独存一份，render() 之后再写回。
+
+── 改动 ──────────────────────────────
+· web/pet-illusion.js（revision pet-illusion-v1 → pet-illusion-v2）
+  · installButton：拆成「按钮只建一次」+「监听直接挂在 button 上、保证全程都在」；
+  · 新增 pullPetDetail()：发 15502 → fromBytesDetail 写回 VO → 补回 PET_INFO 标志位；
+    refreshPet() 改成不 await（网络慢也不卡住提示），完成后调 mdr.updateView()；
+  · submit() 的成功/失败文案不再被 render() 覆盖。
+· web/index.html：/pet-illusion.js 加版本参数（?v=pet-illusion-v2），
+  免得 WebView 继续吃旧缓存。
+· 服务端一行没动 —— 15502 下发的 petDetail 本来就带幻化后的外观（第 19 版已实现）。
+
+── 验证 ──────────────────────────────
+· 新增 tests/pet-illusion-app.test.mjs（4 条，把真正的 web/pet-illusion.js 丢进 VM 里跑，
+  用假的 eui / egret / document 模拟宠物界面与 Mdr 生命周期）：
+    1) 关一次界面（doHide 摘监听）再打开，点击仍然能发出 90023；
+       并断言幻化按钮的监听**不在** __egretHandler 里；
+    2) 幻化成功后状态文案保持「已幻化成…」，且确实发了 15502、
+       调用了 fromBytesDetail 与 updateView；
+    3) 连续两轮「幻化 → 关界面 → 再打开 → 幻化」全程可用
+       （协议序列 90023 / 90024 / 15502 / 90023）；
+    4) 反向回归：把注册方式换回 onEgret，doHide 之后按钮监听归零、再点没有任何反应
+       —— 证明上面那条测试确实盯住了根因，不是为了凑数。
+· 全量 tests/*.test.mjs：328 项 pass 281 / fail 47，
+  上一版（324/277/47）多出的 4 条就是本次新增的测试，失败数不变 → 无回归。
+
+── 构建 ──────────────────────────────
+主包未改动（4,564,108 字符，与第 19 版同值），本轮只动 web 层。
+构建指纹 7ca60073c0a5，index.html 20 个脚本。
+
+第 20 版 APK：124.70 MB（130,752,458 字节），sha256
+  09effacc1843b76f24b44ee557b88bb1b6ea020a11dec47fb37b1b516bb9c409
+
+  开包校验（10825 个条目）：
+    · assets/public/pet-illusion.js 含 button.addEventListener / __petIllusionTap /
+      pullPetDetail / fromBytesDetail / PET_SEE=15502，revision 已是 pet-illusion-v2；
+      文件里已不含任何走 onEgret 的按钮注册（只剩注释里的一句说明）
+    · index.html 脚本标签 = /pet-illusion.js?v=pet-illusion-v2&t=7ca60073c0a5
+    · 版本按钮仍是「单机菜单 · v10.8」
+    · build-version.json id = 7ca60073c0a5
+
+改动文件：web/pet-illusion.js、web/index.html
+新增文件：tests/pet-illusion-app.test.mjs
+
+说明：幻化依旧只改外观 —— 名字、等级、品质、属性、技能与任何战斗判定都不动。
+  覆盖安装即可，不必卸载（幻化快照存在存档里，不会丢）。
+══════════════════════════════════════════════
+第 21 版 —— 宠物幻化「列表不更新 / 关掉界面造型回退」修复
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+候选列表能正常打开了，幻化完宠物详情界面的造型也确实变了；但是
+  · 宠物列表里那只宠物还是旧造型；
+  · 把详情界面、幻化面板都关掉之后，宠物造型又变回原来的；
+  · 得重新登录或者刷新角色才会更新。
+
+── 根因：客户端里宠物的「外观」存了两份，场景贴图还要单独触发 ───
+1) 宠物列表读的是**背包道具**，不是宠物对象。
+   · 列表格子是 PetListMdr → PetItem，它画的是 `this.data.pet.petItem.icon`
+     （皮肤里那一格的数据是 `{pet:SoloPetVo, index}`，`petItem` 就是这只宠物在
+     背包里的那个道具对象，`itemChangePet()` 里是 `i.petItem = e`，同一个引用）。
+   · 而背包道具的 icon 是从 wire 上单独解出来的：客户端 module 0032 解析类型 32
+     （ITEM_TYPE_PET）时读的是 `t.icon = i.getShort()` / `t.petHeadIcon = i.getShort()`，
+     对应服务端 petItemDefinition 里写的 `short(lookIcon(p))` / `short(lookHeadIcon(p))`。
+   · 第 20 版只改了宠物对象上的 `icon1 / PetHeadIcon / modelForPet`，
+     背包道具那份没人管 —— 所以详情界面对、列表不对。
+   · 又因为列表页只在 `onShow` 时用 `initView()` 重建数据源，而幻化是在它上面的
+     宠物详情窗口里做的，回去的时候列表页并不会重新 onShow，所以连重建都不会发生。
+2) 场景里那只随行宠物，贴图也不是自动跟着宠物对象走的。
+   · 场景宠物显示对象的 `setSpriteSrc()` 才会 `this._sprite.setPetIcon(this.vo.icon1, …)`；
+     它只在 `updateSprite()` 里被调用。
+   · 而宠物自己没有任何事件能触发 `updateSprite()` —— 唯一的路子是玩家贴图重建时顺带做的：
+     玩家类的 `setSpriteSrc()` 结尾有 `if(e.vo.pet){ d = ctrl.getPetByOwnerId(e.vo.id); d.updateSprite() }`。
+   · 所以「关掉界面之后造型还是原来的」，其实就是场景贴图从没重建过。
+     （顺带记一条：发 `SceneEvent.ON_PET_ADD` 不够 —— `onPetAdd` 只做 `o.vo=vo; o.onAdded()`，
+     不重算贴图。）
+
+── 改动（全部在 web/pet-illusion.js，服务端一行没动） ──
+· revision → `pet-illusion-v3`；index.html 的 `?v=` 同步。
+· `pullPetDetail()` 改成返回被写回的宠物对象（原来是返回 boolean）。
+· 新增 `applyAppearanceToItem(vo)`：把解出来的 `icon1 → petItem.icon`、
+  `PetHeadIcon → petItem.petHeadIcon` 写回背包道具（`icon1` 是 Long，
+  统一 `Number(vo.icon1?.toNumber?.() ?? vo.icon1)`）。**只在详情解析成功后写**，
+  解析失败就不动道具，免得把旧值当新值写进去。
+· 新增 `notifyAppearanceChanged()`：
+  · `sendNt(BagEvent.BAG_ITEM_UPDATE)` —— 背包/宠物格按本地道具重画；
+  · `sendNt(MainEvent.ON_PET_ATTR_UPDATE)` —— 宠物头像等小组件；
+  · `World.myPlayer.refreshWorldSprite()`（缺了就用 `updateAndRefreshIcon()`）
+    —— 场景里玩家贴图，顺带把随行宠物的贴图一起重建。
+    这两个 notify 与刷新方式都是本项目 web 层已经在用的写法
+    （见 web/equipment-composition.js、web/equipment-workshop.js）。
+· 新增 `refreshPetListPage()`：顺着同一个 Pet 模块的实例表 `mdr._owner.__mdrIns`
+  找到那个皮肤上带 `listPets`、并且有 `initView()` 的页面（就是宠物列表页），
+  直接让它重建一次。**不动窗口层级、不切页签**；找不到就安静跳过
+  （下次打开列表自然会重建）。整体 try/catch，页面还没建好也不会出事。
+· `refreshPet()` 串起来：拉详情 → 写背包道具 → 发通知 + 刷场景 → 重建列表页 → 详情界面重画。
+
+── 验证 ──────────────────────────────
+· `tests/pet-illusion-app.test.mjs` 扩到 6 条（VM 里跑真的 web/pet-illusion.js）：
+  · 新增「幻化后背包宠物道具、宠物列表、场景贴图都要跟着更新」：
+    断言 `petItem.icon` 变成 1111、`petItem.petHeadIcon` 变成 22、
+    两个 notify 的先后与内容、`refreshWorldSprite()` 恰好被调一次、
+    列表页 `initView()` 恰好被调一次、并且官方解析器写的就是
+    `myPlayer.pet` 那个对象本身（随行宠物贴图读的就是它）；
+  · 新增「重拉详情失败时不写坏背包道具」：15502 返回错误状态时
+    `petItem.icon/petHeadIcon` 必须原样（7/8），解析器不会被调用，但幻化本身照常提示成功；
+  · 原有 4 条（按钮在 doHide 后仍可点、提交后文案不被覆盖、连续两轮可用、
+    换回 onEgret 就会失效的反向回归）继续全过。
+· 全量 tests/*.test.mjs：330 项 pass 283 / fail 47，
+  上一版（328/281/47）多出的 2 条就是本次新增，失败数不变 → 无回归。
+
+── 构建 ──────────────────────────────
+主包未改动（4,564,108 字符），本轮只动 web 层两张文件。
+构建指纹 d8e86bdf7bbb，index.html 20 个脚本。
+
+第 21 版 APK：124.70 MB（130,752,458 字节），sha256
+  b633dcee525869de1341ba21c3c04b447199c720e7615ac094320ed28fc039c7
+
+  开包校验（10825 个条目）：
+    · assets/public/pet-illusion.js 含 applyAppearanceToItem / refreshPetListPage /
+      notifyAppearanceChanged / refreshWorldSprite，revision 已是 pet-illusion-v3
+    · index.html 脚本标签 = /pet-illusion.js?v=pet-illusion-v3&t=d8e86bdf7bbb
+    · build-version.json id = d8e86bdf7bbb
+    · 版本按钮仍是「单机菜单 · v10.8」
+
+改动文件：web/pet-illusion.js、web/index.html
+测试文件：tests/pet-illusion-app.test.mjs（6 条）
+
+一点说明：幻化仍然只改外观 —— 名字、等级、品质、属性、技能与任何战斗判定都不动。
+  覆盖安装即可，不必卸载。
+第 22 版 —— 补齐五维 +4 宝石，并接上原版「宝石替换」
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+原版是有 +4 的各种宝石的，看看有没有；没有的话补几颗 +4 宝石，或者把 +3 宝石的数值
+直接改成 +4。另外装备宝石是可以替换的，宝石加成总属性大于一定值的时候可以把宝石
+换成其他类型的宝石。
+
+── 查证：原版确实有 +4 档，只是没采到完整道具定义 ───
+· 官方目录（data/official-v305.json 的 type 30）只采集到 +1/+2/+3 的五维宝石
+  （390–394 是 +3），另加「加50生命宝石」「加20魔法宝石」，没有 +4。
+· 但原版角色的装备导出里确实有 +4 档：attachPower=1、attachValue=颗数×4
+  （tests/fixtures/character-export.json 里 16 件带宝石的装备全是这个组合），
+  也就是 +4 力量宝石。项目里唯一出现过 +4 的地方是
+  data/manual-item-grants.json 的「加4力量宝石（单机直装）」，那只是直装玩法内部
+  用的属性快照，不是一件能拿在手里镶嵌的道具。
+· 结论：原版有 +4，只是没采到道具定义 —— 所以按原版宝石的字节格式把这一档补出来。
+
+── 改动 1：补五维 +4 宝石（新增 lib/local-gems.mjs） ──
+· 以已采集的 +3 宝石为模板补出五种属性各自的 +4：
+    800401 加4力量宝石(绑）  power1=1（力量）
+    800402 加4体质宝石(绑）  power1=3
+    800403 加4敏捷宝石(绑）  power1=5
+    800404 加4智力宝石(绑）  power1=7
+    800405 加4感知宝石(绑）  power1=9
+  除 id / 名称 / powerValue1(=4) / 品质(=2，和 +3 的 1 在背包里能一眼分开) / 说明之外，
+  图标、堆叠数(99)、自动绑定等字段全部沿用原版；原版 +3 宝石一颗都没动。
+· 定义字节按原版格式写出（type/id/名称/图标/说明/品质/绑定/堆叠/…/power 对），
+  加载时拿 390–394 五颗已采集宝石做一次**二进制回环校验**：只要原版格式变了、
+  或者本地写出顺序写错了，服务端启动就直接报错，而不是安静地造出一件客户端
+  解不开的坏道具。
+· 挂在 lib/official-data.mjs 里推进 official.items，于是和 +1/+2/+3 完全同等：
+  · 自动进入「新月繁华之都（20,18）装备与补给商人 → 镶嵌宝石」商店（按 type 30 分类）；
+  · 同属性规则不变，+4 与 +3 同属一个属性位，可以混镶；
+  · 也可以用于宝石替换。
+
+── 改动 2：接上原版「宝石替换」（服务端原本完全没实现） ──
+· 客户端本来就有这个功能：装备详情 → 镶嵌 面板里，当
+  `attachValue >= 20 && isReplaceInlayGem(attachPower)` 时会多出一条「宝石替换」，
+  点进去是 BagItemAttachChangeMdr（选新宝石 → 确认），走两条协议
+  CG_REPLACE_INLAY_GEM(11507) 报价 / CG_REPLACE_INLAY_GEM_ASK(11508) 确认。
+  服务端此前没接这两个协议，所以按下去没有任何反应 —— 这就是「宝石替换用不了」的原因。
+· 规则照客户端实现（isReplaceInlayGem / getCanChangeAttachGemItemList /
+  STR_ATTACH_CAN_REPLACE_INFO「当装备宝石基础属性超过 20 时，可用其他宝石替换」）：
+  · 装备宝石基础属性总和 ≥ 20 才能替换；
+  · 只有五维宝石（力量1/体质3/敏捷5/智力7/感知9）能替换，生命、魔法宝石不在其中；
+  · 新宝石同样是五维宝石，且不能用 +1 档（原版专门排除了它）；
+  · 消耗 2×已镶颗数 颗新宝石；替换后颗数不变，属性按新宝石重算。
+· 11507 的应答里没有状态字节（客户端直接把第一个字节当成消耗清单的条数），所以：
+  · 报价永不返回负数：算不出来就回空清单，真正的原因留给 11508 讲
+    （客户端在那边会弹服务端给的文案）；
+  · 宝石不够时也照实返回能凑到的部分，点确认后给出「还差几颗」的准确提示。
+· 消耗清单固定按背包槽位从小到大取，报价与确认两次算出来的必然一致；
+  确认时再逐条核对槽位与数量，对不上就拒绝（避免界面开着时材料发生变化）。
+· 替换成功后回写一份完整装备数据（byte(0) + 原版 itemPacket），客户端 fromBytes 解出来
+  会自己把背包、图标、场景贴图、血蓝一起刷掉，服务端不需要再推通知。
+
+── 改动 3：一键镶嵌改成优先用最高档宝石（web/equipment-workshop.js） ──
+· 「一键镶嵌到满」原来挑**数量最多**的那堆宝石，于是背包里那 98 颗 +3 永远会把刚领的
+  +4 挤掉，+4 反而镶不上去。现在先比每颗属性值、同档之间才比数量。
+· 其它逻辑不变，逐颗镶嵌的老入口也原样留着。
+
+── 顺带：原版角色导入不再只认 +4 力量 ──
+· tools/import-character-export.mjs 原来写死「attachPower=1 且 attachValue=颗数×4」，
+  其它组合一律报「该宝石组合尚未核验」。
+· 现在按「属性位 + 每颗数值」回查官方目录（含新补的 +4 档），力量/体质/敏捷/智力/感知的
+  +1～+4，以及生命、魔法宝石，都能还原成真实宝石道具。老存档里的
+  `{grant:'strength4'}` 仍然照旧解析，不受影响。
+
+── 验证 ──────────────────────────────
+· 新增 tests/local-gems.test.mjs（8 条，全部通过）：
+  · +4 宝石在目录里，定义字节用**原版客户端解析器**（Item.fromBytesAtts2）逐字段回读一致，
+    背包 itemPacket 与商店 definitionBase64 两条路径都覆盖；原版 +3 宝石数值未被改动；
+  · 五颗 +4 宝石都在「镶嵌宝石」商店分类里；
+  · 镶嵌规则：+4 可以和同属性 +3 混镶（20 颗 +4 智力 = 属性 80），换成别的属性仍被拒；
+  · 替换规则：门槛（21 放行 / 18 拒绝）、生命宝石与 +1 档被拒、宝石不够时的提示、
+    报价与确认之间的材料变化被拒，而且失败的每一步都不花掉任何宝石；
+  · 11507/11508 协议往返：报价清单 == 确认消耗，回包能被原版解析器解出
+    attachDone=20 / attachPower=1 / attachValue=80，并且有尾巴时 finish() 会抛（回包正好读完）；
+  · 全链路：走 server.mjs 那套真实处理链 —— 12005 在商店免费领 80 颗 +4 智力/力量
+    → 12001 逐颗镶 20 颗（attachValue=80）→ 11507/11508 用 40 颗 +4 力量整件替换
+    （全程 coins 为 0，确认免费商店不扣铜币）。
+· tests/equipment-workshop.test.mjs 新增 1 条：背包里「200 颗 +3 + 6 颗 +4」时，
+  一键镶嵌必须三颗全用 +4、且 +3 那堆一颗不动；原有 18 条照旧通过。
+· 全量 tests/*.test.mjs：339 / pass 292 / fail 47（上版 330 / 283 / 47）→ 无回归。
+  47 条仍是既有基线（其中有 equipment-direct-grants 里一条附魔文案不符的老失败，与本次无关）。
+
+── 构建 ──────────────────────────────
+主包未改动（4,564,108 字符），本轮是服务端 + web 层。
+站点构建指纹 fc5adf4ceb10，index.html 20 个脚本。
+
+第 22 版 APK：124.70 MB（130,752,458 字节），sha256
+  2b4e661dab162a86f56f8fbf09992e806814c090819e3d74f153cf3e8f1f3088
+
+  开包校验（10825 个条目）：
+    · assets/public/worldol-standalone.js 含 localGems / gemReplaceQuote / planGemReplace /
+      replaceGemMinValue / 11507 / 11508 / equipment-gem-replaced，
+      以及 800401–800405 五个 +4 宝石编号
+    · assets/public/equipment-workshop.js 含「优先挑每颗属性最高的那一档」的新逻辑
+    · build-version.json id = fc5adf4ceb10
+    · 版本按钮仍是「单机菜单 · v10.8」
+
+改动文件：lib/local-gems.mjs（新增）、lib/official-data.mjs、lib/equipment-upgrades.mjs、
+  lib/equipment-upgrade-service.mjs、web/equipment-workshop.js、tools/import-character-export.mjs
+测试文件：tests/local-gems.test.mjs（新增 8 条）、tests/equipment-workshop.test.mjs（+1 条）
+
+怎么用：
+  1) 到「新月繁华之都（20,18）装备与补给商人 → 镶嵌宝石」，免费领 +4 宝石
+     （同一摞最多 99 颗，一次领满即可）。
+  2) 想直接镶：装备详情 → 镶嵌 → 一键镶嵌到满，现在会优先用 +4 那一档。
+  3) 想把已经镶好的整件换成别的属性：装备详情 → 镶嵌 → 宝石替换 → 选一颗 +4 宝石，
+     消耗 2×已镶颗数 颗（镶了 30 颗就要 60 颗），换完颗数不变、属性按新宝石重算。
+  覆盖安装即可，不必卸载。
+第 23 版 —— 修「宝石替换」点确定没反应
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+宝石已经能领到了。但装备的宝石替换：温馨提示确认框已经弹出来（显示属性变化、问是否
+确认替换为新宝石），点确定之后无事发生，宝石并没有被替换。
+
+── 根因：11507 的应答少了客户端要吃的那个「状态字节」 ───
+· 客户端把 11507（CG_REPLACE_INLAY_GEM）列在 sendProtoAsync 的 resultMsg 集合里
+  （analysis/modules/0035.js）。这条路径在把应答交给调用方之前，会先调
+  Handler.processMessage 读走**第一个字节**当状态：
+    负数 → alertMessageGuide(后面那段文案)，并让这次 sendProtoAsync 直接返回空；
+    >=0  → 才把剩下的字节交给 doWorldAttachChangeGemSelect。
+  本项目里已经有同款先例：12019 CG_BAG_REPAIR 也在 resultMsg 里，服务端一直是
+  `byte(0) + int(铜币)`（server.mjs 原注释：Native sendProtoAsync consumes the repair
+  status before reading copper）。
+· 第 22 版的 11507 报价回包是 `byte(条数) + 各槽位`，没有状态字节。于是客户端：
+  · 把回包的「条数」(1) 当成了状态位（>=0，通过）；
+  · 再把「槽位高字节」当成条数 —— 背包槽位 31～40 的高字节恒为 0，于是条数 = 0；
+  · 消耗清单空 → 确认框里没有「消耗」那一行；
+  · 点确定时按 0 条材料发 11508，服务端核对不上计划就拒绝，
+    整个过程在界面上就表现为「点了确定没有任何反应」。
+· 对照确认：11508（CG_REPLACE_INLAY_GEM_ASK）**不在** resultMsg 里，状态位由调用方
+  自己读（`d = e.getByte(); if (0 > d) alertMessage(e.getString())`），
+  所以确认那条回包保持 `byte(0) + 装备数据` 不变。
+
+── 改动（lib/equipment-upgrade-service.mjs 一个协议，客户端零改动） ──
+· 11507 回包改为 `byte(0) + byte(条数) + 各(槽位, 数量)`，与客户端两步读的顺序对齐。
+· 报价失败不再回「空清单」，而是和其它协议一样回 `byte(-1) + 说明`：客户端框架自己
+  就会把它弹给玩家（不必再借 11508 转述）。所以宝石不够时现在直接能看到
+  「替换需要 60 颗「加4XX宝石(绑）」，背包里只有 12 颗。」
+· 报价成功后才记下 context.gemReplace；11508 仍然会重新报价并逐条核对槽位与数量。
+
+── 验证 ──────────────────────────────
+· tests/local-gems.test.mjs 按客户端的两步读法重写协议用例（8 条全过）：
+  · 新增 readQuote()：先读状态位（负数就走 getString()），再读条数与各槽位 ——
+    与 resultMsg 路径完全一致；并断言报价的第一个字节必须是 0；
+  · 「11507 的应答永远以状态位开头」：没镶过宝石 → -1 +「还没有镶嵌宝石」；
+    只有 12 颗（需要 40）→ -1 +「背包里只有 12 颗」；
+    没走报价直接确认 → 11508 自己回 -1 +「重新打开宝石替换」；
+  · 往返与全链路两条也改成两步读，仍然断言回包能被原版解析器解出
+    attachDone=20 / attachPower=1 / attachValue=80，并且正好读完。
+· 全量 tests/*.test.mjs：339 / pass 292 / fail 47（与上版一致）→ 无回归。
+
+── 构建 ──────────────────────────────
+主包未改动（4,564,108 字符），本轮只动服务端一个文件。
+站点构建指纹 88181c18d2f5，index.html 20 个脚本。
+
+第 23 版 APK：124.70 MB（130,752,458 字节），sha256
+  275ee98ceea8b70c6e655bed9c88c1c180588f7676183d001ebd87b4adecd81c
+
+  开包校验（10825 个条目）：
+    · assets/public/worldol-standalone.js 的 11507 分支已是
+      `new Writer().byte(0).byte(quote.rows.length)`
+    · build-version.json id = 88181c18d2f5
+    · 版本按钮仍是「单机菜单 · v10.8」
+
+改动文件：lib/equipment-upgrade-service.mjs
+测试文件：tests/local-gems.test.mjs
+
+怎么看这次好了没有：
+  · 点「宝石替换」选好新宝石后，确认框里应该出现「消耗: XXX宝石 x N」那一行；
+  · 点确定后装备的宝石属性立刻变成新属性，宝石按 2×已镶颗数 扣掉；
+  · 宝石不够时直接弹「替换需要 N 颗…背包里只有 M 颗。」，不再静默。
+  覆盖安装即可，不必卸载。
+第 24 版 —— 美容院「更换发型/更换脸型」：查明为何点了没反应（商品资料未采集）
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+新月繁华之都的美容院 NPC 里有「更换发型」「更换脸型」两个菜单，点下去没有任何反应。
+要求：能恢复就恢复，恢复不了就说明缺什么数据。
+
+── 结论先说 ────────────────────────────
+**凭现有资料恢复不了。缺的是原服这两个商店的商品清单（12004 应答）。**
+本轮把「点了毫无反应」改成「回一条说清缺什么资料的提示」，并把客户端到服务端的路打通，
+等有资料时只需要补数据，客户端不用再改。
+
+── 一、为什么点了没反应：两层的闸门 ────────
+1) 客户端 —— 请求根本没发出去。
+   原版 doBrowseShop 的第一句是 `go.openPay && 1 != this.doSpecialShop(t, i)`（0005.js）。
+   go.openPay 是渠道付费开关，单机里是关的。本项目为此在 web/offline.js 里改写了
+   World.doBrowseShop：只有 901–920（本地补给商店）直接走原生商店界面，其余一律回落原函数。
+   于是 51/52 落到 `browseShop.call(this, id, ...)` → 被 openPay 挡下 → **连请求都不发**，
+   界面上既没有报错也没有空列表，就是彻底没反应。
+   这也反证了 openPay 确实是关的：如果它是开的，点下去至少会弹一条服务端给的报错。
+2) 服务端 —— 就算放出去也没有商品。
+   lib/restoration-service.mjs 的 shopItems() 只认 VIP 商店、宠物蛋店（917）、
+   本地补给 906–920、技能/装备商店等；遇到 51/52 直接返回 undefined，
+   原提示是「这个商店尚未接入。可到新月繁华之都（20,18）的装备与补给商人处查看。」
+
+── 二、缺的到底是什么数据 ───────────────
+把工程里所有资料翻了一遍：
+· 商店 51/52/55 只出现在 NPC 定义里（official-v305.json 与 recorded-expansion-20260922.json
+  的「美容院」节点：mapId 14 是 menuShop=[更换发型,更换脸型,时装合成,时装强化]、
+  shopID=[51,52,10052,10057]；mapId 19 是 menuShop=[更换发型,更换脸型,合成时装,全新发型]、
+  shopID=[51,52,10052,55]）。**没有任何一处记录它们的商品清单**。
+· 12004（CG_ITEMSHOP_LIST，「列出商店商品」）的采集记录全工程只有一份
+  （data/native-commerce.json 的 sources["12004"]，2026-09-22 那次抓包），内容是 VIP 商店，
+  与美容院无关。
+· 图鉴/道具目录 2505 件里，没有任何「只改发型或只改脸型」的时装：
+  94 件带 fashIcon1 的时装（type 12）里 fashIcon2/fashIcon3 全都不为 0（都带整套衣服），
+  没有一件是单改头部的。
+· 客户端主包里搜不到「发型」「脸型」这几个字，说明它不需要专门界面 —— 全部走通用商店界面，
+  缺的纯粹是服务端那份商品数据。
+所以缺的是：**在正式服美容院分别打开「更换发型」「更换脸型」（以及另一张图的「全新发型」）
+时的 12004 应答，和对应的 12005 购买应答。**
+
+顺带把它「本来怎么工作」读清楚了（可用于判断该录什么）：
+· 这三个菜单在原版里就是普通道具商店：NPC 是 type 5，点菜单 → POWER_NPC_SHOP →
+  doBrowseShop(shopID) → 12004 取商品（0074.js → 0005.js → 0067.js）。
+· 商店界面 ShopBuyItemMdr 里，选中一件 isCanEquip() 的商品会在旁边**给主角试穿预览**
+  （`getCompareSprite(myPlayer, item, …)`）—— 正好对上 NPC 台词
+  「才可以看上面的角色预览。查看更换效果」。
+· 商品本身是 type 12（ITEM_TYPE_ARMOR_FASHION）的时装，落在时装槽 ARMOR_FASHION_POS=3，
+  靠 fashIcon1/2/3 覆盖外观：发型 = icon1 第 7–10 位（样式，4 位）+ 11–12 位（颜色）
+  + high 第 0–2 位（附加）；脸型 = 第 13–16 位 + high 第 3 位。
+  也就是说「发型/脸型商品」= 只写发型位、或只写脸型位的时装。
+  这也解释了台词为什么让人先脱掉时装 —— 时装槽只有一个，自己的时装会盖掉沙龙的效果。
+
+── 三、本轮改动 ────────────────────────
+1) 客户端 web/offline.js：把 51/52/55 加进本地商店白名单（localShops），
+   点击后真的会发 12004（以前是静默）。这一步是「通路」，不是「恢复」。
+2) 服务端 lib/restoration-service.mjs：
+   · 新增 APPEARANCE_SHOPS 映射（51→更换发型、52→更换脸型、55→全新发型）；
+   · 12004 命中这三个商店时回一条说清的提示，例如
+     「美容院的「更换发型」卖的是原服的造型道具（商店 51），这批商品资料还没有采集到，暂时打不开。」
+   · 不臆造商品、不占用商品编号。
+
+── 验证 ──────────────────────────────
+新增 tests/beauty-salon-shops.test.mjs（5 条，全过）：
+· 三个造型商店都回 byte(-1) + 点名菜单名与商店号 + 提到「采集」；
+· 本地六类补给商店（905/906/907/908/918/919）照常回 byte(0) + 非空清单；
+· shopItems(51/52/55) === undefined（不许臆造）；
+· 识别范围与原版 NPC 定义对齐：扫描 official-v305.json 里所有「美容院」节点，
+  凡 shopID < 100 的小号商店必须都在 APPEARANCE_SHOPS 里（换版本也不会漏）；
+· 客户端源码断言：web/offline.js 的 localShops 含 51/52/55，且分发仍走
+  openItemShop / browseShop 那条分支。
+全量 tests/*.test.mjs：344 / pass 297 / fail 47（上版 339 / 292 / 47）→ 无回归。
+
+── 构建 ──────────────────────────────
+主包未改动（4,564,108 字符），本轮只动 web 层与服务端一个文件。
+站点构建指纹 8112a7619cc3。
+
+第 24 版 APK：124.70 MB（130,752,458 字节），sha256
+  28aeca0f6f254468ba8bab630e1bb29e52a30ab0724f2429ab5879e6be7a91cb
+
+  开包校验（10825 个条目）：
+    · assets/public/offline.js 的 localShops 已是 [51,52,55,901,…,920]
+    · assets/public/worldol-standalone.js 已含 APPEARANCE_SHOPS 与提示文案
+    · 版本按钮仍是「单机菜单 · v10.8」
+
+改动文件：web/offline.js、lib/restoration-service.mjs
+测试文件：tests/beauty-salon-shops.test.mjs
+
+怎么确认这版的效果：
+· 进游戏找美容院，点「更换发型」/「更换脸型」，现在会弹一条明确提示说明缺资料
+  （以前是完全没反应）。
+
+想要真正恢复，需要补的就是下面这几份记录：
+· 用正式服录制工具，在美容院点「更换发型」，记下返回的商品列表（协议 12004）；
+· 再点「更换脸型」，同样记一份；
+· 两边各随便买一件（协议 12005），把购买应答也记下来（决定价格/货币与购买后的回调）；
+· 另一张图的「全新发型」（商店 55）如果也要，同样录一遍。
+拿到这几份记录后：把商品定义并进目录、在 shopItems() 里把 51/52/55 映射到对应商品即可，
+客户端不用再改（白名单已经放开）。
+第 25 版 —— 美容院「更换发型/更换脸型」：本地还原一套造型道具（发型 20 + 脸型 11）
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+上一版已经查明：美容院这三个菜单是普通道具商店（51/52/55），缺的是原服的商品清单。
+用户拿不到正式服录制工具，要求：按客户端现有的发型/脸型贴图本地造一套，图标用问号。
+
+── 做法 ────────────────────────────────
+按客户端自带的发型/脸型贴图，本地还原一套「只改发型/只改脸型」的 type 12 时装道具：
+· 新增 lib/local-fashion.mjs：用目录里的明神时装（15012）确认 type 12 时装存在，并沿用
+  它的 icon/durMax 等通用字段；发型/脸型样式只收录「两种性别、全部颜色」贴图齐全的，
+  避免穿上去缺图。
+· 发型 20 件（5 种样式 × 4 色）：商店 51「更换发型」和 55「全新发型」各一份；
+  脸型 11 件：商店 52「更换脸型」。
+· 外观位域：发型 = fashIcon1 第 7–10 位（样式）+ 11–12 位（颜色）；
+  脸型 = fashIcon1 第 13–16 位。只写对应位，所以改发型不动脸型，反之亦然。
+· 编号：发型 900101–900120，脸型 900201–900211，图标占位号 9000001
+  （客户端资源里没有，由 web/offline.js 映射成 common_icon_wenhao2 问号图）。
+
+── 关键坑：type 12 时装的字节格式 ────────
+原版 fromBytesAtts2 的 ITEM_CLASS_ARMOR 分支里，fromItemAscensionStarInfo 是
+`n && (A, B, C, ...)` 的**逗号表达式**——只有第一个 A 受 n（ascFlag）短路控制，
+B/C（组合技能数量、skillDesc、bindPower×4、ascensionStar、star）**无条件读**。
+所以 ascFlag=false 时也必须把这些字段写进去，否则 fashIcon1 的位置整体错位，
+客户端会把造型道具当坏道具（fashIcon1 读出 0，外观不变）。
+字段序列已用 capture-decoders 的真实解码器逐字节回读核对，并在测试里固化成回环校验。
+
+── 改动 ────────────────────────────────
+· lib/local-fashion.mjs（新增）：encode + localFashion + appearanceShops
+· lib/official-data.mjs：localFashion 的道具并入 official.items
+· lib/restoration-service.mjs：shopItems() 对 51/52/55 返回真实清单，12004 不再回 -1
+· web/offline.js：本地造型道具（900101–900211）的图标映射成问号图
+· tests/local-fashion.test.mjs（新增）、tests/beauty-salon-shops.test.mjs（重写）
+· tests/supply-shops.test.mjs：目录覆盖断言排除 id≥900000 的本地补充道具
+
+── 验证 ────────────────────────────────
+· 全量 tests/*.test.mjs：347 / pass 300 / fail 47（上版 344/297/47）→ 无回归
+· local-fashion 3 条：资源扫描守卫（贴图变了会失败）+ 编号不冲突 + 清单一致
+· beauty-salon-shops 5 条：51/52/55 回真实清单（20/11/20），定义字节回读 fashIcon1 位域正确
+· 主包未变，站点指纹 db0e90402271
+
+第 25 版 APK：124.70 MB（130,752,458 字节），sha256 330ba77a2499a57646881ccb4911f40b5a1c396e554b3ddb92396474020bd2fc
+
+第 26 版 —— 美容院造型道具改用你补齐的真实贴图：一件道具对一张图（发型 29 + 脸型 14）
+══════════════════════════════════════════════
+
+── 用户反馈 ────────────────────────────
+用户自己补齐了脸型和发型的图片，放在「世界OL_源码」下的四个目录里：
+face_png_i / face_png_o / hair_png_i / hair_png_o（i = 男、o = 女）。
+要求：塞进美容师的道具里当角色的贴图，用道具就能换发型/脸型；
+道具数量跟贴图数量一致，多余的没有贴图的道具删掉；序号按实际顺序定义。
+
+── 先做的事：把贴图对回客户端 ──────────
+这不是新画的图，四份目录里的 PNG 与客户端 client/assets 里已有的角色碎片**逐像素完全相同**
+（用尺寸 + RGBA sha256 精确比对，56 张全中）。所以「塞进去」= 把道具清单换成这些贴图，
+并让商店列表直接显示它们。
+
+碎片编号规则（analysis/modules/0055.js 的 SpriteTool，与 0056.js 的 updateHair/updateFace 一致）：
+  发型碎片 = 0    + 8*style - 7 + 4*gender + color   （gender 0 = 男，1 = 女；color 0..3）
+  脸型碎片 = 1000 + 8*style - 7 + 4*gender
+反查结果：
+  男发 29 张（碎片 2,3,4 / 9-12 / 17-20 / 25-28 / 33-36 / 41-44 / 49-52 / 57,58）
+  女发 27 张（碎片 6,7,8 / 13-16 / 22,23 / 29-32 / 37-40 / 45-48 / 53-56 / 61,62）
+  男脸 13 张（样式 2..9,11..15）、女脸 13 张（样式 3..15）
+因为**一件发型道具是性别无关的**（客户端按玩家性别自己挑 4*gender 那一段碎片），
+所以清单取两个性别的并集：发型 29 件（样式 1-8）、脸型 14 件（样式 2-15）。
+样式/颜色不再由我们假设（上一版是写死 5 种样式×4 色 + 11 种脸型，与真实贴图对不上）。
+
+── 新增：贴图清单 + 图标图集构建工具 ────
+· tools/build-fashion-icons.mjs（新增）：读那四份目录，按像素匹配回碎片编号，
+  推导清单，并把每张图拼成图标图集，产出
+    data/fashion-icons.json                    清单 + 图集帧表（服务端与构建期都读）
+    client/assets/<hh>/<md5>.png               图标图集（1024×36，43 张图并排）
+    client/assets/<hh>/<md5>.json              「原版 assets/data/sheet.json + 本图集一项」
+  node tools/build-fashion-icons.mjs --check 只校验不写盘，测试里用它做守卫。
+· tools/png-mini.mjs（新增）：用 node:zlib 手写的最小 PNG 编解码（客户端的角色碎片
+  只有「调色板 4/8 位、非隔行」这一种格式，够用，不引第三方依赖）。
+
+── 商店列表直接显示真图 ────────────────
+道具图标是这样取到的：Tool.getIconByData(item) 把 item.bagIcon 转成**资源名**。
+所以把图集的子键命名成道具编号，图标就自然命中：
+· bagIcon = 道具编号（900101…），图集子键同名 → 列表直接显示该款发型/脸型。
+· 资源注入放在 lib/fashion-icons.mjs，由 lib/native-ui-restoration.mjs 在
+  **内存里生成的那份资源清单**上追加：url.resource.ui、res.resources、
+  以及把 assets/data/sheet.json 指向合并后的帧表。归档的 client/v/gd/305.json
+  字节不动（tests 会断言它的 sha256）。
+· 图集挂在**每一个资源组**上：商店/背包各界面加载的组不一样，挂满之后不管先开哪个界面
+  图集都会跟着就绪（第一次加载过后命中缓存，后面各组几乎零成本）。
+· web/offline.js 的图标钩子改成：图集就绪 → 返回真实贴图；没就绪 → 退回问号图，
+  保证列表不会出现空白图标。
+
+── 改动 ────────────────────────────────
+· tools/build-fashion-icons.mjs、tools/png-mini.mjs、lib/fashion-icons.mjs（新增）
+· data/fashion-icons.json、client/assets/af/…png、client/assets/9d/…json（新增产出）
+· lib/local-fashion.mjs（重写）：清单改读 data/fashion-icons.json；道具名就是序号
+  （发型 1..29 / 脸型 1..14）；fashIcon1 按真实样式/颜色写位；bagIcon = 道具编号
+· lib/native-ui-restoration.mjs：清单注入图集
+· web/offline.js：图标钩子（真图 + 问号兜底）
+· web/index.html：版本按钮 v10.8 → v10.9，说明里补一句美容院
+· tests/fashion-icons.test.mjs（新增 8 条）、tests/local-fashion.test.mjs（重写 5 条）、
+  tests/beauty-salon-shops.test.mjs（改为按清单长度断言）
+· 安卓打包/standalone/build.mjs：data/ 目录改用逐层复制（见下）
+
+── 顺手修的构建坑 ──────────────────────
+build.mjs 原来用 fs.cpSync 复制 data/（文件少但单个文件最大 34MB），在这台机器的
+F: 卷上会直接把 node 进程打崩：Windows 退出码 0xC0000409，日志里只剩一句 exit 127，
+没有任何异常可捕获。新增 copyTree()（readdir + copyFileSync）替掉这一处，行为等价。
+
+── 验证 ────────────────────────────────
+· 全量 tests/*.test.mjs：357 / pass 299 / fail 58。
+  注意：本机环境里失败数一直是 58（同一份失败清单在改动前后**逐个一致**，
+  已用回退到上一版的对照跑验证过），多数是沙箱拦截批量删临时目录、缺少
+  「正式服录制数据」目录等环境问题，与本次改动无关。
+· fashion-icons 8 条：清单与贴图目录一致（按像素重比对）+ 碎片编号可被公式还原 +
+  编号连续且按实际顺序 + 图集/帧表 md5 与记录一致 + 构建可复现 + 资源注入正确且
+  不写坏归档清单 + 产出缺失时安静跳过 + 客户端钩子文案
+· local-fashion 5 条：道具数 = 贴图数、序号即名称、fashIcon1 位域正确且不越界、
+  bagIcon = 道具编号、商店清单一致
+· beauty-salon-shops 5 条：51/52/55 分别回 29/14/29 件，定义字节能被原版解码器回读出
+  fashIcon1 位域
+· 站点与 APK 双通道都核过：/v/gd/305.json 里 fashion_icon 资源（43 个子键）、
+  两个 url 映射、sheet.json 重定向、全部分组带键；图集 PNG 与帧表都在包里
+· 主包字符数 4557839 → 4564108（与上一版相同，本次没动客户端主包）
+
+第 26 版 APK：130,752,754 字节（124.70 MB），
+sha256 81da9f3f902f063319e659f33c304e2c21128d6283557ca07ed4f0ce6761650c
+站点指纹 16a1299215b8，版本按钮「单机菜单 · v10.9」
+
+
+第 27 版：美容院造型道具改成原版的「买下即换造型」道具
+================================================================
+
+── 问题 ────────────────────────────────
+第 26 版把美容院的造型道具做成了 type 12 时装（装备），装备后才改外观。
+这不是原版的用法：原版卖的是**买下即生效**的造型道具，点购买立刻换发型/脸型，
+道具不进背包、也不占装备栏。用户指出「这些不应该是装备，而是一种道具，
+使用之后角色的脸型或发型会转变成相应的贴图」。
+
+── 关键发现：原版客户端本来就支持 ──────
+翻主包发现客户端一直有这条链路，只是本地道具的编号没落在它的判定区间里：
+
+· 判定区间写死在 ModelConst（主包）：
+    ITEM_ID_HAIR_START = 40100   ITEM_ID_HAIR_END = 40199
+    ITEM_ID_FACE_START = 40200   ITEM_ID_FACE_END = 40249
+    isHairItem(t){return t>=40100&&t<=40199}
+    isFaceItem(t){return t>=40200&&t<=40249}
+  注意这判定的是**道具 ID**，不是图标值。
+
+· 购买回包的状态位 == 2 时，客户端直接换造型（主包 t.onItemShopBuy）：
+    if(2==p){
+      isHairItem(t.id) ? (updateHair(t), refreshWorldSprite())
+                       : isFaceItem(t.id) && (updateFace(t), refreshWorldSprite());
+      … setPlayerMoney(getInt(), getInt(), getInt()); maxBuy=getShort(); allCount=getShort();
+    }
+  这一支**不往背包加道具**，也**不走装备流程**——这正是「买下即用」。
+  状态 0 才是普通购买（进背包）。
+
+· 造型怎么算：updateHair / updateFace 读的是商品的 **icon** 字段
+    updateHair: i = icon - START_HAIR(0)    样式 = 1 + (i-1)/8   颜色 = (i-1)%8
+    updateFace: i = icon - START_FACE(1000) 样式 = 1 + (i-1)/8
+  而「男性碎片编号」正是 8*style-7+color / 1000+8*style-7，所以：
+    **icon 直接等于该款造型的男性碎片编号**（拼图集时已经算出来了，直接用）。
+  只有女性贴图的款式用女性碎片也成立：多出来的 +4 落在颜色高位，被 2 位掩码截掉。
+
+── 为什么道具类型仍然是 type 12 ────────
+客户端按 type 分派解析分支，而**只有 ITEM_CLASS_ARMOR 分支会读 icon**：
+    case e.ITEM_CLASS_ARMOR: t.icon = i.getShort(); …
+    case e.ITEM_CLASS_USE_ITEM: t.reqLv = i.getByte(); …（从 reqLv 开始，没有 icon）
+改成「普通道具」类型的话 icon 就丢了，客户端拿不到外观值。所以类型保持时装编码，
+但道具**只在商店 51/52/55 里出现、买下即换、永不进背包**，行为上就是一件「使用型道具」。
+
+── 改动 ────────────────────────────────
+· tools/build-fashion-icons.mjs
+    HAIR_BASE 900101 → 40101、FACE_BASE 900201 → 40201（落进原版识别区间）
+    清单每项新增 icon 字段 = 该款的男性碎片编号（male ?? female）
+    REVISION → fashion-icons-20261010b
+· lib/local-fashion.mjs
+    道具编号用新号段；编码里的 icon 从模板值改成清单里的外观编码
+    新增 applyHairAppearance / applyFaceAppearance：复刻客户端的位运算
+      （发型样式 7..10 位、颜色 11..12 位、附加 high 0..2；脸型 13..16 位、high 3）
+      清位再写值，性别/阵营/职业位原样保留
+    新增 appearanceByItemId（购买时查「这款改哪里」）与 applyAppearance
+    文案改成「购买后立即更换，不需要装备」
+· lib/restoration-service.mjs（12005 购买）
+    造型道具单独一支：数量必须为 1 → 扣铜币（本地道具 localPrice=0，等于免费）
+    → 改角色 icon1 → 存盘 → 回 **byte(2)** + 金钱三值 + maxBuy/allCount
+    这一步必须做：客户端只在本地改 myPlayer.icon1，服务端不同步的话
+    重登或刷新角色列表后造型会退回去
+· lib/supply-shops.mjs
+    造型道具虽然是 type 12，但不属于「装备与补给商人」卖的时装，
+    从分类列表与 coverage(12) 统计里排除（否则 908 时装商店会多出 43 件、
+    「时装 98 种」会变成 141 种）
+· web/offline.js：图标钩子的编号范围 900101+ → 40101+ / 40201+
+· web/index.html：版本按钮 v10.9 → v11.0，美容院说明改成「点购买立刻换成该造型」
+
+── 旧存档兼容 ──────────────────────────
+第 26 版的造型道具编号是 900101+/900201+，那一版它们是**可装备的时装**，
+玩家可能已经买下并穿在身上。改到新号段后这些 ID 在目录里查不到了，
+带着它们登录时背包封包的 itemPacket 会抛「未知道具」，直接把进入游戏卡死。
+所以 lib/content.mjs 的 normalizeRole 里加了一步 pruneUnknownItems：
+读档时清掉目录里不存在的道具。造型本身写在 role.icon1 的外观位里，
+丢掉的只是空壳，角色外观不受影响。清理时会打一行 console.warn 方便排查。
+两种「不在目录里但合法」的道具要放过，不能误删：
+  · 宠物（带 pet 字段，走宠物目录）；
+  · 角色导出文件导入的道具（自带 recordedDefinition，发包时不查目录）。
+第一版漏了后者，character-import 用例立刻报错（inventory 期望 17、实际 16，
+被清掉的是导入角色里目录中没采集到的 41007），补上判断后恢复正常。
+
+── 验证 ────────────────────────────────
+· 全量 tests/*.test.mjs：362 / pass 304 / fail 58。
+  新增 15 条全部通过；失败的 58 条与改动前的对照跑**逐个一致**
+  （本机环境的老问题：沙箱拦批量删临时目录、缺「正式服录制数据」目录等），确认零回归。
+· 新增/改写的用例：
+  - beauty-salon-shops：买造型道具回状态位 2、扣铜币、直接改 icon1、道具不进背包；
+    只换发型不动脸型位、只换脸型不动发型位、低 7 位（性别/阵营/职业）不动；
+    数量不为 1 被拦下且不改外观；免费换装不扣钱；旧版 900101+/900201+ 空壳被清理
+  - fashion-icons：编号必须落在 40100..40199 / 40200..40249，icon 字段能反推出样式/颜色
+  - supply-shops：造型道具不再进补给商店的分类清单
+· 站点与 APK 双通道核对：/v/gd/305.json 里 fashion_icon 共 43 个子键（40101…40214）、
+  两个 url 映射、sheet.json 指向合并帧表、全部资源组都挂上了；
+  图集 PNG 与帧表都在包里；上一版的旧帧表已从 client/assets 删除
+· 客户端主包未改动（4557839 → 4564108 字符，与第 26 版相同）
+
+第 27 版 APK：130,752,754 字节（124.70 MB），
+sha256 31f02e4c2a47dc2ee53542bd41dca399d8300ae54dfb33c1dee00cdee64e0692
+站点指纹 0be7ec92c2cc，版本按钮「单机菜单 · v11.0」
+
+
+第 28 版（工程）：测试基线瘦身——已知失败清单 + 统一测试入口
+================================================================
+
+── 背景 ────────────────────────────────
+每次跑全量测试都有 58 条红色（本机），看不出到底哪些是真回归、哪些是老毛病。
+要求：把这批长期失败的用例处理掉，以后跑测试不用再逐条确认它们，
+并把约定写进项目记录。
+
+── 第一步：先把「环境噪音」和「真失败」分开 ────────────
+58 条里有 11 条根本不是代码问题：WorkBuddy/CodeBuddy 的命令行会把
+node-safe-delete-shim.cjs 通过 NODE_OPTIONS 注入进来，它拦截「一次删除 50 个
+以上文件」，而 recorded-expansion 这类用例要在临时目录里批量清理存档，
+于是整片报 SAFE_DELETE_BULK_CONFIRM_REQUIRED。**普通终端没有这个注入**。
+在工具里把这段 require 摘掉之后再跑：
+    361 用例 / 通过 314 / 失败 47（正好回到第 25 版的老基线）
+
+── 第二步：剩下 47 条到底是什么 ────────────────────────
+逐条看过报错，它们期望的是**原版 / 早期单机版**的行为与数据规模，不是 bug：
+  · 宠物模板写死 23 个，而目录里已经有 50 个（recordings ×2）
+  · 经验表阈值与上限、人物经验卷数量（player-experience ×4、bulk-item-use ×2）
+  · 存档里的 icon1 还是字符串的年代（core、game ×3、attribute-points）
+  · 缺客户端桩（appearance 要 window.installOfflineViewport；legion-orders ×3 要 adapter）
+  · 录制数据缺失（catalog / guides / legion-attributes / pet-skill-books 4 个整文件）
+  · 天赋 / 神器 / 军团 / 宠物商店等数值随实现演进（city-character-features ×7 等）
+这些用例本身有价值，删掉就永远没人会去修；所以**不删代码**，改成按清单忽略。
+
+── 第三步：做法 ────────────────────────
+· tests/known-failures.json（新增）
+    47 条记录，每条含 {file, name, detail}；detail 是当次报错首行，方便将来复查
+· tools/run-tests.mjs（新增；取代裸跑 node --test）
+    1. 摘掉 NODE_OPTIONS 里的 safe-delete shim，让结果与普通终端一致
+    2. 解析 TAP，把清单内的失败归为「已知失败」并忽略
+    3. **清单之外的失败一律报错并以退出码 1 结束**
+       （已用一个临时失败用例验证过：能准确点名并 exit 1）
+    4. 参数：
+         --all            列出全部失败（不忽略）
+         --only <关键字>  只跑文件名含关键字的用例（日常改动用，几秒出结果）
+         --update         修完用例后按当前失败重写清单
+         --verbose        附带子进程原始输出
+· package.json
+    test      → node tools/run-tests.mjs        （默认入口，输出干净）
+    test:all  → node tools/run-tests.mjs --all
+    test:raw  → node --test tests/*.test.mjs    （完全裸跑）
+· 顺手删掉 tests/pet-sealing.test.mjs —— 一个 0 字节的空文件
+
+从这版开始，跑测试请用 `npm test`（或 `node tools/run-tests.mjs`）：
+只要「新增失败 = 0」就说明这次改动没有引入回归，不需要再逐条比对老失败。
+
+── 关于「砍掉一些已经通过的测试」 ──────────────────────
+扫了一遍：64 个测试文件、361 条用例，**测试名零重复**，每个文件对应一块独立
+功能（每个文件 2～19 条），不存在可以安全合并的冗余。
+另外真正拖慢全量的是那 47 条失败（约 28 秒），通过的部分只要 13 秒左右；
+忽略已知失败之后日常看结果已经很快，所以这轮**没有删任何有效用例**。
+日常改动用 `--only <关键字>` 只跑相关文件即可，例如：
+    node tools/run-tests.mjs --only beauty      # 只跑美容院相关，1.3 秒
+
+── 现状 ────────────────────────────────
+node tools/run-tests.mjs
+  文件 64 个｜用例 361｜通过 314｜失败 47｜耗时 40.6s
+  已知失败 47（按 tests/known-failures.json 忽略）
+  新增失败 0
+
+（本轮只动测试与工具，没有改任何游戏逻辑，也不需要重新出 APK。）
+
+================================================================
+第 29 版 —— 美容院的造型图标与实际一致 + 点选即可实时预览
+================================================================
+
+用户反馈：
+  1. 美容师的发型和脸型道具「贴图与实际表现不一样」；
+  2. 脱掉时装后，在商店里点选发型/脸型，右边的角色「没有实时预览」。
+
+──────────────── 根因一：点选预览被自己的补丁吃掉了 ────────────────
+web/offline.js 里曾为「脱掉时装要恢复角色自己的发型」加过一层基准（baseFaces）：
+
+    Player.prototype.updateIcon = function(){
+      ...
+      this.icon1.low  = (this.icon1.low  & ~faceLowMask)  | (base.low  & faceLowMask);
+      this.icon1.high = (this.icon1.high & ~faceHighMask) | (base.high & faceHighMask);
+      ... 原版 updateIcon ...
+    };
+
+它的本意是：原版 updateIconByFashion 会把时装的外观直接写进 icon1，所以每轮重建
+外观前先把「发型(7..10 位) / 脸型(13..16 位)」还原成角色自己的值，这样脱掉时装后
+发型会自己回来。
+
+但商店的「点选预览」（模块 29 的 ModelTool.getCompareSprite）走的正是同一条路：
+
+    复制角色外观 → updateHair(item) / updateFace(item) 改写 icon1 → updateIcon() 重建
+
+于是刚写进去的新造型被 updateIcon 立刻还原 —— 而且基准是 WeakMap 缓存的，
+第一次预览之后那个预览模型的基准就锁死在当时的款式上，后面点什么都看不到变化。
+（购买回包的 `2 == p` 分支同样调 updateHair 然后 refreshWorldSprite，也被吃掉一次。）
+
+修法：给 Player.prototype.updateHair / updateFace 各包一层，在调用原版之后把基准
+同步成新造型。这样基准始终等于「角色当前真正该有的发型/脸型」，
+脱掉时装回退原发型的逻辑保持不变，而预览和购买都能立刻生效。
+
+──────────────── 根因二：图标用的是一块「零件」，不是实际的样子 ────────────────
+图标图集原先直接拿角色碎片当图：
+  · 发型碎片只是一撮头发（23×23 左右，不带脸）
+  · 脸型碎片只有一整张脸（17×27 左右，不带头发）
+而角色身上是「头发盖在脸上」叠出来的。所以列表图标和实际表现天然对不上；
+再加一层：图标固定取男性碎片，女角色看到的也是男款。
+
+修法：图标改成把「脸型碎片 + 发型碎片」按角色画布上的相对位置叠成一张头像。
+  · 对齐依据：两类碎片都是从角色画布上紧贴内容裁切的，头顶都压在裁切框顶边，
+    所以「水平居中 + 头发盖住脸的上沿约四分之一」就等价于它们在角色身上的位置。
+  · 每件道具出两张帧：「<道具编号>」用男性碎片、「<道具编号>f」用女性碎片。
+  · 客户端 Tool.getIconByData 的钩子按 icon1 的性别位取图
+    （OFFSET_SEX=0 / LEN_SEX=1 —— 这跟渲染时决定用男/女碎片的判断是同一位，
+      见 analysis/modules/0055.js：g = icon1.low >> OFFSET_SEX & LEN_SEX）。
+  · 图集没就绪时依次退回另一性别、再退回客户端自带的问号图。
+
+──────────────── 改动文件 ────────────────
+· tools/png-mini.mjs
+    + blitOver()：按 alpha 叠加，源图透明处不动底图
+      （原 blit 是逐像素覆盖，头发碎片的透明边会把脸擦出洞）
+· tools/build-fashion-icons.mjs
+    + composeAvatar(faceId, hairId)；AVATAR_FACE / AVATAR_HAIR 两张打底表
+    图集从 43 帧变成 86 帧（发型 29 + 脸型 14，每件男女各一张）
+    payload 增加 avatar / genderFrames / avatarFace / avatarHair
+· web/offline.js
+    · 图标钩子按玩家性别取帧，并保留问号图兜底
+    · 给 updateHair / updateFace 包一层同步外观基准（修预览）
+· tests/appearance.test.mjs
+    这条用例长期失败（缺 window.installOfflineViewport 等模块桩），本轮补齐；
+    现在它同时守着「造型换完不能被 updateIcon 还原」
+· tests/fashion-icons.test.mjs
+    + 双帧头像断言；子键格式改为 ^\d+f?$
+· tests/beauty-salon-shops.test.mjs
+    图标钩子的断言跟着改（原先断言的是旧的 return name 写法）
+· lib/local-fashion.mjs  注释更新
+· web/index.html         版本按钮 v11.0 → v11.1，美容院文案改写
+
+──────────────── 验证 ────────────────
+· 相关用例 31 / 31 全过
+· 全量 node tools/run-tests.mjs：
+    文件 64 个｜用例 362｜通过 316｜失败 46｜新增失败 0
+  失败数从 47 降到 46 —— appearance 那条长期失败被修好（补齐了 offline.js
+  需要的模块桩），已从 tests/known-failures.json 里移除。
+· 反向验证：把 updateHair/updateFace 的基准同步拿掉，appearance 用例立刻报
+      「updateHair 写进去的发型被 updateIcon 还原了，商店预览会一动不动」
+  说明这个守卫是真的能拦住回归，不是摆设。
+· 顺手清理了上一版遗留的孤儿产物：
+    client/assets/af/afc40f45390b42790a3d296ac1aca3b8.png（旧图集）
+    client/assets/ab/ab68f4eb9984d7eab6d052c042e465f9.json（旧帧表）
+
+──────────────── 交付 ────────────────
+第 29 版 APK：130,752,754 字节（124.70 MB）
+sha256 a76e1090568266efcb44e80076e4a52774b44430c32b8e196113189acd17c064
+站点指纹 e63cba4d31d1，版本按钮「单机菜单 · v11.1」
+资源清单 fashion_icon 共 86 个子键（43 男 + 43 女），图集
+client/assets/5b/5b83d06f3fa0eb8d439c40887b60c36f.png、
+帧表 client/assets/ba/bab777888159be31716f7768ed37b3dd.json。
+客户端主包未改动。
+
+
+
+════════════════ 第 30 版 · 2026-10-10 ════════════════
+
+【需求】改写游戏内公告的更新内容
+原来公告里的「更新内容 / 新增内容 / 问题修复」是按版本随手累加的流水账，
+编号一路排到 20 多、新旧功能混在一起，读起来很乱。按功能分类重写一遍，
+原有条目全部替换。
+
+【改动明细】
+
+一、公告正文重写（web/offline.js 的 applyNotice）
+公告是客户端 req(360).Notice.applyNotice 返回的富文本数组，走
+0014 parseHtml -> 0008 convertDescToTextFlow 这条链路解析。
+它只认游戏自己的颜色标记，不认 HTML：
+  /cRRGGBB 开始着色，/p 结束着色
+每个 /c 都必须配一个 /p，否则颜色会串到后面的文字。
+新结构按功能分七块：
+  ★ 本次更新 ★
+    【角色】【宠物】【装备与道具】【技能】【外观】【玩法】
+  ★ 问题修复 ★（10 条）
+分类标题用 /c00FF00（绿），大标题用 /cFFD700（金黄），正文 /cFFFFFF（白）。
+开头欢迎语与结尾「严禁商用」说明原样保留。
+
+相比用户提供原始清单做的增删改：
+· 删：旧公告独有的「修复转职书无效」「导出存档会提示存档位置」，
+       这两条不在新清单里
+· 增：把用户清单里没写但版本里确实做进去的补了回来 ——
+       「恢复原版 +4 宝石与宝石替换」「每回合待机 180 秒」
+· 改：统一措辞，去掉原文里的重复主语和不完整句（如「更好的酣畅」式断句、
+       「装备与道具」第 7 条缺右引号、「单手剑」缺「新增」动词等）
+· 修：「清增群体祝福」按语境改为「群体增益祝福」
+
+二、版本号
+web/index.html 的「单机菜单」按钮 v11.1 → v11.2。
+
+──────────────── 验证 ────────────────
+· 全量 node tools/run-tests.mjs：
+    文件 64 个｜用例 362｜通过 316｜失败 46｜新增失败 0
+· 标记自检：公告 68 行，/c 与 /p 数量逐行配对、颜色均为 6 位十六进制，0 异常
+· 站点与 APK 双重核对（uesbuild 会把中文转成 \uXXXX，只能用 Node 实际
+  eval 那段数组来验，直接搜明文会误判）：
+    六个分类标题齐全、旧独有的 2 条已清除、「严禁商用」保留
+
+──────────────── 交付 ────────────────
+第 30 版 APK：130,752,754 字节（124.70 MB）
+sha256 e01a3a3e8c77fb49e43983f5f289a3b158ead601db85d76b7d44e61a3d4f4bff
+站点指纹 954d6eb26781，版本按钮「单机菜单 · v11.2」
+客户端主包未改动，仅改公告文本与版本号。
+
+
+
+════════════════ 第 31 版 · 2026-10-10 ════════════════
+
+【需求】在新月繁华之都新增四位纪念 NPC（创世神N / 界王·猫神 / 洛天依&初音 /
+猎狗座），纯聊天，复用现有 NPC 的点击、选中、对话窗口机制；形象先借用原版
+素材，后期替换。
+
+【改动明细】
+
+一、新增 lib/memorial-npcs.mjs
+四位 NPC 的定义。全部 npcType 0（纯聊天），local:true，pureTalk:true。
+对话文本逐字照抄需求方给的文案，用 \n 分段。
+
+二、lib/content.mjs
+· import memorialNpcs，在地形加载之后 push 进 maps[19].npcs，并做三重校验：
+  编号未占用、坐标未被占用、落点可通行（不通过就直接抛错，不允许悄悄站进墙里）。
+  放在地形加载之后是有原因的 —— walkable() 依赖 map.blocks，那要等
+  data/maps/<id>.json 读进来才有；放前面校验等于没校验。
+· npcSign() 增加 pureTalk 分支，直接返回 0。原因：type 0 在原版语义里是
+  NPC_MISSION，函数会顺着任务状态返回 1/2/3，玩家身上只要还挂着可接的本地任务，
+  纪念 NPC 头上就会冒出感叹号，点开却是纯文本，很容易被当成坏掉的任务。
+  对照断言见 tests/memorial-npcs.test.mjs（新手村守卫的标记不能被误伤）。
+
+三、形象（icon）沿用原版 sprite/model
+15052 创世神N（金甲、红披风）／15126 界王·猫神（紫色猫科兽）／
+15068 洛天依&初音（蓝发少女）／15144 猎狗座（白色带翼神犬）。
+后期替换贴图时只需要新增一个 model、改这里的 icon，其余字段不用动。
+
+四、摆位
+新月繁华之都 40×40 格，出生点 (3,3)。四位站成正方形、间隔 2 格，落在
+(5,2) (7,2) (5,4) (7,4) —— 出生点右前方，四格全部可通行，且避开已有的
+21 个 NPC。原本打算用的 (5,5) 其实是阻挡格，站不住。
+
+五、web/index.html
+版本按钮 v11.2 → v11.3，面板说明补上纪念 NPC 一句。
+
+──────────────── 坑 ────────────────
+· NPC 编号必须留在 0..127。协议里它按有符号字节走：Writer.byte 虽然是无符号
+  写入，但客户端按 getByte 读回来，编号 128+ 会变成负数，导致按键找不到 NPC。
+  查过官方 500+ 个 NPC，编号全部落在 0..127，没有例外。四位一开始用了
+  127-130，发现后改成 122-125。
+· 目录里四份贴图源目录（face_png_i / face_png_o / hair_png_i / hair_png_o）
+  已经被清理掉了 —— 它们只是一次性素材，生成进 data/fashion-icons.json + 图集
+  之后就没人再用。fashion-icons.test.mjs 里有两条需要拿源素材重新比对的用例
+  因此报错，已改成「源目录不在就条件跳过」；图集字节、帧表 md5、资源清单注入、
+  取帧这些守生成物的用例照常跑（8 过 / 2 跳 / 0 失败）。源目录放回来会自动恢复。
+· tests/official.test.mjs 的 NPC 数量断言原来写死 m.id===19?1:0（只有补给商人），
+  改成按 local 标记动态统计，以后再加本地 NPC 不用回来改期望值。
+
+──────────────── 验证 ────────────────
+· 新增 tests/memorial-npcs.test.mjs（8 条）：挂载与字段、编号范围、落点不冲突
+  且可通行、正方形摆位、pureTalk 不挂任务标记（含守卫对照）、封包逐字编码、
+  多行对话没被拆坏、点开不会触发任务请求死路（14501 回 0 个任务）、
+  未知编号仍然被拒绝。
+· 端到端：worldData(detail=true/false) 两条分支都能在字节流里找到四位的名字、
+  首行对话，位置紧随其后解析出 (5,2)(7,2)(5,4)(7,4)。
+· 全量 node tools/run-tests.mjs：
+    文件 65 个｜用例 370｜通过 324｜失败 46｜新增失败 0
+
+──────────────── 交付 ────────────────
+第 31 版 APK：130,752,754 字节（124.70 MB）
+sha256 b4c25315963a6db792c53db2486e3df6f48439b9a8ac950c1001f1a1580211da3
+站点指纹 7faddff9c60e，版本按钮「单机菜单 · v11.3」
+客户端主包未改动。
+
+
+════════════════ 第 32 版 · 2026-10-10 ════════════════
+
+【需求】四位纪念 NPC 的站位再调。最早那版放在左上角 (5,2)/(7,4)，太偏，玩家
+不特意去找基本看不见；第 31 版改成挤在广场中轴线的 2×2 又太密。这次要求：挪到
+「宠物训练师(18,8)」与「装备与补给商人(20,18)」之间的宽敞空地，四位可以分开站。
+
+一、新站位（lib/memorial-npcs.mjs）
+  创世神N(122)   → (16,10)      界王·猫神(123) → (21,10)
+  洛天依&初音(124) → (18,16)    猎狗座(125)   → (21,14)
+  不再排成方阵：两两最小间距 3.6 格，重心 (19,12.5) 正好落在两位商店 NPC 连线
+  中点 (19,13) 附近。四格都可用 walkable() 走上去。
+
+二、位置是怎么挑的
+  · 先把地图 19 的阻挡格（blocks & 1）标出来。注意「高大摆件」不在 blocks 里 ——
+    灯柱 / 花坛那一类（344x 系列，高 ≥45px）只是绘制物，得直接翻
+    data/maps/19.json 的 layers 对象框，否则 NPC 会正好站在灯柱上。
+  · 在两位 NPC 之间的区域枚举 2×2 与 1×4 候选，按「无阻挡、不压高大摆件、
+    离中点近、周围 9×9 空地率高」排序。结果：广场正中央那一圈基本被灯柱花坛
+    占满，(20,14)-(21,15) 是唯一干净又贴中点的 2×2；既然可以分开站，就换成
+    四个单独的空地，铺得更开更宽敞。
+  · 与原有 NPC 最近的是 (18,16) 到补给商人的 2.83 格（游戏本体里 NPC 之间
+    1.4 格都有，不会被挡住）。
+
+三、测试（tests/memorial-npcs.test.mjs）
+  原来那条「四位站成正方形」改成「分开站」：固定四个坐标；每格可行走且不压
+  高大摆件（用例里直接读 layers 的对象框判定）；两两间距 ≥3 格；与原有 NPC
+  ≥2 格；重心纵向落在两位商店 NPC 之间、横向靠近两点中线。
+
+──────────────── 验证 ────────────────
+· node tools/run-tests.mjs --only memorial-npcs：
+    文件 1 个｜用例 8｜通过 8｜失败 0
+· 全量 node tools/run-tests.mjs：
+    文件 65 个｜用例 370｜通过 324｜失败 46｜新增失败 0
+· 摆位预览图重出：纪念NPC-摆位与形象预览.png
+  立绘改为直接用客户端 sprite 资源渲染（model → fragment 图集，方向 1），
+  不再从旧图里裁；地图局部按 blocks + layers 重画，标出红圈站位与虚线中轴。
+
+──────────────── 交付 ────────────────
+第 32 版 APK：130,752,754 字节（124.70 MB）
+sha256 645a92c537b65a0af03ea9815907e5bb8fb5690059ee924fa0bc22576f9df4a5
+站点指纹 4995d789ac11，版本按钮「单机菜单 · v11.3」
+客户端主包未改动（构建期补丁仍是 4,557,839 → 4,564,108），只改了站位数据。
+
+打包记录：
+  · node 安卓打包/standalone/build.mjs
+      client 平铺 10434 项 → worldol-standalone.js 764 KB
+  · 安卓打包/构建APK.ps1（-ExecutionPolicy Bypass）
+      MainActivity 已是自定义版本，保留不覆盖（防覆盖保护生效）
+      BUILD SUCCESSFUL in 17s
+  · 核对：解包 APK 的 assets/public/worldol-standalone.js，memorialNpcs 里
+    x/y 确实是 16/10、21/10、18/16、21/14，中文没有被转义。

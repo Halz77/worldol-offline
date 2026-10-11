@@ -1,0 +1,13 @@
+{
+  "name": "worldol-standalone-builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "把 世界OL 单机版的服务端打包成浏览器内运行的 standalone 运行时",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

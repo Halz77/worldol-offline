@@ -1,0 +1,5541 @@
+{
+  "schema": 1,
+  "revision": "yunruo-temple-v1",
+  "capture": {
+    "id": "2026-09-22T04-45-00-484Z_716322",
+    "audit": {
+      "schema": "worldol.capture.prefix-audit.v1",
+      "snapshot": true,
+      "checkedAt": "2026-09-22T04:52:37.691Z",
+      "cutoffSeq": 7810,
+      "cutoffAt": "2026-09-22T04:52:31.472Z",
+      "events": 7810,
+      "wsSent": 292,
+      "wsReceived": 239,
+      "cleanEnd": false,
+      "integrityPassed": true,
+      "errors": [],
+      "truncatedTail": false,
+      "uniqueBlobs": 1020,
+      "verifiedBytes": 32389284,
+      "captureGaps": [],
+      "networkFailures": []
+    }
+  },
+  "map": {
+    "id": 411,
+    "name": "云若寺",
+    "recordedName": "_0#map_411_",
+    "spawn": [
+      43,
+      37
+    ],
+    "npcs": [
+      {
+        "mapId": 411,
+        "sign": 3,
+        "id": 2,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5003",
+        "businessIcon": 0,
+        "name": "寺庙老者",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 11,
+        "direction": 1,
+        "x": 43,
+        "y": 36,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          0,
+          0,
+          3901,
+          1
+        ],
+        "sourceGx": 43,
+        "sourceGy": 36,
+        "wireBase64": "AwIAAAAAAAAAABOLAAAADOWvuuW6meiAgeiAhQAAAAALASskAAAAAAAPPQE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 3,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5014",
+        "businessIcon": 0,
+        "name": "云若寺修女",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 34,
+        "y": 25,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3901,
+          7,
+          3914,
+          1
+        ],
+        "sourceGx": 34,
+        "sourceGy": 25,
+        "wireBase64": "AAMAAAAAAAAAABOWAAAAD+S6keiLpeWvuuS/ruWlswAAAAAKASIZAAAPPQcPSgE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 4,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5055",
+        "businessIcon": 0,
+        "name": "广寒道长",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 30,
+        "y": 35,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3902,
+          1,
+          3906,
+          7
+        ],
+        "sourceGx": 30,
+        "sourceGy": 35,
+        "wireBase64": "AAQAAAAAAAAAABO/AAAADOW5v+WvkumBk+mVvwAAAAAKAR4jAAAPPgEPQgc=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 11,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15048",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 23,
+        "y": 21,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3902,
+          2,
+          3902,
+          1
+        ],
+        "battleID": [
+          20325
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 23,
+        "sourceGy": 21,
+        "wireBase64": "AAsAAQAAAAAAADrIAAAAAAAAAAAKARcVAAAPPgIPPgFPZR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 12,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15048",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 26,
+        "y": 20,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3902,
+          2,
+          3902,
+          1
+        ],
+        "battleID": [
+          20325
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 26,
+        "sourceGy": 20,
+        "wireBase64": "AAwAAQAAAAAAADrIAAAAAAAAAAAKARoUAAAPPgIPPgFPZR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 13,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15048",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 28,
+        "y": 22,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3902,
+          2,
+          3902,
+          1
+        ],
+        "battleID": [
+          20325
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 28,
+        "sourceGy": 22,
+        "wireBase64": "AA0AAQAAAAAAADrIAAAAAAAAAAAKARwWAAAPPgIPPgFPZR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 15,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15048",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 31,
+        "y": 24,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3902,
+          2,
+          3902,
+          1
+        ],
+        "battleID": [
+          20325
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 31,
+        "sourceGy": 24,
+        "wireBase64": "AA8AAQAAAAAAADrIAAAAAAAAAAAKAR8YAAAPPgIPPgFPZR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 17,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15147",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 16,
+        "y": 35,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3904,
+          2,
+          3904,
+          1
+        ],
+        "battleID": [
+          20326
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 16,
+        "sourceGy": 35,
+        "wireBase64": "ABEAAQAAAAAAADsrAAAAAAAAAAAKARAjAAAPQAIPQAFPZh4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 18,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15147",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 17,
+        "y": 32,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3904,
+          2,
+          3904,
+          1
+        ],
+        "battleID": [
+          20326
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 17,
+        "sourceGy": 32,
+        "wireBase64": "ABIAAQAAAAAAADsrAAAAAAAAAAAKAREgAAAPQAIPQAFPZh4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 16,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15147",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 19,
+        "y": 30,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3904,
+          2,
+          3904,
+          1
+        ],
+        "battleID": [
+          20326
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 19,
+        "sourceGy": 30,
+        "wireBase64": "ABAAAQAAAAAAADsrAAAAAAAAAAAKARMeAAAPQAIPQAFPZh4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 20,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15262",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 28,
+        "y": 31,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3905,
+          2,
+          3905,
+          1
+        ],
+        "battleID": [
+          20327
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 28,
+        "sourceGy": 31,
+        "wireBase64": "ABQAAQAAAAAAADueAAAAAAAAAAAKARwfAAAPQQIPQQFPZx4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 21,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15262",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 26,
+        "y": 33,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3905,
+          2,
+          3905,
+          1
+        ],
+        "battleID": [
+          20327
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 26,
+        "sourceGy": 33,
+        "wireBase64": "ABUAAQAAAAAAADueAAAAAAAAAAAKARohAAAPQQIPQQFPZx4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 22,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15262",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 27,
+        "y": 36,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3905,
+          2,
+          3905,
+          1
+        ],
+        "battleID": [
+          20327
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 27,
+        "sourceGy": 36,
+        "wireBase64": "ABYAAQAAAAAAADueAAAAAAAAAAAKARskAAAPQQIPQQFPZx4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 5,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5057",
+        "businessIcon": 0,
+        "name": "奉星巫师",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 20,
+        "y": 20,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3906,
+          7,
+          3908,
+          1
+        ],
+        "sourceGx": 20,
+        "sourceGy": 20,
+        "wireBase64": "AAUAAAAAAAAAABPBAAAADOWlieaYn+W3q+W4iAAAAAAKARQUAAAPQgcPRAE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 23,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15122",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 12,
+        "y": 17,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3908,
+          2,
+          3908,
+          1
+        ],
+        "battleID": [
+          20328
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 12,
+        "sourceGy": 17,
+        "wireBase64": "ABcAAQAAAAAAADsSAAAAAAAAAAAKAAwRAAAPRAIPRAFPaB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 24,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15122",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 9,
+        "y": 20,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3908,
+          2,
+          3908,
+          1
+        ],
+        "battleID": [
+          20328
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 9,
+        "sourceGy": 20,
+        "wireBase64": "ABgAAQAAAAAAADsSAAAAAAAAAAAKAAkUAAAPRAIPRAFPaB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 25,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15122",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 6,
+        "y": 20,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3908,
+          2,
+          3908,
+          1
+        ],
+        "battleID": [
+          20328
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 6,
+        "sourceGy": 20,
+        "wireBase64": "ABkAAQAAAAAAADsSAAAAAAAAAAAKAAYUAAAPRAIPRAFPaB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 26,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15122",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 12,
+        "y": 20,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3908,
+          2,
+          3908,
+          1
+        ],
+        "battleID": [
+          20328
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 12,
+        "sourceGy": 20,
+        "wireBase64": "ABoAAQAAAAAAADsSAAAAAAAAAAAKAAwUAAAPRAIPRAFPaB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 6,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5501",
+        "businessIcon": 0,
+        "name": "书生",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 3,
+        "y": 32,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3908,
+          7,
+          3913,
+          1
+        ],
+        "sourceGx": 3,
+        "sourceGy": 32,
+        "wireBase64": "AAYAAAAAAAAAABV9AAAABuS5pueUnwAAAAAKAAMgAAAPRAcPSQE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 7,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5032",
+        "businessIcon": 0,
+        "name": "黑头士",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 13,
+        "y": 22,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3910,
+          7,
+          3912,
+          1
+        ],
+        "sourceGx": 13,
+        "sourceGy": 22,
+        "wireBase64": "AAcAAAAAAAAAABOoAAAACem7keWktOWjqwAAAAAKAA0WAAAPRgcPSAE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 27,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15165",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 9,
+        "y": 25,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3912,
+          2,
+          3912,
+          1
+        ],
+        "battleID": [
+          20329
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 9,
+        "sourceGy": 25,
+        "wireBase64": "ABsAAQAAAAAAADs9AAAAAAAAAAAKAAkZAAAPSAIPSAFPaR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 28,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15165",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 8,
+        "y": 29,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3912,
+          2,
+          3912,
+          1
+        ],
+        "battleID": [
+          20329
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 8,
+        "sourceGy": 29,
+        "wireBase64": "ABwAAQAAAAAAADs9AAAAAAAAAAAKAAgdAAAPSAIPSAFPaR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 29,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15165",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 7,
+        "y": 32,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3912,
+          2,
+          3912,
+          1
+        ],
+        "battleID": [
+          20329
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 7,
+        "sourceGy": 32,
+        "wireBase64": "AB0AAQAAAAAAADs9AAAAAAAAAAAKAAcgAAAPSAIPSAFPaR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 8,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5500",
+        "businessIcon": 0,
+        "name": "紫霞仙",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 37,
+        "y": 8,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3914,
+          7,
+          3920,
+          1
+        ],
+        "sourceGx": 37,
+        "sourceGy": 8,
+        "wireBase64": "AAgAAAAAAAAAABV8AAAACee0q+mcnuS7mQAAAAAKASUIAAAPSgcPUAE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 31,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15214",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 26,
+        "y": 5,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3915,
+          2,
+          3915,
+          1
+        ],
+        "battleID": [
+          20330
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 26,
+        "sourceGy": 5,
+        "wireBase64": "AB8AAQAAAAAAADtuAAAAAAAAAAAKABoFAAAPSwIPSwFPah4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 30,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15214",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 29,
+        "y": 4,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3915,
+          2,
+          3915,
+          1
+        ],
+        "battleID": [
+          20330
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 29,
+        "sourceGy": 4,
+        "wireBase64": "AB4AAQAAAAAAADtuAAAAAAAAAAAKAB0EAAAPSwIPSwFPah4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 32,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15214",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 33,
+        "y": 4,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3915,
+          2,
+          3915,
+          1
+        ],
+        "battleID": [
+          20330
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 33,
+        "sourceGy": 4,
+        "wireBase64": "ACAAAQAAAAAAADtuAAAAAAAAAAAKACEEAAAPSwIPSwFPah4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 33,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15702",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 43,
+        "y": 13,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3917,
+          2,
+          3917,
+          1
+        ],
+        "battleID": [
+          20331
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 43,
+        "sourceGy": 13,
+        "wireBase64": "ACEAAQAAAAAAAD1WAAAAAAAAAAAKASsNAAAPTQIPTQFPax4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 34,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15702",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 41,
+        "y": 10,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3917,
+          2,
+          3917,
+          1
+        ],
+        "battleID": [
+          20331
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 41,
+        "sourceGy": 10,
+        "wireBase64": "ACIAAQAAAAAAAD1WAAAAAAAAAAAKASkKAAAPTQIPTQFPax4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 35,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15702",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 36,
+        "y": 11,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3917,
+          2,
+          3917,
+          1
+        ],
+        "battleID": [
+          20331
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 36,
+        "sourceGy": 11,
+        "wireBase64": "ACMAAQAAAAAAAD1WAAAAAAAAAAAKACQLAAAPTQIPTQFPax4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 36,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15702",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 38,
+        "y": 15,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3917,
+          2,
+          3917,
+          1
+        ],
+        "battleID": [
+          20331
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 38,
+        "sourceGy": 15,
+        "wireBase64": "ACQAAQAAAAAAAD1WAAAAAAAAAAAKACYPAAAPTQIPTQFPax4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 9,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5004",
+        "businessIcon": 0,
+        "name": "长老",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 0,
+        "x": 3,
+        "y": 7,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3917,
+          7,
+          3922,
+          1
+        ],
+        "sourceGx": 3,
+        "sourceGy": 7,
+        "wireBase64": "AAkAAAAAAAAAABOMAAAABumVv+iAgQAAAAAKAAMHAAAPTQcPUgE=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 37,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "20878",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 22,
+        "y": 8,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3919,
+          2,
+          3919,
+          1
+        ],
+        "battleID": [
+          20332
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 22,
+        "sourceGy": 8,
+        "wireBase64": "ACUAAQAAAAAAAFGOAAAAAAAAAAAKARYIAAAPTwIPTwFPbB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 38,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "20878",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 23,
+        "y": 4,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3919,
+          2,
+          3919,
+          1
+        ],
+        "battleID": [
+          20332
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 23,
+        "sourceGy": 4,
+        "wireBase64": "ACYAAQAAAAAAAFGOAAAAAAAAAAAKARcEAAAPTwIPTwFPbB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 39,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "20878",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 18,
+        "y": 4,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3919,
+          2,
+          3919,
+          1
+        ],
+        "battleID": [
+          20332
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 18,
+        "sourceGy": 4,
+        "wireBase64": "ACcAAQAAAAAAAFGOAAAAAAAAAAAKARIEAAAPTwIPTwFPbB4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 411,
+        "sign": 0,
+        "id": 41,
+        "missionGroupID": 0,
+        "npcType": 1,
+        "icon1": "15877",
+        "businessIcon": 0,
+        "name": "",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 10,
+        "direction": 1,
+        "x": 10,
+        "y": 4,
+        "rangeX": 0,
+        "rangeY": 0,
+        "missionData": [
+          3921,
+          2,
+          3921,
+          1
+        ],
+        "battleID": [
+          20333
+        ],
+        "comeOutTime": 30,
+        "sourceGx": 10,
+        "sourceGy": 4,
+        "wireBase64": "ACkAAQAAAAAAAD4FAAAAAAAAAAAKAQoEAAAPUQIPUQFPbR4=",
+        "sources": [
+          {
+            "capture": "2026-09-22T04-45-00-484Z_716322",
+            "seq": 2850,
+            "protocol": 10506,
+            "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+            "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+          }
+        ]
+      }
+    ],
+    "sourceSeq": 2850,
+    "sourceCapture": "2026-09-22T04-45-00-484Z_716322"
+  },
+  "geometry": {
+    "file": "data/maps/411.json",
+    "sha256": "f9b764ddc40e5988736c5cb9006b4b26c5083cba1f739a7f536e10e8ca84f3f0"
+  },
+  "chain": [
+    3900,
+    3901,
+    3902,
+    3903,
+    3904,
+    3905,
+    3906,
+    3907,
+    3908,
+    3910,
+    3945,
+    3912,
+    3913,
+    3914,
+    3915,
+    3916,
+    3917,
+    3918,
+    3919,
+    3920,
+    3921,
+    3922
+  ],
+  "missions": [
+    {
+      "id": 3900,
+      "name": "诡异的寺庙",
+      "level": 0,
+      "simpleDesc": "继续与寺庙老者对话",
+      "desc": "“兰若山高处，烟霞障几重”，传说有一座令人谈之色变的“鬼寺”就位于兰若山，是千年树妖姥姥管辖之地，白天是一个荒凉废弃的古寺，实际是姥姥所布下的幻境，连森林也被其控制。普通人一旦踏入便极难逃出，这座寺庙处处透着诡异.....",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 2,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "需要携带\"试炼的邀请\"以及等级达到80级方可领取该任务！",
+      "dialogStartFinish": "处处笼罩着诡异的气氛，前行需小心...",
+      "exp": 0,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3901,
+      "acceptCondition": [
+        {
+          "type": 1,
+          "typeName": "CONDITION_LEVEL",
+          "not": 0,
+          "rawHex": "50",
+          "minimum": 80
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 7,
+          "typeName": "CONDITION_HAVE_ITEM",
+          "not": 0,
+          "rawHex": "000014b5000fe8af95e782bce79a84e98280e8afb701",
+          "itemId": 5301,
+          "name": "试炼的邀请",
+          "required": 1
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 2,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "DzwAD+ivoeW8gueahOWvuuW6mQAAG+e7p+e7reS4juWvuuW6meiAgeiAheWvueivnQFD4oCc5YWw6Iul5bGx6auY5aSE77yM54Of6Zye6Zqc5Yeg6YeN4oCd77yM5Lyg6K+05pyJ5LiA5bqn5Luk5Lq66LCI5LmL6Imy5Y+Y55qE4oCc6ay85a+64oCd5bCx5L2N5LqO5YWw6Iul5bGx77yM5piv5Y2D5bm05qCR5aaW5ael5ael566h6L6W5LmL5Zyw77yM55m95aSp5piv5LiA5Liq6I2S5YeJ5bqf5byD55qE5Y+k5a+677yM5a6e6ZmF5piv5ael5ael5omA5biD5LiL55qE5bm75aKD77yM6L+e5qOu5p6X5Lmf6KKr5YW25o6n5Yi244CC5pmu6YCa5Lq65LiA5pem6LiP5YWl5L6/5p6B6Zq+6YCD5Ye677yM6L+Z5bqn5a+65bqZ5aSE5aSE6YCP552A6K+h5byCLi4uLi4UAgGbAgAAAAAATOmcgOimgeaQuuW4piLor5XngrznmoTpgoDor7ci5Lul5Y+K562J57qn6L6+5YiwODDnuqfmlrnlj6/pooblj5bor6Xku7vliqHvvIEAM+WkhOWkhOesvOe9qeedgOivoeW8gueahOawlOawm++8jOWJjeihjOmcgOWwj+W/gy4uLgAAAAAAAAAAAAAAAAAAAAAPPQAAAwEAAVAAAAAAAAADBwAWAAAUtQAP6K+V54K855qE6YKA6K+3AQAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAACAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2881,
+          "protocol": 14501,
+          "sha256": "77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9",
+          "blob": "blobs/77/77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9.bin",
+          "npcId": 2,
+          "mapId": 411
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2882,
+          "protocol": 14501,
+          "sha256": "77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9",
+          "blob": "blobs/77/77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9.bin",
+          "npcId": 2,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3901,
+      "name": "外来的使者",
+      "level": 0,
+      "simpleDesc": "前去与云若寺修女对话",
+      "desc": "听说有一个外来的使者要来云若寺拜访，是你吗/c00ff00{1}/p？非常欢迎来到云若寺，但是云若寺与其他寺庙有所不同，虚无与现实交织，希望你好好分辨，一路顺利！",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 3,
+      "radarMapID": 411,
+      "radarGx": 35,
+      "radarGy": 24,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "",
+      "dialogStartFinish": "开始探索吧，使者~",
+      "exp": 0,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3902,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f3c000fe8afa1e5bc82e79a84e5afbae5ba99",
+          "missionId": 3900,
+          "name": "诡异的寺庙"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 2,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "Dz0AD+WkluadpeeahOS9v+iAhQAAHuWJjeWOu+S4juS6keiLpeWvuuS/ruWls+WvueivnQDZ5ZCs6K+05pyJ5LiA5Liq5aSW5p2l55qE5L2/6ICF6KaB5p2l5LqR6Iul5a+65ouc6K6/77yM5piv5L2g5ZCXL2MwMGZmMDB7MX0vcO+8n+mdnuW4uOasoui/juadpeWIsOS6keiLpeWvuu+8jOS9huaYr+S6keiLpeWvuuS4juWFtuS7luWvuuW6meacieaJgOS4jeWQjO+8jOiZmuaXoOS4jueOsOWunuS6pOe7h++8jOW4jOacm+S9oOWlveWlveWIhui+qO+8jOS4gOi3r+mhuuWIqe+8gQQCAZsDAZsjGAAAAAAAGeW8gOWni+aOoue0ouWQp++8jOS9v+iAhX4AAAAAAAAAAAAAAAAAAAAADz4AAAMJABMPPAAP6K+h5byC55qE5a+65bqZAAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAACAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2881,
+          "protocol": 14501,
+          "sha256": "77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9",
+          "blob": "blobs/77/77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9.bin",
+          "npcId": 2,
+          "mapId": 411
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2882,
+          "protocol": 14501,
+          "sha256": "77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9",
+          "blob": "blobs/77/77bada9aa5098430361ec1c9d57a379fcc641ca6a179a696361682dc521beee9.bin",
+          "npcId": 2,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3902,
+      "name": "狂妄的倩女",
+      "level": 0,
+      "simpleDesc": "消灭倩女",
+      "desc": "你是哪里来的使者？要来我们云若寺拜访？看你的样子，能力应该不怎么样，云若寺没有你想的美好，你还是早点回去吧，这里，不欢迎你！真的想要进去，就出招吧！",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 3,
+      "radarMapID": 411,
+      "radarGx": 29,
+      "radarGy": 24,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "语气好狂妄的倩女，快去打败它！",
+      "dialogStartFinish": "你不要骄傲，后面还有很多怪物，看你怎么解决，哈哈哈哈哈~",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3903,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f3d000fe5a496e69da5e79a84e4bdbfe88085",
+          "missionId": 3901,
+          "name": "外来的使者"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09f50006e580a9e5a5b31e00",
+          "monsterId": 2549,
+          "name": "倩女",
+          "required": 30,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 3,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "Dz4AD+eLguWmhOeahOWAqeWlswAADOa2iOeBreWAqeWlswDe5L2g5piv5ZOq6YeM5p2l55qE5L2/6ICF77yf6KaB5p2l5oiR5Lus5LqR6Iul5a+65ouc6K6/77yf55yL5L2g55qE5qC35a2Q77yM6IO95Yqb5bqU6K+l5LiN5oCO5LmI5qC377yM5LqR6Iul5a+65rKh5pyJ5L2g5oOz55qE576O5aW977yM5L2g6L+Y5piv5pep54K55Zue5Y675ZCn77yM6L+Z6YeM77yM5LiN5qyi6L+O5L2g77yB55yf55qE5oOz6KaB6L+b5Y6777yM5bCx5Ye65oub5ZCn77yBBAIBmwMBmx0YAAAALeivreawlOWlveeLguWmhOeahOWAqeWls++8jOW/q+WOu+aJk+i0peWug++8gQBS5L2g5LiN6KaB6aqE5YKy77yM5ZCO6Z2i6L+Y5pyJ5b6I5aSa5oCq54mp77yM55yL5L2g5oCO5LmI6Kej5Yaz77yM5ZOI5ZOI5ZOI5ZOI5ZOIfgAAA+gAAAAAAAAAAAAAAAAPPwAAAwkAEw89AA/lpJbmnaXnmoTkvb/ogIUAAAAAAAADAgAMCfUABuWAqeWlsx4AAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAMBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3040,
+          "protocol": 14501,
+          "sha256": "50d4eeb6f392ed66d5a41199c25b4de6b0ea504d4b2a34c40873c661890f5297",
+          "blob": "blobs/50/50d4eeb6f392ed66d5a41199c25b4de6b0ea504d4b2a34c40873c661890f5297.bin",
+          "npcId": 3,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3914,
+      "name": "寻找紫霞仙",
+      "level": 0,
+      "simpleDesc": "和云若寺修女对话",
+      "desc": "紫霞仙你在哪儿啊？（你大声的呼喊），云若寺修女听到了，使者你在找紫霞仙嘛？我昨晚还和她在一起呢，难道她被吊死鬼缠上了嘛？吊死鬼可不是好对付的，我们快去找找吧！",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 3,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "紫霞仙你到底在哪里啊？！",
+      "dialogStartFinish": "快去找紫霞仙",
+      "exp": 100,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3915,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f49000ce9ad82e9ad84e5bd92e4bd8d",
+          "missionId": 3913,
+          "name": "魂魄归位"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 3,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0oAD+Wvu+aJvue0q+mcnuS7mQAAGOWSjOS6keiLpeWvuuS/ruWls+WvueivnQDt57Sr6Zye5LuZ5L2g5Zyo5ZOq5YS/5ZWK77yf77yI5L2g5aSn5aOw55qE5ZG85ZaK77yJ77yM5LqR6Iul5a+65L+u5aWz5ZCs5Yiw5LqG77yM5L2/6ICF5L2g5Zyo5om+57Sr6Zye5LuZ5Zib77yf5oiR5pio5pma6L+Y5ZKM5aW55Zyo5LiA6LW35ZGi77yM6Zq+6YGT5aW56KKr5ZCK5q276ay857yg5LiK5LqG5Zib77yf5ZCK5q276ay85Y+v5LiN5piv5aW95a+55LuY55qE77yM5oiR5Lus5b+r5Y675om+5om+5ZCn77yBFAIBmwMAAAAAACTntKvpnJ7ku5nkvaDliLDlupXlnKjlk6rph4zllYrvvJ/vvIEAEuW/q+WOu+aJvue0q+mcnuS7mQAAAGQAAAAAAAAAAAAAAAAPSwAAAwkAEA9JAAzprYLprYTlvZLkvY0AAAAAAAADAAAAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAMBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3040,
+          "protocol": 14501,
+          "sha256": "50d4eeb6f392ed66d5a41199c25b4de6b0ea504d4b2a34c40873c661890f5297",
+          "blob": "blobs/50/50d4eeb6f392ed66d5a41199c25b4de6b0ea504d4b2a34c40873c661890f5297.bin",
+          "npcId": 3,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3903,
+      "name": "帮忙救灾",
+      "level": 0,
+      "simpleDesc": "与广寒道长对话",
+      "desc": "/c00ff00{1}/p，你可算来了，我等你好久了，我看了一下，这里的粮食都被树妖破坏了，我必须用法阵封印树妖，不让树妖继续作孽，你愿意一起协助我吗？",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 4,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "答应广寒道长的要求，一起协助对付树妖",
+      "dialogStartFinish": "你真是一个好人儿，寺民会感谢你的",
+      "exp": 100,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3904,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f3e000fe78b82e5a684e79a84e580a9e5a5b3",
+          "missionId": 3902,
+          "name": "狂妄的倩女"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 4,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "Dz8ADOW4ruW/meaVkeeBvgAAFeS4juW5v+WvkumBk+mVv+WvueivnQDKL2MwMGZmMDB7MX0vcO+8jOS9oOWPr+eul+adpeS6hu+8jOaIkeetieS9oOWlveS5heS6hu+8jOaIkeeci+S6huS4gOS4i++8jOi/memHjOeahOeyrumjn+mDveiiq+agkeWmluegtOWdj+S6hu+8jOaIkeW/hemhu+eUqOazlemYteWwgeWNsOagkeWmlu+8jOS4jeiuqeagkeWmlue7p+e7reS9nOWtve+8jOS9oOaEv+aEj+S4gOi1t+WNj+WKqeaIkeWQl++8nxQCAZsEAAAAAAA2562U5bqU5bm/5a+S6YGT6ZW/55qE6KaB5rGC77yM5LiA6LW35Y2P5Yqp5a+55LuY5qCR5aaWADDkvaDnnJ/mmK/kuIDkuKrlpb3kurrlhL/vvIzlr7rmsJHkvJrmhJ/osKLkvaDnmoQAAABkAAAAAAAAAAAAAAAAD0AAAAMJABMPPgAP54uC5aaE55qE5YCp5aWzAAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAEAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3044,
+          "protocol": 14501,
+          "sha256": "3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469",
+          "blob": "blobs/3d/3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469.bin",
+          "npcId": 4,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3904,
+      "name": "难缠的树妖",
+      "level": 0,
+      "simpleDesc": "消灭小树妖",
+      "desc": "（一群小树妖向你们扑来！）小心这些讨厌的小树妖！？？/c00ff00{1}/p，就是这些小树妖在破坏我们的粮食，我们快消灭它们！！",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 4,
+      "radarMapID": 411,
+      "radarGx": 18,
+      "radarGy": 32,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "快一起行动吧",
+      "dialogStartFinish": "太好了，我们的粮食有救了！",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3905,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f3f000ce5b8aee5bf99e69591e781be",
+          "missionId": 3903,
+          "name": "帮忙救灾"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09f60009e5b08fe6a091e5a6961400",
+          "monsterId": 2550,
+          "name": "小树妖",
+          "required": 20,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 4,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0AAD+mavue8oOeahOagkeWmlgAAD+a2iOeBreWwj+agkeWmlgCp77yI5LiA576k5bCP5qCR5aaW5ZCR5L2g5Lus5omR5p2l77yB77yJ5bCP5b+D6L+Z5Lqb6K6o5Y6M55qE5bCP5qCR5aaW77yB77yf77yfL2MwMGZmMDB7MX0vcO+8jOWwseaYr+i/meS6m+Wwj+agkeWmluWcqOegtOWdj+aIkeS7rOeahOeyrumjn++8jOaIkeS7rOW/q+a2iOeBreWug+S7rO+8ge+8gQQCAZsEAZsSIAAAABLlv6vkuIDotbfooYzliqjlkKcAJ+WkquWlveS6hu+8jOaIkeS7rOeahOeyrumjn+acieaVkeS6hu+8gQAAA+gAAAAAAAAAAAAAAAAPQQAAAwkAEA8/AAzluK7lv5nmlZHngb4AAAAAAAADAgAPCfYACeWwj+agkeWmlhQAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAQBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3044,
+          "protocol": 14501,
+          "sha256": "3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469",
+          "blob": "blobs/3d/3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469.bin",
+          "npcId": 4,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3905,
+      "name": "树妖现身",
+      "level": 0,
+      "simpleDesc": "消灭大树妖",
+      "desc": "小树妖，这都搞不定，简直是废物！还是看我的吧！今天，我要让你们全都消失在这里，接招吧，自不量力的人！（大树妖洋洋得意的说）",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 4,
+      "radarMapID": 411,
+      "radarGx": 19,
+      "radarGy": 20,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "",
+      "dialogStartFinish": "感谢你的帮忙，带上这些粮食吧，前面险象丛生，可以补充体力。",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3906,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f40000fe99abee7bca0e79a84e6a091e5a696",
+          "missionId": 3904,
+          "name": "难缠的树妖"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09f70009e5a4a7e6a091e5a6961400",
+          "monsterId": 2551,
+          "name": "大树妖",
+          "required": 20,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 4,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0EADOagkeWmlueOsOi6qwAAD+a2iOeBreWkp+agkeWmlgC35bCP5qCR5aaW77yM6L+Z6YO95pCe5LiN5a6a77yM566A55u05piv5bqf54mp77yB6L+Y5piv55yL5oiR55qE5ZCn77yB5LuK5aSp77yM5oiR6KaB6K6p5L2g5Lus5YWo6YO95raI5aSx5Zyo6L+Z6YeM77yM5o6l5oub5ZCn77yM6Ieq5LiN6YeP5Yqb55qE5Lq677yB77yI5aSn5qCR5aaW5rSL5rSL5b6X5oSP55qE6K+077yJBAIBmwQBmxMUAAAAAABX5oSf6LCi5L2g55qE5biu5b+Z77yM5bim5LiK6L+Z5Lqb57Ku6aOf5ZCn77yM5YmN6Z2i6Zmp6LGh5Lib55Sf77yM5Y+v5Lul6KGl5YWF5L2T5Yqb44CCAAAD6AAAAAAAAAAAAAAAAA9CAAADCQATD0AAD+mavue8oOeahOagkeWmlgAAAAAAAAMCAA8J9wAJ5aSn5qCR5aaWFAAAAAAAAAAAAAAHAAnkupHoi6Xlr7oAAAGbAAAABAEA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3044,
+          "protocol": 14501,
+          "sha256": "3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469",
+          "blob": "blobs/3d/3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469.bin",
+          "npcId": 4,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3906,
+      "name": "寒风刺骨",
+      "level": 0,
+      "simpleDesc": "前去与奉星巫师对话",
+      "desc": "你突然感觉到有一股刺骨的寒风，是什么东西啊？前面有个人去问一下看看~（你看到前面的人手里拿着东西不知道在干嘛..） ",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 5,
+      "radarMapID": 411,
+      "radarGx": 21,
+      "radarGy": 20,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "好冷啊，好像进入了一个结界",
+      "dialogStartFinish": "快去看看前面是谁",
+      "exp": 100,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3907,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f41000ce6a091e5a696e78eb0e8baab",
+          "missionId": 3905,
+          "name": "树妖现身"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 4,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0IADOWvkumjjuWIuumqqAAAG+WJjeWOu+S4juWlieaYn+W3q+W4iOWvueivnQCm5L2g56qB54S25oSf6KeJ5Yiw5pyJ5LiA6IKh5Yi66aqo55qE5a+S6aOO77yM5piv5LuA5LmI5Lic6KW/5ZWK77yf5YmN6Z2i5pyJ5Liq5Lq65Y676Zeu5LiA5LiL55yL55yLfu+8iOS9oOeci+WIsOWJjemdoueahOS6uuaJi+mHjOaLv+edgOS4nOilv+S4jeefpemBk+WcqOW5suWYmy4u77yJIAQCAZsFAZsVFAAAACflpb3lhrfllYrvvIzlpb3lg4/ov5vlhaXkuobkuIDkuKrnu5PnlYwAGOW/q+WOu+eci+eci+WJjemdouaYr+iwgQAAAGQAAAAAAAAAAAAAAAAPQwAAAwkAEA9BAAzmoJHlppbnjrDouqsAAAAAAAADAAAAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAQBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3044,
+          "protocol": 14501,
+          "sha256": "3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469",
+          "blob": "blobs/3d/3d4fb7ee188d154a536c3e39b67adc08bdbcca6bc44484431549b2f60256d469.bin",
+          "npcId": 4,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3907,
+      "name": "鬼魂出没",
+      "level": 0,
+      "simpleDesc": "继续与奉星巫师对话",
+      "desc": "/c00ff00{1}/p，兰若寺经常会有鬼魂在晚上出没。传说这些鬼魂通常被无尽的愤怒驱使着，有专门的魔法师控制他们，他们可以穿过实体的物质，吸取人类的魂魄，寺庙里已经有很多人因此丧命了，我们一起去对付这该死的鬼魂吧，要注意别让鬼魂靠近你。（突然一道白光落下，是巫师在用魔法）",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 5,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "",
+      "dialogStartFinish": "夜晚尤其危险，要注意保护自己哦",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3908,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f42000ce5af92e9a38ee588bae9aaa8",
+          "missionId": 3906,
+          "name": "寒风刺骨"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 5,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0MADOmsvOmtguWHuuayoQAAG+e7p+e7reS4juWlieaYn+W3q+W4iOWvueivnQGEL2MwMGZmMDB7MX0vcO+8jOWFsOiLpeWvuue7j+W4uOS8muaciemsvOmtguWcqOaZmuS4iuWHuuayoeOAguS8oOivtOi/meS6m+msvOmtgumAmuW4uOiiq+aXoOWwveeahOaEpOaAkumpseS9v+edgO+8jOacieS4k+mXqOeahOmtlOazleW4iOaOp+WItuS7luS7rO+8jOS7luS7rOWPr+S7peepv+i/h+WunuS9k+eahOeJqei0qO+8jOWQuOWPluS6uuexu+eahOmtgumthO+8jOWvuuW6memHjOW3sue7j+acieW+iOWkmuS6uuWboOatpOS4p+WRveS6hu+8jOaIkeS7rOS4gOi1t+WOu+WvueS7mOi/meivpeatu+eahOmsvOmtguWQp++8jOimgeazqOaEj+WIq+iuqemsvOmtgumdoOi/keS9oOOAgu+8iOeqgeeEtuS4gOmBk+eZveWFieiQveS4i++8jOaYr+W3q+W4iOWcqOeUqOmtlOazle+8iRQCAZsFAAAAAAAAAC3lpJzmmZrlsKTlhbbljbHpmanvvIzopoHms6jmhI/kv53miqToh6rlt7Hlk6YAAABkAAAAZAAAAAAAAAAAD0QAAAMJABAPQgAM5a+S6aOO5Yi66aqoAAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAFAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3048,
+          "protocol": 14501,
+          "sha256": "ad7bae4897551bbb0737c2c30ffe6e15d7d1b37ae28bd033a1fa65081b883933",
+          "blob": "blobs/ad/ad7bae4897551bbb0737c2c30ffe6e15d7d1b37ae28bd033a1fa65081b883933.bin",
+          "npcId": 5,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3908,
+      "name": "鬼魂袭击",
+      "level": 0,
+      "simpleDesc": "消灭夜晚鬼魂",
+      "desc": "这些鬼魂因为常年被魔法师控制，早已法力无边，只要发现活人的气息，它们就会发疯似的咬人。不能让它们发现我们，要快一点趁天亮前消灭它们。",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 5,
+      "radarMapID": 411,
+      "radarGx": 11,
+      "radarGy": 20,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "小心夜晚的鬼魂..",
+      "dialogStartFinish": "真不容易啊，终于把这些鬼魂消灭掉了，真把我累死了...",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3910,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f43000ce9acbce9ad82e587bae6b2a1",
+          "missionId": 3907,
+          "name": "鬼魂出没"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09f8000ce5a49ce6999ae9acbce9ad821e00",
+          "monsterId": 2552,
+          "name": "夜晚鬼魂",
+          "required": 30,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 5,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0QADOmsvOmtguiireWHuwAAEua2iOeBreWknOaZmumsvOmtggDG6L+Z5Lqb6ay86a2C5Zug5Li65bi45bm06KKr6a2U5rOV5biI5o6n5Yi277yM5pep5bey5rOV5Yqb5peg6L6577yM5Y+q6KaB5Y+R546w5rS75Lq655qE5rCU5oGv77yM5a6D5Lus5bCx5Lya5Y+R55av5Ly855qE5ZKs5Lq644CC5LiN6IO96K6p5a6D5Lus5Y+R546w5oiR5Lus77yM6KaB5b+r5LiA54K56LaB5aSp5Lqu5YmN5raI54Gt5a6D5Lus44CCBAIBmwUBmwsUAAAAF+Wwj+W/g+WknOaZmueahOmsvOmtgi4uAEvnnJ/kuI3lrrnmmJPllYrvvIznu4jkuo7miorov5nkupvprLzprYLmtojnga3mjonkuobvvIznnJ/miormiJHntK/mrbvkuoYuLi4AAAPoAAAAAAAAAAAAAAAAD0YAAAMJABAPQwAM6ay86a2C5Ye65rKhAAAAAAAAAwIAEgn4AAzlpJzmmZrprLzprYIeAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAFAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3048,
+          "protocol": 14501,
+          "sha256": "ad7bae4897551bbb0737c2c30ffe6e15d7d1b37ae28bd033a1fa65081b883933",
+          "blob": "blobs/ad/ad7bae4897551bbb0737c2c30ffe6e15d7d1b37ae28bd033a1fa65081b883933.bin",
+          "npcId": 5,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3910,
+      "name": "书生的烦恼",
+      "level": 0,
+      "simpleDesc": "与书生对话",
+      "desc": "咦，这兰若寺怎么有一个书生在这里（你感到好奇并走近去看），书生苦恼的说他是来寺庙为奶奶祈祷的，奶奶前几天被妖怪白骨夫人取了魂魄，他来寺庙寻求黑头士的帮助，好几天了，黑头士还没有回来，使者，可以麻烦你帮我去看看吗？（你听了决定去看看究竟，点了点头）",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 6,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "书生的烦恼是什么呢?",
+      "dialogStartFinish": "谢谢你使者，期待你为我带来好消息。",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3945,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f44000ce9acbce9ad82e8a2ade587bb",
+          "missionId": 3908,
+          "name": "鬼魂袭击"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 6,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0YAD+S5pueUn+eahOeDpuaBvAAAD+S4juS5pueUn+WvueivnQFx5ZKm77yM6L+Z5YWw6Iul5a+65oCO5LmI5pyJ5LiA5Liq5Lmm55Sf5Zyo6L+Z6YeM77yI5L2g5oSf5Yiw5aW95aWH5bm26LWw6L+R5Y6755yL77yJ77yM5Lmm55Sf6Ium5oG855qE6K+05LuW5piv5p2l5a+65bqZ5Li65aW25aW256WI56W355qE77yM5aW25aW25YmN5Yeg5aSp6KKr5aaW5oCq55m96aqo5aSr5Lq65Y+W5LqG6a2C6a2E77yM5LuW5p2l5a+65bqZ5a+75rGC6buR5aS05aOr55qE5biu5Yqp77yM5aW95Yeg5aSp5LqG77yM6buR5aS05aOr6L+Y5rKh5pyJ5Zue5p2l77yM5L2/6ICF77yM5Y+v5Lul6bq754Om5L2g5biu5oiR5Y6755yL55yL5ZCX77yf77yI5L2g5ZCs5LqG5Yaz5a6a5Y6755yL55yL56m256uf77yM54K55LqG54K55aS077yJFAIBmwYAAAAAABzkuabnlJ/nmoTng6bmgbzmmK/ku4DkuYjlkaI/ADPosKLosKLkvaDkvb/ogIXvvIzmnJ/lvoXkvaDkuLrmiJHluKbmnaXlpb3mtojmga/jgIIAAABkAAAAZAAAAAAAAAAAD2kAAAMJABAPRAAM6ay86a2C6KKt5Ye7AAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAGAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3054,
+          "protocol": 14501,
+          "sha256": "7145af0f8f6895a8a43ee47220d2d097056897eb199febcc3c08fc22177245a7",
+          "blob": "blobs/71/7145af0f8f6895a8a43ee47220d2d097056897eb199febcc3c08fc22177245a7.bin",
+          "npcId": 6,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3913,
+      "name": "魂魄归位",
+      "level": 0,
+      "simpleDesc": "归位奶奶魂魄",
+      "desc": "书生，费尽千辛万苦，我们终于除掉白骨夫人，奶奶的魂魄终于归位了，你现在可以和奶奶回家啦。（书生面露喜悦）太好了，谢谢你们的帮忙，我这就和奶奶一起回家，但是在这之前，我想和你们说一件事情，今天我去玉女那里祈祷，之前紫霞仙都会在的，今天不在了，好像遇到困难了，使者你快点儿过去看看吧！",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 6,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "",
+      "dialogStartFinish": "太好了，奶奶，你终于回来了",
+      "exp": 200,
+      "money2": 0,
+      "money3": 200,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3914,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f480012e587bbe8b4a5e799bde9aaa8e5a4abe4baba",
+          "missionId": 3912,
+          "name": "击败白骨夫人"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 6,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0kADOmtgumthOW9kuS9jQAAEuW9kuS9jeWltuWltumtgumthAGk5Lmm55Sf77yM6LS55bC95Y2D6L6b5LiH6Ium77yM5oiR5Lus57uI5LqO6Zmk5o6J55m96aqo5aSr5Lq677yM5aW25aW255qE6a2C6a2E57uI5LqO5b2S5L2N5LqG77yM5L2g546w5Zyo5Y+v5Lul5ZKM5aW25aW25Zue5a625ZWm44CC77yI5Lmm55Sf6Z2i6Zyy5Zac5oKm77yJ5aSq5aW95LqG77yM6LCi6LCi5L2g5Lus55qE5biu5b+Z77yM5oiR6L+Z5bCx5ZKM5aW25aW25LiA6LW35Zue5a6277yM5L2G5piv5Zyo6L+Z5LmL5YmN77yM5oiR5oOz5ZKM5L2g5Lus6K+05LiA5Lu25LqL5oOF77yM5LuK5aSp5oiR5Y67546J5aWz6YKj6YeM56WI56W377yM5LmL5YmN57Sr6Zye5LuZ6YO95Lya5Zyo55qE77yM5LuK5aSp5LiN5Zyo5LqG77yM5aW95YOP6YGH5Yiw5Zuw6Zq+5LqG77yM5L2/6ICF5L2g5b+r54K55YS/6L+H5Y6755yL55yL5ZCn77yBFAIBmwYAAAAAAAAAJ+WkquWlveS6hu+8jOWltuWltu+8jOS9oOe7iOS6juWbnuadpeS6hgAAAMgAAADIAAAAAAAAAAAPSgAAAwkAFg9IABLlh7votKXnmb3pqqjlpKvkuroAAAAAAAADAAAAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAYBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3054,
+          "protocol": 14501,
+          "sha256": "7145af0f8f6895a8a43ee47220d2d097056897eb199febcc3c08fc22177245a7",
+          "blob": "blobs/71/7145af0f8f6895a8a43ee47220d2d097056897eb199febcc3c08fc22177245a7.bin",
+          "npcId": 6,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3945,
+      "name": "遇到黑头士",
+      "level": 0,
+      "simpleDesc": "与黑头士对话",
+      "desc": "（气喘吁吁）你是黑头士吗？（黑头士点点头，有点疑惑），我是使者/c00ff00{1}/p，是书生叫我来找你的，你找到白骨夫人了吗？黑头士点点头，白骨夫人就藏在这附近，可能会神不知鬼不觉的出来，我们要小心一点！",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 7,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "怎么还没有看到黑头士，在哪里呢？",
+      "dialogStartFinish": "总算找到你了，费了好大力气",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3912,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f46000fe4b9a6e7949fe79a84e783a6e681bc",
+          "missionId": 3910,
+          "name": "书生的烦恼"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 7,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D2kAD+mBh+WIsOm7keWktOWjqwAAEuS4jum7keWktOWjq+WvueivnQEe77yI5rCU5ZaY5ZCB5ZCB77yJ5L2g5piv6buR5aS05aOr5ZCX77yf77yI6buR5aS05aOr54K554K55aS077yM5pyJ54K555aR5oOR77yJ77yM5oiR5piv5L2/6ICFL2MwMGZmMDB7MX0vcO+8jOaYr+S5pueUn+WPq+aIkeadpeaJvuS9oOeahO+8jOS9oOaJvuWIsOeZvemqqOWkq+S6uuS6huWQl++8n+m7keWktOWjq+eCueeCueWktO+8jOeZvemqqOWkq+S6uuWwseiXj+WcqOi/memZhOi/ke+8jOWPr+iDveS8muelnuS4jeefpemsvOS4jeinieeahOWHuuadpe+8jOaIkeS7rOimgeWwj+W/g+S4gOeCue+8gRQCAZsHAAAAAAAw5oCO5LmI6L+Y5rKh5pyJ55yL5Yiw6buR5aS05aOr77yM5Zyo5ZOq6YeM5ZGi77yfACfmgLvnrpfmib7liLDkvaDkuobvvIzotLnkuoblpb3lpKflipvmsJQAAABkAAAAZAAAAAAAAAAAD0gAAAMJABMPRgAP5Lmm55Sf55qE54Om5oG8AAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAHAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3058,
+          "protocol": 14501,
+          "sha256": "241ff05a9c28b6d2ed21def6e6edc6ac52478471b177e4fe0890831e07ebdaeb",
+          "blob": "blobs/24/241ff05a9c28b6d2ed21def6e6edc6ac52478471b177e4fe0890831e07ebdaeb.bin",
+          "npcId": 7,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3912,
+      "name": "击败白骨夫人",
+      "level": 0,
+      "simpleDesc": "消灭白骨夫人",
+      "desc": "突然，一道白色的阴影闪出，/c00ff00{1}/p，这个就是白骨夫人，我的力量太薄弱了，你一起帮我打败它吧，白骨夫人擅长蛊惑，吸取别人魂魄，你自己要小心点儿，我们快上吧！不要让这造孽的妖怪跑了！！（黑暗的空间被照亮了些许，巫师在用镇灵符）",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 7,
+      "radarMapID": 411,
+      "radarGx": 8,
+      "radarGy": 26,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "危险生于虚无之中，无相可寻，无形可抓，这就是蛊惑！",
+      "dialogStartFinish": "呜呼~刚刚差点不小心就被白骨夫人蛊惑了！",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 0,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3913,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f69000fe98187e588b0e9bb91e5a4b4e5a3ab",
+          "missionId": 3945,
+          "name": "遇到黑头士"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09f9000ce799bde9aaa8e5a4abe4baba0300",
+          "monsterId": 2553,
+          "name": "白骨夫人",
+          "required": 3,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 7,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0gAEuWHu+i0peeZvemqqOWkq+S6ugAAEua2iOeBreeZvemqqOWkq+S6ugFO56qB54S277yM5LiA6YGT55m96Imy55qE6Zi05b2x6Zeq5Ye677yML2MwMGZmMDB7MX0vcO+8jOi/meS4quWwseaYr+eZvemqqOWkq+S6uu+8jOaIkeeahOWKm+mHj+WkquiWhOW8seS6hu+8jOS9oOS4gOi1t+W4ruaIkeaJk+i0peWug+WQp++8jOeZvemqqOWkq+S6uuaThemVv+ibiuaDke+8jOWQuOWPluWIq+S6uumtgumthO+8jOS9oOiHquW3seimgeWwj+W/g+eCueWEv++8jOaIkeS7rOW/q+S4iuWQp++8geS4jeimgeiuqei/memAoOWtveeahOWmluaAqui3keS6hu+8ge+8ge+8iOm7keaal+eahOepuumXtOiiq+eFp+S6ruS6huS6m+iuuO+8jOW3q+W4iOWcqOeUqOmVh+eBteespu+8iQQCAZsHAZsIGgAAAEvljbHpmannlJ/kuo7omZrml6DkuYvkuK3vvIzml6Dnm7jlj6/lr7vvvIzml6DlvaLlj6/mipPvvIzov5nlsLHmmK/om4rmg5HvvIEAOuWRnOWRvH7liJrliJrlt67ngrnkuI3lsI/lv4PlsLHooqvnmb3pqqjlpKvkurrom4rmg5HkuobvvIEAAAPoAAAAAAAAAAAAAAAAD0kAAAMJABMPaQAP6YGH5Yiw6buR5aS05aOrAAAAAAAAAwIAEgn5AAznmb3pqqjlpKvkuroDAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAHAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3058,
+          "protocol": 14501,
+          "sha256": "241ff05a9c28b6d2ed21def6e6edc6ac52478471b177e4fe0890831e07ebdaeb",
+          "blob": "blobs/24/241ff05a9c28b6d2ed21def6e6edc6ac52478471b177e4fe0890831e07ebdaeb.bin",
+          "npcId": 7,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3915,
+      "name": "挑战吊死鬼",
+      "level": 0,
+      "simpleDesc": "消灭吊死鬼",
+      "desc": "吊死鬼，果然是你，你把紫霞仙藏在哪里了！？快交出来！！你是谁？！竟敢这么和我说话，真的是不知天高地厚的家伙！想要找到紫霞仙，先打败我再说吧，接招吧！（黑色阴影突然闪到你的旁边，准备战斗吧）",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 8,
+      "radarMapID": 411,
+      "radarGx": 34,
+      "radarGy": 5,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "不要怕，吊死鬼一点儿都不可怕",
+      "dialogStartFinish": "哈哈哈，吊死鬼还很得意，还是被我击败啦！",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 1000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3916,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4a000fe5afbbe689bee7b4abe99c9ee4bb99",
+          "missionId": 3914,
+          "name": "寻找紫霞仙"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09fa0009e5908ae6adbbe9acbc0300",
+          "monsterId": 2554,
+          "name": "吊死鬼",
+          "required": 3,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 8,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0sAD+aMkeaImOWQiuatu+msvAAAD+a2iOeBreWQiuatu+msvAEa5ZCK5q276ay877yM5p6c54S25piv5L2g77yM5L2g5oqK57Sr6Zye5LuZ6JeP5Zyo5ZOq6YeM5LqG77yB77yf5b+r5Lqk5Ye65p2l77yB77yB5L2g5piv6LCB77yf77yB56uf5pWi6L+Z5LmI5ZKM5oiR6K+06K+d77yM55yf55qE5piv5LiN55+l5aSp6auY5Zyw5Y6a55qE5a625LyZ77yB5oOz6KaB5om+5Yiw57Sr6Zye5LuZ77yM5YWI5omT6LSl5oiR5YaN6K+05ZCn77yM5o6l5oub5ZCn77yB77yI6buR6Imy6Zi05b2x56qB54S26Zeq5Yiw5L2g55qE5peB6L6577yM5YeG5aSH5oiY5paX5ZCn77yJBAIBmwgBmyIFAAAAKuS4jeimgeaAle+8jOWQiuatu+msvOS4gOeCueWEv+mDveS4jeWPr+aAlQA85ZOI5ZOI5ZOI77yM5ZCK5q276ay86L+Y5b6I5b6X5oSP77yM6L+Y5piv6KKr5oiR5Ye76LSl5ZWm77yBAAAD6AAAA+gAAAAAAAAAAA9MAAADCQATD0oAD+Wvu+aJvue0q+mcnuS7mQAAAAAAAAMCAA8J+gAJ5ZCK5q276ay8AwAAAAAAAAAAAAAHAAnkupHoi6Xlr7oAAAGbAAAACAEA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3062,
+          "protocol": 14501,
+          "sha256": "fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188",
+          "blob": "blobs/fa/fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188.bin",
+          "npcId": 8,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3916,
+      "name": "紫霞仙的心事",
+      "level": 0,
+      "simpleDesc": "和紫霞仙对话",
+      "desc": "你好呀，/c00ff00{1}/p，谢谢你救了我，我这几天都在忙着和倩女头领过招，疏忽了这个可恶的吊死鬼，竟然中计，被它抓到了，它们两个最近勾结在一起，想要破坏寺庙的修缮，与神对抗。我现在法力变弱了，需要闭关修炼，暂时还对抗不了他们，你可以帮我去阻止这场对抗吗？（你点点头，准备出发）",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 8,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "紫霞仙有什么心事呢？？？",
+      "dialogStartFinish": "开始吧，阻止这场对抗，保护寺庙。",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3917,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4b000fe68c91e68898e5908ae6adbbe9acbc",
+          "missionId": 3915,
+          "name": "挑战吊死鬼"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 8,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D0wAEue0q+mcnuS7meeahOW/g+S6iwAAEuWSjOe0q+mcnuS7meWvueivnQGQ5L2g5aW95ZGA77yML2MwMGZmMDB7MX0vcO+8jOiwouiwouS9oOaVkeS6huaIke+8jOaIkei/meWHoOWkqemDveWcqOW/meedgOWSjOWAqeWls+WktOmihui/h+aLm++8jOeWj+W/veS6hui/meS4quWPr+aBtueahOWQiuatu+msvO+8jOern+eEtuS4reiuoe+8jOiiq+Wug+aKk+WIsOS6hu+8jOWug+S7rOS4pOS4quacgOi/keWLvue7k+WcqOS4gOi1t++8jOaDs+imgeegtOWdj+WvuuW6meeahOS/rue8ru+8jOS4juelnuWvueaKl+OAguaIkeeOsOWcqOazleWKm+WPmOW8seS6hu+8jOmcgOimgemXreWFs+S/rueCvO+8jOaaguaXtui/mOWvueaKl+S4jeS6huS7luS7rO+8jOS9oOWPr+S7peW4ruaIkeWOu+mYu+atoui/meWcuuWvueaKl+WQl++8n++8iOS9oOeCueeCueWktO+8jOWHhuWkh+WHuuWPke+8iRQCAZsIAAAAAAAk57Sr6Zye5LuZ5pyJ5LuA5LmI5b+D5LqL5ZGi77yf77yf77yfADDlvIDlp4vlkKfvvIzpmLvmraLov5nlnLrlr7nmipfvvIzkv53miqTlr7rlupnjgIIAAABkAAAAZAAAAAAAAAAAD00AAAMJABMPSwAP5oyR5oiY5ZCK5q276ay8AAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAIAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3062,
+          "protocol": 14501,
+          "sha256": "fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188",
+          "blob": "blobs/fa/fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188.bin",
+          "npcId": 8,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3917,
+      "name": "追击倩女头领",
+      "level": 0,
+      "simpleDesc": "消灭倩女头领",
+      "desc": "哦呵呵呵，使者追到这里来啦，不管怎样，我们是不会放弃我们的计划的，你是斗不过我们的，我劝你早点放弃吧！！（小心，它这是在激怒你，寻找你的弱点），倩女头领，不说太多，我今天就是来破坏你们的邪恶计划的！！",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 8,
+      "radarMapID": 411,
+      "radarGx": 36,
+      "radarGy": 12,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "倩女头领不好对付，还是要小心行事！",
+      "dialogStartFinish": "什么？是黑发老妖计划的？",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 1000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3918,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4c0012e7b4abe99c9ee4bb99e79a84e5bf83e4ba8b",
+          "missionId": 3916,
+          "name": "紫霞仙的心事"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09fb000ce580a9e5a5b3e5a4b4e9a2860400",
+          "monsterId": 2555,
+          "name": "倩女头领",
+          "required": 4,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 8,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D00AEui/veWHu+WAqeWls+WktOmihgAAEua2iOeBreWAqeWls+WktOmihgEs5ZOm5ZG15ZG15ZG177yM5L2/6ICF6L+95Yiw6L+Z6YeM5p2l5ZWm77yM5LiN566h5oCO5qC377yM5oiR5Lus5piv5LiN5Lya5pS+5byD5oiR5Lus55qE6K6h5YiS55qE77yM5L2g5piv5paX5LiN6L+H5oiR5Lus55qE77yM5oiR5Yqd5L2g5pep54K55pS+5byD5ZCn77yB77yB77yI5bCP5b+D77yM5a6D6L+Z5piv5Zyo5r+A5oCS5L2g77yM5a+75om+5L2g55qE5byx54K577yJ77yM5YCp5aWz5aS06aKG77yM5LiN6K+05aSq5aSa77yM5oiR5LuK5aSp5bCx5piv5p2l56C05Z2P5L2g5Lus55qE6YKq5oG26K6h5YiS55qE77yB77yBBAIBmwgBmyQMAAAAM+WAqeWls+WktOmihuS4jeWlveWvueS7mO+8jOi/mOaYr+imgeWwj+W/g+ihjOS6i++8gQAk5LuA5LmI77yf5piv6buR5Y+R6ICB5aaW6K6h5YiS55qE77yfAAAD6AAAA+gAAAAAAAAAAA9OAAADCQAWD0wAEue0q+mcnuS7meeahOW/g+S6iwAAAAAAAAMCABIJ+wAM5YCp5aWz5aS06aKGBAAAAAAAAAAAAAAHAAnkupHoi6Xlr7oAAAGbAAAACAEA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3062,
+          "protocol": 14501,
+          "sha256": "fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188",
+          "blob": "blobs/fa/fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188.bin",
+          "npcId": 8,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3920,
+      "name": "幻境破灭",
+      "level": 0,
+      "simpleDesc": "与紫霞仙对话",
+      "desc": "终于是将黑发老妖击败了，但是树妖姥姥布下的幻境还是没有破灭，一切的问题的答案都在树妖姥姥身上，神与妖的真正对抗才刚刚开始，树妖姥姥统治了云若寺很久很久，使者，你与树妖姥姥对抗的时候一定要分外小心，使命已达，出发吧，/c00ff00{1}/p！",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 8,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "一切虚无之下又是什么呢？",
+      "dialogStartFinish": "终将是迎来了神与妖的对决，一定要竭尽全力哦！",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3921,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4f000ce4baa6e79c9fe4baa6e58187",
+          "missionId": 3919,
+          "name": "亦真亦假"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 8,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D1AADOW5u+Wig+egtOeBrQAAEuS4jue0q+mcnuS7meWvueivnQFR57uI5LqO5piv5bCG6buR5Y+R6ICB5aaW5Ye76LSl5LqG77yM5L2G5piv5qCR5aaW5ael5ael5biD5LiL55qE5bm75aKD6L+Y5piv5rKh5pyJ56C054Gt77yM5LiA5YiH55qE6Zeu6aKY55qE562U5qGI6YO95Zyo5qCR5aaW5ael5ael6Lqr5LiK77yM56We5LiO5aaW55qE55yf5q2j5a+55oqX5omN5Yia5Yia5byA5aeL77yM5qCR5aaW5ael5ael57uf5rK75LqG5LqR6Iul5a+65b6I5LmF5b6I5LmF77yM5L2/6ICF77yM5L2g5LiO5qCR5aaW5ael5ael5a+55oqX55qE5pe25YCZ5LiA5a6a6KaB5YiG5aSW5bCP5b+D77yM5L2/5ZG95bey6L6+77yM5Ye65Y+R5ZCn77yML2MwMGZmMDB7MX0vcO+8gRQCAZsIAAAAAAAk5LiA5YiH6Jma5peg5LmL5LiL5Y+I5piv5LuA5LmI5ZGi77yfAELnu4jlsIbmmK/ov47mnaXkuobnpZ7kuI7lppbnmoTlr7nlhrPvvIzkuIDlrpropoHnq63lsL3lhajlipvlk6bvvIEAAABkAAAAZAAAAAAAAAAAD1EAAAMJABAPTwAM5Lqm55yf5Lqm5YGHAAAAAAAAAwAAAAAAAAAAAAAAAAcACeS6keiLpeWvugAAAZsAAAAIAQA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3062,
+          "protocol": 14501,
+          "sha256": "fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188",
+          "blob": "blobs/fa/fa194d9a0e6ea686a233c984a5bb3c719e24657f183f72b3c285e523a2dfd188.bin",
+          "npcId": 8,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3918,
+      "name": "云若寺的秘密",
+      "level": 0,
+      "simpleDesc": "与长老对话",
+      "desc": "/c00ff00{1}/p，感谢你千里迢迢来拜访云若寺，这一路你帮助我们打败妖怪，解决困难。现在我告诉你，云若寺的秘密，其实云若寺一直都被树妖姥姥控制了，我们一直在这里诵经念佛就是为了镇妖这股邪气，打败树妖姥姥，但是树妖姥姥太强大了，我们一直都不是它的对手。我们眼前所看到的皆是幻境，是虚无的，真正的云若寺你还没有到达，我就指点到这里啦，最后的留给你探索吧，找到真正的云若寺，我会给你一份真经！！",
+      "setting": 5122,
+      "mapId": 411,
+      "npcId": 9,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "长老好像有话对我说.....",
+      "dialogStartFinish": "出发！寻找真正的云若寺！",
+      "exp": 100,
+      "money2": 0,
+      "money3": 100,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3919,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4d0012e8bfbde587bbe580a9e5a5b3e5a4b4e9a286",
+          "missionId": 3917,
+          "name": "追击倩女头领"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 9,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D04AEuS6keiLpeWvuueahOenmOWvhgAAD+S4jumVv+iAgeWvueivnQI4L2MwMGZmMDB7MX0vcO+8jOaEn+iwouS9oOWNg+mHjOi/oui/ouadpeaLnOiuv+S6keiLpeWvuu+8jOi/meS4gOi3r+S9oOW4ruWKqeaIkeS7rOaJk+i0peWmluaAqu+8jOino+WGs+WbsOmavuOAgueOsOWcqOaIkeWRiuivieS9oO+8jOS6keiLpeWvuueahOenmOWvhu+8jOWFtuWunuS6keiLpeWvuuS4gOebtOmDveiiq+agkeWmluWnpeWnpeaOp+WItuS6hu+8jOaIkeS7rOS4gOebtOWcqOi/memHjOivtee7j+W/teS9m+WwseaYr+S4uuS6humVh+Wmlui/meiCoemCquawlO+8jOaJk+i0peagkeWmluWnpeWnpe+8jOS9huaYr+agkeWmluWnpeWnpeWkquW8uuWkp+S6hu+8jOaIkeS7rOS4gOebtOmDveS4jeaYr+Wug+eahOWvueaJi+OAguaIkeS7rOecvOWJjeaJgOeci+WIsOeahOeahuaYr+W5u+Wig++8jOaYr+iZmuaXoOeahO+8jOecn+ato+eahOS6keiLpeWvuuS9oOi/mOayoeacieWIsOi+vu+8jOaIkeWwseaMh+eCueWIsOi/memHjOWVpu+8jOacgOWQjueahOeVmee7meS9oOaOoue0ouWQp++8jOaJvuWIsOecn+ato+eahOS6keiLpeWvuu+8jOaIkeS8mue7meS9oOS4gOS7veecn+e7j++8ge+8gRQCAZsJAAAAAAAg6ZW/6ICB5aW95YOP5pyJ6K+d5a+55oiR6K+0Li4uLi4AJOWHuuWPke+8geWvu+aJvuecn+ato+eahOS6keiLpeWvuu+8gQAAAGQAAABkAAAAAAAAAAAPTwAAAwkAFg9NABLov73lh7vlgKnlpbPlpLTpooYAAAAAAAADAAAAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAkBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3066,
+          "protocol": 14501,
+          "sha256": "13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df",
+          "blob": "blobs/13/13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df.bin",
+          "npcId": 9,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3919,
+      "name": "亦真亦假",
+      "level": 0,
+      "simpleDesc": "消灭黑发老妖",
+      "desc": "前面有人，好像是书生，书生怎么会回来了呢？（你走近一看，突然被袭击了，你的手受伤了）糟糕是黑发老妖，它竟然假扮成书生迷惑我，我要给它点颜色瞧瞧！！",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 9,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "真真假假，浮世肮脏，到底什么才是最终的答案呢？",
+      "dialogStartFinish": "黑发老妖好难对付，我觉得我快没有力气了呜呜呜",
+      "exp": 2000,
+      "money2": 0,
+      "money3": 2000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3920,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f4e0012e4ba91e88ba5e5afbae79a84e7a798e5af86",
+          "missionId": 3918,
+          "name": "云若寺的秘密"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09fc000ce9bb91e58f91e88081e5a6960300",
+          "monsterId": 2556,
+          "name": "黑发老妖",
+          "required": 3,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 9,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D08ADOS6puecn+S6puWBhwAAEua2iOeBrem7keWPkeiAgeWmlgDb5YmN6Z2i5pyJ5Lq677yM5aW95YOP5piv5Lmm55Sf77yM5Lmm55Sf5oCO5LmI5Lya5Zue5p2l5LqG5ZGi77yf77yI5L2g6LWw6L+R5LiA55yL77yM56qB54S26KKr6KKt5Ye75LqG77yM5L2g55qE5omL5Y+X5Lyk5LqG77yJ57Of57OV5piv6buR5Y+R6ICB5aaW77yM5a6D56uf54S25YGH5omu5oiQ5Lmm55Sf6L+35oOR5oiR77yM5oiR6KaB57uZ5a6D54K56aKc6Imy556n556n77yB77yBBAIBmwkAAAAAAEXnnJ/nnJ/lgYflgYfvvIzmta7kuJbogq7ohI/vvIzliLDlupXku4DkuYjmiY3mmK/mnIDnu4jnmoTnrZTmoYjlkaLvvJ8AQum7keWPkeiAgeWmluWlvemavuWvueS7mO+8jOaIkeinieW+l+aIkeW/q+ayoeacieWKm+awlOS6huWRnOWRnOWRnAAAB9AAAAfQAAAAAAAAAAAPUAAAAwkAFg9OABLkupHoi6Xlr7rnmoTnp5jlr4YAAAAAAAADAgASCfwADOm7keWPkeiAgeWmlgMAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAkBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3066,
+          "protocol": 14501,
+          "sha256": "13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df",
+          "blob": "blobs/13/13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df.bin",
+          "npcId": 9,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3921,
+      "name": "神与妖的终极对抗",
+      "level": 0,
+      "simpleDesc": "消灭树妖姥姥",
+      "desc": "万年后的神妖大战，血与泪的交织，生与死的更替，真实与虚无，今天都会有答案。树妖姥姥，快出来过招吧！今日，我将拼尽全力，消灭兰若寺的一切孽障，包括你，让兰若寺恢复正常！（树妖姥姥发出藤曼攻击，你险险一躲）",
+      "setting": 1026,
+      "mapId": 411,
+      "npcId": 9,
+      "radarMapID": 411,
+      "radarGx": 9,
+      "radarGy": 6,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "冲呀，打败树妖姥姥，破了这幻境！",
+      "dialogStartFinish": "我就知道，使者一定会胜利的！",
+      "exp": 2000,
+      "money2": 0,
+      "money3": 2000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 0,
+      "submitBattleID": 0,
+      "submitNextMissionID": 3922,
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f50000ce5b9bbe5a283e7a0b4e781ad",
+          "missionId": 3920,
+          "name": "幻境破灭"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "09fd000ce6a091e5a696e5a7a5e5a7a50100",
+          "monsterId": 2557,
+          "name": "树妖姥姥",
+          "required": 1,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 9,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D1EAGOelnuS4juWmlueahOe7iOaegeWvueaKlwAAEua2iOeBreagkeWmluWnpeWnpQEv5LiH5bm05ZCO55qE56We5aaW5aSn5oiY77yM6KGA5LiO5rOq55qE5Lqk57uH77yM55Sf5LiO5q2755qE5pu05pu/77yM55yf5a6e5LiO6Jma5peg77yM5LuK5aSp6YO95Lya5pyJ562U5qGI44CC5qCR5aaW5ael5ael77yM5b+r5Ye65p2l6L+H5oub5ZCn77yB5LuK5pel77yM5oiR5bCG5ou85bC95YWo5Yqb77yM5raI54Gt5YWw6Iul5a+655qE5LiA5YiH5a296Zqc77yM5YyF5ous5L2g77yM6K6p5YWw6Iul5a+65oGi5aSN5q2j5bi477yB77yI5qCR5aaW5ael5ael5Y+R5Ye66Jek5pu85pS75Ye777yM5L2g6Zmp6Zmp5LiA6Lqy77yJBAIBmwkBmwkGAAAAMOWGsuWRgO+8jOaJk+i0peagkeWmluWnpeWnpe+8jOegtOS6hui/meW5u+Wig++8gQAq5oiR5bCx55+l6YGT77yM5L2/6ICF5LiA5a6a5Lya6IOc5Yip55qE77yBAAAH0AAAB9AAAAAAAAAAAA9SAAADCQAQD1AADOW5u+Wig+egtOeBrQAAAAAAAAMCABIJ/QAM5qCR5aaW5ael5aelAQAAAAAAAAAAAAAHAAnkupHoi6Xlr7oAAAGbAAAACQEA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3066,
+          "protocol": 14501,
+          "sha256": "13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df",
+          "blob": "blobs/13/13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df.bin",
+          "npcId": 9,
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "id": 3922,
+      "name": "恢复如初",
+      "level": 0,
+      "simpleDesc": "与长老对话",
+      "desc": "使者，你看大殿外，晴天万里无云。庭园青绿，于清新中蕴蓄着宁谧，多美好的晨景。此时此景即常寂光土，更向何处觅净土？而这一切的功劳都是你的！特别感谢你对云若寺的帮助，云若寺能恢复如初，清除孽障，都多亏了你啊！！！长老献上一份奖励，祝你今后福慧双收！！（你开心的从长老手里接过奖励）",
+      "setting": 4098,
+      "mapId": 411,
+      "npcId": 9,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "",
+      "dialogStartNotFinish": "快来领取长老给的奖励吧~",
+      "dialogStartFinish": "恭喜你，使者，你帮助兰若寺恢复如初。",
+      "exp": 1000,
+      "money2": 0,
+      "money3": 1000,
+      "rewardItems": [
+        {
+          "illusion": [],
+          "id": 100669,
+          "quantity": 1,
+          "name": "长老的谢礼",
+          "bagIcon": 7,
+          "grade": 2
+        }
+      ],
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0f510018e7a59ee4b88ee5a696e79a84e7bb88e69e81e5afb9e68a97",
+          "missionId": 3921,
+          "name": "神与妖的终极对抗"
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "云若寺",
+      "acceptMapId": 411,
+      "acceptNpcId": 9,
+      "canAccept": 1,
+      "_isHelp": false,
+      "wireBase64": "D1IADOaBouWkjeWmguWInQAAD+S4jumVv+iAgeWvueivnQGe5L2/6ICF77yM5L2g55yL5aSn5q6/5aSW77yM5pm05aSp5LiH6YeM5peg5LqR44CC5bqt5Zut6Z2S57u/77yM5LqO5riF5paw5Lit6JW06JOE552A5a6B6LCn77yM5aSa576O5aW955qE5pmo5pmv44CC5q2k5pe25q2k5pmv5Y2z5bi45a+C5YWJ5Zyf77yM5pu05ZCR5L2V5aSE6KeF5YeA5Zyf77yf6ICM6L+Z5LiA5YiH55qE5Yqf5Yqz6YO95piv5L2g55qE77yB54m55Yir5oSf6LCi5L2g5a+55LqR6Iul5a+655qE5biu5Yqp77yM5LqR6Iul5a+66IO95oGi5aSN5aaC5Yid77yM5riF6Zmk5a296Zqc77yM6YO95aSa5LqP5LqG5L2g5ZWK77yB77yB77yB6ZW/6ICB54yu5LiK5LiA5Lu95aWW5Yqx77yM56Wd5L2g5LuK5ZCO56aP5oWn5Y+M5pS277yB77yB77yI5L2g5byA5b+D55qE5LuO6ZW/6ICB5omL6YeM5o6l6L+H5aWW5Yqx77yJEAIBmwkAAAAAACLlv6vmnaXpooblj5bplb/ogIHnu5nnmoTlpZblirHlkKd+ADbmga3llpzkvaDvvIzkvb/ogIXvvIzkvaDluK7liqnlhbDoi6Xlr7rmgaLlpI3lpoLliJ3jgIIAAAPoAAAD6AEAAYk9AQAP6ZW/6ICB55qE6LCi56S8AAAABwIAAwkAHA9RABjnpZ7kuI7lppbnmoTnu4jmnoHlr7nmipcAAAAAAAADAAAAAAAAAAAAAAAABwAJ5LqR6Iul5a+6AAABmwAAAAkBAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 3066,
+          "protocol": 14501,
+          "sha256": "13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df",
+          "blob": "blobs/13/13dc3a59f5d0f3a6a606730c7ed1ef7979eff7e1147b43523370a8e2b1a4d0df.bin",
+          "npcId": 9,
+          "mapId": 411
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "monsters": [
+        2549,
+        0,
+        2549,
+        2550,
+        2549,
+        2549,
+        0,
+        2549,
+        2549,
+        2549,
+        0,
+        2549,
+        0,
+        2549,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20325,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2UAAAABAAAAAAn1AAAJ9Qn2CfUJ9QAACfUJ9Qn1AAAJ9QAACfUAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        0,
+        2550,
+        2550,
+        0,
+        2550,
+        2550,
+        2550,
+        0,
+        2549,
+        2550,
+        2549,
+        2550,
+        2550,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20326,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2YAAAABAAAAAAAACfYJ9gAACfYJ9gn2AAAJ9Qn2CfUJ9gn2AAAAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2552,
+        2551,
+        2551,
+        2551,
+        2552,
+        2551,
+        0,
+        2551,
+        0,
+        2551,
+        2552,
+        2551,
+        2552,
+        2551,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20327,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2cAAAABAAAAAAn4CfcJ9wn3CfgJ9wAACfcAAAn3CfgJ9wn4CfcAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2552,
+        0,
+        2552,
+        2551,
+        2552,
+        2551,
+        2552,
+        2552,
+        2552,
+        2551,
+        2552,
+        2551,
+        2552,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20328,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2gAAAABAAAAAAn4AAAJ+An3CfgJ9wn4CfgJ+An3CfgJ9wn4AAAAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2549,
+        2550,
+        0,
+        2551,
+        2551,
+        2552,
+        0,
+        2553,
+        2551,
+        2552,
+        2551,
+        2552,
+        2549,
+        2550,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20329,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2kAAAABAAAAAAn1CfYAAAn3CfcJ+AAACfkJ9wn4CfcJ+An1CfYAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2549,
+        2550,
+        2551,
+        2552,
+        2551,
+        2552,
+        2554,
+        0,
+        2551,
+        2552,
+        2549,
+        2550,
+        0,
+        2551,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20330,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2oAAAABAAAAAAn1CfYJ9wn4CfcJ+An6AAAJ9wn4CfUJ9gAACfcAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2549,
+        2550,
+        2551,
+        2552,
+        2551,
+        2552,
+        0,
+        2555,
+        2551,
+        2552,
+        2550,
+        2549,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20331,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2sAAAABAAAAAAn1CfYJ9wn4CfcJ+AAACfsJ9wn4CfYJ9QAAAAAAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2551,
+        2552,
+        2551,
+        2552,
+        0,
+        0,
+        2556,
+        0,
+        2551,
+        2552,
+        2551,
+        2552,
+        2551,
+        2552,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20332,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T2wAAAABAAAAAAn3CfgJ9wn4AAAAAAn8AAAJ9wn4CfcJ+An3CfgAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    },
+    {
+      "monsters": [
+        2551,
+        2552,
+        0,
+        0,
+        2551,
+        2552,
+        0,
+        2557,
+        2551,
+        2552,
+        2551,
+        2552,
+        2551,
+        2552,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20333,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "T20AAAABAAAAAAn3CfgAAAAACfcJ+AAACf0J9wn4CfcJ+An3CfgAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "mapId": 411
+        }
+      ]
+    }
+  ],
+  "monsters": [
+    {
+      "id": 2549,
+      "name": "倩女",
+      "icon1": "20048",
+      "level": 125,
+      "monstertype": 1,
+      "hpMax": 4000000,
+      "mpMax": 400000,
+      "speed": 20000,
+      "atkType": 4,
+      "atkMin": 10000,
+      "atkMax": 20000,
+      "atk_time": 4,
+      "dodge": 3000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 50000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 50000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 50000,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 400,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 3000,
+      "tough": 15000,
+      "block": 4000,
+      "brkArmor": 10000,
+      "insight": 4000,
+      "def_field": 0,
+      "back": 2000,
+      "magic_back": 2000,
+      "life_absorption": 2000,
+      "mana_absorption": 2000,
+      "magic_penetration": 10000,
+      "bornStatus": "14336",
+      "newReflection": 50,
+      "wireBase64": "AAAJ9QAAAlApWXMAAAAAAABOUH0BAD0JAAAGGoAAAE4gBAAAJxAAAE4gBAAAC7gAAJxAAAAAAAAAAAAAAJxAAAAAAAAAAAAAAJxAAADDUAAAAAAAAAAAAADDUAAAAAAAAAAAAADDUAAAC7gAAAu4AZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC7gAADqYAAAPoAAAJxAAAA+gAAAAAAAAB9AAAAfQAAAH0AAAB9AAACcQAAAAAAAAOAAAAAAy",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2550,
+      "name": "小树妖",
+      "icon1": "20147",
+      "level": 125,
+      "monstertype": 1,
+      "hpMax": 4000000,
+      "mpMax": 400000,
+      "speed": 20000,
+      "atkType": 1,
+      "atkMin": 10000,
+      "atkMax": 20000,
+      "atk_time": 4,
+      "dodge": 3000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 50000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 50000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 50000,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 400,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 3000,
+      "tough": 15000,
+      "block": 4000,
+      "brkArmor": 10000,
+      "insight": 4000,
+      "def_field": 0,
+      "back": 2000,
+      "magic_back": 2000,
+      "life_absorption": 2000,
+      "mana_absorption": 2000,
+      "magic_penetration": 10000,
+      "bornStatus": "14336",
+      "newReflection": 50,
+      "wireBase64": "AAAJ9gAAA1wPaBFZlgAAAAAAAE6zfQEAPQkAAAYagAAATiABAAAnEAAATiAEAAALuAAAnEAAAAAAAAAAAAAAnEAAAAAAAAAAAAAAnEAAAMNQAAAAAAAAAAAAAMNQAAAAAAAAAAAAAMNQAAALuAAAC7gBkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALuAAAOpgAAA+gAAAnEAAAD6AAAAAAAAAH0AAAB9AAAAfQAAAH0AAAJxAAAAAAAAA4AAAAADI=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2552,
+      "name": "夜晚鬼魂",
+      "icon1": "20122",
+      "level": 125,
+      "monstertype": 2,
+      "hpMax": 6000000,
+      "mpMax": 600000,
+      "speed": 8000,
+      "atkType": 4,
+      "atkMin": 20000,
+      "atkMax": 30000,
+      "atk_time": 4,
+      "dodge": 10000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 500,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 8000,
+      "tough": 30000,
+      "block": 4800,
+      "brkArmor": 20000,
+      "insight": 8000,
+      "def_field": 0,
+      "back": 5000,
+      "magic_back": 5000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 15000,
+      "bornStatus": "538624",
+      "newReflection": 50,
+      "wireBase64": "AAAJ+AAABFkcZlqbPJtCAAAAAAAATpp9AgBbjYAACSfAAAAfQAQAAE4gAAB1MAQAACcQAACcQAAAAAAAAAAAAACcQAAAAAAAAAAAAACcQAAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAAu4AAALuAH0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9AAAB1MAAAEsAAAE4gAAAfQAAAAAAAABOIAAATiAAAC7gAAAu4AAA6mAAAAAAACDgAAAAAMg==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2551,
+      "name": "大树妖",
+      "icon1": "20262",
+      "level": 125,
+      "monstertype": 2,
+      "hpMax": 6000000,
+      "mpMax": 600000,
+      "speed": 30000,
+      "atkType": 1,
+      "atkMin": 20000,
+      "atkMax": 30000,
+      "atk_time": 4,
+      "dodge": 10000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 500,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 8000,
+      "tough": 30000,
+      "block": 4800,
+      "brkArmor": 20000,
+      "insight": 8000,
+      "def_field": 0,
+      "back": 3000,
+      "magic_back": 3000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 15000,
+      "bornStatus": "538624",
+      "newReflection": 50,
+      "wireBase64": "AAAJ9wAAA1knaBFZlgAAAAAAAE8mfQIAW42AAAknwAAAdTABAABOIAAAdTAEAAAnEAAAnEAAAAAAAAAAAAAAnEAAAAAAAAAAAAAAnEAAAP//AAAAAAAAAAAAAP//AAAAAAAAAAAAAP//AAALuAAAC7gB9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfQAAAdTAAABLAAABOIAAAH0AAAAAAAAALuAAAC7gAAAu4AAALuAAAOpgAAAAAAAg4AAAAADI=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2553,
+      "name": "白骨夫人",
+      "icon1": "20165",
+      "level": 125,
+      "monstertype": 3,
+      "hpMax": 10000000,
+      "mpMax": 1000000,
+      "speed": 65535,
+      "atkType": 2,
+      "atkMin": 60000,
+      "atkMax": 65535,
+      "atk_time": 4,
+      "dodge": 10000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 8000,
+      "hitMagic": 8000,
+      "critical": 2000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 50000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 32000,
+      "insight": 10000,
+      "def_field": 10000,
+      "back": 8000,
+      "magic_back": 8000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 30000,
+      "bornStatus": "4993024",
+      "newReflection": 50,
+      "wireBase64": "AAAJ+QAABHZ9mqhZK066AAAAAAAATsV9AwCYloAAD0JAAAD//wIAAOpgAAD//wQAACcQAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAB9AAAAfQAfQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMNQAAE4gAAAE4gAAH0AAAAnEAAAJxAAAB9AAAAfQAAAC7gAAAu4AAB1MAAAAAAATDAAAAAAMg==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2554,
+      "name": "吊死鬼",
+      "icon1": "20214",
+      "level": 125,
+      "monstertype": 3,
+      "hpMax": 10000000,
+      "mpMax": 1000000,
+      "speed": 65535,
+      "atkType": 4,
+      "atkMin": 60000,
+      "atkMax": 65535,
+      "atk_time": 4,
+      "dodge": 10000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 8000,
+      "hitMagic": 8000,
+      "critical": 2000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 50000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 32000,
+      "insight": 10000,
+      "def_field": 10000,
+      "back": 8000,
+      "magic_back": 8000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 30000,
+      "bornStatus": "864256",
+      "newReflection": 50,
+      "wireBase64": "AAAJ+gAAA1QKa3ubPAAAAAAAAE72fQMAmJaAAA9CQAAA//8EAADqYAAA//8EAAAnEAAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAP//AAAAAAAAAAAAAP//AAAAAAAAAAAAAP//AAAfQAAAH0AH0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDUAABOIAAABOIAAB9AAAAJxAAACcQAAAfQAAAH0AAAAu4AAALuAAAdTAAAAAAAA0wAAAAADI=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2555,
+      "name": "倩女头领",
+      "icon1": "20702",
+      "level": 125,
+      "monstertype": 4,
+      "hpMax": 25000000,
+      "mpMax": 5000000,
+      "speed": 65535,
+      "atkType": 4,
+      "atkMin": 65535,
+      "atkMax": 65535,
+      "atk_time": 4,
+      "dodge": 150000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65000,
+      "hitrate": 10000,
+      "hitMagic": 10000,
+      "critical": 7000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 80000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 50000,
+      "insight": 25000,
+      "def_field": 80000,
+      "back": 15000,
+      "magic_back": 15000,
+      "life_absorption": 12000,
+      "mana_absorption": 12000,
+      "magic_penetration": 20000,
+      "bornStatus": "800768",
+      "newReflection": 50,
+      "wireBase64": "AAAJ+wAABFApWXNZNJiGAAAAAAAAUN59BAF9eEAATEtAAAD//wQAAP//AAD//wQAAknwAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA/egAAAAAAAAAAAAA/egAAAAAAAAAAAAA/egAACcQAAAnEBtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATiAAAE4gAAAE4gAAMNQAABhqAABOIAAADqYAAA6mAAALuAAAC7gAABOIAAAAAAADDgAAAAAMg==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2556,
+      "name": "黑发老妖",
+      "icon1": "20878",
+      "level": 125,
+      "monstertype": 4,
+      "hpMax": 25000000,
+      "mpMax": 5000000,
+      "speed": 65535,
+      "atkType": 2,
+      "atkMin": 65535,
+      "atkMax": 65535,
+      "atk_time": 4,
+      "dodge": 150000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65000,
+      "hitrate": 10000,
+      "hitMagic": 10000,
+      "critical": 7000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 80000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 50000,
+      "insight": 25000,
+      "def_field": 80000,
+      "back": 15000,
+      "magic_back": 15000,
+      "life_absorption": 12000,
+      "mana_absorption": 12000,
+      "magic_penetration": 20000,
+      "bornStatus": "800768",
+      "newReflection": 50,
+      "wireBase64": "AAAJ/AAABJ7RU9GAAVmWAAAAAAAAUY59BAF9eEAATEtAAAD//wIAAP//AAD//wQAAknwAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA/egAAAAAAAAAAAAA/egAAAAAAAAAAAAA/egAACcQAAAnEBtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATiAAAE4gAAAE4gAAMNQAABhqAABOIAAADqYAAA6mAAALuAAAC7gAABOIAAAAAAADDgAAAAAMg==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2557,
+      "name": "树妖姥姥",
+      "icon1": "20877",
+      "level": 125,
+      "monstertype": 4,
+      "hpMax": 25000000,
+      "mpMax": 5000000,
+      "speed": 65535,
+      "atkType": 4,
+      "atkMin": 65535,
+      "atkMax": 65535,
+      "atk_time": 4,
+      "dodge": 150000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65000,
+      "hitrate": 10000,
+      "hitMagic": 10000,
+      "critical": 7000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 80000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 50000,
+      "insight": 25000,
+      "def_field": 80000,
+      "back": 15000,
+      "magic_back": 15000,
+      "life_absorption": 12000,
+      "mana_absorption": 12000,
+      "magic_penetration": 20000,
+      "bornStatus": "17512448",
+      "newReflection": 0,
+      "wireBase64": "AAAJ/QAABGgRWZZZ5VnlAAAAAAAAUY19BAF9eEAATEtAAAD//wQAAP//AAD//wQAAknwAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA/egAAAAAAAAAAAAA/egAAAAAAAAAAAAA/egAACcQAAAnEBtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATiAAAE4gAAAE4gAAMNQAABhqAABOIAAADqYAAA6mAAALuAAAC7gAABOIAAAAAABCzgAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": 438,
+      "level": 22,
+      "name": "落英神剑掌",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 18,
+      "power1": 151,
+      "powerValue1": 660,
+      "power2": 156,
+      "powerValue2": 660,
+      "power3": 82,
+      "powerValue3": 280,
+      "skillAtkType": 2,
+      "area": 11,
+      "round": 0,
+      "atk_time": 7,
+      "useMP": 110,
+      "useHP": 0,
+      "anime1": 2,
+      "anime2": 1313,
+      "anime3": 0,
+      "position": 1,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AbYWAAAFhD2C8XleUlFjjAMAAAASAJcClACcApQAUgEYAgsABwBuAAACBSEAAAEAAAAA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 7004,
+      "level": 1,
+      "name": "光与暗之仆从B型",
+      "type": 3,
+      "info": "物攻无效，伤害减免，状态抵抗，反击",
+      "skillWeapon": 0,
+      "power1": 34,
+      "powerValue1": 15,
+      "power2": 35,
+      "powerValue2": 15,
+      "power3": 41,
+      "powerValue3": 10,
+      "skillAtkType": 6,
+      "area": 29,
+      "round": 1,
+      "atk_time": 1,
+      "useMP": 500,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1405,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 15,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "G1wBAAAIUUlODmaXTktOxk7OAEJXiwMAABFyaWU7ZeBlSP8MTyRbs1HPUU3/DHK2YAFitWKX/wxTzVH7AAAiAA8AIwAPACkACgYdAQEB9AAAAQV9AAAADwAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 7001,
+      "level": 1,
+      "name": "光与暗之仆从A型",
+      "type": 3,
+      "info": "魔攻无效，伤害减免，状态抵抗，魔法反馈",
+      "skillWeapon": 0,
+      "power1": 34,
+      "powerValue1": 15,
+      "power2": 35,
+      "powerValue2": 15,
+      "power3": 42,
+      "powerValue3": 10,
+      "skillAtkType": 6,
+      "area": 29,
+      "round": 1,
+      "atk_time": 1,
+      "useMP": 500,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1405,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 16,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "G1kBAAAIUUlODmaXTktOxk7OAEFXiwMAABObVGU7ZeBlSP8MTyRbs1HPUU3/DHK2YAFitWKX/wybVGzVU82ZiAAAIgAPACMADwAqAAoGHQEBAfQAAAEFfQAAABAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 546,
+      "level": 22,
+      "name": "法力燃烧",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 51,
+      "powerValue1": -1400,
+      "power2": 52,
+      "powerValue2": -15,
+      "power3": 154,
+      "powerValue3": 147,
+      "skillAtkType": 5,
+      "area": 16,
+      "round": 3,
+      "atk_time": 0,
+      "useMP": 682,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1222,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AiIWAAAEbNVSm3HDcOcDAAAAAAAz+ogANP/xAJoAkwUQAwACqgAAAQTGAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 540,
+      "level": 22,
+      "name": "死亡法阵",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 19,
+      "power1": 49,
+      "powerValue1": -700,
+      "power2": 50,
+      "powerValue2": -5,
+      "power3": 154,
+      "powerValue3": 147,
+      "skillAtkType": 5,
+      "area": 18,
+      "round": 6,
+      "atk_time": 0,
+      "useMP": 2310,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1333,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 10,
+      "statusBit2": 1,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AhwWAAAEa3tOoWzVljUDAAAAEwAx/UQAMv/7AJoAkwUSBgAJBgAAAQU1AAAACgEAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 459,
+      "level": 22,
+      "name": "血光刀气",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 21,
+      "power1": 149,
+      "powerValue1": 300,
+      "power2": 49,
+      "powerValue2": -780,
+      "power3": 156,
+      "powerValue3": 360,
+      "skillAtkType": 0,
+      "area": 16,
+      "round": 6,
+      "atk_time": 2,
+      "useMP": 220,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1321,
+      "anime3": 0,
+      "position": 1,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AcsWAAAEiEBRSVIAbBQDAAAAFQCVASwAMfz0AJwBaAAQBgIA3AAAAAUpAAABAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 542,
+      "level": 22,
+      "name": "毒云术",
+      "type": 3,
+      "info": "中毒状态法力恢复、吸收无效",
+      "skillWeapon": 0,
+      "power1": 49,
+      "powerValue1": -420,
+      "power2": 55,
+      "powerValue2": -210,
+      "power3": 65,
+      "powerValue3": -210,
+      "skillAtkType": 5,
+      "area": 19,
+      "round": 5,
+      "atk_time": 0,
+      "useMP": 242,
+      "useHP": 0,
+      "anime1": 9,
+      "anime2": 1304,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "Ah4WAAADa9JOkWcvAwAADU4ta9JytmABbNVSm2BiWQ0wAVQ4ZTZl4GVIAAAx/lwAN/8uAEH/LgUTBQAA8gAACQUYAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 626,
+      "level": 22,
+      "name": "先制攻击",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 17,
+      "power1": 151,
+      "powerValue1": 100,
+      "power2": 82,
+      "powerValue2": -14,
+      "power3": 156,
+      "powerValue3": 260,
+      "skillAtkType": 3,
+      "area": 18,
+      "round": 0,
+      "atk_time": 4,
+      "useMP": 220,
+      "useHP": 0,
+      "anime1": 24,
+      "anime2": 1328,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AnIWAAAEUUhSNmU7UfsCAAAAEQCXAGQAUv/yAJwBBAMSAAQA3AAAGAUwAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 132,
+      "level": 22,
+      "name": "无尽怒火",
+      "type": 2,
+      "info": "21、22级时，将获得混乱状态",
+      "skillWeapon": 0,
+      "power1": 178,
+      "powerValue1": -2,
+      "power2": 23,
+      "powerValue2": -30,
+      "power3": 34,
+      "powerValue3": -30,
+      "skillAtkType": 5,
+      "area": 15,
+      "round": 2,
+      "atk_time": 0,
+      "useMP": 1950,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1224,
+      "anime3": 1224,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 9,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AIQWAAAEZeBcPWAScGsCAAAPADIAMTABADIAMn6nZfb/DFwGg7dfl233TnFytmABAACy//4AF//iACL/4gUPAgAHngAAAATIBMgAAAkAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 7780,
+          "protocol": 14501,
+          "sha256": "d22e02f2d083006bdb4dd06efc60d7d004517d1e0f8d1f0d64e76f46aa7545d6",
+          "blob": "blobs/d2/d22e02f2d083006bdb4dd06efc60d7d004517d1e0f8d1f0d64e76f46aa7545d6.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 548,
+      "level": 22,
+      "name": "解除魔法",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 79,
+      "powerValue1": 25,
+      "power2": 79,
+      "powerValue2": 26,
+      "power3": 52,
+      "powerValue3": -8,
+      "skillAtkType": 6,
+      "area": 19,
+      "round": 2,
+      "atk_time": 0,
+      "useMP": 300,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1223,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 7,
+      "isLearnByBook": false,
+      "wireBase64": "AiQWAAAEieOWZJtUbNUDAAAAAABPABkATwAaADT/+AYTAgABLAAAAQTHAAAAAAAHAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 7788,
+          "protocol": 14501,
+          "sha256": "ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c",
+          "blob": "blobs/ba/ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 762,
+      "level": 22,
+      "name": "三味真火",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 50,
+      "powerValue1": -9,
+      "power2": 49,
+      "powerValue2": -2200,
+      "power3": 156,
+      "powerValue3": 345,
+      "skillAtkType": 4,
+      "area": 18,
+      "round": 3,
+      "atk_time": 5,
+      "useMP": 5000,
+      "useHP": 0,
+      "anime1": 25,
+      "anime2": 1306,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AvoWAAAETglUc3cfcGsDAAAAAAAy//cAMfdoAJwBWQQSAwUTiAAAGQUaAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 7780,
+          "protocol": 14501,
+          "sha256": "d22e02f2d083006bdb4dd06efc60d7d004517d1e0f8d1f0d64e76f46aa7545d6",
+          "blob": "blobs/d2/d22e02f2d083006bdb4dd06efc60d7d004517d1e0f8d1f0d64e76f46aa7545d6.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 627,
+      "level": 22,
+      "name": "斩击",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 1,
+      "power1": 50,
+      "powerValue1": -12,
+      "power2": 0,
+      "powerValue2": 0,
+      "power3": 82,
+      "powerValue3": -127,
+      "skillAtkType": 0,
+      "area": 11,
+      "round": 2,
+      "atk_time": 0,
+      "useMP": 253,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1321,
+      "anime3": 0,
+      "position": 1,
+      "statusBit1": 3,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AnMWAAACZalR+wMAAAABADL/9AAAAAAAUv+BAAsCAAD9AAAABSkAAAEDAAAA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 6131,
+      "level": 9,
+      "name": "狐火",
+      "type": 2,
+      "info": "妖狐最高可学习8级，灵狐可学习满级9级",
+      "skillWeapon": 0,
+      "power1": 65,
+      "powerValue1": -300,
+      "power2": 82,
+      "powerValue2": 400,
+      "power3": 63,
+      "powerValue3": -800,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 2,
+      "atk_time": 3,
+      "useMP": 3400,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1306,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 7,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "F/MJAAACctBwawIAABNZlnLQZwCa2FPvW2ZOYAA4fqf/DHB1ctBT71tmTmBu4X6nADl+pwAAQf7UAFIBkAA//OAEEwIDDUgAAAEFGgAAAAcAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 7788,
+          "protocol": 14501,
+          "sha256": "ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c",
+          "blob": "blobs/ba/ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "level": 22,
+      "name": "拈花刀",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 10,
+      "power1": 87,
+      "powerValue1": 2890,
+      "power2": 156,
+      "powerValue2": 420,
+      "power3": 178,
+      "powerValue3": -1,
+      "skillAtkType": 0,
+      "area": 18,
+      "round": 0,
+      "atk_time": 0,
+      "useMP": 220,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 0,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AHcWAAADYsiCsVIAAgAAAAoAVwtKAJwBpACy//8AEgAAANwAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 328,
+      "level": 1,
+      "name": "灭空寒星",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 17,
+      "power1": 87,
+      "powerValue1": 1000,
+      "power2": 151,
+      "powerValue2": 250,
+      "power3": 156,
+      "powerValue3": 250,
+      "skillAtkType": 3,
+      "area": 18,
+      "round": 0,
+      "atk_time": 4,
+      "useMP": 500,
+      "useHP": 0,
+      "anime1": 24,
+      "anime2": 1319,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AUgBAAAEcG16elvSZh8CAAAAEQBXA+gAlwD6AJwA+gMSAAQB9AAAGAUnAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 363,
+      "level": 9,
+      "name": "龙炎爆",
+      "type": 3,
+      "info": "火烧状态生命恢复、吸收失效",
+      "skillWeapon": 19,
+      "power1": 49,
+      "powerValue1": -4400,
+      "power2": 152,
+      "powerValue2": 310,
+      "power3": 178,
+      "powerValue3": -2,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 2,
+      "atk_time": 0,
+      "useMP": 6800,
+      "useHP": 0,
+      "anime1": 9,
+      "anime2": 1331,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 30,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AWsJAAADn5lwjnIGAwAADXBrcOdytmABdR9UfWBiWQ0wAVQ4ZTZZMWVIEwAx7tAAmAE2ALL//gQTAgAakAAACQUzAAAAHgAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 7788,
+          "protocol": 14501,
+          "sha256": "ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c",
+          "blob": "blobs/ba/ba14f0dfc006b11d381ad4b539d30437b471d3fd76e21d16f32d5e6e99c3583c.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 6108,
+      "level": 9,
+      "name": "风雪冰天",
+      "type": 3,
+      "info": "　",
+      "skillWeapon": 0,
+      "power1": 25,
+      "powerValue1": -50,
+      "power2": 53,
+      "powerValue2": -590,
+      "power3": 155,
+      "powerValue3": 145,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 4,
+      "atk_time": 0,
+      "useMP": 4000,
+      "useHP": 0,
+      "anime1": 9,
+      "anime2": 1319,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 8,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "F9wJAAAEmM6W6lGwWSkDAAABMAAAABn/zgA1/bIAmwCRBBMEAA+gAAAJBScAAAAIAAAA",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "id": 2549,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        50,
+        100
+      ],
+      "msg": [
+        "",
+        "祝福，物攻无效"
+      ],
+      "skill1": [
+        {
+          "id": 438,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 7004,
+          "level": 1,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        12
+      ],
+      "wireBase64": "CfUCAwAAADIAAAABthYAAAALAwAAAGQAAAd5XXmP/wxyaWU7ZeBlSBtcAQAAAAw=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2550,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        50,
+        100
+      ],
+      "msg": [
+        "",
+        "祝福，魔攻无效"
+      ],
+      "skill1": [
+        {
+          "id": 438,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 7001,
+          "level": 1,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        12
+      ],
+      "wireBase64": "CfYCAwAAADIAAAABthYAAAALAwAAAGQAAAd5XXmP/wybVGU7ZeBlSBtZAQAAAAw=",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2552,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        50,
+        70
+      ],
+      "msg": [
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 546,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 540,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11
+      ],
+      "wireBase64": "CfgCAwAAADIAAAACIhYAAAALAwAAAEYAAAACHBYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2551,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        70,
+        40
+      ],
+      "msg": [
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 459,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 542,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11
+      ],
+      "wireBase64": "CfcCAwAAAEYAAAAByxYAAAALAwAAACgAAAACHhYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2553,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        40,
+        70
+      ],
+      "msg": [
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 542,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 459,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11
+      ],
+      "wireBase64": "CfkCAwAAACgAAAACHhYAAAALAwAAAEYAAAAByxYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2554,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        50,
+        70
+      ],
+      "msg": [
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 546,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 540,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11
+      ],
+      "wireBase64": "CfoCAwAAADIAAAACIhYAAAALAwAAAEYAAAACHBYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2555,
+      "conType": [
+        3,
+        3,
+        3
+      ],
+      "conValue": [
+        90,
+        70,
+        50
+      ],
+      "msg": [
+        "",
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 626,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 132,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 548,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 762,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 627,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11,
+        11
+      ],
+      "wireBase64": "CfsDAwAAAFoAAAACchYC+hYLAwAAAEYAAAAAhBYCcxYLAwAAADIAAAACJBYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2556,
+      "conType": [
+        3,
+        3,
+        3
+      ],
+      "conValue": [
+        90,
+        70,
+        50
+      ],
+      "msg": [
+        "",
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 626,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 132,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 548,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 762,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 627,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11,
+        11
+      ],
+      "wireBase64": "CfwDAwAAAFoAAAACchYC+hYLAwAAAEYAAAAAhBYCcxYLAwAAADIAAAACJBYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    },
+    {
+      "id": 2557,
+      "conType": [
+        3,
+        3,
+        3
+      ],
+      "conValue": [
+        90,
+        70,
+        50
+      ],
+      "msg": [
+        "",
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 6131,
+          "level": 9,
+          "definitionFound": true
+        },
+        {
+          "id": 119,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 328,
+          "level": 1,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 762,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 363,
+          "level": 9,
+          "definitionFound": true
+        },
+        {
+          "id": 6108,
+          "level": 9,
+          "definitionFound": true
+        }
+      ],
+      "targetType": [
+        11,
+        11,
+        11
+      ],
+      "wireBase64": "Cf0DAwAAAFoAAAAX8wkC+hYLAwAAAEYAAAAAdxYBawkLAwAAADIAAAABSAEX3AkL",
+      "sources": [
+        {
+          "capture": "2026-09-22T04-45-00-484Z_716322",
+          "seq": 2850,
+          "protocol": 10506,
+          "sha256": "4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb",
+          "blob": "blobs/4d/4d83122a92c0d907f34bd7ebc4e867ef618cb8b976ff81c8d2d84dabd45723cb.bin"
+        }
+      ]
+    }
+  ],
+  "pendingItems": [
+    {
+      "id": 5301,
+      "name": "试炼的邀请",
+      "role": "entry-condition",
+      "policy": "Use existing offline policy: unknown item requirements do not block entry."
+    },
+    {
+      "id": 100669,
+      "name": "长老的谢礼",
+      "role": "reward",
+      "policy": "Record owed reward on completion; item definition and box contents remain pending."
+    }
+  ]
+}

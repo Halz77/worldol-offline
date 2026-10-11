@@ -1,0 +1,340 @@
+[
+  {
+    "name": "未暴击伤害",
+    "asset": "assets/common/2000.png",
+    "capture": "png_1446fd4c_121x13.png",
+    "original_size": [
+      121,
+      13
+    ],
+    "frames": [
+      {
+        "digit": 0,
+        "x": 2,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 1,
+        "x": 15,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 2,
+        "x": 26,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 3,
+        "x": 38,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 4,
+        "x": 49,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 5,
+        "x": 62,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 6,
+        "x": 74,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 7,
+        "x": 86,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 8,
+        "x": 98,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 9,
+        "x": 109,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      }
+    ],
+    "sha256": "d0ebec30c466e7667f10208fe916ae8b7b784b6d7f13c376b13a11454e6ba40f"
+  },
+  {
+    "name": "HP回复",
+    "asset": "assets/common/2001.png",
+    "capture": "png_12eab7ac_122x13.png",
+    "original_size": [
+      122,
+      13
+    ],
+    "frames": [
+      {
+        "digit": 0,
+        "x": 2,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 1,
+        "x": 15,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 2,
+        "x": 26,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 3,
+        "x": 38,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 4,
+        "x": 50,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 5,
+        "x": 63,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 6,
+        "x": 75,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 7,
+        "x": 87,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 8,
+        "x": 99,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 9,
+        "x": 110,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      }
+    ],
+    "sha256": "b60d0070c3cdfdcea1769bcc3685b9ccaf616296e6e936822d68edc5bc6aa67b"
+  },
+  {
+    "name": "MP回复",
+    "asset": "assets/common/2002.png",
+    "capture": "png_12eb9444_122x13.png",
+    "original_size": [
+      122,
+      13
+    ],
+    "frames": [
+      {
+        "digit": 0,
+        "x": 2,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 1,
+        "x": 15,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 2,
+        "x": 26,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 3,
+        "x": 38,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 4,
+        "x": 50,
+        "y": 0,
+        "width": 11,
+        "height": 13
+      },
+      {
+        "digit": 5,
+        "x": 63,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 6,
+        "x": 75,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 7,
+        "x": 87,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      },
+      {
+        "digit": 8,
+        "x": 99,
+        "y": 0,
+        "width": 9,
+        "height": 13
+      },
+      {
+        "digit": 9,
+        "x": 110,
+        "y": 0,
+        "width": 10,
+        "height": 13
+      }
+    ],
+    "sha256": "ac00904f4c82fbb0f0a8c1445c81a15fc2b45151a824930abfe70f787de21efc"
+  },
+  {
+    "name": "暴击伤害",
+    "asset": "assets/common/2003.png",
+    "capture": "png_12e1be7c_176x18.png",
+    "original_size": [
+      176,
+      18
+    ],
+    "frames": [
+      {
+        "digit": 0,
+        "x": 4,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 1,
+        "x": 21,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 2,
+        "x": 38,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 3,
+        "x": 55,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 4,
+        "x": 72,
+        "y": 0,
+        "width": 14,
+        "height": 18
+      },
+      {
+        "digit": 5,
+        "x": 90,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 6,
+        "x": 107,
+        "y": 0,
+        "width": 14,
+        "height": 18
+      },
+      {
+        "digit": 7,
+        "x": 125,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 8,
+        "x": 142,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      },
+      {
+        "digit": 9,
+        "x": 159,
+        "y": 0,
+        "width": 13,
+        "height": 18
+      }
+    ],
+    "sha256": "98d3a96c46fe32eb510652be3a1a43b909945e714c4faf59d9bb1df02d396ade"
+  },
+  {
+    "name": "暴击爆炸效果",
+    "asset": "assets/common/bo.png",
+    "capture": "png_12dc260c_54x56.png",
+    "original_size": [
+      54,
+      56
+    ],
+    "sha256": "fadb2d0b8ee02368db506e626c7469c67acfefa9c4b7f45903a89b7a2509b514"
+  }
+]

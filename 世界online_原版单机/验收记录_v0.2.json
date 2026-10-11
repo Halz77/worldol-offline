@@ -1,0 +1,262 @@
+{
+  "version": "0.2.0",
+  "verifiedAt": "2026-09-19T19:58:17.310Z",
+  "automatedTests": {
+    "passed": 10,
+    "failed": 0,
+    "command": "runtime/node.exe --test tests/*.test.mjs"
+  },
+  "browserVerified": [
+    "原版 NPC 对话与接取任务",
+    "原版两地图传送",
+    "短距离移动后 NPC 交互",
+    "碰撞触发回合制战斗",
+    "胜利经验和铜币到账",
+    "两次击杀完成任务目标",
+    "回村交付与升级",
+    "三段委托完成",
+    "重登恢复角色和进行中任务"
+  ],
+  "ruleTestsOnly": [
+    "生命归零后回村恢复",
+    "逃跑不发放奖励",
+    "重复结算拒绝",
+    "越界与障碍落点拒绝"
+  ],
+  "services": [
+    {
+      "port": 8775,
+      "pid": 34660,
+      "version": "0.2.0",
+      "roles": [
+        {
+          "id": 1001,
+          "name": "小蜜",
+          "map": 1,
+          "x": 19,
+          "y": 15
+        },
+        {
+          "id": 1002,
+          "name": "单机预习",
+          "map": 1,
+          "x": 19,
+          "y": 15
+        }
+      ]
+    },
+    {
+      "port": 8776,
+      "pid": 35512,
+      "version": "0.2.0",
+      "roles": [
+        {
+          "id": 1001,
+          "name": "青岚57",
+          "map": 1,
+          "x": 17,
+          "y": 16
+        },
+        {
+          "id": 1002,
+          "name": "青岚95",
+          "map": 1,
+          "x": 18,
+          "y": 24
+        }
+      ]
+    },
+    {
+      "port": 8778,
+      "pid": 28956,
+      "version": "0.2.0",
+      "roles": [
+        {
+          "id": 1001,
+          "name": "远山21",
+          "map": 1,
+          "x": 22,
+          "y": 20
+        }
+      ]
+    }
+  ],
+  "featureProgress": [
+    {
+      "name": "远山21",
+      "level": 3,
+      "exp": 130,
+      "coins": 1670,
+      "quests": {
+        "active": {},
+        "completed": [
+          9001,
+          9002,
+          9003
+        ]
+      },
+      "battles": {
+        "wins": 7,
+        "losses": 0,
+        "kills": {
+          "701": 4,
+          "702": 3
+        },
+        "cooldowns": {
+          "701": 1789847496302,
+          "702": 1789847494552,
+          "703": 1789847554335
+        },
+        "last": {
+          "token": 503407824,
+          "group": 703,
+          "result": 2,
+          "rounds": 1,
+          "time": "2026-09-19T19:52:34.516Z",
+          "reward": {
+            "exp": 50,
+            "coins": 60,
+            "levels": 1
+          }
+        }
+      }
+    }
+  ],
+  "questDeliveries": [
+    {
+      "time": "2026-09-19T19:39:16.570Z",
+      "kind": "quest-delivered",
+      "role": 1001,
+      "quest": 9001,
+      "reward": {
+        "exp": 20,
+        "coins": 50,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:49:58.640Z",
+      "kind": "quest-delivered",
+      "role": 1001,
+      "quest": 9002,
+      "reward": {
+        "exp": 60,
+        "coins": 120,
+        "levels": 1
+      }
+    },
+    {
+      "time": "2026-09-19T19:52:41.593Z",
+      "kind": "quest-delivered",
+      "role": 1001,
+      "quest": 9003,
+      "reward": {
+        "exp": 100,
+        "coins": 200,
+        "levels": 0
+      }
+    }
+  ],
+  "successfulBattles": [
+    {
+      "time": "2026-09-19T19:49:25.021Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 1953868783,
+      "group": 701,
+      "result": 2,
+      "rounds": 1,
+      "reward": {
+        "exp": 25,
+        "coins": 30,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:49:51.559Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 1223318401,
+      "group": 702,
+      "result": 2,
+      "rounds": 4,
+      "reward": {
+        "exp": 25,
+        "coins": 30,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:51:16.754Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 167277957,
+      "group": 703,
+      "result": 2,
+      "rounds": 1,
+      "reward": {
+        "exp": 50,
+        "coins": 60,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:51:31.016Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 50846472,
+      "group": 703,
+      "result": 2,
+      "rounds": 4,
+      "reward": {
+        "exp": 50,
+        "coins": 60,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:51:33.899Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 37773310,
+      "group": 702,
+      "result": 2,
+      "rounds": 1,
+      "reward": {
+        "exp": 25,
+        "coins": 30,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:51:37.049Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 740674198,
+      "group": 701,
+      "result": 2,
+      "rounds": 9,
+      "reward": {
+        "exp": 25,
+        "coins": 30,
+        "levels": 0
+      }
+    },
+    {
+      "time": "2026-09-19T19:52:34.516Z",
+      "kind": "battle-settled",
+      "role": 1001,
+      "token": 503407824,
+      "group": 703,
+      "result": 2,
+      "rounds": 1,
+      "reward": {
+        "exp": 50,
+        "coins": 60,
+        "levels": 1
+      }
+    }
+  ],
+  "oldSaveBackup": "backups/pre-v0.2-20260920-035708",
+  "limitations": "本地自设计 NPC/任务/数值；保留原版界面与本地战斗引擎；装备掉落、商店、技能养成及在线系统未接入。"
+}

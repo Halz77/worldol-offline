@@ -1,0 +1,1906 @@
+{
+  "schema": 1,
+  "revision": "batianhu-dongge-quests-v1+plaza-kukulkan",
+  "captures": [
+    {
+      "id": "2026-09-22T00-25-47-572Z_c936a4",
+      "audit": {
+        "schema": "worldol.capture.prefix-audit.v1",
+        "snapshot": true,
+        "checkedAt": "2026-09-22T02:30:59.131Z",
+        "cutoffSeq": 12167,
+        "cutoffAt": "2026-09-22T00:57:29.295Z",
+        "events": 12167,
+        "wsSent": 1155,
+        "wsReceived": 555,
+        "cleanEnd": true,
+        "integrityPassed": true,
+        "errors": [],
+        "truncatedTail": false,
+        "uniqueBlobs": 1199,
+        "verifiedBytes": 38764219,
+        "captureGaps": [],
+        "networkFailures": []
+      },
+      "clientCodeMatches": 9
+    },
+    {
+      "id": "2026-09-22T01-10-13-330Z_601bdd",
+      "audit": {
+        "schema": "worldol.capture.prefix-audit.v1",
+        "snapshot": true,
+        "checkedAt": "2026-09-22T02:30:59.419Z",
+        "cutoffSeq": 13281,
+        "cutoffAt": "2026-09-22T02:10:04.730Z",
+        "events": 13281,
+        "wsSent": 2461,
+        "wsReceived": 1065,
+        "cleanEnd": true,
+        "integrityPassed": true,
+        "errors": [],
+        "truncatedTail": false,
+        "uniqueBlobs": 1247,
+        "verifiedBytes": 35639789,
+        "captureGaps": [],
+        "networkFailures": [
+          {
+            "seq": 6433,
+            "error": "net::ERR_ABORTED"
+          }
+        ]
+      },
+      "clientCodeMatches": 9
+    }
+  ],
+  "map": {
+    "id": 945,
+    "name": "征战广场",
+    "spawn": [
+      5,
+      22
+    ],
+    "npcs": [
+      {
+        "mapId": 945,
+        "sign": 3,
+        "id": 1,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "15760",
+        "businessIcon": 0,
+        "name": "超级BOSS-霸天虎",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 3,
+        "direction": 1,
+        "x": 20,
+        "y": 11,
+        "rangeX": 0,
+        "rangeY": 0,
+        "sourceGx": 20,
+        "sourceGy": 11,
+        "wireBase64": "AwEAAAAAAAAAAD2QAAAAFOi2hee6p0JPU1Mt6Zy45aSp6JmOAAAAAAMBFAsAAA==",
+        "sources": [
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 8791,
+            "protocol": 10506,
+            "sha256": "7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e",
+            "blob": "blobs/71/7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e.bin"
+          },
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 9985,
+            "protocol": 10503,
+            "sha256": "8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86",
+            "blob": "blobs/85/8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 945,
+        "sign": 0,
+        "id": 2,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5023",
+        "businessIcon": 0,
+        "name": "守卫",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 3,
+        "direction": 1,
+        "x": 7,
+        "y": 18,
+        "rangeX": 0,
+        "rangeY": 0,
+        "sourceGx": 7,
+        "sourceGy": 18,
+        "wireBase64": "AAIAAAAAAAAAABOfAAAABuWuiOWNqwAAAAADAQcSAAA=",
+        "sources": [
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 8791,
+            "protocol": 10506,
+            "sha256": "7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e",
+            "blob": "blobs/71/7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e.bin"
+          },
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 9985,
+            "protocol": 10503,
+            "sha256": "8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86",
+            "blob": "blobs/85/8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 945,
+        "sign": 0,
+        "id": 3,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "5023",
+        "businessIcon": 0,
+        "name": "守卫",
+        "welcome": "",
+        "talkDetail": "",
+        "status": 3,
+        "direction": 1,
+        "x": 13,
+        "y": 21,
+        "rangeX": 0,
+        "rangeY": 0,
+        "sourceGx": 13,
+        "sourceGy": 21,
+        "wireBase64": "AAMAAAAAAAAAABOfAAAABuWuiOWNqwAAAAADAQ0VAAA=",
+        "sources": [
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 8791,
+            "protocol": 10506,
+            "sha256": "7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e",
+            "blob": "blobs/71/7144c03e5e2ea1e866e0e218323678d7e45e59c0e495ac2997833fe2d917ec5e.bin"
+          },
+          {
+            "capture": "2026-09-22T00-25-47-572Z_c936a4",
+            "seq": 9985,
+            "protocol": 10503,
+            "sha256": "8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86",
+            "blob": "blobs/85/8580e3a709b5a6be8e2453d89eea13d8f89aa4d3b4800f40be2fa1549d27ea86.bin"
+          }
+        ]
+      },
+      {
+        "mapId": 945,
+        "sign": 3,
+        "id": 5,
+        "missionGroupID": 0,
+        "npcType": 0,
+        "icon1": "20788",
+        "businessIcon": 0,
+        "name": "太阳神-库库尔坎",
+        "welcome": "",
+        "talkDetail": "太阳神在此，凡人止步。",
+        "status": 3,
+        "direction": 1,
+        "x": 16,
+        "y": 8,
+        "rangeX": 0,
+        "rangeY": 0,
+        "sourceGx": 16,
+        "sourceGy": 8,
+        "wireBase64": "AwUAAAAAAAAAAFE0AAAAFuWkqumYs+elni3lupPlupPlsJTlnY4AAAAh5aSq6Ziz56We5Zyo5q2k77yM5Yeh5Lq65q2i5q2l44CCAwEQCAAA",
+        "localChallenge": true,
+        "sources": [
+          {
+            "origin": "local-plaza-boss",
+            "mapId": 945,
+            "npcId": 5
+          }
+        ]
+      }
+    ],
+    "sourceCapture": "2026-09-22T00-25-47-572Z_c936a4",
+    "sourceSeq": 8791
+  },
+  "geometry": {
+    "file": "data/maps/945.json",
+    "sha256": "23bacb8f686a31bf3bec1a2eeae038dd58954aa4c7d8c10e54bab6eb734a1a6f"
+  },
+  "dongNpc": {
+    "mapId": 979,
+    "sign": 3,
+    "id": 18,
+    "missionGroupID": 0,
+    "npcType": 0,
+    "icon1": "20731",
+    "businessIcon": 0,
+    "name": "超级BOSS撼地者—宇宙男神东哥",
+    "welcome": "",
+    "talkDetail": "",
+    "status": 10,
+    "direction": 0,
+    "x": 9,
+    "y": 26,
+    "rangeX": 0,
+    "rangeY": 0,
+    "missionData": [
+      3456,
+      7,
+      3460,
+      7
+    ],
+    "sourceGx": 9,
+    "sourceGy": 26,
+    "wireBase64": "AxIAAAAAAAAAAFD7AAAAKOi2hee6p0JPU1PmkrzlnLDogIXigJTlroflrpnnlLfnpZ7kuJzlk6UAAAAACgAJGgAADYAHDYQH",
+    "sources": [
+      {
+        "capture": "2026-09-22T01-10-13-330Z_601bdd",
+        "seq": 5020,
+        "protocol": 10503,
+        "sha256": "04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee",
+        "blob": "blobs/04/04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee.bin"
+      },
+      {
+        "capture": "2026-09-22T01-10-13-330Z_601bdd",
+        "seq": 6435,
+        "protocol": 10503,
+        "sha256": "bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9",
+        "blob": "blobs/ba/bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9.bin"
+      },
+      {
+        "capture": "2026-09-22T01-10-13-330Z_601bdd",
+        "seq": 13055,
+        "protocol": 10503,
+        "sha256": "5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41",
+        "blob": "blobs/5c/5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41.bin"
+      }
+    ]
+  },
+  "placement": {
+    "mapId": 945,
+    "npcId": 4,
+    "x": 25,
+    "y": 12,
+    "missionId": 3459
+  },
+  "monsters": [
+    {
+      "id": 3271,
+      "name": "钢铁战士",
+      "icon1": "20756",
+      "level": 80,
+      "monstertype": 1,
+      "hpMax": 6000000,
+      "mpMax": 600000,
+      "speed": 30000,
+      "atkType": 0,
+      "atkMin": 20000,
+      "atkMax": 30000,
+      "atk_time": 2,
+      "dodge": 10000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 500,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 8000,
+      "tough": 30000,
+      "block": 1371,
+      "brkArmor": 20000,
+      "insight": 8000,
+      "def_field": 0,
+      "back": 3000,
+      "magic_back": 3000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 15000,
+      "bornStatus": "964608",
+      "newReflection": 99,
+      "wireBase64": "AAAMxwAABJSilMFiGFjrAAAAAAAAURRQAQBbjYAACSfAAAB1MAAAAE4gAAB1MAIAACcQAACcQAAAAAAAAAAAAACcQAAAAAAAAAAAAACcQAAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAAu4AAALuAH0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9AAAB1MAAABVsAAE4gAAAfQAAAAAAAAAu4AAALuAAAC7gAAAu4AAA6mAAAAAAADrgAAAAAYw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "id": 3350,
+      "name": "超级BOSS-霸天虎",
+      "icon1": "15760",
+      "level": 120,
+      "monstertype": 4,
+      "hpMax": 20000000,
+      "mpMax": 2000000,
+      "speed": 65535,
+      "atkType": 4,
+      "atkMin": 60000,
+      "atkMax": 65535,
+      "atk_time": 5,
+      "dodge": 200000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 8000,
+      "hitMagic": 8000,
+      "critical": 8000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 200000,
+      "tough": 200000,
+      "block": 5000,
+      "brkArmor": 200000,
+      "insight": 200000,
+      "def_field": 200000,
+      "back": 20000,
+      "magic_back": 20000,
+      "life_absorption": 8000,
+      "mana_absorption": 8000,
+      "magic_penetration": 200000,
+      "bornStatus": "268744704",
+      "newReflection": 0,
+      "wireBase64": "AAANFgAACo2FfqcAQgBPAFMAUwAtlzhZKYZOAAAAAAAAPZB4BAExLQAAHoSAAAD//wQAAOpgAAD//wUAAw1AAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAB9AAAAfQB9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw1AAAMNQAAAE4gAAw1AAAMNQAADDUAAAE4gAABOIAAAH0AAAB9AAAMNQAAAAAAQBLgAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        }
+      ]
+    },
+    {
+      "id": 3272,
+      "name": "钢铁法师",
+      "icon1": "20758",
+      "level": 80,
+      "monstertype": 1,
+      "hpMax": 6000000,
+      "mpMax": 600000,
+      "speed": 8000,
+      "atkType": 4,
+      "atkMin": 20000,
+      "atkMax": 30000,
+      "atk_time": 2,
+      "dodge": 10000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 500,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 8000,
+      "tough": 30000,
+      "block": 1371,
+      "brkArmor": 20000,
+      "insight": 8000,
+      "def_field": 0,
+      "back": 5000,
+      "magic_back": 5000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 15000,
+      "bornStatus": "134559744",
+      "newReflection": 99,
+      "wireBase64": "AAAMyAAABJSilMFs1V4IAAAAAAAAURZQAQBbjYAACSfAAAAfQAQAAE4gAAB1MAIAACcQAACcQAAAAAAAAAAAAACcQAAAAAAAAAAAAACcQAAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAAu4AAALuAH0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9AAAB1MAAABVsAAE4gAAAfQAAAAAAAABOIAAATiAAAC7gAAAu4AAA6mAAAAAAIBTgAAAAAYw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "id": 3268,
+      "name": "机械卫兵",
+      "icon1": "20724",
+      "level": 70,
+      "monstertype": 1,
+      "hpMax": 4000000,
+      "mpMax": 400000,
+      "speed": 20000,
+      "atkType": 2,
+      "atkMin": 10000,
+      "atkMax": 20000,
+      "atk_time": 0,
+      "dodge": 3000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 50000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 50000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 50000,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 400,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 3000,
+      "tough": 15000,
+      "block": 1000,
+      "brkArmor": 10000,
+      "insight": 4000,
+      "def_field": 0,
+      "back": 2000,
+      "magic_back": 2000,
+      "life_absorption": 2000,
+      "mana_absorption": 2000,
+      "magic_penetration": 10000,
+      "bornStatus": "866304",
+      "newReflection": 99,
+      "wireBase64": "AAAMxAAABGc6aLBTa1F1AAAAAAAAUPRGAQA9CQAABhqAAABOIAIAACcQAABOIAAAAAu4AACcQAAAAAAAAAAAAACcQAAAAAAAAAAAAACcQAAAw1AAAAAAAAAAAAAAw1AAAAAAAAAAAAAAw1AAAAu4AAALuAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu4AAA6mAAAA+gAACcQAAAPoAAAAAAAAAfQAAAH0AAAB9AAAAfQAAAnEAAAAAAADTgAAAAAYw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5020,
+          "protocol": 10503,
+          "sha256": "04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee",
+          "blob": "blobs/04/04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 6435,
+          "protocol": 10503,
+          "sha256": "bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9",
+          "blob": "blobs/ba/bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 13055,
+          "protocol": 10503,
+          "sha256": "5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41",
+          "blob": "blobs/5c/5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41.bin"
+        }
+      ]
+    },
+    {
+      "id": 3269,
+      "name": "生化魔人",
+      "icon1": "20008",
+      "level": 70,
+      "monstertype": 1,
+      "hpMax": 4000000,
+      "mpMax": 400000,
+      "speed": 20000,
+      "atkType": 0,
+      "atkMin": 10000,
+      "atkMax": 20000,
+      "atk_time": 1,
+      "dodge": 3000,
+      "atk_str": 40000,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 40000,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 40000,
+      "def_str": 50000,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 50000,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 50000,
+      "hitrate": 3000,
+      "hitMagic": 3000,
+      "critical": 400,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 3000,
+      "tough": 15000,
+      "block": 1000,
+      "brkArmor": 10000,
+      "insight": 4000,
+      "def_field": 0,
+      "back": 2000,
+      "magic_back": 2000,
+      "life_absorption": 2000,
+      "mana_absorption": 2000,
+      "magic_penetration": 10000,
+      "bornStatus": "866304",
+      "newReflection": 99,
+      "wireBase64": "AAAMxQAABHUfUxabVE66AAAAAAAATihGAQA9CQAABhqAAABOIAAAACcQAABOIAEAAAu4AACcQAAAAAAAAAAAAACcQAAAAAAAAAAAAACcQAAAw1AAAAAAAAAAAAAAw1AAAAAAAAAAAAAAw1AAAAu4AAALuAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAu4AAA6mAAAA+gAACcQAAAPoAAAAAAAAAfQAAAH0AAAB9AAAAfQAAAnEAAAAAAADTgAAAAAYw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "id": 3275,
+      "name": "超级BOSS撼地者-宇宙男神东哥",
+      "icon1": "20731",
+      "level": 100,
+      "monstertype": 3,
+      "hpMax": 10000000,
+      "mpMax": 1000000,
+      "speed": 65535,
+      "atkType": 0,
+      "atkMin": 60000,
+      "atkMax": 65535,
+      "atk_time": 3,
+      "dodge": 10000,
+      "atk_str": 65535,
+      "atk_str_nearby": 0,
+      "atk_str_range": 0,
+      "atk_agi": 65535,
+      "atk_agi_nearby": 0,
+      "atk_agi_range": 0,
+      "atk_magic": 65535,
+      "def_str": 65535,
+      "def_str_nearby": 0,
+      "def_str_range": 0,
+      "def_agi": 65535,
+      "def_agi_nearby": 0,
+      "def_agi_range": 0,
+      "def_magic": 65535,
+      "hitrate": 8000,
+      "hitMagic": 8000,
+      "critical": 2000,
+      "ignoreCritical": 0,
+      "criticalDmg": 0,
+      "ignore_back": 0,
+      "ignore_magic_back": 0,
+      "ignore_block": 0,
+      "ignore_insight": 0,
+      "ignore_touch": 0,
+      "ignore_wil": 0,
+      "wil": 50000,
+      "tough": 80000,
+      "block": 5000,
+      "brkArmor": 32000,
+      "insight": 10000,
+      "def_field": 0,
+      "back": 8000,
+      "magic_back": 8000,
+      "life_absorption": 3000,
+      "mana_absorption": 3000,
+      "magic_penetration": 30000,
+      "bornStatus": "135198720",
+      "newReflection": 99,
+      "wireBase64": "AAAMywAAEI2FfqcAQgBPAFMAU2S8VzCABQAtW4dbmXU3eV5OHFTlAAAAAAAAUPtkAwCYloAAD0JAAAD//wAAAOpgAAD//wMAACcQAAD//wAAAAAAAAAAAAD//wAAAAAAAAAAAAD//wAA//8AAAAAAAAAAAAA//8AAAAAAAAAAAAA//8AAB9AAAAfQAfQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMNQAAE4gAAAE4gAAH0AAAAnEAAAAAAAAB9AAAAfQAAAC7gAAAu4AAB1MAAAAAAIDvgAAAAAYw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": 459,
+      "level": 22,
+      "name": "血光刀气",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 21,
+      "power1": 149,
+      "powerValue1": 300,
+      "power2": 49,
+      "powerValue2": -780,
+      "power3": 156,
+      "powerValue3": 360,
+      "skillAtkType": 0,
+      "area": 16,
+      "round": 6,
+      "atk_time": 2,
+      "useMP": 220,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1321,
+      "anime3": 0,
+      "position": 1,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AcsWAAAEiEBRSVIAbBQDAAAAFQCVASwAMfz0AJwBaAAQBgIA3AAAAAUpAAABAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 1379,
+      "level": 1,
+      "name": "天使的祝福",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 79,
+      "powerValue1": 25,
+      "power2": 50,
+      "powerValue2": -100,
+      "power3": 178,
+      "powerValue3": -5,
+      "skillAtkType": 6,
+      "area": 19,
+      "round": 1,
+      "atk_time": 0,
+      "useMP": 0,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1408,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 30,
+      "isLearnByBook": false,
+      "wireBase64": "BWMBAAAFWSlPf3aEeV15jwIAAAAAAE8AGQAy/5wAsv/7BhMBAAAAAAAABYAAAAAAAB4A",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 1381,
+      "level": 1,
+      "name": "盾飞湮灭",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 178,
+      "powerValue1": -10,
+      "power2": 0,
+      "powerValue2": 0,
+      "power3": 0,
+      "powerValue3": 0,
+      "skillAtkType": 6,
+      "area": 29,
+      "round": 4,
+      "atk_time": 0,
+      "useMP": 0,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 0,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "BWUBAAAEdv6Y3m5ucG0DAAAAAACy//YAAAAAAAAAAAYdBAAAAAAAAAAAAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 1378,
+      "level": 1,
+      "name": "神圣复活",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 97,
+      "powerValue1": 50,
+      "power2": 0,
+      "powerValue2": 0,
+      "power3": 0,
+      "powerValue3": 0,
+      "skillAtkType": 6,
+      "area": 29,
+      "round": 3,
+      "atk_time": 0,
+      "useMP": 0,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 1338,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "BWIBAAAEeV5XI1kNbTsDAAAAAABhADIAAAAAAAAAAAYdAwAAAAAAAAU6AAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 546,
+      "level": 22,
+      "name": "法力燃烧",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 51,
+      "powerValue1": -1400,
+      "power2": 52,
+      "powerValue2": -15,
+      "power3": 154,
+      "powerValue3": 147,
+      "skillAtkType": 5,
+      "area": 16,
+      "round": 3,
+      "atk_time": 0,
+      "useMP": 682,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1222,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AiIWAAAEbNVSm3HDcOcDAAAAAAAz+ogANP/xAJoAkwUQAwACqgAAAQTGAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 540,
+      "level": 22,
+      "name": "死亡法阵",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 19,
+      "power1": 49,
+      "powerValue1": -700,
+      "power2": 50,
+      "powerValue2": -5,
+      "power3": 154,
+      "powerValue3": 147,
+      "skillAtkType": 5,
+      "area": 18,
+      "round": 6,
+      "atk_time": 0,
+      "useMP": 2310,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1333,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 10,
+      "statusBit2": 1,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AhwWAAAEa3tOoWzVljUDAAAAEwAx/UQAMv/7AJoAkwUSBgAJBgAAAQU1AAAACgEAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 438,
+      "level": 22,
+      "name": "落英神剑掌",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 18,
+      "power1": 151,
+      "powerValue1": 660,
+      "power2": 156,
+      "powerValue2": 660,
+      "power3": 82,
+      "powerValue3": 280,
+      "skillAtkType": 2,
+      "area": 11,
+      "round": 0,
+      "atk_time": 7,
+      "useMP": 110,
+      "useHP": 0,
+      "anime1": 2,
+      "anime2": 1313,
+      "anime3": 0,
+      "position": 1,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AbYWAAAFhD2C8XleUlFjjAMAAAASAJcClACcApQAUgEYAgsABwBuAAACBSEAAAEAAAAA",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5020,
+          "protocol": 10503,
+          "sha256": "04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee",
+          "blob": "blobs/04/04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 6435,
+          "protocol": 10503,
+          "sha256": "bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9",
+          "blob": "blobs/ba/bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9.bin",
+          "origin": "monsterAI"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 13055,
+          "protocol": 10503,
+          "sha256": "5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41",
+          "blob": "blobs/5c/5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 6131,
+      "level": 9,
+      "name": "狐火",
+      "type": 2,
+      "info": "妖狐最高可学习8级，灵狐可学习满级9级",
+      "skillWeapon": 0,
+      "power1": 65,
+      "powerValue1": -300,
+      "power2": 82,
+      "powerValue2": 400,
+      "power3": 63,
+      "powerValue3": -800,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 2,
+      "atk_time": 3,
+      "useMP": 3400,
+      "useHP": 0,
+      "anime1": 1,
+      "anime2": 1306,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 7,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "F/MJAAACctBwawIAABNZlnLQZwCa2FPvW2ZOYAA4fqf/DHB1ctBT71tmTmBu4X6nADl+pwAAQf7UAFIBkAA//OAEEwIDDUgAAAEFGgAAAAcAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "level": 22,
+      "name": "拈花刀",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 10,
+      "power1": 87,
+      "powerValue1": 2890,
+      "power2": 156,
+      "powerValue2": 420,
+      "power3": 178,
+      "powerValue3": -1,
+      "skillAtkType": 0,
+      "area": 18,
+      "round": 0,
+      "atk_time": 0,
+      "useMP": 220,
+      "useHP": 0,
+      "anime1": 0,
+      "anime2": 0,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AHcWAAADYsiCsVIAAgAAAAoAVwtKAJwBpACy//8AEgAAANwAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 328,
+      "level": 1,
+      "name": "灭空寒星",
+      "type": 2,
+      "info": "",
+      "skillWeapon": 17,
+      "power1": 87,
+      "powerValue1": 1000,
+      "power2": 151,
+      "powerValue2": 250,
+      "power3": 156,
+      "powerValue3": 250,
+      "skillAtkType": 3,
+      "area": 18,
+      "round": 0,
+      "atk_time": 4,
+      "useMP": 500,
+      "useHP": 0,
+      "anime1": 24,
+      "anime2": 1319,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AUgBAAAEcG16elvSZh8CAAAAEQBXA+gAlwD6AJwA+gMSAAQB9AAAGAUnAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 762,
+      "level": 22,
+      "name": "三味真火",
+      "type": 3,
+      "info": "",
+      "skillWeapon": 0,
+      "power1": 50,
+      "powerValue1": -9,
+      "power2": 49,
+      "powerValue2": -2200,
+      "power3": 156,
+      "powerValue3": 345,
+      "skillAtkType": 4,
+      "area": 18,
+      "round": 3,
+      "atk_time": 5,
+      "useMP": 5000,
+      "useHP": 0,
+      "anime1": 25,
+      "anime2": 1306,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 0,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AvoWAAAETglUc3cfcGsDAAAAAAAy//cAMfdoAJwBWQQSAwUTiAAAGQUaAAAAAAAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 363,
+      "level": 9,
+      "name": "龙炎爆",
+      "type": 3,
+      "info": "火烧状态生命恢复、吸收失效",
+      "skillWeapon": 19,
+      "power1": 49,
+      "powerValue1": -4400,
+      "power2": 152,
+      "powerValue2": 310,
+      "power3": 178,
+      "powerValue3": -2,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 2,
+      "atk_time": 0,
+      "useMP": 6800,
+      "useHP": 0,
+      "anime1": 9,
+      "anime2": 1331,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 30,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "AWsJAAADn5lwjnIGAwAADXBrcOdytmABdR9UfWBiWQ0wAVQ4ZTZZMWVIEwAx7tAAmAE2ALL//gQTAgAakAAACQUzAAAAHgAAAA==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    },
+    {
+      "id": 6108,
+      "level": 9,
+      "name": "风雪冰天",
+      "type": 3,
+      "info": "　",
+      "skillWeapon": 0,
+      "power1": 25,
+      "powerValue1": -50,
+      "power2": 53,
+      "powerValue2": -590,
+      "power3": 155,
+      "powerValue3": 145,
+      "skillAtkType": 4,
+      "area": 19,
+      "round": 4,
+      "atk_time": 0,
+      "useMP": 4000,
+      "useHP": 0,
+      "anime1": 9,
+      "anime2": 1319,
+      "anime3": 0,
+      "position": 0,
+      "statusBit1": 8,
+      "statusBit2": 0,
+      "statusBit3": 0,
+      "isLearnByBook": false,
+      "wireBase64": "F9wJAAAEmM6W6lGwWSkDAAABMAAAABn/zgA1/bIAmwCRBBMEAA+gAAAJBScAAAAIAAAA",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "origin": "monsterAI"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "monsters": [
+        3271,
+        0,
+        0,
+        3350,
+        0,
+        3272,
+        3272,
+        3271,
+        3272,
+        3271,
+        3271,
+        3272,
+        3271,
+        3272,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 11778,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "LgIAAAABAAAAAAzHAAAAAA0WAAAMyAzIDMcMyAzHDMcMyAzHDMgAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        }
+      ]
+    },
+    {
+      "monsters": [
+        3268,
+        3269,
+        3268,
+        3269,
+        0,
+        3275,
+        0,
+        3272,
+        3271,
+        3272,
+        3271,
+        3272,
+        3271,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 11740,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "LdwAAAABAAAAAAzEDMUMxAzFAAAMywAADMgMxwzIDMcMyAzHAAAAAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "monsters": [
+        0,
+        4046,
+        3353,
+        4046,
+        0,
+        0,
+        3352,
+        0,
+        4046,
+        4046,
+        3354,
+        0,
+        0,
+        4046,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "npcs": [],
+      "groupId": 20500,
+      "type": 0,
+      "nextBattleGroupID": 0,
+      "flag": 1,
+      "coefficient": 0,
+      "wireBase64": "UBQAAAABAAAAAAAAD84NGQ/OAAAAAA0YAAAPzg/ODRoAAAAAD84AAAAAAAAAAAAAAAA=",
+      "sources": [
+        {
+          "origin": "local-plaza-boss",
+          "mapId": 945
+        }
+      ]
+    }
+  ],
+  "ai": [
+    {
+      "id": 3271,
+      "conType": [
+        3
+      ],
+      "conValue": [
+        70
+      ],
+      "msg": [
+        "斩！"
+      ],
+      "skill1": [
+        {
+          "id": 459,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11
+      ],
+      "wireBase64": "DMcBAwAAAEYAAAJlqf8BAcsWAAAACw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "id": 3350,
+      "conType": [
+        3,
+        3,
+        4
+      ],
+      "conValue": [
+        100,
+        100,
+        15
+      ],
+      "msg": [
+        "天使祝福",
+        "盾飞湮灭",
+        "神圣复活"
+      ],
+      "skill1": [
+        {
+          "id": 1379,
+          "level": 1,
+          "definitionFound": true
+        },
+        {
+          "id": 1381,
+          "level": 1,
+          "definitionFound": true
+        },
+        {
+          "id": 1378,
+          "level": 1,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        12,
+        14
+      ],
+      "wireBase64": "DRYDAwAAAGQAAARZKU9/eV15jwVjAQAAAAsDAAAAZAAABHb+mN5ubnBtBWUBAAAADAQAAAAPAAAEeV5XI1kNbTsFYgEAAAAO",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        }
+      ]
+    },
+    {
+      "id": 3272,
+      "conType": [
+        3,
+        3
+      ],
+      "conValue": [
+        70,
+        70
+      ],
+      "msg": [
+        "烧光你们的蓝",
+        "死亡降临了"
+      ],
+      "skill1": [
+        {
+          "id": 546,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 540,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        },
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11,
+        11
+      ],
+      "wireBase64": "DMgCAwAAAEYAAAZw51FJT2BO7HaEhN0CIhYAAAALAwAAAEYAAAVre06hlk1ONE6GAhwWAAAACw==",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    },
+    {
+      "id": 3268,
+      "conType": [
+        3
+      ],
+      "conValue": [
+        30
+      ],
+      "msg": [
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 438,
+          "level": 22,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 0,
+          "level": 0,
+          "definitionFound": false
+        }
+      ],
+      "targetType": [
+        11
+      ],
+      "wireBase64": "DMQBAwAAAB4AAAABthYAAAAL",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5020,
+          "protocol": 10503,
+          "sha256": "04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee",
+          "blob": "blobs/04/04688f54f177f960b612646b9e9049c6026296e18bf259eb7226cd49184a2dee.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 6435,
+          "protocol": 10503,
+          "sha256": "bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9",
+          "blob": "blobs/ba/bacc6ded17b7d0d0ff123d40c6f969749eb0d3fa3ddd0669d796600e2fbcbed9.bin"
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 13055,
+          "protocol": 10503,
+          "sha256": "5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41",
+          "blob": "blobs/5c/5cad595d8a33d582e51149de4e2b37715186fa5ae3b4f3361ecd3168b6650b41.bin"
+        }
+      ]
+    },
+    {
+      "id": 3275,
+      "conType": [
+        3,
+        3,
+        3
+      ],
+      "conValue": [
+        90,
+        70,
+        50
+      ],
+      "msg": [
+        "",
+        "",
+        ""
+      ],
+      "skill1": [
+        {
+          "id": 6131,
+          "level": 9,
+          "definitionFound": true
+        },
+        {
+          "id": 119,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 328,
+          "level": 1,
+          "definitionFound": true
+        }
+      ],
+      "skill2": [
+        {
+          "id": 762,
+          "level": 22,
+          "definitionFound": true
+        },
+        {
+          "id": 363,
+          "level": 9,
+          "definitionFound": true
+        },
+        {
+          "id": 6108,
+          "level": 9,
+          "definitionFound": true
+        }
+      ],
+      "targetType": [
+        11,
+        11,
+        11
+      ],
+      "wireBase64": "DMsDAwAAAFoAAAAX8wkC+hYLAwAAAEYAAAAAdxYBawkLAwAAADIAAAABSAEX3AkL",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin"
+        }
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": 1317,
+      "name": "挑战超级BOSS-霸天虎",
+      "level": 0,
+      "simpleDesc": "挑战超级BOSS-霸天虎",
+      "desc": "需要达到90级方可接受该任务，每天最多可挑战3次！该BOSS将会释放终极技能，需要在每回合中封住BOSS才有机会打败它！注：该副本将会根据情况随时进行调整，请留意副本动态。",
+      "setting": 1026,
+      "mapId": 945,
+      "npcId": 1,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "需要达到90级方可接取该任务！",
+      "dialogStartNotFinish": "",
+      "dialogStartFinish": "",
+      "exp": 10000,
+      "money2": 0,
+      "money3": 10000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 11778,
+      "submitBattleID": 0,
+      "submitNextMissionID": 0,
+      "rewardItems": [
+        {
+          "illusion": [],
+          "id": 1566,
+          "quantity": 1,
+          "name": "霸天虎秘宝箱（锁）",
+          "bagIcon": 7,
+          "grade": 3
+        }
+      ],
+      "acceptCondition": [
+        {
+          "type": 1,
+          "typeName": "CONDITION_LEVEL",
+          "not": 0,
+          "rawHex": "5a",
+          "minimum": 90
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "0d160014e8b685e7baa7424f53532de99cb8e5a4a9e8998e0100",
+          "monsterId": 3350,
+          "name": "超级BOSS-霸天虎",
+          "required": 1,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 0,
+      "series": "",
+      "acceptMapId": 945,
+      "acceptNpcId": 1,
+      "canAccept": 1,
+      "_isHelp": true,
+      "wireBase64": "BSUAGuaMkeaImOi2hee6p0JPU1Mt6Zy45aSp6JmOAAAa5oyR5oiY6LaF57qnQk9TUy3pnLjlpKnomY4A7OmcgOimgei+vuWIsDkw57qn5pa55Y+v5o6l5Y+X6K+l5Lu75Yqh77yM5q+P5aSp5pyA5aSa5Y+v5oyR5oiYM+asoe+8geivpUJPU1PlsIbkvJrph4rmlL7nu4jmnoHmioDog73vvIzpnIDopoHlnKjmr4/lm57lkIjkuK3lsIHkvY9CT1NT5omN5pyJ5py65Lya5omT6LSl5a6D77yB5rOo77ya6K+l5Ymv5pys5bCG5Lya5qC55o2u5oOF5Ya16ZqP5pe26L+b6KGM6LCD5pW077yM6K+355WZ5oSP5Ymv5pys5Yqo5oCB44CCBAIDsQEAAAAp6ZyA6KaB6L6+5YiwOTDnuqfmlrnlj6/mjqXlj5bor6Xku7vliqHvvIEAAAAAAAAnEAAAJxAAAAAALgIAAAAAAQAABh4BABvpnLjlpKnomY7np5jlrp3nrrHvvIjplIHvvIkAAAAHAwADAQABWgAAAAAAAAMCABoNFgAU6LaF57qnQk9TUy3pnLjlpKnomY4BAAAAAAAAAAAAAAAAAAAAA7EAAAABAQE=",
+      "sources": [
+        {
+          "capture": "2026-09-22T00-25-47-572Z_c936a4",
+          "seq": 8834,
+          "protocol": 14501,
+          "sha256": "fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db",
+          "blob": "blobs/fd/fde437d5292d668cdaa5071c507c124dcb071cae0bdaa39ec7cfed0e015ba2db.bin",
+          "npcId": 1,
+          "mapId": 945
+        }
+      ]
+    },
+    {
+      "id": 3459,
+      "name": "苦战撼地者—宇宙男神东哥",
+      "level": 0,
+      "simpleDesc": "打败撼地者",
+      "desc": "无知的人类，我只能亲自出手你们是毫无机会的！遵从我的意志，帮我击溃眼前的敌人！出来吧贝希摩斯！",
+      "setting": 5122,
+      "mapId": 979,
+      "npcId": 18,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "需要达到80级方可接取该任务。",
+      "dialogStartNotFinish": "你们虽然很强，但终将逃不过被我囚禁的命运。",
+      "dialogStartFinish": "我承认我失败了~这是打败我的奖励！",
+      "exp": 10000,
+      "money2": 0,
+      "money3": 10000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 11740,
+      "submitBattleID": 0,
+      "submitNextMissionID": 0,
+      "rewardItems": [
+        {
+          "illusion": [],
+          "id": 1530,
+          "quantity": 1,
+          "name": "撼地者东哥的神秘宝箱（锁）",
+          "bagIcon": 28,
+          "grade": 3
+        },
+        {
+          "illusion": [],
+          "id": 6128,
+          "quantity": 1,
+          "name": "宠物装备盒（传说）",
+          "bagIcon": 7,
+          "grade": 4
+        }
+      ],
+      "acceptCondition": [
+        {
+          "type": 9,
+          "typeName": "CONDITION_MISSION_DONE",
+          "not": 0,
+          "rawHex": "0d810009e692bce59cb0e88085",
+          "missionId": 3457,
+          "name": "撼地者"
+        },
+        {
+          "type": 1,
+          "typeName": "CONDITION_LEVEL",
+          "not": 0,
+          "rawHex": "50",
+          "minimum": 80
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "0ccb0026e8b685e7baa7424f5353e692bce59cb0e880852de5ae87e5ae99e794b7e7a59ee4b89ce593a50100",
+          "monsterId": 3275,
+          "name": "超级BOSS撼地者-宇宙男神东哥",
+          "required": 1,
+          "current": 0
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        },
+        {
+          "type": 0,
+          "typeName": "CONDITION_NONE",
+          "not": 0,
+          "rawHex": ""
+        }
+      ],
+      "type": 7,
+      "series": "机械城副本",
+      "acceptMapId": 979,
+      "acceptNpcId": 18,
+      "canAccept": 1,
+      "_isHelp": true,
+      "wireBase64": "DYMAJOiLpuaImOaSvOWcsOiAheKAlOWuh+WumeeUt+elnuS4nOWTpQAAD+aJk+i0peaSvOWcsOiAhQCN5peg55+l55qE5Lq657G777yM5oiR5Y+q6IO95Lqy6Ieq5Ye65omL5L2g5Lus5piv5q+r5peg5py65Lya55qE77yB6YG15LuO5oiR55qE5oSP5b+X77yM5biu5oiR5Ye75rqD55y85YmN55qE5pWM5Lq677yB5Ye65p2l5ZCn6LSd5biM5pGp5pav77yBFAID0xIAAAAp6ZyA6KaB6L6+5YiwODDnuqfmlrnlj6/mjqXlj5bor6Xku7vliqHjgIIAP+S9oOS7rOiZveeEtuW+iOW8uu+8jOS9hue7iOWwhumAg+S4jei/h+iiq+aIkeWbmuemgeeahOWRvei/kOOAggAx5oiR5om/6K6k5oiR5aSx6LSl5LqGfui/meaYr+aJk+i0peaIkeeahOWlluWKse+8gQAAJxAAACcQAAAAAC3cAAAAAAIAAAX6AQAn5pK85Zyw6ICF5Lic5ZOl55qE56We56eY5a6d566x77yI6ZSB77yJAAAAHAMAABfwAQAb5a6g54mp6KOF5aSH55uS77yI5Lyg6K+077yJAAAABwQAAwkADQ2BAAnmkrzlnLDogIUBAAFQAAAAAwIALAzLACbotoXnuqdCT1NT5pK85Zyw6ICFLeWuh+WumeeUt+elnuS4nOWTpQEAAAAAAAAAAAAABwAP5py65qKw5Z+O5Ymv5pysAAAD0wAAABIBAQ==",
+      "sources": [
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 5041,
+          "protocol": 14501,
+          "sha256": "4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae",
+          "blob": "blobs/4e/4ec2382f8e02578cd077dab9584ff9ab193a41b5590893276cbe26ae51d05eae.bin",
+          "npcId": 18,
+          "mapId": 979
+        },
+        {
+          "capture": "2026-09-22T01-10-13-330Z_601bdd",
+          "seq": 6437,
+          "protocol": 14501,
+          "sha256": "989b5df37557086455db01c1ea2dceeb6c28c07606c4e187ce0d10094e940e7a",
+          "blob": "blobs/98/989b5df37557086455db01c1ea2dceeb6c28c07606c4e187ce0d10094e940e7a.bin",
+          "npcId": 18,
+          "mapId": 979
+        }
+      ]
+    },
+    {
+      "id": 3460,
+      "name": "挑战太阳神-库库尔坎",
+      "level": 0,
+      "simpleDesc": "挑战太阳神-库库尔坎",
+      "desc": "征战广场的第三位挑战者。太阳神-库库尔坎携阿努比斯与荷鲁斯降临，据说它的原业之火能烧尽一切。击败它即可完成任务并领取奖励，可重复挑战。",
+      "setting": 1026,
+      "mapId": 945,
+      "npcId": 5,
+      "radarMapID": 0,
+      "dialogNotStartNotReady": "准备妥当即可接取挑战。",
+      "dialogStartNotFinish": "击败太阳神，证明你的实力。",
+      "dialogStartFinish": "挑战成功，收下你的奖励吧。",
+      "exp": 10000,
+      "money2": 0,
+      "money3": 10000,
+      "acceptJumpMapID": 0,
+      "submitJumpMapID": 0,
+      "acceptBattleID": 20500,
+      "submitBattleID": 0,
+      "submitNextMissionID": 0,
+      "rewardItems": [],
+      "acceptCondition": [],
+      "submitCondition": [
+        {
+          "type": 2,
+          "typeName": "CONDITION_KILL_MONSTER",
+          "not": 0,
+          "rawHex": "0d180016e5a4aae998b3e7a59e2de5ba93e5ba93e5b094e59d8e0100",
+          "monsterId": 3352,
+          "name": "太阳神-库库尔坎",
+          "required": 1,
+          "current": 0
+        }
+      ],
+      "type": 0,
+      "series": "",
+      "acceptMapId": 945,
+      "acceptNpcId": 5,
+      "canAccept": 1,
+      "_isHelp": true,
+      "wireBase64": "BSUAGuaMkeaImOi2hee6p0JPU1Mt6Zy45aSp6JmOAAAa5oyR5oiY6LaF57qnQk9TUy3pnLjlpKnomY4A7OmcgOimgei+vuWIsDkw57qn5pa55Y+v5o6l5Y+X6K+l5Lu75Yqh77yM5q+P5aSp5pyA5aSa5Y+v5oyR5oiYM+asoe+8geivpUJPU1PlsIbkvJrph4rmlL7nu4jmnoHmioDog73vvIzpnIDopoHlnKjmr4/lm57lkIjkuK3lsIHkvY9CT1NT5omN5pyJ5py65Lya5omT6LSl5a6D77yB5rOo77ya6K+l5Ymv5pys5bCG5Lya5qC55o2u5oOF5Ya16ZqP5pe26L+b6KGM6LCD5pW077yM6K+355WZ5oSP5Ymv5pys5Yqo5oCB44CCBAIDsQEAAAAp6ZyA6KaB6L6+5YiwOTDnuqfmlrnlj6/mjqXlj5bor6Xku7vliqHvvIEAAAAAAAAnEAAAJxAAAAAALgIAAAAAAQAABh4BABvpnLjlpKnomY7np5jlrp3nrrHvvIjplIHvvIkAAAAHAwADAQABWgAAAAAAAAMCABoNFgAU6LaF57qnQk9TUy3pnLjlpKnomY4BAAAAAAAAAAAAAAAAAAAAA7EAAAABAQE=",
+      "sources": [
+        {
+          "origin": "local-plaza-boss",
+          "mapId": 945,
+          "npcId": 5
+        }
+      ],
+      "selectItems": [],
+      "localChallenge": true
+    }
+  ],
+  "notes": [
+    "Original quest/NPC bytes retained here. Local challenge placement and repeatability are applied in lib/boss-challenges.mjs.",
+    "Bio demon 3269 has no AI record in this capture; no synthetic skill list has been supplied."
+  ]
+}

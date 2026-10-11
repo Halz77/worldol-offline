@@ -1,0 +1,638 @@
+{
+  "revision": "native-map-slices-20260922-v1",
+  "officialManifestSHA256": "ff9d4224d4f57e3ae616cdcafcd07bd7dae5977e6adff67b6d0b93f9409ab005",
+  "restored": [
+    {
+      "logical": "assets/map_slice/1147.png",
+      "md5": "d49ac7a8d471d3eb76494ee9316cb4d9",
+      "path": "client/assets/d4/d49ac7a8d471d3eb76494ee9316cb4d9.png",
+      "sha256": "01c6980fc338bcf1adde521c23c233401993ec5f33da6b64994e92aa3e33b5a2",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 221,
+        "y": 84,
+        "w": 51,
+        "h": 42,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 51,
+        "sourceH": 42
+      },
+      "width": 51,
+      "height": 42,
+      "pixelSHA256": "b2b2d97bb896c2931d41e283f148654e31d75f4a36b24a59aa3baca68cbad0f9",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "b2b2d97bb896c2931d41e283f148654e31d75f4a36b24a59aa3baca68cbad0f9",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "865daf3c47c576e38e1d61b3b402e03cdbd5a86a76066378120827ce21e77db4",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "8ab88f7eea1d26eb1c1db72891fa6becdbfa13a65b4f0e352802c5fadc28add1",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "d4a7298c4d335c09e80be746c1b19597b404d2f233b5f5a7437d5bde79db0756",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "8081aa953a5cc3e436935c673bc346766cd248c8fb214b9c75069ebe8e058381",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "ab9376ffd360ae7ea82c8fa4e3451db34d09e9970d4b6e1200f81764cd3771a1",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "de7cbc9771a1f731582d5dcdb0cdcaea770308cfea5d6b8879a493ffd475a279",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/1151.png",
+      "md5": "cef2ecd96b8811f749bf0e89696ef8e0",
+      "path": "client/assets/ce/cef2ecd96b8811f749bf0e89696ef8e0.png",
+      "sha256": "affe47ad3701f5a75931d4a06ac0bb70280d602d5745e5761d121223c44b5256",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 565,
+        "y": 83,
+        "w": 39,
+        "h": 33,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 39,
+        "sourceH": 33
+      },
+      "width": 39,
+      "height": 33,
+      "pixelSHA256": "fd02fb0b6ff6223e32489c7f8e910347dc2fd9ad34168e160037b36e89ff203c",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "fd02fb0b6ff6223e32489c7f8e910347dc2fd9ad34168e160037b36e89ff203c",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "6f86a9edcb6c33e8b846f2d14f40e278faf543eea27a14b122b6ec9b243ff2e8",
+          "atlases": [
+            "assets/map_merged/23.png"
+          ]
+        },
+        {
+          "pixelSHA256": "170e7da1add08bc29b732e59e962c372f3d666597945b75489ea16ec143680f3",
+          "atlases": [
+            "assets/map_merged/31.png"
+          ]
+        },
+        {
+          "pixelSHA256": "b009d7b23a94253627729354d80872995098ee0901d2f9e6d967618754ac12e6",
+          "atlases": [
+            "assets/map_merged/32.png"
+          ]
+        },
+        {
+          "pixelSHA256": "ff4c84ea3984776e24a9ee7865e764ea05c9e9f4a2f5192d56b50cc134e15105",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "341118c0baa66b807cd3bb73ab5bdcb2f9b6a993aa78346529796f508452f391",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "3de57cb15d184c78c9ae8238887f5bd481f0c1735d2f0acbc90f3eb49fb5617d",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "62c267345fa8ba57c2f7b1218bddeea1002e5710a35553c03cb1ccef5f4b9759",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "943890b6a0a7b1c1c371c47e80dccd8545f6abe7203f2353576bccc645bcb0e7",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "f7df920d9c4196e5dda3de2dfb2b0c6a2f63a24e5ce874ac5cb1d695b33e8c3b",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a04469655ebc419672f3ef92e9a8f04f3f779507c87e9f42abb993ef2ae8b11b",
+          "atlases": [
+            "assets/map_merged/963.png"
+          ]
+        },
+        {
+          "pixelSHA256": "e92e694436a92445ed11131445a8d9a8cb0c4fd42385d93b22da10b5c2b29fc0",
+          "atlases": [
+            "assets/map_merged/964.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/1154.png",
+      "md5": "054fe3b34301ebf269566bc949ac5990",
+      "path": "client/assets/05/054fe3b34301ebf269566bc949ac5990.png",
+      "sha256": "79a51dca81cabba8e37286ef031fd3274feb4062591261a4f20b5f071592bbe5",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 309,
+        "y": 72,
+        "w": 29,
+        "h": 51,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 29,
+        "sourceH": 51
+      },
+      "width": 29,
+      "height": 51,
+      "pixelSHA256": "982f77a5a84e54dd894a5958d7cf2f29ca10607616b524c3cc6a6992525ee2cd",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "982f77a5a84e54dd894a5958d7cf2f29ca10607616b524c3cc6a6992525ee2cd",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "6c4f40535e2c535dc0311dc118bcc175d80cc5a00481415a18f6137cfad61dfa",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "b1aaed3aef0980d3eaf69f578135594e5b5370de38889ed67aa1af766db8a5c3",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "53fee98a18b5a3fd11c73c20a405a358577e31a035f049eb8fbe3e371fa6684d",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "d17a200b76f5f12332545e95c50e7a898f37e068f8cf9ffb9ac77f49c9bda26e",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "e9168c59f3133e74e1b21a72f799723cfee78bf674c0b321bd9b6545f94d98bc",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "4b524806705a1293a778cffe767780a706ecf40dc0eaf6c816b119851d1e8f2e",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/214_3.png",
+      "md5": "da9cd3872a16c53574206a6549b48381",
+      "path": "client/assets/da/da9cd3872a16c53574206a6549b48381.png",
+      "sha256": "dd3c421b6064ddace66996f2571f656bdef30c58e3742334c067af45457d3453",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 510,
+        "y": 83,
+        "w": 54,
+        "h": 40,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 54,
+        "sourceH": 40
+      },
+      "width": 54,
+      "height": 40,
+      "pixelSHA256": "88210ab7d0d9937e14c1ef68fc2fa9ace50693f187b12067d3279958076233ef",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "88210ab7d0d9937e14c1ef68fc2fa9ace50693f187b12067d3279958076233ef",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "afda8b75c1056d58e057a88c434367d64ae26ca1b42f20016324fd5d8e705171",
+          "atlases": [
+            "assets/map_merged/31.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a88b6d8cf3f907c386f0bb223b78b48b1ff09bad6a22706e4410a7232c6694e6",
+          "atlases": [
+            "assets/map_merged/32.png"
+          ]
+        },
+        {
+          "pixelSHA256": "e27ac39cef3876a1c14ff02055314f37cc0eab21fd91fdb3ba0b311d837b690d",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "bf41e70794541a855bc211554348e5ecb8d15a4cb2fd75d608ecd507d924e5c7",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "584b78135ff25f1a4b103e0c1b448234fbd8848bd0a614e3b097b8d2c80e3cea",
+          "atlases": [
+            "assets/map_merged/453.png"
+          ]
+        },
+        {
+          "pixelSHA256": "4fca4c224ed420701a19d67d2075bd160a628fc79f454c1adbcf56b48d6be6a5",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a45e45e73da19e44db941aea4604e4bfefe7ceb5659a22faa47e93874e0cde5c",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "7ebd252c0f7665eb3cedee6a266eb9564a346952342e802dfc5e003eafc6c234",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/213_3.png",
+      "md5": "0d963dcc7f4829e1d152e0819263eff3",
+      "path": "client/assets/0d/0d963dcc7f4829e1d152e0819263eff3.png",
+      "sha256": "d46b2c70c08b264da3d1009da0a7542715195143205d269e7a7256c4ffc86faa",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 364,
+        "y": 48,
+        "w": 65,
+        "h": 45,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 65,
+        "sourceH": 45
+      },
+      "width": 65,
+      "height": 45,
+      "pixelSHA256": "439f3fd086d8e4dcfc807dcd9753ef1b1af5236bb716afa49337be56122d6847",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "439f3fd086d8e4dcfc807dcd9753ef1b1af5236bb716afa49337be56122d6847",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "1d38f6b4eb2321fca494217c831a3fc5d99070039ee4939119766d6d7864bfe5",
+          "atlases": [
+            "assets/map_merged/31.png"
+          ]
+        },
+        {
+          "pixelSHA256": "dfcadaf280c65bcefdd556c9fa40d0623ee61bd4769ae2a05b16424a5d018031",
+          "atlases": [
+            "assets/map_merged/32.png"
+          ]
+        },
+        {
+          "pixelSHA256": "81215afbec35286ef7011eba2a4ecabbf39c4cf172d798cb384c058214117bba",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "c2604c0be2e09caf59aa7704d1eb69cf994e6a16124fef76093ebff6bfbfc9f9",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "ec93a0a3c3295fc8fbf43d2edb7507474cb776a81f4a84dad9671de28f946554",
+          "atlases": [
+            "assets/map_merged/453.png"
+          ]
+        },
+        {
+          "pixelSHA256": "6a0e15af95081d50fdedc26cbb008f71ca5e8b91ea730824447e1a65956dd7bf",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "86ff884a446f5f191a525fd8ba76bf11070ec30cd9454e4b8b042bc612e44535",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "ee78f2146154f75af1f839738588f7519d5e328eb27a2c4e1ee1e6b58210d658",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/1305_2.png",
+      "md5": "8bd0fc4769a51a535208cc5ef22738e0",
+      "path": "client/assets/8b/8bd0fc4769a51a535208cc5ef22738e0.png",
+      "sha256": "c71820959e757a31c475c02cea68901fe7c92b55db2b6d511a0465afc66807b4",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 1,
+        "y": 110,
+        "w": 21,
+        "h": 14,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 21,
+        "sourceH": 14
+      },
+      "width": 21,
+      "height": 14,
+      "pixelSHA256": "f28c5e6ce053c03ec144aa6ec5a4907045302c50b23cc596f02b0e8887bf00b5",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "f28c5e6ce053c03ec144aa6ec5a4907045302c50b23cc596f02b0e8887bf00b5",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "df40345b5938ef186e3041a17edc41b44e934e104592ef460a0e9e2e3b941169",
+          "atlases": [
+            "assets/map_merged/31.png"
+          ]
+        },
+        {
+          "pixelSHA256": "cdba691948e331738ee5c9dfb0aee0745b0d2466d620ec3f574a52e43a7fd7d8",
+          "atlases": [
+            "assets/map_merged/32.png"
+          ]
+        },
+        {
+          "pixelSHA256": "bc94ab843afcf0ef03cf2206cfb99ef6d99cea2e8b6d03fd25e0ea4ab8c134c6",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "39c7571f95daf9f46deefdfeccdd21b6fd929752adfa75176ed11614911c1bb8",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a0258e75cdc8f7dcd4fab9ed96352f220d6eb6b535587966618654991a7efc7b",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "7a2a3712e31841e4a55c5682f0b1a9f98e3aac1516cbd9ec66c42b554a560830",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "7d1dacd394ca53995851c453431c261d11df68098e22d9c7e3be519f84c05554",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "df21629b7fb7b658d13ea5741e2796727b65d31c9de589ca391cb21c1411bdb6",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        },
+        {
+          "pixelSHA256": "c4788afd6e3668f8e605b02a6f7039d6e660ef6462d5cceb8f3a5797e9f419c0",
+          "atlases": [
+            "assets/map_merged/963.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/955_4.png",
+      "md5": "046c705cfdc8e1493d15818db3a9b871",
+      "path": "client/assets/04/046c705cfdc8e1493d15818db3a9b871.png",
+      "sha256": "c852a0974bc900dc8826de26f5dd520b0814cf34fc27ab3471ad1f33bc7939a7",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 112,
+        "y": 102,
+        "w": 20,
+        "h": 18,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 20,
+        "sourceH": 18
+      },
+      "width": 20,
+      "height": 18,
+      "pixelSHA256": "2e8e694ea80ed12f5b2f287e8378ccf24c358d94b382e67f84c02601c18d9dc5",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "2e8e694ea80ed12f5b2f287e8378ccf24c358d94b382e67f84c02601c18d9dc5",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "196ea4d2aa94c080d3d41be56c338717840923098dc0227fed96959d907ff673",
+          "atlases": [
+            "assets/map_merged/31.png"
+          ]
+        },
+        {
+          "pixelSHA256": "c1b2d520eee6f3c7e76f826203cd1c01119a0f7c838f05636da130274bafe277",
+          "atlases": [
+            "assets/map_merged/32.png"
+          ]
+        },
+        {
+          "pixelSHA256": "5cd03c927dd8162eae3e643ee5c835423de36ec77eff1b60e69b9cd625145d30",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a31db169125e169c593908267c086152aafe0e79c8256cd87b11ae2a5928b8e3",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "91418cbf0b54f32e4c9214f66f5bb26575f5c3628f14cd6d4b5e6dd16492ef58",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "fded1bcd27a65eeb74ebb299d798800619e9e1fd305b9559c0eb9414b428c4bf",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "51dbac86c4cda5f77e4664d8b767f06d59c1de3739aa2dc453bdc88484eac8e3",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "302170f26881e1c522d5d11ec7375e115f723acaa4a8bd943eed19f78239f8ef",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    },
+    {
+      "logical": "assets/map_slice/1153.png",
+      "md5": "0d1bdedf1dd9e44cd208d535539b680f",
+      "path": "client/assets/0d/0d1bdedf1dd9e44cd208d535539b680f.png",
+      "sha256": "977b7c2413690a065847e3e6cca810b92845cf6ae9e594bd735bf4e45054d801",
+      "sourceLogical": "assets/map_merged/299.png",
+      "source": "client/assets/dc/dcc215709f62e400.png",
+      "sourceSHA256": "937ef3da2ce8f94e13f9c35bda77feb40eea180392c9fa1323a7066ce07ac470",
+      "frame": {
+        "x": 273,
+        "y": 72,
+        "w": 35,
+        "h": 54,
+        "offX": 0,
+        "offY": 0,
+        "sourceW": 35,
+        "sourceH": 54
+      },
+      "width": 35,
+      "height": 54,
+      "pixelSHA256": "7222eabefea4e749cbce35a679d4b2686d51374e83f2c65b64cff6cc44401390",
+      "matchingOriginalAtlases": 2,
+      "originalPixelVariants": [
+        {
+          "pixelSHA256": "7222eabefea4e749cbce35a679d4b2686d51374e83f2c65b64cff6cc44401390",
+          "atlases": [
+            "assets/map_merged/299.png",
+            "assets/map_merged/821.png"
+          ]
+        },
+        {
+          "pixelSHA256": "a14b32b410941dbc44652eb158afac8ad0a14e9674f9c4dfadd0af1c8178f6f7",
+          "atlases": [
+            "assets/map_merged/33.png"
+          ]
+        },
+        {
+          "pixelSHA256": "97febc763dddb60a862966ed38ec4c6598f6e6cd47d5c753e16466c001aa1e18",
+          "atlases": [
+            "assets/map_merged/34.png"
+          ]
+        },
+        {
+          "pixelSHA256": "f6be559eaf02c7abc680ada22f5e2bfa94fa8c442694277d173e0c1c4f110f48",
+          "atlases": [
+            "assets/map_merged/459.png"
+          ]
+        },
+        {
+          "pixelSHA256": "0cca3a2ee84ddd352c5c586fa0cc56c97e23ab88833530bdd865259fb9110c2e",
+          "atlases": [
+            "assets/map_merged/822.png"
+          ]
+        },
+        {
+          "pixelSHA256": "44149bd519b7625a4b200596fe6496a4b5c9eb21f0a736a4221f2d6db1400eaf",
+          "atlases": [
+            "assets/map_merged/823.png"
+          ]
+        },
+        {
+          "pixelSHA256": "dd1a2a30e416cbe203cfdc30317eaa2f806934cf217fb011a2efd7080ecc933d",
+          "atlases": [
+            "assets/map_merged/937.png"
+          ]
+        }
+      ]
+    }
+  ],
+  "pending": [
+    "assets/map_slice/690_2.png",
+    "assets/map_slice/1409_2.png"
+  ]
+}
