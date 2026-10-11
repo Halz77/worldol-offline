@@ -37,9 +37,11 @@ import {featureSnapshot} from './character-feature-service.mjs';
 import {legionSnapshot} from './legion-service.mjs';
 import {dailyKey,dailySnapshot} from './daily-activity.mjs';
 import {combatRating,combatRatingRevision} from './combat-rating.mjs';
-import {setData,VIP_MAX} from './equipment-sets.mjs';
-import {upgradeRules,upgradeIdentifyItemIds} from './item-affixes.mjs';
-import {spiritRules} from './spirit-seal-data.mjs';
+// 动态生成给客户端的全局变量（/equipment-rules.js 等）与 standalone 共用一份实现，
+// 别再在这儿抄表达式：第 37 版就是因为两处各写一份、只改了一处，导致包进 APK 后
+// 客户端拿到的 identifyItemIds 是个函数，整个菜单加载不出来。
+import {equipmentRulesGlobals,compositionGlobals} from './generated-globals.mjs';
+import {upgradeRules} from './item-affixes.mjs';
 import {starLimit} from './equipment-policy.mjs';
 import {nativeUiRevision,nativeResourceManifest} from './native-ui-restoration.mjs';
 import {openPortalsRevision} from './open-portals.mjs';
@@ -129,8 +131,8 @@ export function createHttpRouter(env){
   {kind:'path',path:'/api/player-experience',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({...playerExperience,clientProgressionRevision}))},
   {kind:'path',path:'/api/supply-shops',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify(supplyDirectory))},
   {kind:'path',path:'/api/combat-rating',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),combatRating,'{"error":"没有找到这个角色"}')},
-  {kind:'path',path:'/equipment-composition-data.js',reply:({res})=>answer(res,200,mime['.js'],`window.worldolCompositionData=${JSON.stringify({vipMax:VIP_MAX,sets:setData.sets.map(({id,bonuses})=>({id,bonuses}))})};`)},
-  {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify({...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds()},spirit:spiritRules})},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
+  {kind:'path',path:'/equipment-composition-data.js',reply:({res})=>answer(res,200,mime['.js'],`window.worldolCompositionData=${JSON.stringify(compositionGlobals())};`)},
+  {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify(equipmentRulesGlobals())},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
   {kind:'path',path:'/api/content-library',reply:({res})=>answer(res,200,mime['.json'],fs.readFileSync(path.join(root,'data/content-library.json')))},
   {kind:'path',path:'/api/official-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({version:'0.6.4',maps:official.maps.map(m=>({id:m.id,name:m.name})),itemIds:[...officialItems.keys()],catalog:official.catalog.length,missions:official.missions.length,supportedMissions:supportedMissionCount}))},
   // /api/status 必须排在 /status 前面：否则 /status 会被前者吃掉前 11 个字符？不会 —— 精确匹配，

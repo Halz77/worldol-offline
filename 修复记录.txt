@@ -3180,3 +3180,115 @@ const a=1;const b=2; 同行多语句）。这个风格有它的理由：6000 行
   · 站点指纹只由 index.html、客户端主包、modules bundle、worldol-standalone.js 这些
     产物哈希决定，它们全部源自 lib/ + web/ + client/ —— 输入没变，产物就没变。
   · 代价：npm test 前面多约 0.4 秒的语法基线检查。
+
+════════════════ 第 39 版 · 2026-10-11 ════════════════
+
+【问题】打完第 37 版包进游戏直接白屏，左上单机菜单只显示一行报错：
+
+    Uncaught TypeError: function is not iterable
+    (cannot read property Symbol(Symbol.iterator))
+    https://localhost/equipment-workshop.js?t=e6b6f9ed2e7a.6
+
+URL 里的 t=e6b6f9ed2e7a 就是第 37 版的站点指纹 —— 是我上一轮惰性化改造带出来的回归。
+
+──────────────── 一、复现（不打开手机就能复现）────────────────
+
+报错点是客户端 web/equipment-workshop.js 第 6 行：
+
+    const advancedIds=new Set(rules.advanced.identifyItemIds),canAdvance=...
+
+安卓包里这条 `window.worldolEquipmentRules` 不是 HTTP 下发的，而是由
+安卓打包/standalone/entry.mjs → globals.mjs 在启动时直接铺的全局量。所以直接在 Node 里
+import 那份 globals.mjs 就能复现，报错逐字一致：
+
+    identifyItemIds 的类型 = function
+    ❌ new Set() 抛错 -> function is not iterable (cannot read property Symbol(Symbol.iterator))
+
+──────────────── 二、根因：同一个表达式写了两份，第 37 版只改了其中一份 ────────────────
+
+「动态生成给客户端的全局变量」有**两个投放口**：
+
+  服务端路径   lib/http-routes.mjs        —— 把对象 JSON.stringify 进 /equipment-rules.js 正文
+  安卓包       安卓打包/standalone/globals.mjs —— 没有 HTTP，直接在 entry 里铺成全局量
+
+同一个表达式在两个文件里各写了一遍。第 37 版把 upgradeIdentifyItemIds 从数组常量改成
+函数（为了能惰性加载鉴定表）时，我只批量改了 lib/ 与 web/ —— 而 globals.mjs 既不在 lib/
+也不在 web/，那次 grep 根本没扫到它，于是它还是 `identifyItemIds: upgradeIdentifyItemIds`
+（函数本身）。客户端 new Set(函数) 当场抛错。
+
+为什么 443 条用例全绿（这是更值得记的部分）：
+  · 我写的 HTTP 冒烟只打了**服务端**那一条投放口，globals.mjs 没被任何用例执行过；
+  · tests/service.test.mjs 倒是真去 fetch /equipment-rules.js 并求值了，但只断言了
+    star.successRate / gem.guaranteed / gem.successRate，**没有断言 identifyItemIds**；
+  · 第 38 版补的语法基线也抓不到 —— 那是**类型**错，不是语法错；文件本身完全合法。
+  · 一句话：这是一条「两份实现、只有一份被测」的漏网之鱼。
+
+──────────────── 三、修法：收敛成唯一来源，而不是只补那个括号 ────────────────
+
+只把 globals.mjs 那行补上 `()` 能修好这次，但下次改这份对象还会漏。按评审 P0-2
+（补丁链双份）同样的处理方式收敛：
+
+  新增 **lib/generated-globals.mjs** —— 这两个对象的唯一实现：
+      equipmentRulesGlobals()   → { ...upgradeRules, advanced:{...,identifyItemIds:…()}, spirit }
+      compositionGlobals()      → { vipMax, sets }
+  两边都改成调它：
+      lib/http-routes.mjs                用 equipmentRulesGlobals() / compositionGlobals()
+      安卓打包/standalone/globals.mjs    同样的两个调用，文件里写清「别再抄表达式」
+
+顺带清掉**第三份**照抄：tests/equipment-workshop.test.mjs 里
+`const browserRules={...upgradeRules,advanced:{...,identifyItemIds:upgradeIdentifyItemIds()}}`
+也改成 `equipmentRulesGlobals()`。它当时的注释还写着「这里照抄同一份，免得测试里的规则和
+真正下发的不一致」—— 照抄正是分叉的来源。
+
+──────────────── 四、守卫：把「两个投放口必须一致」变成断言 ────────────────
+
+新增 tests/generated-globals.test.mjs（5 条）。做法是把三条生成脚本
+（/equipment-rules.js、/equipment-composition-data.js、/pet-snapshot-data.js）从路由表里
+取出来、在 vm 沙箱里求值，再和 globals.mjs 的导出逐字段对一遍：
+
+  1. 两条投放口给的形状逐字段一致；
+  2. **这些对象必须是纯数据，不许有函数漏进去** —— 函数进 JSON.stringify 会被静默丢掉，
+     两条路给客户端的字段就不一样了（这一条就是本次事故的直接断言）；
+  3. 客户端会 new Set / 展开的字段必须是数组（identifyItemIds / identifyScrolls /
+     starScrolls / star.bands / sets）；
+  4. 每条生成脚本定义的全局量，entry.mjs 都得铺上（数量钉死，防止加了第 4 条脚本却
+     忘了同步）；
+  5. build.mjs 的 generated 列表与路由表对得上（少摘一条客户端会去请求不存在的静态文件）。
+
+负向实验：把 lib/generated-globals.mjs 里的 `identifyItemIds:upgradeIdentifyItemIds()`
+改回不带调用 → 第 2、3 条立刻红，报错信息就是「equipmentRules 里有函数值 ——
+JSON.stringify 会把它静默丢掉…」；恢复后 5/5 通过。
+
+写用例时踩到的坑（记下来，别人的测试也会踩）：vm 沙箱里的对象属于**另一个 realm**，
+原型不是宿主的 Object.prototype，而 assert/strict 的 deepEqual 是 deepStrictEqual、
+要连原型一起比 —— 直接比会报「不一致」却看不到任何字段差异（我第一版就栽在这儿，
+用自己的 walk() 逐字段比才发现两边其实完全相同）。两边各过一次 JSON 往返再比即可，
+这也正好把「客户端实际拿到的形状」定死了。
+
+──────────────── 五、验证 ────────────────
+
+· 复现脚本重跑：identifyItemIds 类型 = object、Array.isArray = true、length = 163、
+  new Set() size = 163；compositionData.sets = 192 组
+· npm test：文件 70 个｜用例 443｜通过 443｜失败 0｜新增失败 0
+· 重建站点：构建指纹 e6b6f9ed2e7a → **abb40a0fb694**，
+  worldol-standalone.js 797,621 → 797,764 字节（sha256 b5a13bee4c3abfaf）
+· 产物核验：该表达式在 bundle 里**只剩 1 处**（equipmentRulesGlobals 的定义），
+  旧写法 `identifyItemIds: upgradeIdentifyItemIds,` 出现 **0 次**
+· 站点里不再有静态 equipment-rules.js / equipment-composition-data.js /
+  pet-snapshot-data.js（符合预期：这三条由全局量替代）
+
+──────────────── 交付 ────────────────
+
+第 39 版 APK：130,752,723 字节（124.70 MB）
+sha256 5c66a956703cb6958d0b8431548f1daca896bc5607384ac9ced75a3758e9d8b3
+站点指纹 abb40a0fb694（build-version.json / index.html 里共 10 处版本号一致）
+包内 assets/public/worldol-standalone.js = 797,764 字节（sha256 b5a13bee4c3abfaf），
+与站点产物**逐字节一致**，旧写法 0 处、带调用 1 处。
+
+打包记录：
+  · node 安卓打包/standalone/build.mjs → 构建指纹 abb40a0fb694（5m21s）
+  · 安卓打包/构建APK.ps1（进程级 Bypass 执行）
+      MainActivity 已是自定义版本，保留不覆盖（防覆盖保护生效）
+      BUILD SUCCESSFUL in 29s
+
+客户端主包与 gd.js 字节未变（本轮只动服务端拼接逻辑与打包侧 globals）。

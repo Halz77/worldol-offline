@@ -3,10 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {starLimit} from '../lib/equipment-policy.mjs';
-// 浏览器里那条 window.worldolEquipmentRules 是 server.mjs / globals.mjs 拼出来的，
-// 这里照抄同一份，免得测试里的规则和真正下发的不一致。
-import {upgradeRules,upgradeIdentifyItemIds} from '../lib/item-affixes.mjs';
-const browserRules={...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds()}};
+// 浏览器里那条 window.worldolEquipmentRules 由 lib/generated-globals.mjs 生成 ——
+// 服务端拼 /equipment-rules.js 与安卓包铺全局量都取这一份。这里直接用它，别再照抄表达式：
+// 第 37 版照抄的那份漏了 identifyItemIds 的调用（数组变成函数），包进 APK 后客户端
+// new Set() 抛 "function is not iterable"，单机菜单整个加载不出来。
+import {equipmentRulesGlobals} from '../lib/generated-globals.mjs';
+const browserRules=equipmentRulesGlobals();
 
 function fixture(){
   // 最小 DOM：equipment-workshop 只用到追加选项、读写 value/textContent/disabled
