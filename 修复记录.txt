@@ -2811,3 +2811,130 @@ node 安卓打包/standalone/build.mjs 再执行 安卓打包/构建APK.ps1 即�
 
 ──────────────── 交付 ────────────────
 评审建议里只剩第 5 项（server.mjs 拆路由 + 分派表化 + 协议常量从 0019.js 生成）未做。
+
+
+════════════════ 第 36 版 · 2026-10-11 ════════════════
+
+【需求】落地《架构评审-20261011.md》建议顺序第 5 条：server.mjs 拆路由 + 分派表化 +
+协议常量从 0019.js 生成。这是三条建议里唯一会动到运行时主流程的，所以先把
+「什么顺序都不能变」用测试钉死，再动结构。
+
+──────────────── 一、协议常量（lib/protocol-constants.mjs，新）────────────────
+
+原版把整张协议号表定义在 analysis/modules/0019.js（723 条 `(e.NAME = 数字)`）。
+以前 server.mjs 末尾用一句内联正则把它扫成对象，却只取了 CG_SYSTEM_TIME /
+CG_SYSTEM_HEART 两个值，其余 700 多个号在服务端和各 service 里全是裸数字。
+
+现在做成模块：解析一次、冻结、提供反查（号 → 名字）。日志里的 unsupported 现在
+会带上名字，查「客户端发了什么没人处理」不用再翻 0019.js。
+
+解析口径与原实现一致：只认字面量赋值，0019.js 里唯一的例外 ADD_ITEM_DEF = -1
+（负数字面量）同样漏掉 —— 不改口径，免得有人以为常量表「变全了」而依赖新键。
+
+server.mjs 里所有协议号改为 P.<常量名>。只剩 4 个裸号，都是本地扩展、原版没有：
+90021（跨天任务重置推送）、90022（外观同步到角色列表）、32107（图鉴分组推送）、
+22106（每日任务信息推送）—— 各自带注释，并由测试列进白名单守住。
+
+──────────────── 二、入站分派链（lib/protocol-dispatch.mjs，新）────────────────
+
+原来是 server.mjs 里 20 个连续判断：
+
+    if(handleCharacterFeatures(type,r,context,{store,send,log}))return;
+    ...
+    if(handleGame(type,r,context,{store,send,log}))return;
+
+现在是有序数组 INBOUND_CHAIN（20 段），每段带 name / file / handle，两处补推钩子
+（10512 提取城市资金后刷角色功能面板、14503 交任务后同样刷新）用 `afterClaim.onType`
+写**常量名字**，建分派器时校验名字存在 —— 名字写错直接抛错，不会让钩子静默不跑。
+
+分派链为什么不能重排（实测确认，都写进了用例）：
+
+  · 每个 handler 的约定是「认领就返回 true，不认领就返回 false 且一个字节都不许读」。
+    链条共用同一个 Reader，谁拒绝时偷读，后面的段就从错位置解析。实测横扫 20 个
+    handler × 8680 个协议号，这条不变量目前**全部成立**，用例守着。
+  · 真正被两段同时认领的号只有一个：32110（图鉴幻化）。illusion 排在 official 前面
+    接走它，于是 official-service 里 `[32103,32110]` 的 32110 分支**永远不可达**。
+    这是原有行为，本轮只记录不修（行为要逐字节保持）。
+  · 12001（使用道具）由包内首个字节（wait 类型）决定归属，三段参与：
+      wait ∈ {5,6}            → equipment-upgrade-service（鉴定 / 强化）
+      wait ∈ {1,2,3,4,11,12}  → pet-service（宠物出战/卸下、开容器、经验卷…）
+      其余                    → restoration-service（穿戴/卸下/转职/丢弃/吃药）
+    pet-service 拒绝时会把读指针还原（`r.pos=start`）再放行 —— 少还原一次，
+    穿戴类请求就会掉进宠物分支，症状是「穿装备没反应」。用例把这个矩阵钉死。
+
+──────────────── 三、HTTP 路由表（lib/http-routes.mjs，新）────────────────
+
+原来是 27 个连续的 `if(pathname===...)`，夹着两条特殊规则：
+
+  · /api/shutdown、/api/client-log 只收 POST（条件写在 if 里）；
+  · 中间那句 `if(req.method!=='GET'&&req.method!=='HEAD')return 405` 是**位置敏感**的：
+    它上面的路由什么方法都收（POST /api/status 会正常返回 JSON），下面的静态资源只收
+    GET/HEAD。
+
+现在整张表是有序数组，三种条目：{kind:'path'} 精确路径、{kind:'gate'} 通配拦截、
+{kind:'static'} 末尾兜底。条目顺序与原 if 链**逐条对应**（含 gate 的位置），
+review 时能一行一行比。
+
+顺带把 /api/status 那坨大对象需要的 45 个数据模块集中到本模块 import ——
+server.mjs 的 import 从 73 条降到 25 条，只留运行时真正用得上的。
+boot/main（引导脚本与打过补丁的主包）也搬到这里现算，它俩只有 HTTP 层用得到。
+
+──────────────── 四、顺手修掉一个「守卫空过」的缺陷 ────────────────
+
+写守卫用例时发现 client-patch-chain.test.mjs 里的 codeOnly()（剥注释用的辅助）
+**在 build.mjs 上是失效的**，而且失效方式让断言静默变真：
+
+  它先剥块注释（正则 /\*[\s\S]*?\*\//g）。build.mjs 第 48 行的**行注释里**写了
+  `web/*.js` —— 这个 `/*` 被当成块注释开头，一路吞到下一个 `*/`（第 73 行），
+  正好把 57–62 行的 patchClientBoot() / patchClientMain() 调用整段吃掉。
+  于是「build.mjs 不该自己打补丁」这种否定式断言永远为真。
+
+实测对照：旧 codeOnly 在原始 build.mjs 上看不到 `patchClientMain(`（false），
+新扫描器能看到（true）。
+
+新增 tests/source-scan.mjs：按字符扫，跟踪代码/单引号/双引号/模板串/行注释/块注释
+六种状态；可选 strings:'drop' 连字符串一起丢（扫协议号时用）。两个守卫文件共用它。
+（这个陷阱我先在自己的注释里又踩了一次：注释里写字面的块注释结束符，把注释提前结束。）
+
+──────────────── 五、测试 ────────────────
+
+新增 tests/server-dispatch.test.mjs（18 条）：
+  分派链段名与顺序被 deepEqual 钉死；补推钩子常量名可解析且缺名要抛错；
+  148 个协议号的归属快照（未认领的 25 个逐个说明为什么留在 server.mjs）；
+  12001 的三分支；32110 归 illusion 且 official 那份不可达；
+  「拒绝时不消费读指针」的不变量；无角色时仍接走包的四段（原行为，钉住）；
+  认领后抛异常的号集合；协议常量关键绑定与解析口径；
+  HTTP 路由顺序、方法门位置、POST 门上门下行为、静态兜底与 missing 记录、
+  关闭接口的令牌校验；server.mjs 收敛状态与「协议号只剩已登记的本地扩展」。
+
+负向验证（确认用例真会咬人，验完已还原）：
+  · 把 game 挪到链首（兜底抢走一切） → 「分派链是 20 段且顺序被钉死」红
+  · 让 city 在拒绝时偷读一个字节   → 6 条红，含归属快照与不变量
+  · 把方法门挪到 /api/status 之前   → 3 条红，含路由顺序与 405 行为
+  · 往 build.mjs 塞一个单独补丁调用 → 「standalone 构建不再自带补丁链」红
+
+──────────────── 验证 ────────────────
+· node tools/run-tests.mjs --only server-dispatch：18 / 18 通过
+· node tools/run-tests.mjs：文件 67 个｜用例 414｜通过 414｜失败 0｜新增失败 0
+· 真起服务（临时端口 + 临时存档）实测各端点：
+    /api/status 200（POST 也 200，方法门之上）、/status 200、/ 200、/gd.js 200、
+    主包 200、POST /viewport.js 405、/nope.js 404 且进 missing —— 与改动前一致
+· 重建站点：主包 sha256 逐字节不变（f5abf262ad78c455）、gd.js 不变（35589 字节）、
+  站点里已无 .orig；worldol-standalone.js 784,407 → 790,607 字节（三个新模块的净增量）
+· server.mjs 266 行 → 166 行
+
+──────────────── 交付 ────────────────
+第 36 版 APK：130,752,648 字节（124.70 MB）
+sha256 7a68de76ca74edd0cf762a52be69edf6dc9d373f1138f44af48f77aecda9159e
+站点指纹 47d639a59b2e
+包内 assets/public/worldol-standalone.js = 790,607 字节（sha256 b859322b6c8af856），
+已含三个新模块；客户端主包仍是构建期打好的 4,564,108 字符版本（字节未变）。
+
+打包记录：
+  · node 安卓打包/standalone/build.mjs → 构建指纹 47d639a59b2e
+  · 安卓打包/构建APK.ps1（进程级 Bypass 执行）
+      MainActivity 已是自定义版本，保留不覆盖（防覆盖保护生效）
+      BUILD SUCCESSFUL in 32s
+  · 核对：解包 APK 的 bundle 与站点产物逐字节一致。
+
+本轮只动服务端结构与测试，客户端主包与 gd.js 字节都没变，行为等价。

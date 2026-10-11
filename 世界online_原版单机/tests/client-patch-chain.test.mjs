@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {patchClientBoot,patchClientMain,replaceOnce,clientPatchStepNames,CLIENT_MAIN_PATH,isClientMainPatched} from '../lib/client-patch-chain.mjs';
+import {codeOnly} from './source-scan.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,'..');
@@ -58,17 +59,6 @@ const PATCH_FUNCTIONS=[
  'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEmptyNativeShop'
 ];
 
-/**
- * 去掉行注释与块注释，避免把注释里提到的函数名当调用点。
- * 先统一换行再匹配 —— 这两个文件是 CRLF，直接对整串用 `//.*$` 会匹配不上。
- */
-function codeOnly(source){
- return source
-  .replace(/\r\n?/g,'\n')
-  .replace(/\/\*[\s\S]*?\*\//g,'')
-  .replace(/\/\/.*$/gm,'');
-}
-
 function readIfPresent(file){
  return fs.existsSync(file)?fs.readFileSync(file,'utf8'):null;
 }
@@ -77,12 +67,12 @@ test('补丁链只有一份，顺序被钉死',()=>{
  assert.deepEqual(clientPatchStepNames(),{boot:EXPECTED_BOOT_STEPS,main:EXPECTED_MAIN_STEPS});
 });
 
-test('server.mjs 不再自带补丁链',()=>{
+test('server.mjs 不自带补丁链（运行时那处已归口到 lib/http-routes.mjs）',()=>{
  const source=fs.readFileSync(path.join(root,'server.mjs'),'utf8');
- assert.match(source,/from '\.\/lib\/client-patch-chain\.mjs'/,'server.mjs 必须从共享模块引入补丁链');
  const code=codeOnly(source);
  for(const name of PATCH_FUNCTIONS)assert.ok(!code.includes(name),'server.mjs 不该再直接引用 '+name);
  assert.ok(!code.includes('function replaceOnce'),'server.mjs 不该再自带 replaceOnce');
+ assert.ok(!code.includes('patchClientBoot')&&!code.includes('patchClientMain'),'server.mjs 不该自己打补丁了');
 });
 
 test('standalone 构建不再自带补丁链',()=>{
@@ -149,15 +139,31 @@ test('standalone 的 VFS 清单把主包指向打过补丁的那一份',()=>{
  assert.ok(!build.includes("write(path.join(outRoot, MAIN_PATH + '.orig')"),'不该再产出主包 .orig');
 });
 
-test('两个调用方指向同一份链（避免再次分叉）',()=>{
- const server=readIfPresent(path.join(root,'server.mjs'));
- const build=readIfPresent(path.resolve(root,'..','安卓打包','standalone','build.mjs'));
- assert.ok(server&&build);
- const target=/(?:^|\/)(client-patch-chain\.mjs)/;
- assert.match(server,target);
- assert.match(build,target);
- // 两处都必须只认这一个模块，不能再出现按名字逐个 import 补丁函数的老写法。
- for(const [label,source] of [['server.mjs',server],['build.mjs',build]]){
+test('全工程只有两处打补丁，且都指向同一份链（避免再次分叉）',()=>{
+ // 真正要守的契约是「打补丁的地方只有一个运行时、一个构建期」，而不是「必须在某个文件里」。
+ // 第 36 版把运行时那处从 server.mjs 挪到了 lib/http-routes.mjs（它负责给客户端发
+ // /gd.js 与主包），这里按「谁真的调用了 patchClientBoot/patchClientMain」来判定，
+ // 比钉文件名更能反映意图，也不会因为搬家而误报。
+ const libDir=path.join(root,'lib');
+ const targets=[
+  ['server.mjs',path.join(root,'server.mjs')],
+  // 定义补丁函数的模块自己当然会「调用」（其实是被调用），排除掉。
+  ...fs.readdirSync(libDir).filter(n=>n.endsWith('.mjs')&&n!=='client-patch-chain.mjs').map(n=>['lib/'+n,path.join(libDir,n)]),
+  ['安卓打包/standalone/build.mjs',path.resolve(root,'..','安卓打包','standalone','build.mjs')],
+ ];
+ const consumers=[];
+ for(const [label,file] of targets){
+  const source=readIfPresent(file);
+  if(source===null)continue;
+  if(/patchClientBoot\s*\(|patchClientMain\s*\(/.test(codeOnly(source)))consumers.push(label);
+ }
+ assert.deepEqual(consumers,['lib/http-routes.mjs','安卓打包/standalone/build.mjs']);
+
+ // 定义链的模块只有一个；两个调用方都只从它取，不能再出现按名字逐个 import 补丁函数的老写法。
+ assert.match(readIfPresent(path.join(libDir,'client-patch-chain.mjs')),/export function patchClientMain/);
+ for(const [label,file] of targets){
+  const source=readIfPresent(file);
+  if(source===null)continue;
   const imports=codeOnly(source).split('\n').filter(line=>line.trimStart().startsWith('import '));
   for(const line of imports)for(const name of PATCH_FUNCTIONS){
    assert.ok(!line.includes(name),label+' 仍在逐个 import '+name+'：'+line.trim());

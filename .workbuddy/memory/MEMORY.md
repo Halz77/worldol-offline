@@ -25,7 +25,7 @@ node tools/run-tests.mjs --update         # 修完用例后重写已知失败清
   数据规模…）；属于「已被替代的模型 / 已知有意偏差」的改成**用例内 `{skip:'原因'}`**
   （1e-4 经验表、免费成长 v3、成品宠改走 90004、加点自由化、依赖原版录制抓包的用例）。
   **清单为空意味着此后任何失败都是新增失败，必须当场处理，不要再往里加条目。**
-  当前基线：66 文件 / 394 用例 / 通过 394 / 失败 0 / 跳过 30。
+  当前基线：67 文件 / 414 用例 / 通过 414 / 失败 0。
 - 跑测试遇到「整文件失败 / 某条用例全挂」，先怀疑三件事：测试自己的**假模块表**落后于
   `web/*.js`（缺 `req(模块号)` 或**计算型常量**，如 `BC.MAX_POS`）、漏 import、
   以及在**模块顶层**读了不存在的 `../正式服录制数据/`。
@@ -64,11 +64,42 @@ node tools/run-tests.mjs --update         # 修完用例后重写已知失败清
 - **`lib/client-patch-chain.mjs` 是唯一来源**，`CLIENT_MAIN_STEPS`(23 步) 与
   `CLIENT_BOOT_STEPS`(3 步) 按数组顺序执行；`patchClientMain()` / `patchClientBoot()` /
   `replaceOnce()` / `CLIENT_MAIN_PATH` 都从这里导出。
-- `server.mjs` 与 `安卓打包/standalone/build.mjs` **都必须 import 它**，
+- 调用方只有两处：**运行时在 `lib/http-routes.mjs`**（它负责给客户端发 `/gd.js` 与主包，
+  第 36 版从 server.mjs 搬过来的）、**构建期在 `安卓打包/standalone/build.mjs`**。
   不要再在调用方排列补丁函数（`tests/client-patch-chain.test.mjs` 守着，
   顺序改了要同步改用例里的 EXPECTED_MAIN_STEPS）。
 - 加新补丁：写 `lib/client-xxx-patch.mjs` 导出 patch 函数 → 加进 `CLIENT_MAIN_STEPS`
   末尾（或按依赖插到合适位置）→ 同步 EXPECTED_MAIN_STEPS → 跑 `--only client-patch-chain`。
+
+## 服务端结构（第 36 版起）
+`server.mjs` 从 266 行收到 166 行，只剩「起服务 + WebSocket 主流程」；三块结构各归各的模块：
+
+- **`lib/protocol-constants.mjs`** —— 从 `analysis/modules/0019.js` 解析协议号表（723 条），
+  冻结 + 反查。`server.mjs` 里协议号一律写 `P.<常量名>`；只剩 4 个裸号，都是**本地扩展、
+  原版没有**：90021 / 90022 / 32107 / 22106（在 `tests/server-dispatch.test.mjs` 的白名单里）。
+  解析口径只认字面量赋值，`ADD_ITEM_DEF = -1` 同样漏掉（保持原口径，别自作聪明补上）。
+- **`lib/protocol-dispatch.mjs`** —— `INBOUND_CHAIN`，20 段有序。**顺序不许重排**：
+  - 约定：handler 认领就回 `true`，拒绝就回 `false` **且一个字节都不许读**（全链共用一个
+    Reader）。`tests/server-dispatch.test.mjs` 横扫 148 个协议号守着这条不变量。
+  - 唯一被两段同时认领的号是 **32110**，`illusion` 抢先 `official`；official 里那份分支
+    **不可达**（原有行为，没修）。
+  - **12001（使用道具）按包内第一个字节路由**：`{5,6}`→`equipmentUpgrades`；
+    `{1,2,3,4,11,12}`→`petItems`；其余→`restoration`。`petItems` 拒绝时靠 `r.pos=start`
+    还原读指针再放行 —— 动这里要同步 `tests/server-dispatch.test.mjs` 的 `EXPECTED_OWNER`。
+  - 补推钩子用 `afterClaim.onType` 写**常量名字**，建分派器时校验名字存在（写错直接抛错）。
+- **`lib/http-routes.mjs`** —— 有序路由表（`{kind:'path'|'gate'|'static'}`），顺序与原 if 链
+  逐条对应。**方法门（405）的位置承重**：它上面的路由任何方法都收（POST /api/status 返回
+  JSON），下面的静态资源只收 GET/HEAD。`/api/status` 那坨大对象要的 45 个数据模块都在这
+  个文件里 import；boot/main（打过补丁的引导脚本与主包）也在这里现算。
+
+## 改「按源码做断言」的守卫用例时注意
+`tests/source-scan.mjs` 的 `codeOnly()` 是**按字符扫**剥注释的，不要换回正则：
+- 先剥块注释会被注释里的「斜杠+星号」骗到 —— build.mjs 的行注释里写了 `web/<星号>.js`，
+  旧写法把 48–73 行整段当块注释吃掉（含 `patchClientMain()` 调用），
+  于是「build.mjs 不该自己打补丁」这种**否定式断言会静默变真**。
+- 另一个老坑：行尾用 `$` 剥行注释在 CRLF 文件上失效。
+- 自己写注释时也别在块注释里写字面的块注释结束符（会把注释提前结束，直接语法错误）。
+- 扫协议号用 `codeOnly(src,{strings:'drop'})`，顺手把路径/URL 里的数字排掉。
 
 ## 客户端要点（改功能前必看）
 - 主包：`client/js/ff/fff570bb4753f056432680e781d827dc.js`（4,557,839 字符，**尽量不要动**；
