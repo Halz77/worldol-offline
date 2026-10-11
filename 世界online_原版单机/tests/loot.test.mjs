@@ -76,7 +76,7 @@ test('battle settlement persists loot and its native response consumes exactly, 
  const h=combatHarness();h.run();assert.equal(h.context.battle,null);assert.ok(h.p.inventory.length>=2);const r=new NativeReader(h.sent.find(s=>s.type===12502).b),out=readBattleReward(r,decoder,()=>{});r.finish();assert.equal(out.result,2);assert.equal(out.items.length,2);assert.deepEqual(out.items.map(i=>i.itemId),h.p.battles.last.reward.loot.map(i=>i.id));const before=JSON.stringify(h.p);assert.throws(()=>h.run(),/已结算/);assert.equal(JSON.stringify(h.p),before);
 });
 test('failed persistence rolls back the whole settlement and retains the battle for retry',()=>{
- const h=combatHarness({fail:true}),before=JSON.stringify(h.p);h.context.storyBattle={group:409};assert.throws(()=>h.run(),/disk failure/);assert.equal(JSON.stringify(h.p),before);assert.equal(h.context.battle.token,34567);assert.deepEqual(h.context.storyBattle,{group:409});assert.equal(h.sent.length,0);
+ const h=combatHarness({fail:true}),before=JSON.stringify(h.p);h.context.storyBattle={group:409};assert.throws(()=>h.run(),/disk failure/);assert.equal(JSON.stringify(h.p),before);assert.equal(h.context.battle,null);assert.equal(h.context.rejectedBattle.token,34567,'作废的那场留着，客户端重发同一包还能结算');assert.deepEqual(h.context.storyBattle,{group:409});assert.equal(h.sent.length,0);
  h.env.store.save=()=>{};h.run();assert.equal(h.context.battle,null);assert.equal(h.context.storyBattle,null);assert.ok(h.p.inventory.length);
 });
 test('escape, defeat, and invalid battle tokens never deliver equipment or pending rewards',()=>{

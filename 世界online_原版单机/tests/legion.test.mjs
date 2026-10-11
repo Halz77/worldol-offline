@@ -129,13 +129,17 @@ test('helper pets keep independent vitals and failed battle saves roll the whole
  const full=new NativeReader(playerDetail(new Writer(),p).done());skipPlayerDetail(full,d);full.finish();
  p.mapId=10;p.x=17;p.y=20;
  handleGame(12501,new Reader(new Writer().short(701).done()),context,env);
+ const token=context.battle.token;
  assert.ok(context.battle.legion[0].petUid);assert.ok(context.battle.legion[1].petUid,'进战斗前会把军团成员的宠物一起回满，所以血为 0 的助战宠也会带出战');
- const packet=(petHP)=>{const w=new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(LEGION_TRAILER).byte(4);for(let i=1;i<=4;i++){const hasPet=i===1||i===2;w.int(roles[i].id).int(roles[i].hp-1).int(roles[i].mp).bool(hasPet);if(hasPet)w.int(petHP).int(80);}return w.done();};
+ // 令牌用上面捕获的那份：第一次结算被拒后 context.battle 就空了（见 game-service 的 reject）。
+ const packet=(petHP)=>{const w=new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(token).byte(2).int(LEGION_TRAILER).byte(4);for(let i=1;i<=4;i++){const hasPet=i===1||i===2;w.int(roles[i].id).int(roles[i].hp-1).int(roles[i].mp).bool(hasPet);if(hasPet)w.int(petHP).int(80);}return w.done();};
  // 助战宠血量超上限现在被夹紧到上限（lib/legion-service.mjs 里已改成 Math.min 夹取），
  // 不再整包拒绝，所以这里不再断言抛错；血量越界由下面「结算后回满」的断言间接覆盖。
  const before=JSON.stringify(roles),save=h.store.save;h.store.save=()=>{throw Error('disk unavailable');};
  assert.throws(()=>handleGame(12502,new Reader(packet(100)),context,env),/disk unavailable/);
- assert.equal(JSON.stringify(roles),before);assert.ok(context.battle);h.store.save=save;
+ // 第 40 版起：结算被拒（这里是存档写盘失败回滚）后这场战斗搬到 context.rejectedBattle，
+ // context.battle 必须清空 —— 否则移动/传送/鉴定/军团等二十多处守卫会把玩家锁死。
+ assert.equal(JSON.stringify(roles),before);assert.equal(context.battle,null);assert.equal(context.rejectedBattle.token,token);h.store.save=save;
  handleGame(12502,new Reader(packet(100)),context,env);
  assert.equal(activePet(roles[1]).hp,petAttributes(roles[1],activePet(roles[1])).hp,'结算后助战宠回满');assert.equal(activePet(roles[1]).mp,petAttributes(roles[1],activePet(roles[1])).mp);assert.equal(activePet(roles[1]).exp,0);
  assert.ok(activePet(roles[2]).hp>0,'助战宠在进战斗时已被回满，不再是 0');

@@ -64,7 +64,9 @@ test('pet participates in native two-plan battle, receives XP, and invalid HP or
  const {p,context,call,sent}=harness();call(12001,use(1,32));const item=p.inventory.find(i=>i.pet);call(12001,new Writer().byte(2).byte(1).short(item.slot).int(1).byte(-1).bool(false).byte(32));
  p.quests.active[1114]={official:true,counts:{}};const target=maps[303].npcs.find(n=>n.battleID?.includes(260));[p.x,p.y]=[target.x,target.y];
  assert.equal(call(12501,new Writer().short(260)).byte(),0);
- const packet=(hp)=>new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(260).bool(true).byte(0).byte(1).bytes([0]).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(hp).int(92);
+ // 令牌先取出来：第一次结算被拒后 context.battle 就空了（见 game-service 的 reject）。
+ const token=context.battle.token;
+ const packet=(hp)=>new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(260).bool(true).byte(0).byte(1).bytes([0]).bytes([0]).int(BATTLE_TRAILER).int(token).byte(2).int(hp).int(92);
  const before=p.coins;assert.throws(()=>call(12502,packet(999999)),/宠物战斗状态/);assert.equal(p.coins,before);
  const victory=packet(100);assert.equal(call(12502,victory).byte(),2);assert.equal(item.pet.hp,petAttributes(p,item.pet).hp,'战斗结束后出战宠回满');assert.ok(item.pet.exp>0);
  const read=new NativeReader(sent.findLast(x=>x.type===12502).bytes);const reward=readBattleReward(read,d,()=>{});read.finish();assert.equal(reward.result,2);assert.throws(()=>call(12502,victory),/已结算/);

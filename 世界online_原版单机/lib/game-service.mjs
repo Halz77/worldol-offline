@@ -89,7 +89,13 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
   }
   if(type===14504){const id=r.short();if(!p.quests.active[id])fail('任务不在进行中。');delete p.quests.active[id];commit();send(type,signUpdates(new Writer().byte(0),p));return true;}
   if(type===12501){
-    if(context.battle)fail('上一场战斗尚未结束。');const group=r.short()&65535;
+    if(context.battle)fail('上一场战斗尚未结束。');
+    // 结算被拒时 context.battle 已经清掉（见 12502 的 reject），所以这里自然放行；
+    // 作废的那场只留在 context.rejectedBattle 里，供客户端重发同一包时再试一次。
+    // 开新战斗就把那份丢弃。
+    if(context.rejectedBattle)log('battle-rejected-cleared',{role:p.id,previous:context.rejectedBattle.group});
+    context.rejectedBattle=null;
+    const group=r.short()&65535;
     const story=context.storyBattle?.group===group&&context.storyBattle.mapId===p.mapId?context.storyBattle:null;
     const active=Object.entries(p.quests.active).find(([id,a])=>missionBattleId(officialMissions.get(Number(id)))===group&&a.origin?.mapId===p.mapId);
     const origin=story||active?.[1].origin;
@@ -134,17 +140,53 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     send(type,new Writer().byte(0).int(token));log('battle-start',{role:p.id,group,token});return true;
   }
   if(type===12502){
-    const battle=context.battle;if(!battle)fail('这场战斗已结算或未开始，请重新进入地图。');
+    // context.battle 只在「还在等这场战斗的结算包」时才非空。结算一旦被拒，这场战斗就搬到
+    // context.rejectedBattle：**所有「战斗期间不许动」的守卫（移动、传送、鉴定、附魔、军团、
+    // 加点、改名…共 20 多处）会自动放行** —— 否则一次结算失败就把玩家锁死在
+    // 「请先结束上一场战斗 / 上一场战斗尚未结束」上，只能重进角色（第 40 版前的实际表现）。
+    // 搬到 rejectedBattle 而不是直接丢，是为了保留「客户端重发同一包能再试一次」这条契约。
+    const battle=context.battle||context.rejectedBattle;
+    if(!battle)fail('这场战斗已结算或未开始，请重新进入地图。');
+    let settled=false;
+    const reject=message=>{
+      if(context.battle===battle){context.battle=null;context.rejectedBattle=battle;}
+      battle.rejected=true;
+      const text=String(message).replace(/，未发放奖励。$/,'');
+      log('battle-result-rejected',{role:p.id,group:battle.group,mapId:battle.mapId,length:r.b.length,nativeRounds,reason:text});
+      fail(text+'，未发放奖励。');
+    };
     const startHP=r.int(),startMP=r.int(),hp=r.int(),mp=r.int();r.short();const group=r.short()&65535;
     const pet=r.bool(),buddies=r.byte()&255,nativeRounds=r.byte()&255;
-    if(buddies||pet!==!!battle.petUid)fail('出战队伍与进入战斗时不一致。');
-    const {result,rounds,commands,wireVersion}=readBattleResultTail(r,battle,{pet,nativeRounds,role:p.id,log});
+    if(buddies||pet!==!!battle.petUid)reject(`出战队伍与进入战斗时不一致（包内伙伴 ${buddies}、宠物 ${pet?1:0}，开战时宠物 ${battle.petUid?1:0}）`);
+    // 包尾解析（battle-result-wire.mjs）自己就带原因，透传给 reject() —— 不走 reject 的话
+    // 这场战斗不会被标成作废，玩家仍会被卡在「上一场战斗尚未结束」上。
+    let tail;try{tail=readBattleResultTail(r,battle,{pet,nativeRounds,role:p.id,log});}catch(error){reject(error.message);}
+    const {result,rounds,commands,wireVersion}=tail;
     const companion=activePet(p),petHP=pet?r.int():null,petMP=pet?r.int():null;
-    const legionResult=readLegionResult(r,p,battle);
-    if(pet){const max=petAttributes(p,companion);if(companion.uid!==battle.petUid||petHP<0||petHP>max.hp||petMP<0||petMP>max.mp)fail('宠物战斗状态不完整。');}
+    let legionResult;try{legionResult=readLegionResult(r,p,battle);}catch(error){reject(error.message);}
+    // 客户端带的助战行数与开战快照不一致（多半是它那边的军团资料没就绪 → 这一场助战
+    // 没上场）。照旧结算，但落一条日志：以后再有玩家报「结算失败」，这条能直接说明
+    // 是不是这个原因。
+    if(legionResult.length!==(battle.legion||[]).length)log('battle-legion-mismatch',{role:p.id,expected:(battle.legion||[]).length,received:legionResult.length});
+    if(pet){const max=petAttributes(p,companion);if(companion.uid!==battle.petUid||petHP<0||petHP>max.hp||petMP<0||petMP>max.mp)reject(`宠物战斗状态不完整（血 ${petHP}/${max.hp}、蓝 ${petMP}/${max.mp}）`);}
     // Native victory belongs to the surviving side, not just the main actor.
     const survivingAlly=hp>0||(pet&&petHP>0)||legionResult.some(row=>row.hp>0||row.petHP>0);
-    if(r.pos!==r.b.length||group!==battle.group||p.mapId!==battle.mapId||![1,2,3,4].includes(result)||hp<0||hp>hpMax(p)||mp<0||mp>mpMax(p)||startHP<1||startMP<0||(result===2&&(!survivingAlly||rounds===0)))fail('战斗结果数据不完整，未发放奖励。');
+    // 原来这十项挤在一个 if 里共用一句「战斗结果数据不完整，未发放奖励。」，线上出问题时
+    // 完全看不出是哪一项（第 40 版排查打怪偶尔结算失败时就卡在这儿）。逐项写清原因，
+    // 顺便让 reject() 把这场战斗标成作废，玩家可以重新开战。
+    const anomaly=
+      r.pos!==r.b.length?`包尾多出 ${r.b.length-r.pos} 字节`
+      :group!==battle.group?`怪物组 ${group} 与开战时的 ${battle.group} 不一致`
+      :p.mapId!==battle.mapId?`地图 ${p.mapId} 与开战时的 ${battle.mapId} 不一致`
+      :![1,2,3,4].includes(result)?`胜败标记 ${result} 不在 1..4`
+      :hp<0||hp>hpMax(p)?`生命 ${hp} 超出 0..${hpMax(p)}`
+      :mp<0||mp>mpMax(p)?`法力 ${mp} 超出 0..${mpMax(p)}`
+      :startHP<1?`开场生命 ${startHP} 小于 1`
+      :startMP<0?`开场法力 ${startMP} 小于 0`
+      :result===2&&!survivingAlly?`判定胜利但场上没有活着的一方`
+      :result===2&&rounds===0?`判定胜利但回合数为 0`
+      :null;
+    if(anomaly)reject(`战斗结果数据不完整（${anomaly}）`);
     // The preserved single-player client engine computes combat. This is not an online anti-cheat server.
     const before=structuredClone(p),storyBefore=context.storyBattle,legionBefore=legionResult.map(row=>[row.role,structuredClone(row.role)]);
     let reward={exp:0,coins:0,levels:0},changeMap=false;
@@ -172,8 +214,8 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     reward.recovery=applyBattleRecovery(p);
     for(const row of legionResult)applyBattleRecovery(row.role);
     p.battles.last={token:battle.token,group,result,rounds,time:new Date().toISOString(),reward};commit();
-    }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);for(const [role,snapshot] of legionBefore){for(const key of Object.keys(role))if(!(key in snapshot))delete role[key];Object.assign(role,snapshot);}context.storyBattle=storyBefore;throw error;}
-    context.battle=null;if(result===2)notifyDaily(p,send);
+    }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);for(const [role,snapshot] of legionBefore){for(const key of Object.keys(role))if(!(key in snapshot))delete role[key];Object.assign(role,snapshot);}context.storyBattle=storyBefore;reject(error.message);}
+    context.battle=null;context.rejectedBattle=null;settled=true;if(result===2)notifyDaily(p,send);
     send(type,battleReward(p,result,reward,killed,changeMap));send(11004,moneyUpdate(p,reward.coins));
     if(legionResult.length)pushLegionMembers(p,send,{appearance:false});
     if(reward.pending?.length)send(10509,new Writer().byte(2).string('背包已满，未装下的掉落已保存。腾出空间后点击背包“整理”即可补发。'));

@@ -46,14 +46,23 @@ export function legionBattleMembers(p){return activeLegionMembers(p).map(({role:
 export function readLegionResult(r,p,battle){
  const expected=battle.legion||[];
  if(!expected.length)return [];
- if(r.int()!==LEGION_TRAILER||r.byte()!==expected.length)throw Error('军团战斗结果不完整。');
- const seen=new Set(),rows=[];
- for(let i=0;i<expected.length;i++){
+ // 客户端这次**没带军团段**：它那边的军团 VO 没就绪时，web/legion.js 的 World.toBattle
+ // 包装会在 members() 为空时直接放行，getLocalBattlePlayerList 也不会加助战 —— 等于
+ // 助战没上场，打的是只有主角色的那一场。这不是错误：怪物、回合、奖励都一样，助战
+ // 只是没参加，血蓝维持进战斗时回满后的状态。第 40 版前这里直接整包拒绝，
+ // 结果是「偶尔结算失败 + 之后被永久卡住」。
+ if(r.pos>=r.b.length)return [];
+ if(r.int()!==LEGION_TRAILER)throw Error('军团战斗结果不完整。');
+ // 行数以**包里的**为准（不再拿开战快照的长度去卡）：两边对不上往往是客户端那边
+ // 军团资料的时机问题，不是篡改。逐行按 id 认人，认得出的照旧校验血蓝，认不出的记下来。
+ const count=r.byte(),seen=new Set(),rows=[];
+ for(let i=0;i<count;i++){
   const id=r.int(),hp=r.int(),mp=r.int(),hasPet=r.bool(),member=expected.find(m=>m.id===id),role=legionRoster(p).find(m=>m.id===id);
-  if(!member||!role||seen.has(id)||hasPet!==!!member.petUid||role.hp!==member.hp||role.mp!==member.mp||hp<0||hp>member.hpMax||mp<0||mp>member.mpMax)throw Error('军团成员或血蓝状态与开战时不一致。');
-  seen.add(id);const row={role,hp,mp};
-//   if(hasPet){const pet=activePet(role),petHP=r.int(),petMP=r.int();if(!pet||pet.uid!==member.petUid||petHP<0||petHP>member.petHpMax||petMP<0||petMP>member.petMpMax)throw Error('军团宠物状态不完整。');Object.assign(row,{pet,petHP,petMP});}
-  if(hasPet){const pet=activePet(role),wirePetHP=r.int(),wirePetMP=r.int();if(!pet)throw Error('军团宠物状态不完整。');const petHP=Math.max(0,Math.min(member.petHpMax,wirePetHP));const petMP=Math.max(0,Math.min(member.petMpMax,wirePetMP));Object.assign(row,{pet,petHP,petMP});}
+  if(!role||seen.has(id))throw Error('军团成员或血蓝状态与开战时不一致。');
+  seen.add(id);
+  const row={role,hp,mp};
+  if(member&&(hasPet!==!!member.petUid||role.hp!==member.hp||role.mp!==member.mp||hp<0||hp>member.hpMax||mp<0||mp>member.mpMax))throw Error('军团成员或血蓝状态与开战时不一致。');
+  if(hasPet){const pet=activePet(role),wirePetHP=r.int(),wirePetMP=r.int();if(!pet)throw Error('军团宠物状态不完整。');const petHP=Math.max(0,Math.min(member?member.petHpMax:petAttributes(role,pet).hp,wirePetHP));const petMP=Math.max(0,Math.min(member?member.petMpMax:petAttributes(role,pet).mp,wirePetMP));Object.assign(row,{pet,petHP,petMP});}
   rows.push(row);
  }
  return rows;

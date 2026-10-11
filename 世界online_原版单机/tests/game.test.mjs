@@ -67,7 +67,13 @@ test('walls, abort, invalid battle tokens, escape and defeat do not award kills'
   h.call(14502,new Writer().short(1).short(9001));h.call(14504,new Writer().short(9001));assert.deepEqual(p.quests.active,{});
   p.mapId=10;p.x=17;p.y=20;h.call(12501,new Writer().short(701));const token=h.context.battle.token;
   const packet=bad=>new Writer().int(100).int(100).int(80).int(100).short(1).short(701).bool(false).byte(0).byte(1).bytes([0]).int(BATTLE_TRAILER).int(bad).byte(1);
-  assert.throws(()=>h.call(12502,packet(token^1)),/会话不匹配/);assert.ok(h.context.battle);h.call(12502,packet(token));assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);
+  // 令牌不对 → 结算被拒。第 40 版起「被拒的战斗」搬去 context.rejectedBattle（见
+  // game-service 的 reject）：context.battle 必须清空，否则移动/传送/鉴定/军团等二十多处
+  // 「战斗期间不许动」的守卫会把玩家锁死，只能重进角色。
+  assert.throws(()=>h.call(12502,packet(token^1)),/会话不匹配/);
+  assert.equal(h.context.battle,null);assert.equal(h.context.rejectedBattle.token,token);
+  h.call(12502,packet(token));assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);
+  assert.equal(h.context.rejectedBattle,null,'结算成功后作废的那场也要丢掉');
   p.x=21;p.y=23;h.fight(702,1,0);assert.equal(p.mapId,10,'战败不再传送回城，留在原地图');assert.equal(p.hp,195);assert.equal(p.coins,1000);assert.equal(p.battles.wins,0);assert.equal(p.battles.losses,2);
 });
 test('an enabled monster spawn is used even when a hidden same-group spawn is closer',()=>{
