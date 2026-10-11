@@ -6,7 +6,7 @@ import {starLimit} from '../lib/equipment-policy.mjs';
 // 浏览器里那条 window.worldolEquipmentRules 是 server.mjs / globals.mjs 拼出来的，
 // 这里照抄同一份，免得测试里的规则和真正下发的不一致。
 import {upgradeRules,upgradeIdentifyItemIds} from '../lib/item-affixes.mjs';
-const browserRules={...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds}};
+const browserRules={...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds()}};
 
 function fixture(){
   // 最小 DOM：equipment-workshop 只用到追加选项、读写 value/textContent/disabled

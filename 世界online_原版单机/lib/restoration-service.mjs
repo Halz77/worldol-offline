@@ -34,7 +34,7 @@ export function shopItems(id){
   return ids.map(itemId=>{const item=equipment.get(itemId);if(!item)throw Error('VIP商品资料未就绪：'+itemId);return item;}).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id));
  }
  if([2000,2002,2003,2004].includes(id))return [...spiritRules.boxIds.map(id=>equipment.get(id)),...localEnchantments.map(e=>equipment.get(e.id))];
- if(id===917)return selectablePetEggs.map(egg=>equipment.get(egg.id));
+ if(id===917)return selectablePetEggs().map(egg=>equipment.get(egg.id));
  if(id===ITEM_SHOP)return restored.equipment.filter(e=>e.id!==IGNORE_REQUIREMENT_ITEM_ID);
  if(id===OFFICIAL_SHOP)return [...officialItems.keys()].map(id=>equipment.get(id)).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id)&&!isSpiritBox(e.id));
  return supplyShopById.get(id)?.items.map(id=>equipment.get(id));

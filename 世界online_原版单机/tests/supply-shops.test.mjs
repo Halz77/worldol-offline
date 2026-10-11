@@ -14,7 +14,7 @@ import {canIdentify} from '../lib/item-affixes.mjs';
 import {shopItem} from '../lib/restoration-packets.mjs';
 import {APPEARANCE_ITEM_IDS} from '../lib/local-fashion.mjs';
 import {soldPetItem,selectablePetEggs} from '../lib/pet-catalog.mjs';
-const selectableEggIds=new Set(selectablePetEggs.map(e=>e.id));
+const selectableEggIds=new Set(selectablePetEggs().map(e=>e.id));
 
 const d=decoders(fileURLToPath(new URL('..',import.meta.url)));
 const role=()=>normalizeRole({id:1,name:'补给验收',level:97,mapId:19,x:21,y:18,coins:39602,gold:12,silver:34,inventory:[],restoration:{starterIssued:true}});

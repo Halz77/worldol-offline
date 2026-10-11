@@ -2938,3 +2938,144 @@ sha256 7a68de76ca74edd0cf762a52be69edf6dc9d373f1138f44af48f77aecda9159e
   · 核对：解包 APK 的 bundle 与站点产物逐字节一致。
 
 本轮只动服务端结构与测试，客户端主包与 gd.js 字节都没变，行为等价。
+
+════════════════ 第 37 版 · 2026-10-11 ════════════════
+
+【需求】把《架构评审-20261011.md》建议顺序里剩下的两条做完：
+  第 7 条 —— lib/ 顶层大 JSON 改惰性加载（原文「528 MB → 目标 250 MB 以内」）
+  第 8 条 —— 写 data/SOURCES.md，讲清 161 MB 数据的血缘。
+
+──────────────── 一、先量，再改 ────────────────
+
+给 fs.readFileSync 打桩跑了一遍启动（import('./server.mjs')），实测启动期读进堆的
+data 文件与原始大小：
+
+  official-v305.json             33.6 MB   地图/NPC/道具/任务/怪物（权威目录）
+  recorded-content.json          17.4 MB   录制内容（宠物/称号/套装）
+  recorded-expansion-*.json      12.4 MB   录制扩展批次
+  career-skill-directory.json     9.6 MB   职业目录原文（只是原样发给面板，不解析）
+  career-skills.json              7.6 MB   职业技能树
+  pet-catalog.json                6.5 MB   宠物模板/技能/经验
+  item-affix-layouts.json         1.8 MB   鉴定/合成字段偏移
+  equipment-skill-levels.json     1.1 MB   装备技能等级
+  home-features-v1.json           0.85 MB  家园
+  drop-catalog.json               0.84 MB  掉落
+  restored-v03.json               0.65 MB  社区复原（背包初始装备）
+  + data/maps/*.json 共 141 个（9.5 MB，进世界必用）
+
+同口径基线：heapUsed 484 MB / RSS 566 MB（不 GC）；GC 后 142 MB / 373 MB。
+
+顺带发现一处纯浪费：createHttpRouter() 在**构造时**就把 4.4 MB 客户端主包读进来跑
+完整补丁链（本机约 840 ms），而客户端可能一个字节都没请求 —— 这正是评审 P1-3 的后半段，
+上一版只做了「幂等跳过」那一半。
+
+──────────────── 二、做法：惰性代理，使用点不动 ────────────────
+
+新增 lib/lazy-data.mjs：
+
+  lazyJson(url)   顶层不读盘，第一次取属性才 JSON.parse
+  lazyBox(init)   任意构造，第一次取属性才执行
+
+导出的是**透明代理** —— 模块顶层只登记「怎么造」，使用方代码一行不改
+（Map/Set/对象上的 get/size/for...of/展开/JSON.stringify/instanceof 都按真值走）。
+
+三条边界写死在实现里，不是注释里的君子协定：
+  · 数组不能包：Array.isArray 读的是代理 target，会静默失真 —— lazyBox 构造出数组时
+    直接抛错挡住。数组型导出因此一律改函数：officialSkills() / selectablePetEggs() /
+    careerDirectory() / upgradeIdentifyItemIds() / homeFeatureRevision() /
+    recordedExpansionRevision()。
+  · 代理有开销：Map.get 实测 2.25x（3M 次 75 ms → 169 ms，即 +0.03 µs/次）。
+    温表无所谓，比这更热的表不要再包。
+  · 方法属性要缓存绑定结果，否则每次访问都 bind 出一个垃圾函数。
+
+改惰性的模块（11 个）：
+  official-data / recorded-content / recorded-expansion / career-skills / pet-catalog /
+  daily-activity / equipment-skill-levels / item-affix-layouts / home-feature-data /
+  loot（drop-catalog）/ restoration
+
+两个踩到的点：
+  · careerDirectory 必须与技能表**分开** ensure()。第一版合成一个，「有存档启动」会经
+    技能表把 9.8 MB 的目录原文一起读进来 —— 实测发现后才拆开。
+  · 有意保留 eager 的：official-v305（lib/content.mjs 顶层 for(const m of official.maps)
+    会把它拉起来，地图/NPC 进世界必用）、restored-v03、maps/*；另外 official 构造时要
+    叠加 recorded-expansion 与 pet-catalog，这两份也必然 eager。评审原文就是
+    「只保留服务端每次连线都要用的那几份」。
+
+顺带：createHttpRouter() 的补丁预热改成惰性 —— boot/main 各 memo 一个 getter，
+首次请求 /gd.js 或主包时才现算（实测首次请求 840 ms，之后命中缓存）。
+
+──────────────── 三、实测 ────────────────
+
+（同脚本同口径：import('./server.mjs') 完成后立即读 process.memoryUsage()）
+
+                        改前        改后        变化
+  RSS（未 GC）          566 MB      252 MB      −314 MB（−55%）
+  heapUsed（未 GC）     484 MB      180 MB      −304 MB
+  RSS（GC 后）          373 MB      173 MB      −200 MB
+  heapUsed（GC 后）     142 MB       95 MB       −47 MB
+
+──────────────── 四、第 8 条：data/SOURCES.md ────────────────
+
+新增 data/SOURCES.md。除了逐文件清单（40 个文件 + maps/ + references/，
+列大小/来源类型/采集时间/重建脚本/运行期是否读），重点讲清三件事：
+
+  1. 四类来源的判定特征（抓包 / 录制 / 社区 / 本地），以及
+     「能重建的以脚本为准、不能重建的以文件为准」这条原则。
+  2. 权威关系：official-v305 是道具/地图/NPC/任务/怪物的唯一权威；录制与扩展批次只做
+     **增量叠加**，冲突时抛错不静默取一边；三套技能来源（official.skills / career-skills /
+     local-career-skills）的合并顺序与「重号即抛错」的约定。
+  3. 哪些文件**运行期根本不读**：content-library（29 MB，只服务一个图鉴接口）、
+     skill-progression、catalog-skills、official-guides 都是构建产物或面板数据，
+     别去 lib/ 里找它们。
+
+清单里还点名了 8 个「无重建脚本」的文件（pet-catalog、equipment-skill-levels、
+city-character-v1 等），改这些只能靠手改 + 改测试 + 记本文件。
+
+──────────────── 五、测试 ────────────────
+
+新增 tests/lazy-data.test.mjs（19 条）：
+  · 11 个模块逐个断言「加载期一个字节都不读它自己的大 JSON」；
+  · careerDirectory 与技能表互不牵连（互相都验：读技能表不读目录、调 careerDirectory() 才读）；
+  · 「取用后才物化，且物化后的值与真值一致」（含派生索引与主表是同一批对象）；
+  · createHttpRouter 构造时不读主包/引导脚本，请求 /gd.js 时才读；
+  · lazyBox 自身的语义：只构造一次、Map 方法/size/迭代/forEach/instanceof、
+    对象展开/JSON.stringify/in/Object.keys/写回、拒绝数组真值、lazyJson 构造期不碰盘。
+
+两个刻意的实现选择，都是本机踩过的坑：
+  1. 用**带查询串的 URL** 重新 import，强制重跑模块顶层 —— 否则同进程第二次 import
+     命中 ESM 缓存、顶层不执行，断言会**空过**（本项目对「空过」是有前车之鉴的）。
+  2. **不用子进程**：本机 spawnSync/execFileSync 到 node.exe **恒 EBUSY**
+     （WorkBuddy 的 node 二进制被占用），子进程方案在这里根本跑不起来。
+
+──────────────── 六、验证 ────────────────
+
+· node tools/run-tests.mjs：文件 68 个｜用例 433｜通过 433｜失败 0｜新增失败 0
+· 真起服务（临时端口 + 临时日志目录）打 HTTP 冒烟，16 个端点全 200：
+    / /index.html /offline.js /api/status /api/career-skills /api/recorded-content
+    /api/drops /api/supply-shops /api/player-experience /api/content-library
+    /api/official-content /v/gd/305.json /equipment-rules.js
+    /equipment-composition-data.js /gd.js /pet-snapshot-data.js
+  其中惰性字段都对：status.recordedExpansionRevision = recorded-expansion-20260922-v1+boss-hub+renumber-9100、
+  homeFeatureRevision = home-features-20260922-v1、petCatalog.profiles = 504 等。
+· 主包请求：4,564,108 字节（= 构建期打过补丁的成品，与上一版逐字节一致），
+  补丁链 840 ms 只在首次请求时付。
+· 重建站点：worldol-standalone.js 790,607 → 797,621 字节（新增 lazy-data.mjs 与各模块改动），
+  gd.js 35,589 字节不变，客户端主包 sha256 f5abf262ad78c455 不变。
+
+──────────────── 交付 ────────────────
+第 37 版 APK：130,752,723 字节（124.70 MB）
+sha256 5d1f522a0f0d3ea7fadbd866b9cc85aa71ac126bbd8bedbf00ebdbc02437c46d
+站点指纹 e6b6f9ed2e7a
+包内 assets/public/worldol-standalone.js = 797,621 字节（sha256 d577be7020b98e16），
+已含 lib/lazy-data.mjs 与 11 个模块的惰性改造；客户端主包仍是构建期打好的
+4,564,108 字符版本（sha256 f5abf262ad78c455，与上一版逐字节一致）。
+
+打包记录：
+  · node 安卓打包/standalone/build.mjs → 构建指纹 e6b6f9ed2e7a（3m54s）
+  · 安卓打包/构建APK.ps1（进程级 Bypass 执行）
+      MainActivity 已是自定义版本，保留不覆盖（防覆盖保护生效）
+      BUILD SUCCESSFUL in 14s
+  · 核对：解包 APK 的 bundle 与站点产物逐字节一致（797,621 字节 / d577be7020b98e16）。
+
+本轮只动服务端加载方式与测试，客户端主包与 gd.js 字节都没变，行为等价；
+换来的是启动内存与首次请求成本的大幅下降（见第三节）。

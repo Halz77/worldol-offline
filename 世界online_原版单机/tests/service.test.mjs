@@ -36,7 +36,7 @@ test('loopback service creates, enters and persists a role through v305 messages
     await Promise.race([once(proc.stdout,'data'),once(proc,'exit').then(([code])=>{throw Error('Service exited '+code);}),new Promise((_,reject)=>setTimeout(()=>reject(Error('Startup timed out')),5000).unref())]);
     const response=await fetch(`http://127.0.0.1:${port}/`);assert.equal(response.status,200);assert.ok(response.headers.get('content-security-policy').includes(`connect-src 'self' ws://127.0.0.1:${port}`));
     const statusResponse=await fetch(`http://127.0.0.1:${port}/api/status`);assert.equal(statusResponse.status,200);const status=await statusResponse.json();assert.equal(status.damageMathRevision,damageMathRevision);assert.equal(status.combatRatingRevision,combatRatingRevision);
-    assert.equal(status.recordedExpansionRevision,recordedExpansionRevision);assert.equal(status.yunruoTempleRevision,yunruoTempleRevision);
+    assert.equal(status.recordedExpansionRevision,recordedExpansionRevision());assert.equal(status.yunruoTempleRevision,yunruoTempleRevision);
     const capturedDirectory=await(await fetch(`http://127.0.0.1:${port}/api/official-content`)).json();assert.equal(capturedDirectory.missions,official.missions.length);
     for(const scene of recordedExpansion.maps)assert.ok(capturedDirectory.maps.some(m=>m.id===scene.id));
     assert.match(await(await fetch(`http://127.0.0.1:${port}/combat-rating.js`)).text(),/installCombatRating/);

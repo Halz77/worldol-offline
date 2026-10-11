@@ -94,16 +94,22 @@ const WEB_PATHS={'/':'index.html','/index.html':'index.html','/offline.js':'offl
 export function createHttpRouter(env){
  const {root,raw,store,log,controlToken,port,stats,onMissing,onShutdown}=env;
  const mainPath=CLIENT_MAIN_PATH;
- // 引导脚本与主包在这里打好补丁；只有 HTTP 层会给客户端发这两个文件。
- const boot=patchClientBoot(fs.readFileSync(path.join(root,'analysis/gd.decoded.js'),'utf8'));
- const main=patchClientMain(fs.readFileSync(path.join(raw,mainPath),'utf8'));
- const restoredManifest=JSON.stringify(nativeResourceManifest(root,raw));
+ // 构建期产物替运行期省下的那一半（架构评审 P1-3 的后半段）：补丁链要读 4.4 MB 主包
+ // 再跑 23 步字符串注入（本机约 830 ms，WebView 更慢），过去在 createHttpRouter 里
+ // 无条件做掉 —— 可客户端一个字节都没请求。改成首次请求 /gd.js 与主包时才算。
+ //
+ // standalone 站点里 VFS 登记的就是打过补丁的成品，patchClientMain 会命中幂等分支
+ // 直接返回入参，所以安卓侧这一步是「读一次 + 比一次标记」，不再是整条链。
+ let bootCache=null,mainCache=null,manifestCache=null;
+ const bootCode=()=>bootCache??=patchClientBoot(fs.readFileSync(path.join(root,'analysis/gd.decoded.js'),'utf8'));
+ const mainCode=()=>mainCache??=patchClientMain(fs.readFileSync(path.join(raw,mainPath),'utf8'));
+ const restoredManifest=()=>manifestCache??=JSON.stringify(nativeResourceManifest(root,raw));
 
  const findRole=id=>store.data.characters.find(p=>p.id===Number(id));
  const roleJson=(res,role,payload,notFound)=>role?answer(res,200,mime['.json'],JSON.stringify(payload(role))):answer(res,404,mime['.json'],notFound);
 
  const routes=[
-  {kind:'path',path:'/v/gd/305.json',reply:({res})=>answer(res,200,mime['.json'],restoredManifest)},
+  {kind:'path',path:'/v/gd/305.json',reply:({res})=>answer(res,200,mime['.json'],restoredManifest())},
   {kind:'path',path:'/api/native-ui',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({revision:nativeUiRevision,commerce:'native-commerce-20260922-v1',portals:openPortalsRevision}))},
   {kind:'path',path:'/native-commerce.js',reply:({res})=>answer(res,200,mime['.js'],fs.readFileSync(path.join(root,'web/native-commerce.js')))},
   {kind:'path',path:'/api/home-features',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),homeSnapshot,'{"error":"角色不存在"}')},
@@ -117,19 +123,19 @@ export function createHttpRouter(env){
   {kind:'path',path:'/api/character-features',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),featureSnapshot,'{"error":"角色不存在"}')},
   {kind:'path',path:'/api/legion',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),legionSnapshot,'{"error":"角色不存在"}')},
   {kind:'path',path:'/api/daily-activity',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),dailySnapshot,'{"error":"角色不存在"}')},
-  {kind:'path',path:'/api/career-skills',reply:({res})=>answer(res,200,mime['.json'],careerDirectory)},
+  {kind:'path',path:'/api/career-skills',reply:({res})=>answer(res,200,mime['.json'],careerDirectory())},
   {kind:'path',path:'/api/recorded-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify(recordedDirectory()))},
   {kind:'path',path:'/api/drops',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify(dropDirectory()))},
   {kind:'path',path:'/api/player-experience',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({...playerExperience,clientProgressionRevision}))},
   {kind:'path',path:'/api/supply-shops',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify(supplyDirectory))},
   {kind:'path',path:'/api/combat-rating',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),combatRating,'{"error":"没有找到这个角色"}')},
   {kind:'path',path:'/equipment-composition-data.js',reply:({res})=>answer(res,200,mime['.js'],`window.worldolCompositionData=${JSON.stringify({vipMax:VIP_MAX,sets:setData.sets.map(({id,bonuses})=>({id,bonuses}))})};`)},
-  {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify({...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds},spirit:spiritRules})},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
+  {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify({...upgradeRules,advanced:{...upgradeRules.advanced,identifyItemIds:upgradeIdentifyItemIds()},spirit:spiritRules})},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
   {kind:'path',path:'/api/content-library',reply:({res})=>answer(res,200,mime['.json'],fs.readFileSync(path.join(root,'data/content-library.json')))},
   {kind:'path',path:'/api/official-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({version:'0.6.4',maps:official.maps.map(m=>({id:m.id,name:m.name})),itemIds:[...officialItems.keys()],catalog:official.catalog.length,missions:official.missions.length,supportedMissions:supportedMissionCount}))},
   // /api/status 必须排在 /status 前面：否则 /status 会被前者吃掉前 11 个字符？不会 —— 精确匹配，
   // 只是若两者顺序颠倒，任何重构都更容易把 /api/status 写成前缀匹配。保持原顺序，便于逐行比对。
-  {kind:'path',path:'/api/status',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({combatLimitsRevision,characterAttackLimits,battleStatusLimit:null,project:'worldonline-original-offline',projectRoot:root,version:'0.6.4',client:305,petCatalog:petCatalogSummary,systemSettingsRevision,homeFeatureRevision,yunruoTempleRevision,recordedExpansionRevision,bossChallengeRevision,legionRevision,damageMathRevision,bossManaRecoveryRevision,clientMissionRevision,clientBagRevision,combatRatingRevision,battleSkillPanelRevision,battleFontRevision,legionSurvivorsRevision,legionPetGuardRevision,battleSpeedRevision,weaponSlotRevision,phantomImmunityRevision,illusionRevision,weaponIconRevision,taskResetRevision,taskResetDay:dailyKey(),nextTaskResetAt:nextTaskResetAt(),port,pid:process.pid,equipmentUpgrades:{version:upgradeRules.version,mode:upgradeRules.mode,starMax:upgradeRules.star.max,star:upgradeRules.star,gem:upgradeRules.gem},careerSkills:{version:careers.version,effectRevision:careers.effectRevision,teachers:careers.teachers.length,skills:careers.skills.length,maxLevel:22,learningMode:careers.learningMode},accounts:store.data.accounts.map(a=>({id:a.id,name:a.name})),characters:store.data.characters,...stats()},null,2))},
+  {kind:'path',path:'/api/status',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({combatLimitsRevision,characterAttackLimits,battleStatusLimit:null,project:'worldonline-original-offline',projectRoot:root,version:'0.6.4',client:305,petCatalog:petCatalogSummary,systemSettingsRevision,homeFeatureRevision:homeFeatureRevision(),yunruoTempleRevision,recordedExpansionRevision:recordedExpansionRevision(),bossChallengeRevision,legionRevision,damageMathRevision,bossManaRecoveryRevision,clientMissionRevision,clientBagRevision,combatRatingRevision,battleSkillPanelRevision,battleFontRevision,legionSurvivorsRevision,legionPetGuardRevision,battleSpeedRevision,weaponSlotRevision,phantomImmunityRevision,illusionRevision,weaponIconRevision,taskResetRevision,taskResetDay:dailyKey(),nextTaskResetAt:nextTaskResetAt(),port,pid:process.pid,equipmentUpgrades:{version:upgradeRules.version,mode:upgradeRules.mode,starMax:upgradeRules.star.max,star:upgradeRules.star,gem:upgradeRules.gem},careerSkills:{version:careers.version,effectRevision:careers.effectRevision,teachers:careers.teachers.length,skills:careers.skills.length,maxLevel:22,learningMode:careers.learningMode},accounts:store.data.accounts.map(a=>({id:a.id,name:a.name})),characters:store.data.characters,...stats()},null,2))},
   {kind:'path',path:'/status',reply:({res})=>answer(res,200,mime['.html'],`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>世界OL单机状态</title><h1>原版单机 v0.6.4</h1><p>${official.maps.length}张原版地图，${official.missions.length}条任务定义，其中${supportedMissionCount}条通过当前条件与奖励检查。</p><p>已整合全部保存录制中可解析的公开配置：${recorded.pets.length}个宠物模板、${recorded.petSnapshots.length}份实际宠物样本、${recorded.petSkills.length}条宠物技能等级、${recordedFinishedPets.size}套97级成品宠物、20个称号、192组套装、16种宠物蛋和4份VIP页面记录。</p><p>左上单机菜单 → 录制内容 / 宠物与称号。宠物可按已录模板免费领取并出战，称号可选择并保存；套装效果按穿戴件数和VIP等级生效。</p><p>保留97级存档及原有强化、镶嵌、免费合成、技能和战力规则。未录到的随机概率、各品质完整成长曲线、16级之后经验表和部分国家/护送功能仍为缺项。</p><a href="/">进入游戏</a></html>`)},
   {kind:'path',path:'/api/shutdown',when:({req})=>req.method==='POST',reply:async({req,res})=>{
    if(req.headers['x-worldol-control']!==controlToken)return answer(res,403,'text/plain','Invalid local control token');
@@ -146,8 +152,8 @@ export function createHttpRouter(env){
   {kind:'gate',when:({req})=>req.method!=='GET'&&req.method!=='HEAD',status:405,body:'Method not allowed'},
 
   {kind:'path',path:'/viewport.js',reply:({res})=>answer(res,200,mime['.js'],fs.readFileSync(path.join(root,'web/viewport.js')))},
-  {kind:'path',path:'/gd.js',reply:({res})=>answer(res,200,mime['.js'],boot)},
-  {kind:'path',path:'/'+mainPath,reply:({res})=>answer(res,200,mime['.js'],main)},
+  {kind:'path',path:'/gd.js',reply:({res})=>answer(res,200,mime['.js'],bootCode())},
+  {kind:'path',path:'/'+mainPath,reply:({res})=>answer(res,200,mime['.js'],mainCode())},
 
   // 静态文件兜底：web/ 白名单优先，其余落到原版资源目录。
   {kind:'static'},

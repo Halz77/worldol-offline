@@ -2,6 +2,7 @@ import {ensurePetEquipment} from './pet-equipment-data.mjs';
 import {titlePowers} from './recorded-content.mjs';
 import {characterFeaturePowers} from './character-features.mjs';
 import fs from 'node:fs';
+import {lazyBox} from './lazy-data.mjs';
 import {official,officialItems,officialSkills,itemSlots} from './official-data.mjs';
 import {itemWithAffixes,equipmentPowers,nativeEquipmentSkill} from './item-affixes.mjs';
 import {setPowers} from './equipment-sets.mjs';
@@ -16,23 +17,44 @@ import {spiritRules} from './spirit-seal-data.mjs';
 import {skillBytes} from './character-import-codec.mjs';
 import {IGNORE_REQUIREMENT_ITEM_ID} from './local-items.mjs';
 import {localCareerSkills,localCareerSkillIds} from './local-career-skills.mjs';
-export const restored=JSON.parse(fs.readFileSync(new URL('../data/restored-v03.json',import.meta.url),'utf8'));
-export const equipment=new Map(restored.equipment.map(x=>[x.id,x]));
-export const skills=new Map(careerSkills);
-// MOD(country-skill-shop)：把国家专属技能（防御战术（劈砍）/（穿刺）等）并进运行时技能表。
-// 它们不在 data/career-skills.json 里（那份文件要保持上游原样），所以这里单独合并。
-for(const s of localCareerSkills)skills.set(s.id,s);
-for(const e of officialItems.values())equipment.set(e.id,{...e,native:true,level:e.reqLv,requirements:[e.reqStr,e.reqCon,e.reqAgi,e.reqIlt,e.reqWis],durability:e.durMax,localPrice:0,localIcon:e.bagIcon,attackTimes:(e.atk_time||0)+1,hit:e.hitrate||0,powers:[1,2,3].filter(n=>e['power'+n]).map(n=>[e['power'+n],e['powerValue'+n]])});
-equipment.get(LEGENDARY_EGG_ID).localPrice=LEGENDARY_EGG_PRICE;
-for(const id of [spiritRules.boxId,...spiritRules.boxIds])equipment.get(id).localPrice=spiritRules.boxPrice;
-for(const row of officialSkills){
- if(careerSkills.has(row.id)||localCareerSkillIds.has(row.id))continue;
- let s=skills.get(row.id);if(s&&!s.native)throw Error('Official skill ID conflicts with local data: '+row.id);
- if(!s){s={id:row.id,name:row.name,native:true,type:row.type,levels:[],shops:[]};skills.set(row.id,s);}
- s.levels.push({...row,native:true,powers:[1,2,3].filter(n=>row['power'+n]).map(n=>[row['power'+n],row['powerValue'+n]])});
- for(const source of row.sources)if(source.origin==='shop'&&!s.shops.includes(source.shopId))s.shops.push(source.shopId);
- s.levels.sort((a,b)=>a.level-b.level);s.shop=s.shops[0];
+
+/**
+ * 运行时物品表与技能表 —— 服务端每次算属性、每次开背包都要用，但**只有登录之后**才用。
+ *
+ * 以前这两张表连同它们的输入（official 34.8 MB、career-skills 7.8 MB、restored 646 KB）
+ * 全在模块顶层建好，于是「起一个 HTTP 服务」= 把整张数据图拉进堆（架构评审 P1-1）。
+ * 现在整套合并逻辑挂在 ensure() 上，第一次真正查物品/技能时执行一次。
+ *
+ * `equipment` 与 `skills` 是热表，包了代理会多一层属性查找 —— 实测 2.25x，
+ * 单次 0.03 µs，相对一个数据包的开销可以忽略；换来的是启动不再建这 30 MB 多的副本。
+ */
+let built=null;
+function ensure(){
+ if(built)return built;
+ const restored=JSON.parse(fs.readFileSync(new URL('../data/restored-v03.json',import.meta.url),'utf8'));
+ const equipment=new Map(restored.equipment.map(x=>[x.id,x]));
+ const careerSkillMap=new Map(careerSkills);
+ const skills=new Map(careerSkillMap);
+ // MOD(country-skill-shop)：把国家专属技能（防御战术（劈砍）/（穿刺）等）并进运行时技能表。
+ // 它们不在 data/career-skills.json 里（那份文件要保持上游原样），所以这里单独合并。
+ for(const s of localCareerSkills)skills.set(s.id,s);
+ for(const e of officialItems.values())equipment.set(e.id,{...e,native:true,level:e.reqLv,requirements:[e.reqStr,e.reqCon,e.reqAgi,e.reqIlt,e.reqWis],durability:e.durMax,localPrice:0,localIcon:e.bagIcon,attackTimes:(e.atk_time||0)+1,hit:e.hitrate||0,powers:[1,2,3].filter(n=>e['power'+n]).map(n=>[e['power'+n],e['powerValue'+n]])});
+ equipment.get(LEGENDARY_EGG_ID).localPrice=LEGENDARY_EGG_PRICE;
+ for(const id of [spiritRules.boxId,...spiritRules.boxIds])equipment.get(id).localPrice=spiritRules.boxPrice;
+ for(const row of officialSkills()){
+  if(careerSkillMap.has(row.id)||localCareerSkillIds.has(row.id))continue;
+  let s=skills.get(row.id);if(s&&!s.native)throw Error('Official skill ID conflicts with local data: '+row.id);
+  if(!s){s={id:row.id,name:row.name,native:true,type:row.type,levels:[],shops:[]};skills.set(row.id,s);}
+  s.levels.push({...row,native:true,powers:[1,2,3].filter(n=>row['power'+n]).map(n=>[row['power'+n],row['powerValue'+n]])});
+  for(const source of row.sources)if(source.origin==='shop'&&!s.shops.includes(source.shopId))s.shops.push(source.shopId);
+  s.levels.sort((a,b)=>a.level-b.level);s.shop=s.shops[0];
+ }
+ built={restored,equipment,skills};
+ return built;
 }
+export const restored=lazyBox(()=>ensure().restored,'restored');
+export const equipment=lazyBox(()=>ensure().equipment,'equipment');
+export const skills=lazyBox(()=>ensure().skills,'skills');
 export const ITEM_SHOP=901,SKILL_SHOP=1100;
 export const bagCapacity=p=>Math.min(INITIAL_BAG_CAPACITY,Math.max(1,p.bagLimit||24));
 export const firstFree=p=>Array.from({length:bagCapacity(p)},(_,i)=>30+i).find(slot=>!p.inventory.some(x=>x.slot===slot));

@@ -24,7 +24,7 @@ function harness(){
 const use=(wait,slot)=>new Writer().byte(wait).byte(3).short(slot).int(1).bool(false).byte(28);
 test('every selectable legendary-pool egg hatches its selected profile deterministically',()=>{
  const {p}=harness();
- for(const egg of selectablePetEggs){
+ for(const egg of selectablePetEggs()){
   p.inventory=[{itemId:egg.id,slot:30,quantity:1}];p.nextPetIndex=0;
   const result=openContainer(p,30,1,()=>{throw Error('selectable eggs must not use randomness');});
   const pet=result.added[0].instance.pet;
@@ -33,7 +33,7 @@ test('every selectable legendary-pool egg hatches its selected profile determini
 });
 
 test('pet item handler accepts a selectable egg from the bag',()=>{
- const {p,call}=harness(),egg=selectablePetEggs[0];p.inventory=[{itemId:egg.id,slot:30,quantity:1}];
+ const {p,call}=harness(),egg=selectablePetEggs()[0];p.inventory=[{itemId:egg.id,slot:30,quantity:1}];
  assert.equal(call(12001,use(1,30)).byte(),1);assert.ok(p.inventory.some(i=>i.pet&&i.pet.catalogKey===egg.profile.key));
 });
 

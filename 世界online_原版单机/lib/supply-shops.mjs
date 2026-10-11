@@ -58,7 +58,7 @@ const categories=[
   [911,'紫色首饰与护符'],
   [912,'紫色宠物装备'],
 ];
-const selectableEggIds=new Set(selectablePetEggs.map(egg=>egg.id));
+const selectableEggIds=new Set(selectablePetEggs().map(egg=>egg.id));
 // 美容院的造型道具（lib/local-fashion.mjs）也是 type 12，但它们只在商店 51/52/55 里
 // 出现、买下即换造型，不属于「装备与补给商人」卖的时装，不能混进 908 的分类列表。
 export const supplyShops=categories.map(([id,name])=>({id,name,items:[...officialItems.values()].filter(e=>!APPEARANCE_ITEM_IDS.has(e.id)&&supplyCategory(e)===id&&(id===918?(selectableEggIds.has(e.id)||soldPetItem(e)):soldPetItem(e))).sort((a,b)=>(a.reqLv||0)-(b.reqLv||0)||a.id-b.id).map(e=>e.id)}));

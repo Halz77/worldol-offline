@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {lazyBox,lazyJson} from './lazy-data.mjs';
 import {petEquipmentDefinition} from './pet-equipment-data.mjs';
 import crypto from 'node:crypto';
 import {official} from './official-data.mjs';
@@ -8,9 +9,21 @@ import {finishEquipment} from './character-import-codec.mjs';
 import {enchantmentFields} from './enchantment-data.mjs';
 import {spiritRuneDefinition,applySpiritSeals} from './spirit-seal-data.mjs';
 
-const layouts=JSON.parse(fs.readFileSync(new URL('../data/item-affix-layouts.json',import.meta.url),'utf8'));
-const manualGrants=JSON.parse(fs.readFileSync(new URL('../data/manual-item-grants.json',import.meta.url),'utf8'));
-const ranges=new Map((official.identification||[]).map(row=>[row.itemId,row.slots]));
+// 词条布局表（1.8 MB）与手工补录：只在鉴定/强化/合成这条路径上才读，惰性化。
+const layouts=lazyJson(new URL('../data/item-affix-layouts.json',import.meta.url),'itemAffixLayouts');
+const manualGrants=lazyJson(new URL('../data/manual-item-grants.json',import.meta.url),'manualItemGrants');
+// 下面两张索引都要先把 official（34.8 MB）建出来，所以一起惰性化：
+// 找一条已鉴定装备的范围、或查一颗宝石的定义，才需要它们（架构评审 P1-1）。
+let indexes=null;
+function index(){
+ if(indexes)return indexes;
+ indexes={
+  ranges:new Map((official.identification||[]).map(row=>[row.itemId,row.slots])),
+  gemDefinitions:new Map(official.items.filter(i=>i.type===30).map(i=>[i.id,i])),
+ };
+ return indexes;
+}
+const ranges=lazyBox(()=>index().ranges,'affixRanges');
 const allowed=new Set(['power1','power2','power3','bindPower1','bindPower2']);
 const valueField=field=>field.replace('Power','PowerValue').replace(/^power/,'powerValue');
 export const upgradeRules={...JSON.parse(fs.readFileSync(new URL('../data/equipment-upgrade-rules.json',import.meta.url),'utf8')),version:'equipment-upgrades-v3',star:starRules,gem:gemRules,advanced:advancedRules};
@@ -20,7 +33,8 @@ export const identifySlots=template=>(ranges.get(template?.id)||[]).filter(slot=
 export const canIdentify=template=>(template?.type===41||!!layouts.items[String(template?.id)])&&identifySlots(template).length>0;
 export const upgradeIdentifySlots=template=>(ranges.get(template?.id)||[]).filter(slot=>/^power[4-7]$/.test(slot.field)&&slot.options?.length);
 export const canUpgradeIdentify=template=>!!layouts.items[String(template?.id)]&&upgradeIdentifySlots(template).length>0;
-export const upgradeIdentifyItemIds=[...ranges.keys()].filter(id=>canUpgradeIdentify({id}));
+/** 可进阶鉴定的道具号（数组）：惰性数组不能走代理，所以是函数。 */
+export const upgradeIdentifyItemIds=()=>[...ranges.keys()].filter(id=>canUpgradeIdentify({id}));
 export const compositionRanges=template=>(ranges.get(template?.id)||[]).filter(slot=>allowed.has(slot.field)&&template[slot.field]===131&&slot.options?.length);
 export const compositionSkills=template=>template?.combinUpSkillList?.filter(s=>layouts.items[template.id]?.combinationSkill?.options.some(o=>o.id===s.id&&o.level===s.level))||[];
 export function nativeEquipmentSkill(template){if(template?.imported&&template.skill?.wireBase64)return template.skill;const wire=layouts.items[template?.id]?.nativeSkillWireBase64;return template?.skill&&wire?{...template.skill,wireBase64:Buffer.concat([Buffer.from(wire,'base64'),Buffer.from([0])]).toString('base64')}:null;}
@@ -28,7 +42,7 @@ export function starValue(value,ascension,star,bound,power){
   if(!bound||!ascension||!star||(power!==undefined&&!isStarPower(power)))return value||0;
   return Math.min(32767,(value||0)+Math.trunc((Math.abs(value||0)*ascension*star+500)/1000));
 }
-const gemDefinitions=new Map(official.items.filter(i=>i.type===30).map(i=>[i.id,i]));
+const gemDefinitions=lazyBox(()=>index().gemDefinitions,'gemDefinitions');
 export function gemCapacity(template,instance){
  const count=instance?.socketCapacity;
  if(count===undefined)return template?.attachCount||0;

@@ -1,9 +1,17 @@
-import fs from 'node:fs';
-export const homeFeatureData=JSON.parse(fs.readFileSync(new URL('../data/home-features-v1.json',import.meta.url),'utf8'));
-export const homeFeatureCatalogs=JSON.parse(fs.readFileSync(new URL('../data/home-feature-catalogs.json',import.meta.url),'utf8'));
-export const homeFeatureRevision=homeFeatureData.revision;
-export const towerFloors=new Map(homeFeatureData.tower.flatMap(t=>t.levels.map(f=>[f.id,{...f,mode:t.mode}])));
-export const towerPreviews=new Map(homeFeatureData.previews.map(p=>[p.id,p]));
+import {lazyBox,lazyJson} from './lazy-data.mjs';
+
+/**
+ * 家园 / 永泽塔资料（835 KB + 目录）。
+ *
+ * 只在「家园」与「永泽塔预览」面板用得到，以前跟着 import 图在启动期解析
+ * （架构评审 P1-1）。现在三张表都惰性：`homeFeatureData` 走代理，
+ * 两张 Map 走惰性构造，revision 改成函数（只有 /api/status 与家园快照要它）。
+ */
+export const homeFeatureData=lazyJson(new URL('../data/home-features-v1.json',import.meta.url),'homeFeatureData');
+export const homeFeatureCatalogs=lazyJson(new URL('../data/home-feature-catalogs.json',import.meta.url),'homeFeatureCatalogs');
+export const homeFeatureRevision=()=>homeFeatureData.revision;
+export const towerFloors=lazyBox(()=>new Map(homeFeatureData.tower.flatMap(t=>t.levels.map(f=>[f.id,{...f,mode:t.mode}]))),'towerFloors');
+export const towerPreviews=lazyBox(()=>new Map(homeFeatureData.previews.map(p=>[p.id,p])),'towerPreviews');
 
 export function vipBenefits(p){
  const level=Math.max(0,Math.min(9,Number(p.vipLevel2)||0));

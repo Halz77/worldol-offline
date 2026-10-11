@@ -1,19 +1,35 @@
 import fs from 'node:fs';
+import {lazyBox} from './lazy-data.mjs';
 import {officialMissions} from './official-data.mjs';
 import {isNewbieMission} from './newbie-missions.mjs';
 import {applyYunruoDaily,yunruoTempleRevision} from './yunruo-temple.mjs';
 import {applyRecordedExpansionDaily,recordedExpansionRevision} from './recorded-expansion.mjs';
 import {vipBenefits} from './home-feature-data.mjs';
 
-export const dailyData=JSON.parse(fs.readFileSync(new URL('../data/daily-activity-v1.json',import.meta.url),'utf8'));
-applyYunruoDaily(dailyData);
-applyRecordedExpansionDaily(dailyData);
-dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision;
-export const dailyRevision=dailyData.revision;
+/**
+ * 每日活动表（100 KB）本身很小，但它的顶层三步 `applyYunruoDaily` /
+ * `applyRecordedExpansionDaily` 会连带把 12.4 MB 的录制扩展解析进堆。
+ * 整段挪进惰性构造：第一次用到每日活动时才建（架构评审 P1-1）。
+ */
+let built=null;
+function ensure(){
+ if(built)return built;
+ const dailyData=JSON.parse(fs.readFileSync(new URL('../data/daily-activity-v1.json',import.meta.url),'utf8'));
+ applyYunruoDaily(dailyData);
+ applyRecordedExpansionDaily(dailyData);
+ dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision();
+ built={
+  data:dailyData,
+  revision:dailyData.revision,
+  conditions:new Map(dailyData.legacy.conditions.map(c=>[c.id,c])),
+  canonicalTasks:dailyData.tasks.filter(t=>t.id===t.canonicalId&&t.linkage),
+ };
+ return built;
+}
+export const dailyData=lazyBox(()=>ensure().data,'dailyData');
+export const dailyRevision=()=>ensure().revision;
 export const dailyKey=(now=Date.now())=>new Date(Number(now)+8*60*60*1000).toISOString().slice(0,10);
 export const isDailyMission=q=>!!(q?.setting&2);
-const conditions=new Map(dailyData.legacy.conditions.map(c=>[c.id,c]));
-const canonicalTasks=dailyData.tasks.filter(t=>t.id===t.canonicalId&&t.linkage);
 
 function newDay(p,day,migrate=false){
  // Old saves have no completion dates. Keep their unlocked steps on the first
@@ -42,7 +58,7 @@ export function missionDone(p,id,now=Date.now()){
  return isDailyMission(q)?!!dailyState(p,now).completed[id]:(p.quests?.completed||[]).includes(id);
 }
 export function recordActivity(p,id,amount=1,now=Date.now()){
- const c=conditions.get(id);if(!c?.supported||!Number.isInteger(amount)||amount<1)return false;
+ const c=ensure().conditions.get(id);if(!c?.supported||!Number.isInteger(amount)||amount<1)return false;
  const s=ensureDaily(p,now),before=s.progress[id]||0;
  s.progress[id]=Math.min(c.count,before+amount);return s.progress[id]!==before;
 }
@@ -51,7 +67,7 @@ export function recordMissionCompletion(p,q,now=Date.now()){
  // Count each recorded daily quest once toward the 20-quest vitality goal.
  // Unlimited entrance/teleport quests cannot farm this goal.
  if(isDailyMission(q)&&!(q.setting&8)&&!s.credited.includes(q.id)){s.credited.push(q.id);recordActivity(p,3,1,now);}
- for(const t of canonicalTasks)if(t.linkage.terminal===q.id){
+ for(const t of ensure().canonicalTasks)if(t.linkage.terminal===q.id){
   s.taskTimes[t.id]=Math.min(Math.max(1,t.frequency), (s.taskTimes[t.id]||0)+1);
  }
  return s;
@@ -63,7 +79,7 @@ export function vitalitySnapshot(p,now=Date.now()){
 }
 export function taskSnapshot(p,now=Date.now()){
  const s=dailyState(p,now);
- const activeValue=canonicalTasks.reduce((sum,t)=>sum+(s.taskTimes[t.id]||0)*t.value,0);
+ const activeValue=ensure().canonicalTasks.reduce((sum,t)=>sum+(s.taskTimes[t.id]||0)*t.value,0);
  const info=dailyData.tasks.map(t=>{
   const {canonicalId,linkage,pending,...row}=t,finishTImes=s.taskTimes[canonicalId]||0;
   const progress=linkage?Math.min(t.progressSum,linkage.missionIds.filter(id=>s.completed[id]).length):0;
@@ -73,5 +89,5 @@ export function taskSnapshot(p,now=Date.now()){
  return {info,activeInfo:{activeValue,info:dailyData.activeRewards.map(r=>({...r,hasReward:s.claimedActive.includes(r.id)}))}};
 }
 export function dailySnapshot(p,now=Date.now()){
- return {revision:dailyRevision,day:dailyKey(now),resetPolicy:dailyData.resetPolicy,vitality:vitalitySnapshot(p,now),tasks:taskSnapshot(p,now),pending:{vipBonus:false,conditions:dailyData.legacy.conditions.filter(c=>!c.supported).map(c=>({id:c.id,name:c.content})),tasks:dailyData.tasks.filter(t=>t.pending).map(t=>({id:t.id,name:t.name,reason:t.pending}))}};
+ return {revision:dailyRevision(),day:dailyKey(now),resetPolicy:dailyData.resetPolicy,vitality:vitalitySnapshot(p,now),tasks:taskSnapshot(p,now),pending:{vipBonus:false,conditions:dailyData.legacy.conditions.filter(c=>!c.supported).map(c=>({id:c.id,name:c.content})),tasks:dailyData.tasks.filter(t=>t.pending).map(t=>({id:t.id,name:t.name,reason:t.pending}))}};
 }

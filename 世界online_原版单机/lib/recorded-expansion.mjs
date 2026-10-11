@@ -1,7 +1,22 @@
-import fs from 'node:fs';
+import {lazyJson} from './lazy-data.mjs';
 
-export const recordedExpansion=JSON.parse(fs.readFileSync(new URL('../data/recorded-expansion-20260922.json',import.meta.url),'utf8'));
-export const recordedExpansionRevision=recordedExpansion.revision;
+/**
+ * 录制扩展数据（12.4 MB）。**只在真正要应用扩展时才解析。**
+ *
+ * 以前这里是模块顶层的 eager `JSON.parse(fs.readFileSync(...))`：只要 import 图
+ * 碰到本文件（official-data → applyRecordedExpansion，daily-activity → applyRecordedExpansionDaily），
+ * 这 12.4 MB 就跟着进堆，哪怕这一局根本没用到扩展内容（架构评审 P1-1）。
+ */
+export const recordedExpansion=lazyJson(new URL('../data/recorded-expansion-20260922.json',import.meta.url),'recordedExpansion');
+
+/**
+ * 版本串。只有 `/api/status` 与每日活动的版本拼接要用它。
+ *
+ * 过去它是 `recordedExpansion.revision` 的顶层常量 —— 读一个字符串就把整份
+ * 12.4 MB 拉进堆。改成函数，让调用点（HTTP 面板）决定什么时候付这个成本。
+ */
+export const recordedExpansionRevision=()=>recordedExpansion.revision;
+
 const keys={items:r=>r.id,missions:r=>r.id,monsters:r=>r.id,ai:r=>r.id,skills:r=>r.id+':'+r.level,groups:r=>r.groupId,areas:r=>r.id,mapList:r=>r.id};
 const sources=(a=[],b=[])=>[...new Map([...a,...b].map(s=>[[s.capture,s.seq,s.origin,s.mapId,s.npcId,s.sha256].join(':'),s])).values()];
 
@@ -52,7 +67,7 @@ export function applyRecordedExpansionEvents(recorded){
     for(const event of recordedExpansion[table])if(!seen.has(event.capture+':'+event.seq)){recorded[table].push(structuredClone(event));seen.add(event.capture+':'+event.seq);}
   }
   for(const capture of recordedExpansion.captures)if(!recorded.captures.some(c=>c.id===capture.id))recorded.captures.push({id:capture.id,endedAt:capture.audit.cutoffAt,gaps:capture.audit.captureGaps.length,networkFailures:capture.audit.networkFailures.length});
-  recorded.revision+='+'+recordedExpansionRevision;
+  recorded.revision+='+'+recordedExpansion.revision;
   return recorded;
 }
 

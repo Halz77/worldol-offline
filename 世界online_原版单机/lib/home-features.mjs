@@ -43,7 +43,7 @@ export function checkpointOnline(p,context,now=Date.now()){
 const itemSummary=i=>({id:i.id,name:i.name||equipment.get(i.id)?.name||String(i.id),quantity:i.quantity||1});
 export function homeSnapshot(p,context,now=Date.now()){
  const state=homeState(p,now),vip=vipBenefits(p),seconds=onlineSeconds(p,context,now);
- return {revision:homeFeatureRevision,role:p.id,entries:homeEntries,day:state.day,
+ return {revision:homeFeatureRevision(),role:p.id,entries:homeEntries,day:state.day,
   balance:{gold:p.gold||0,silver:p.silver||0,coins:p.coins||0},vip:{...vip,experience:state.vipExperience,nextLevelExp:vip.level<=1?data.vip.nextLevelExp:null,pending:vipPending,dailyClaimed:state.vipDailyClaimed,growthClaimed:state.vipGrowthClaimed,gift:itemSummary(data.vip.items[2]),growthGift:itemSummary(data.vip.items[1])},
   online:{seconds,rewards:(data.online?.levels||[]).map(r=>({minutes:r.minutes,items:r.items.map(itemSummary),currencies:r.currencies,claimed:state.onlineClaimed.includes(r.minutes),ready:seconds>=r.minutes*60,pending:r.currencies.some(c=>![-1,-2,-3].includes(c.id))})).sort((a,b)=>a.minutes-b.minutes)},
   tower:data.tower.map(t=>({mode:t.mode,levels:t.levels.map(f=>({...f,previewAvailable:towerPreviews.has(f.id)}))})),

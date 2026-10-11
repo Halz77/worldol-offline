@@ -27,7 +27,7 @@ function decodeAppearance(pet){
 function harness(){
  const p={id:1,name:'幻化验',sex:1,race:0,job:1,level:60,icon1:'2240667',icon2:'0',icon3:'0'};
  initializeNewbie(p);p.level=60;normalizeRole(p);p.expMax=1e9;p.hp=hpMax(p);p.mp=mpMax(p);
- p.inventory=[{itemId:selectablePetEggs[0].id,slot:30,quantity:1}];p.nextPetIndex=0;
+ p.inventory=[{itemId:selectablePetEggs()[0].id,slot:30,quantity:1}];p.nextPetIndex=0;
  openContainer(p,30,1,()=>0.5);
  const item=p.inventory.find(entry=>entry.pet);
  const context={role:p,battle:false},sent=[],logs=[];

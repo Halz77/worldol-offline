@@ -1,17 +1,33 @@
-import fs from 'node:fs';
+import {lazyBox,lazyJson} from './lazy-data.mjs';
 import {officialGroups,officialMonsters,officialMaps} from './official-data.mjs';
 import {equipment,bagCapacity,firstFree} from './restoration.mjs';
 
-export const dropCatalog=JSON.parse(fs.readFileSync(new URL('../data/drop-catalog.json',import.meta.url),'utf8'));
-// Later verified captures can supply item definitions missing from this audit.
-for(const task of dropCatalog.tasks)for(const row of [...task.rewardItems,...task.selectItems,...task.requirements])row.available=equipment.has(row.id);
-dropCatalog.summary.missingRewardIds=dropCatalog.summary.missingRewardIds.filter(id=>!equipment.has(id));
-export const dropRevision=dropCatalog.revision;
-export const dropRateMultiplier=dropCatalog.policy.rateMultiplier??1;
-const groupRules=new Map(dropCatalog.groups.map(g=>[g.key,g]));
-const gearCache=new Map();
+/**
+ * 掉落目录（844 KB）+ 分组规则表。
+ *
+ * 顶层的两件「读数据 + 交叉核对装备目录」跟着启动走，现在挪进 ensure()：
+ * 只有真的算掉落（打怪结算、掉落面板）时才建（架构评审 P1-1）。
+ */
+export const dropCatalog=lazyJson(new URL('../data/drop-catalog.json',import.meta.url),'dropCatalog');
+
+let built=null;
+function ensure(){
+ if(built)return built;
+ // Later verified captures can supply item definitions missing from this audit.
+ for(const task of dropCatalog.tasks)for(const row of [...task.rewardItems,...task.selectItems,...task.requirements])row.available=equipment.has(row.id);
+ dropCatalog.summary.missingRewardIds=dropCatalog.summary.missingRewardIds.filter(id=>!equipment.has(id));
+ built={
+  groupRules:new Map(dropCatalog.groups.map(g=>[g.key,g])),
+  rateMultiplier:dropCatalog.policy.rateMultiplier??1,
+  gearCache:new Map(),
+ };
+ return built;
+}
+export const dropRevision=()=>{ensure();return dropCatalog.revision;};
+
 export function gearPool(level,tier){
  level=Math.min(97,level);const key=`${level}:${tier}`;
+ const {gearCache}=ensure();
  if(!gearCache.has(key)){
   const eligible=dropCatalog.gear.filter(i=>i.level<=level&&i.grade<=dropCatalog.policy.rates[tier].maxGrade);
   const recent=eligible.filter(i=>i.level>=level-dropCatalog.policy.gearLookback);
@@ -22,7 +38,7 @@ export function gearPool(level,tier){
 }
 export function ruleForBattle(battle){
  if(!battle.official)return null;
- const known=groupRules.get(`${battle.mapId}:${battle.group}`);if(known)return known;
+ const known=ensure().groupRules.get(`${battle.mapId}:${battle.group}`);if(known)return known;
  const group=officialGroups.get(battle.group),monsters=group?.monsters.filter(Boolean).map(id=>officialMonsters.get(id)).filter(Boolean);
  if(!monsters?.length)return null;
  return {groupId:battle.group,mapId:battle.mapId,map:officialMaps.get(battle.mapId)?.name,name:[...new Set(monsters.map(m=>m.name))].join(' / '),level:Math.max(...monsters.map(m=>m.level)),tier:monsters.some(m=>m.monstertype>=2)?'boss':monsters.some(m=>m.monstertype===1)?'elite':'normal',equipment:[],materials:[],extras:[],taskDrops:[]};
@@ -30,9 +46,10 @@ export function ruleForBattle(battle){
 function combined(rows){const merged=new Map();for(const r of rows){if(!equipment.has(r.id)||!Number.isSafeInteger(r.quantity)||r.quantity<=0)throw Error('掉落队列中的道具或数量无效。');const quantity=(merged.get(r.id)||0)+r.quantity;if(!Number.isSafeInteger(quantity))throw Error('掉落数量超出范围。');merged.set(r.id,quantity);}return [...merged].map(([id,quantity])=>({id,quantity}));}
 export function rollBattleLoot(p,battle,random=Math.random){
  const rule=ruleForBattle(battle);if(!rule)return [];
+ const multiplier=ensure().rateMultiplier;
  const out=[],rates=dropCatalog.policy.rates[rule.tier];
  const pick=pool=>pool[Math.min(pool.length-1,Math.floor(random()*pool.length))];
- const maybe=(pool,chance)=>{if(pool.length&&random()<chance*dropRateMultiplier)out.push({id:pick(pool),quantity:1});};
+ const maybe=(pool,chance)=>{if(pool.length&&random()<chance*multiplier)out.push({id:pick(pool),quantity:1});};
  maybe(rule.equipment.length?rule.equipment:gearPool(rule.level,rule.tier),rates.equipment);
  const materialPool=dropCatalog.policy.materialPools.find(b=>rule.level>=b.min&&rule.level<=b.max)?.ids||dropCatalog.policy.materialPools.at(-1).ids;
  maybe(rule.materials.length?rule.materials:materialPool,rates.material);
@@ -70,4 +87,4 @@ export function applyLootDelivery(p,rewards=[]){
  p.inventory=plan.inventory.map(i=>{const live=existing.get(`${i.slot}:${i.itemId}`);if(!live)return i;live.quantity=i.quantity;return live;});
  plan.inventory=p.inventory;if(plan.pending.length)p.pendingLoot=plan.pending;else delete p.pendingLoot;return plan;
 }
-export function dropDirectory(){return {revision:dropRevision,summary:dropCatalog.summary,policy:dropCatalog.policy,bands:dropCatalog.bands,sources:dropCatalog.web.sources,groups:dropCatalog.groups.map(g=>({...g,equipment:(g.equipment.length?g.equipment:gearPool(g.level,g.tier)).map(id=>({id,name:equipment.get(id).name,level:equipment.get(id).level})),materials:(g.materials.length?g.materials:(dropCatalog.policy.materialPools.find(b=>g.level>=b.min&&g.level<=b.max)||dropCatalog.policy.materialPools.at(-1)).ids).map(id=>({id,name:equipment.get(id).name})),extras:g.extras.map(id=>({id,name:equipment.get(id).name})),taskDrops:g.taskDrops.map(({evidence,...d})=>d)}))};}
+export function dropDirectory(){return {revision:dropRevision(),summary:dropCatalog.summary,policy:dropCatalog.policy,bands:dropCatalog.bands,sources:dropCatalog.web.sources,groups:dropCatalog.groups.map(g=>({...g,equipment:(g.equipment.length?g.equipment:gearPool(g.level,g.tier)).map(id=>({id,name:equipment.get(id).name,level:equipment.get(id).level})),materials:(g.materials.length?g.materials:(dropCatalog.policy.materialPools.find(b=>g.level>=b.min&&g.level<=b.max)||dropCatalog.policy.materialPools.at(-1)).ids).map(id=>({id,name:equipment.get(id).name})),extras:g.extras.map(id=>({id,name:equipment.get(id).name})),taskDrops:g.taskDrops.map(({evidence,...d})=>d)}))};}
