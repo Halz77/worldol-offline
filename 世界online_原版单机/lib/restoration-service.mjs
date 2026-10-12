@@ -14,7 +14,7 @@ import {applyLootDelivery} from './loot.mjs';
 import {recordActivity} from './daily-activity.mjs';
 import {notifyDaily} from './daily-service.mjs';
 import {nativeCommerce} from './native-commerce-data.mjs';
-import {selectablePetEggs,soldPetItem} from './pet-catalog.mjs';
+import {selectablePetEggs,soldPetItem,petSkillLevels} from './pet-catalog.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
 import {spiritRules,spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
 import {appearanceShops,appearanceByItemId,applyAppearance} from './local-fashion.mjs';
@@ -204,9 +204,68 @@ export function handleRestoration(type,r,context,{store,send,log}){
             throw Error('没有这个宠物技能。');
     }
 
-    // 暂时只支持完整遗忘。
-    if(type===14006)
-        throw Error('请使用完整遗忘后重新学习；逐级遗忘尚未接入。');
+    // 14006 = CG_SKILL_DELETE_BY_LEVEL，「放弃一级」：把技能降一级，降到底就当作完整遗忘。
+    // 客户端的解析与 14003 共用同一段代码（doDropSkillOneLevel 的 case 3）：
+    //   byte 状态（负数 = 错误串）/ int 技能号 / int sp / int 金 / int 银 / int 铜 /
+    //   bool 技能还在不在；还在就再跟一份技能定义 + 一个 byte 的 addLevel。
+    // 所以回包必须和下面 14003 的两个分支同构，只把那个 bool 换成「降级后的技能」。
+    if(type===14006){
+        const before=structuredClone(p);
+        let kept;
+        try{
+            if(target===0){
+                // ===== 人物技能：降一级 =====
+                const next=p.skills[id]-1;
+                // 等级的权威判定与 learned(p) 同一套：先看导入存档自带的等级定义，再看技能表。
+                const definition=next>=1?(p.importedSkillDefinitions?.[`${id}:${next}`]||skills.get(id)?.levels.find(level=>level.level===next)):null;
+                if(next>=1&&!definition)
+                    throw Error('这个技能上一级的资料尚未恢复，无法降级。');
+                if(next>=1)p.skills[id]=next;else delete p.skills[id];
+                reconcileSkillSettings(p);clampVitals(p);
+            }else{
+                // ===== 宠物技能：降一级 =====
+                const index=pet.skills.findIndex(s=>s.id===id),current=pet.skills[index],next=current.level-1;
+                const definition=next>=1?petSkillLevels.get(`${id}:${next}`):null;
+                if(next>=1&&!definition)
+                    throw Error('这个宠物技能上一级的资料尚未恢复，无法降级。');
+                if(next>=1){
+                    // 数值换成上一级的定义，但「这个技能是怎么来的」逐字沿用原来的标记
+                    // （kind / isLearnByBook / learnedFromMentor）：pet-state 的成长里程碑按
+                    // 这三个标记决定技能跟着记录一起长、还是被里程碑表换掉，降一级不该把
+                    // 「天生技能」变成「后天学的」，否则 97 级养成的表现会跟着变。
+                    const level=structuredClone(definition);
+                    if(current.kind===undefined)delete level.kind;else level.kind=current.kind;
+                    level.isLearnByBook=!!current.isLearnByBook;
+                    if(current.learnedFromMentor)level.learnedFromMentor=true;else delete level.learnedFromMentor;
+                    level.addLevel=current.addLevel||0;
+                    pet.skills[index]=level;
+                }else{
+                    pet.skills.splice(index,1);
+                    // 降到底就等于遗忘：自动技能栏与主动技能设置一并清掉（同 14003）。
+                    if(Array.isArray(pet.autoSkills))pet.autoSkills=pet.autoSkills.filter(skillId=>skillId!==id);
+                    if(pet.initiativeSkill===id)pet.initiativeSkill=-1;
+                }
+            }
+            store.save();
+        }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+
+        const w=new Writer().byte(0).int(id);
+        if(target===0){
+            kept=activeSkills(p).find(s=>s.id===id)||null;
+            w.int(p.skillPoints||0);
+        }else{
+            kept=pet.skills.find(s=>s.id===id)||null;
+            w.int(pet.sp||0);
+        }
+        w.int(p.gold||0).int(p.silver||0).int(p.coins).bool(!!kept);
+        if(kept)skillPacket(w,kept).byte(kept.addLevel||0);
+        send(type,w);
+        // 人物技能降级后技能面板里的等级要跟着变；宠物技能走自己的宠物包，这里不推 14011。
+        if(target===0&&kept)send(14011,skillUpdate(new Writer(),p));
+        if(target===0)log('skill-level-forgotten',{role:p.id,target:'player',id,level:kept?kept.level:0});
+        else log('skill-level-forgotten',{role:p.id,target:'pet',pet:pet.uid,id,level:kept?kept.level:0});
+        return true;
+    }
 
     if(target===0){
         // ===== 人物技能 =====

@@ -6,7 +6,7 @@ import {applyRecordedExpansion} from './recorded-expansion.mjs';
 import {nativeCommerce} from './native-commerce-data.mjs';
 import {applyOpenPortals} from './open-portals.mjs';
 import {applyBossHub} from './boss-hub.mjs';
-import {localPetSkillBooks} from './pet-skill-book-data.mjs';
+import {localPetSkillBooks,petSkillShopBooks} from './pet-skill-book-data.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
 import {spiritData,applySpiritNpcs,spiritBoxDefinition,spiritBoxes} from './spirit-seal-data.mjs';
 import {LEGENDARY_EGG_ID,legendaryEggDefinition,selectablePetEggs} from './pet-catalog.mjs';
@@ -44,6 +44,10 @@ function ensure(){
   official.items.push(egg.item);
  }
  for(const item of localPetSkillBooks){if(official.items.some(x=>x.id===item.id))throw Error('Local pet skill book ID collision: '+item.id);official.items.push(item);}
+ // 「装备与补给商人 → 技能书」上架的宠物满级技能书（每个宠物技能一本，见
+ // lib/pet-skill-book-data.mjs）。它们必须进 official.items，restoration 的
+ // equipment 表才会把定义（含 definitionBase64）带给商店与背包。
+ for(const item of petSkillShopBooks()){if(official.items.some(x=>x.id===item.id))throw Error('Pet skill shop book ID collision: '+item.id);official.items.push(item);}
  for(const item of localEnchantments){if(official.items.some(x=>x.id===item.id))throw Error('Local enchantment ID collision: '+item.id);official.items.push(item);}
  for(const item of spiritData.items){const index=official.items.findIndex(e=>e.id===item.id);if(index>=0)official.items[index]=item;else official.items.push(item);}
  for(const spiritBox of [spiritBoxDefinition(),...spiritBoxes.map(spiritBoxDefinition)]){

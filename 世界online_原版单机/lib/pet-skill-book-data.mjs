@@ -1,6 +1,6 @@
 import {Writer} from './codec.mjs';
 import {exportSkill} from './character-import-codec.mjs';
-import {petSkillLevels} from './pet-catalog.mjs';
+import {petSkillLevels,petSkillMaxima} from './pet-catalog.mjs';
 
 // Local item ID, not an invented official drop. The skill itself is the exact
 // recorded Magic Girl level-one skill; type 31 / power 186 is the native seal book.
@@ -49,6 +49,41 @@ const knightsDevotionBook={...book,id:KNIGHTS_DEVOTION_BOOK_ID,name:'骑士的�
 };
 knightsDevotionBook.definitionBase64=definition(knightsDevotionBook);
 export const localPetSkillBooks=[book,magicExhaustionBook,knightsDevotionBook];
+
+// ── 「装备与补给商人 → 技能书」的唯一来源：每个宠物技能一本满级书 ──
+//
+// 上游目录里那批人物技能书（power1 176/177/182、type 31、61001 等）已在
+// lib/supply-shops.mjs 里整体下架，这个分类从此只卖宠物技能书。
+// 「满级」= lib/pet-catalog.mjs 的 petSkillMaxima()，和宠物导师商店
+// （14001/14002 的 offer.levels.at(-1)）能教到的上限是同一个口径。
+//
+// 编号：930000000 + 技能编号 * 128 + 等级（等级 ≤ 127，所以这一段不会撞车）。
+// 和封印产物（createSealedPetSkillBook 的 920000000 段）刻意分开：封出来的书带着
+// 当时宠物的品质（grade），商店书是目录价，两者不该堆到同一个 itemId 上。
+export const PET_SKILL_SHOP_BOOK_ID_BASE=930000000;
+export function petSkillShopBookId(skill){return PET_SKILL_SHOP_BOOK_ID_BASE+skill.id*128+skill.level;}
+let shopBooks=null;
+export function petSkillShopBooks(){
+ if(shopBooks)return shopBooks;
+ shopBooks=petSkillMaxima().map(skill=>{
+  const item={...book,id:petSkillShopBookId(skill),
+   name:`${skill.name}（满级技能书·${skill.level}级）`,
+   info:`宠物技能书。在宠物的道具界面使用，可学习${skill.level}级${skill.name}（该技能已采集到的最高等级）。天生掌握此技能的宠物不能重复学习。`,
+   power1:186,powerValue1:skill.id,power2:0,powerValue2:skill.level,
+   learnSkill:exportSkill({...skill,isLearnByBook:true}),
+   sources:[{origin:'local-requested-pet-skill-book',skillId:skill.id,skillLevel:skill.level}]};
+  if(item.learnSkill.id!==skill.id||item.learnSkill.level!==skill.level)throw Error('满级宠物技能书导出的技能与目录不一致：'+skill.id);
+  item.definitionBase64=definition(item);
+  return item;
+ });
+ return shopBooks;
+}
+/** 技能书分类的上架名单（Set，供 supply-shops 的 supplyCategory 逐件判定；缓存在这里避免反复重建）。 */
+let shopBookIds=null;
+export function petSkillShopBookIds(){
+ if(!shopBookIds)shopBookIds=new Set(petSkillShopBooks().map(b=>b.id));
+ return shopBookIds;
+}
 
 // A sealed book carries the exact skill definition in the save. This also
 // supports captured pet skills that have no ordinary shop-book template.

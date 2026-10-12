@@ -39,12 +39,21 @@ function ensure(){
  });
  const selectablePetEggsById=new Map(selectablePetEggs.map(egg=>[egg.id,egg]));
  if(selectablePetEggsById.size!==legendaryPetPool.length)throw Error('宠物蛋编号重复。');
+ // 每个宠物技能「已采集到的最高等级」—— 这是宠物世界的「满级」口径：
+ // 宠物导师商店（14001/14002）能教到的上限用的也是它（offer.levels.at(-1)），
+ // 「技能书」商店卖的满级技能书同样取这一份，避免同一个词出现两套算法。
+ const petSkillMaxima=new Map();
+ for(const skill of petCatalog.skills){
+  const current=petSkillMaxima.get(skill.id);
+  if(!current||skill.level>current.level)petSkillMaxima.set(skill.id,skill);
+ }
  built={
   petProfiles,
   legendaryPetPool,
   selectablePetEggs,
   selectablePetEggsById,
   petSkillLevels:new Map(petCatalog.skills.map(s=>[`${s.id}:${s.level}`,s])),
+  petSkillMaxima:[...petSkillMaxima.values()].sort((a,b)=>a.id-b.id),
  };
  return built;
 }
@@ -56,6 +65,8 @@ export const petSkillLevels=lazyBox(()=>ensure().petSkillLevels,'petSkillLevels'
 export const selectablePetEggs=()=>ensure().selectablePetEggs;
 /** 传说宠物池（数组），内部候选表。 */
 export const legendaryPetPool=()=>ensure().legendaryPetPool;
+/** 每个宠物技能已采集到的最高等级定义（数组，按技能编号升序）。 */
+export const petSkillMaxima=()=>ensure().petSkillMaxima;
 
 function encodePetEgg(item){
  return new Writer().byte(item.type).bool(false).int(item.id).string(item.name).int(item.bagIcon).string(item.info)

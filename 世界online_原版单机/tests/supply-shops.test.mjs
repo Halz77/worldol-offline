@@ -6,7 +6,8 @@ import {Writer,Reader} from '../lib/codec.mjs';
 import {maps,walkable,reachable,normalizeRole} from '../lib/content.mjs';
 import {official,officialItems} from '../lib/official-data.mjs';
 import {supplyNpc,supplyShops,supplyDirectory,PURPLE_GRADE,PET_SHOP} from '../lib/supply-shops.mjs';
-import {MAGIC_EXHAUSTION_BOOK_ID} from '../lib/pet-skill-book-data.mjs';
+import {MAGIC_EXHAUSTION_BOOK_ID,petSkillShopBooks,petSkillShopBookIds,KNIGHTS_DEVOTION_BOOK_ID} from '../lib/pet-skill-book-data.mjs';
+import {petSkillLevels,petSkillMaxima} from '../lib/pet-catalog.mjs';
 import {npcPacket} from '../lib/game-packets.mjs';
 import {buyItem,equipment} from '../lib/restoration.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
@@ -15,6 +16,12 @@ import {shopItem} from '../lib/restoration-packets.mjs';
 import {APPEARANCE_ITEM_IDS} from '../lib/local-fashion.mjs';
 import {soldPetItem,selectablePetEggs} from '../lib/pet-catalog.mjs';
 const selectableEggIds=new Set(selectablePetEggs().map(e=>e.id));
+// 「技能书」分类的两条等式（见下面两条用例）：
+//   · petBookIds —— 唯一来源 lib/pet-skill-book-data.mjs 给出的在架编号；
+//   · isNativeSkillBook —— 原版目录里的技能书类条目（type 31 / power1 176·177·182·186 / 61001），
+//     它们现在一件都不该在架。
+const petBookIds=petSkillShopBookIds();
+const isNativeSkillBook=e=>e.type===31||[176,177,182,186].includes(e.power1)||e.id===61001;
 
 const d=decoders(fileURLToPath(new URL('..',import.meta.url)));
 const role=()=>normalizeRole({id:1,name:'补给验收',level:97,mapId:19,x:21,y:18,coins:39602,gold:12,silver:34,inventory:[],restoration:{starterIssued:true}});
@@ -39,13 +46,15 @@ test('categories include all purple gear and catalog mounts/costumes without low
  // 本地补充的道具属于各自的独立商店，不在「补给商店覆盖全部目录时装/坐骑」这个等式里：
  //   - 美容院的发型/脸型造型道具（APPEARANCE_ITEM_IDS）只在商店 51/52/55 里卖；
  //   - +4 宝石等其它本地补充道具用 ≥900000 的号段。
- // 补给商店只上「定义完整、能真正生成背包道具」的条目，所以有两类刻意不上架：
+ // 补给商店只上「定义完整、能真正生成背包道具」的条目，所以有三类刻意不上架：
  //   · 赋灵符 / 灵符箱（type 43）走灵符箱自己的流程；
- //   · type 28 里只作图鉴条目、并非宠物蛋的定义（power1 不是 109、名字也不含「宠物蛋」）。
- // 因此不写死两边数量相等，而是：缺的只能来自这两类，且不能多卖预期之外的东西。
- const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes(e.type)||e.grade===PURPLE_GRADE)&&e.id<900000&&!APPEARANCE_ITEM_IDS.has(e.id)).map(e=>e.id).sort((a,b)=>a-b);
+ //   · type 28 里只作图鉴条目、并非宠物蛋的定义（power1 不是 109、名字也不含「宠物蛋」）；
+ //   · 原版目录里的**人物技能书**（type 31 / power1 176·177·182·186 / 61001…）——
+ //     「技能书」分类改成只卖宠物满级技能书之后，这一批整体下架（见下面单独一条用例）。
+ // 因此不写死两边数量相等，而是：缺的只能来自这三类，且不能多卖预期之外的东西。
+const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes(e.type)||e.grade===PURPLE_GRADE)&&e.id<900000&&!APPEARANCE_ITEM_IDS.has(e.id)).map(e=>e.id).sort((a,b)=>a-b);
  const missing=expected.filter(id=>!ids.includes(id));
- assert.ok(missing.every(id=>{const e=officialItems.get(id);return e.type===28||e.type===43;}),'缺的只能是被刻意排除的两类：宠物蛋（type 28，非可售宠物道具）与灵符/灵符箱（type 43）：'+missing.slice(0,5).map(id=>officialItems.get(id).name).join('、'));
+ assert.ok(missing.every(id=>{const e=officialItems.get(id);return e.type===28||e.type===43||(isNativeSkillBook(e)&&!petBookIds.has(e.id));}),'缺的只能是刻意下架的三类（宠物蛋、灵符/灵符箱、原版人物技能书）：'+missing.slice(0,5).map(id=>officialItems.get(id).name).join('、'));
  // 多出来的只能是本地补充道具（高号段的宝石 / 封印书 / 宝箱等），不能混进原版目录条目。
  const extras=ids.filter(id=>!expected.includes(id));
  assert.ok(extras.every(id=>id>=800000),'卖出预期之外的条目：'+extras.filter(id=>id<800000).slice(0,5).join('、'));
@@ -57,8 +66,8 @@ test('categories include all purple gear and catalog mounts/costumes without low
  const category=id=>supplyShops.find(s=>s.items.includes(id))?.name;
  for(const [name,items] of [
   ['宠物蛋',[30100,30019,30076,30065,30067,30047]],
-  ['消耗品',[22,350,40007,40006,40003,40051,40053,40002,787,781,1200,MAGIC_EXHAUSTION_BOOK_ID]],
-  ['技能书',[3192,43700,43001,61001,9106079]],
+  ['消耗品',[22,350,40007,40006,40003,40051,40053,40002,787,781,1200,MAGIC_EXHAUSTION_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID]],
+  ['技能书',[petSkillShopBooks()[0].id,petSkillShopBooks().at(-1).id]],
   ['礼包',[40067,1324,770,40040,40041,1485]],
   ['材料',[497,1041,6120,8581,8761,61105]],
   ['强化卷轴',[40021,40026,40027]],['鉴定卷轴',[40001,40023,40025]],['镶嵌宝石',[411,432]]
@@ -71,6 +80,48 @@ test('categories include all purple gear and catalog mounts/costumes without low
    for(const id of shop.items){const item=parseShop(r,shop.id);assert.equal(item.id,id);assert.equal(item.money3,0);assert.ok(item.stackNum>=1);assert.equal(d.native(32,'isIdentifyItem',{e:d.Item}).call(item),canIdentify(officialItems.get(id)),`identification status for ${id}`);}
    r.finish();
  }
+});
+
+test('技能书分类只有宠物满级技能书：每个宠物技能一本、上限与导师商店同口径、原版技能书全部下架',()=>{
+ const books=petSkillShopBooks(),shop=supplyShops.find(s=>s.id===919),ids=new Set(supplyShops.flatMap(s=>s.items));
+ // 1) 在架的正好是这一批（唯一来源），顺序按编号升序（reqLv 全 0，商店按 (reqLv,id) 排）。
+ assert.deepEqual(shop.items,books.map(b=>b.id));
+ assert.equal(books.length,petSkillMaxima().length);
+ assert.equal(new Set(books.map(b=>b.id)).size,books.length);
+ // 2) 「满级」与宠物导师商店（14001/14002 的 levels.at(-1)）是同一个口径：每个技能恰好一本、取最高档。
+ for(const [index,book] of books.entries()){
+  const skill=petSkillMaxima()[index];
+  assert.equal(book.power1,186,'封印书标记');
+  assert.equal(book.type,31);
+  assert.equal(book.powerValue1,skill.id);
+  assert.equal(book.powerValue2,skill.level);
+  assert.equal(book.learnSkill.id,skill.id);
+  assert.equal(book.learnSkill.level,skill.level);
+  assert.equal(book.learnSkill.isLearnByBook,true);
+  // 技能定义与目录逐字节一致，唯一的差别是最后一字节的「从书学会」标记：
+  // 学习流程（lib/pet-skill-books.mjs selection）下发前本来就会把它置 1。
+  const wire=Buffer.from(book.learnSkill.wireBase64,'base64'),catalog=Buffer.from(petSkillLevels.get(`${skill.id}:${skill.level}`).wireBase64,'base64');
+  assert.equal(wire.length,catalog.length);
+  assert.equal(wire.subarray(0,-1).compare(catalog.subarray(0,-1)),0,'除 learn-by-book 标记外应逐字节一致');
+  assert.equal(wire.at(-1),1);
+  assert.equal(skill.level,Math.max(...[...petSkillLevels.keys()].filter(k=>k.startsWith(skill.id+':')).map(k=>Number(k.split(':')[1]))));
+  assert.equal(equipment.get(book.id).localPrice,0,'单机版商店免费');
+  assert.match(book.name,new RegExp(`满级技能书·${skill.level}级`));
+ }
+ // 3) 原版目录里那一批人物技能书一件都不在架（整个补给商人处都不该再有）。
+ for(const id of [3192,3216,3234,3278,61001,43700,43705,43001,43002,43007,43011,43012,43016,43017,43021,43022,43023,43111,43691,9106079])
+  assert.ok(!ids.has(id),'原版技能书应该已下架：'+id+' '+officialItems.get(id)?.name);
+ for(const e of officialItems.values())if(isNativeSkillBook(e)&&e.id<900000)assert.ok(!ids.has(e.id),'原版技能书漏下架：'+e.id+' '+e.name);
+ // 4) 每一本都必须能被宠物技能书流程识别（14016/14017 的 selection 校验的就是这三个字段）。
+ const parseBook=d.native(32,'isPetSealSkillBook',{a:{default:d.module(4).constants}});
+ const parseShopItem=d.native(67,'fromBytesShopItem',{t:d.Item,S:{default:d.Item}});
+ for(const book of books){
+  const item=parseShopItem(new NativeReader(shopItem(new Writer(),equipment.get(book.id),0).done()),919);
+  assert.equal(item.id,book.id);assert.equal(item.name,book.name);assert.equal(item.power1,186);
+  assert.equal(item.powerValue1,book.powerValue1);assert.equal(item.powerValue2,book.powerValue2);
+  assert.equal(parseBook.call(item),true,book.name);
+ }
+ assert.equal(books.find(b=>b.powerValue1===6079).powerValue2,9,'血雾的结界满级 9 级');
 });
 
 test('freshly purchased mounts and costumes keep their identify menu flag before any bag reload',()=>{

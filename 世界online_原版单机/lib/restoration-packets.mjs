@@ -57,4 +57,8 @@ export function itemPacket(w,i){if(i.pet)return petItemPacket(w,i);const templat
 export function addedItems(w,added=[]){w.byte(added.length);for(const row of added){w.byte(row.mode).byte(row.quantity);if(row.mode===1)itemPacket(w.int(row.instance.slot),row.instance);else w.int(row.instance.itemId).int(row.instance.slot);}return w;}
 export function bagPacket(w,p){w.short(p.inventory.length);for(const i of p.inventory)itemPacket(w,i);return w;}
 // The native purchase callback copies the shop status into the new bag item.
-export function shopItem(w,e,index){itemDefinition(w,e);return w.byte(Math.min(index,127)).int(0).int(0).int(e.localPrice).byte(100).int(0).int(0).int(e.localPrice).byte(canIdentify(e)?16:0).short(-1).short(-1).byte(0).byte(isSpiritBox(e.id)?2:e.id===LEGENDARY_EGG_ID?3:0).bool(false);}
+// viewOrder 在协议里是一个 **byte**（见客户端 fromBytesShopItem：`o.viewOrder=e.getByte()`），
+// 所以最多只能表达到 255。以前写 Math.min(index,127)，而「技能书」分类现在有 300 多本
+// 宠物满级技能书 —— 超过 255 的条目会并列在 255，靠客户端 sort 的稳定性保持插入顺序
+// （ES2019 起 Array.prototype.sort 保证稳定，WebView 上是这样），列表顺序仍然是对的。
+export function shopItem(w,e,index){itemDefinition(w,e);return w.byte(Math.min(index,255)).int(0).int(0).int(e.localPrice).byte(100).int(0).int(0).int(e.localPrice).byte(canIdentify(e)?16:0).short(-1).short(-1).byte(0).byte(isSpiritBox(e.id)?2:e.id===LEGENDARY_EGG_ID?3:0).bool(false);}

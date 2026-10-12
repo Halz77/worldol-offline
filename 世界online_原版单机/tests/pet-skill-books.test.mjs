@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {Writer,Reader} from '../lib/codec.mjs';
-import {BLOOD_MIST_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,KNIGHTS_DEVOTION_SKILL_ID,MAGIC_EXHAUSTION_BOOK_ID,localPetSkillBooks} from '../lib/pet-skill-book-data.mjs';
+import {BLOOD_MIST_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,KNIGHTS_DEVOTION_SKILL_ID,MAGIC_EXHAUSTION_BOOK_ID,localPetSkillBooks,petSkillShopBooks} from '../lib/pet-skill-book-data.mjs';
 import {handlePetItems} from '../lib/pet-service.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 import {recordedPetSkills} from '../lib/recorded-content.mjs';
@@ -92,4 +92,20 @@ test('50级魔力衰竭封印书保留本地外推出来的技能数值',()=>{
  assert.ok(book,'缺少 50 级魔力衰竭封印书');
  assert.equal(book.learnSkill.powerValue2,-133);
  assert.equal(book.learnSkill.useMP,875);
+});
+test('「技能书」商店卖的宠物满级书走的就是这条学习流程（最后一本用完从背包移除）',()=>{
+ // 「装备与补给商人 → 技能书」上架的 345 本和封印产物共用同一段 definition() 编码，
+ // 所以 14016/14017 的 selection() 必须同样认它们。这里用一个真实在架的编号跑一遍。
+ const book=petSkillShopBooks().find(b=>b.powerValue1===6079);
+ assert.ok(book,'商店应该有血雾的结界的满级技能书');
+ assert.equal(book.powerValue2,9);
+ const h=harness();
+ h.p.inventory=h.p.inventory.filter(i=>i.slot!==32);
+ h.p.inventory.push({itemId:book.id,slot:32,quantity:1});
+ assert.equal(new Reader(h.call(14016,preview())).byte(),0);
+ assert.equal(new Reader(h.call(14017,new Writer().int(6079).byte(9).bool(true).short(32).short(1))).byte(),0);
+ const learned=h.p.inventory.find(i=>i.pet).pet.skills.find(s=>s.id===6079);
+ assert.equal(learned.level,9);assert.equal(learned.isLearnByBook,true);
+ assert.equal(learned.wireBase64,book.learnSkill.wireBase64);
+ assert.equal(h.p.inventory.some(i=>i.itemId===book.id),false,'最后一本用完要从背包移除');
 });

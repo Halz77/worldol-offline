@@ -1,6 +1,6 @@
 import {official,officialItems} from './official-data.mjs';
 import {soldPetItem,selectablePetEggs} from './pet-catalog.mjs';
-import {MAGIC_EXHAUSTION_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID} from './pet-skill-book-data.mjs';
+import {MAGIC_EXHAUSTION_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,petSkillShopBooks,petSkillShopBookIds} from './pet-skill-book-data.mjs';
 import {spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
 import {PINNED_SUPPLY_ITEM_IDS} from './local-items.mjs';
 import {APPEARANCE_ITEM_IDS} from './local-fashion.mjs';
@@ -29,7 +29,11 @@ function supplyCategory(e){
   if(e.type===41)return 912;
   return null;
  }
- if(e.type===31||skillBookPowers.has(e.power1)||e.id===61001)return 919;
+ // 「技能书」分类只上**宠物满级技能书**（lib/pet-skill-book-data.mjs 的
+ // petSkillShopBooks 是唯一来源，每个宠物技能一本，等级取该技能已采集到的最高档）。
+ // 原版目录里那批人物技能书（power1 176/177/182、type 31、61001…）在单机版
+ // 没有可用的学习流程，这里整体下架 —— 所以 supplyCategory 对它们回 null。
+ if(e.type===31||skillBookPowers.has(e.power1)||e.id===61001)return petSkillShopBookIds().has(e.id)?919:null;
  // Some recovered egg definitions have no effect yet; their recorded names
  // still identify them as eggs (not generic consumables).
  if(e.power1===109||(e.type===28&&e.name.includes('宠物蛋')))return 918;
@@ -70,7 +74,7 @@ for(const shop of supplyShops)shop.items=[...new Set(shop.items)];
 {const pinned=PINNED_SUPPLY_ITEM_IDS,shop=supplyShopById.get(906);shop.items=[...new Set([...pinned,...shop.items.filter(id=>!pinned.includes(id))])];}
 export const supplyNpc={id:126,type:5,name:'装备与补给商人',icon:5133,x:20,y:18,local:true,
   welcome:'装备、材料与自选宠物蛋。',
-  talk:'宠物蛋可免费选择并固定孵化对应宠物。上下滑动选择分类。\n强化、鉴定、镶嵌可从背包或装备工坊进入。',
+  talk:'宠物蛋可免费选择并固定孵化对应宠物。上下滑动选择分类。\n「技能书」分类出售全部宠物的满级技能书。\n强化、鉴定、镶嵌可从背包或装备工坊进入。',
   shops:[...supplyShops.map(s=>({id:s.id,name:`${s.name}（${s.items.length}种）`})),{id:913,name:'免费合成装备属性'},{id:914,name:'免费合成装备技能'},{id:915,name:'VIP等级与装备属性'}]};
 const coverage=type=>{const entries=official.catalog.filter(e=>e.type===type);return {catalog:entries.length,available:entries.filter(e=>officialItems.has(e.itemId)).length,total:[...officialItems.values()].filter(e=>e.type===type&&!APPEARANCE_ITEM_IDS.has(e.id)).length};};
 export const supplyDirectory={npc:{mapId:19,mapName:'新月繁华之都',id:supplyNpc.id,name:supplyNpc.name,x:supplyNpc.x,y:supplyNpc.y},equipmentGrade:PURPLE_GRADE,shops:supplyShops.map(({id,name,items})=>({id,name,count:items.length})),coverage:{mounts:coverage(11),costumes:coverage(12)}};
