@@ -5,6 +5,7 @@ import {equipment} from './restoration.mjs';
 import {itemWithAffixes} from './item-affixes.mjs';
 import {itemSlots} from './official-data.mjs';
 import {exportEquipment} from './character-import-codec.mjs';
+import {shareEquipSlot,illusionBlockReason} from './illusion-policy.mjs';
 
 const field=(name,type='int32')=>({name,type});
 const schemas={
@@ -17,14 +18,11 @@ const encode=(type,message)=>encodeWithSchema(type,message,schemas);
 function appearanceDefinition(source){
  return exportEquipment({...source,handBookItem:true,isHandBookActivated:true,illusion:[{currency:0,day:0,price:0}],illusionItemId:0,illusionEndTime:0});
 }
-// 两个装备类型是否落在同一组装备槽位上。
-// 所有武器（单手/双手剑、刀、重武、法杖、枪、弩、弓、盾、球、火枪、锤、扇）共用
-// 武器槽 [8,10]，因此它们天然可以互相幻化；装甲各自独占槽位，行为不变。
-const shareSlot=(a,b)=>a.some(slot=>b.includes(slot));
+// 判定在 lib/illusion-policy.mjs —— 那是唯一来源，下发物品包时用的是同一套
+// （以前这里用「同槽位」、下发用「同 type」，跨类型幻化就卡在黑屏，见第 43 版）。
 function candidatesFor(source){
- const slots=itemSlots(source.type);
  return [...equipment.values()]
-    .filter(item=>item.native&&item.definitionBase64&&shareSlot(itemSlots(item.type),slots))
+    .filter(item=>item.native&&item.definitionBase64&&shareEquipSlot(item.type,source.type))
   .sort((a,b)=>(b.grade||0)-(a.grade||0)||a.id-b.id)
   .map(appearanceDefinition);
 }
@@ -57,7 +55,9 @@ export function handleIllusion(type,r,context,{store,send,log}){
   let appearanceId=0,endTime=0;
   if(request.type===1){
    const appearance=equipment.get(request.illusionItemId);
-   if(!appearance||!appearance.native||!shareSlot(itemSlots(appearance.type),itemSlots(definition.type)))throw Error('只能幻化成同部位的装备外观。');
+   // 判定与 candidatesFor、以及下发物品包同源（lib/illusion-policy.mjs）。
+   const blocked=illusionBlockReason(appearance,definition.type);
+   if(blocked)throw Error(`只能幻化成同部位且资料完整的装备外观（${blocked}）。`);
    if(appearance.id===instance.itemId)throw Error('装备本身无需幻化。');
    instance.illusionItemId=appearance.id;instance.illusionEndTime=request.time>0?Date.now()+request.time*86400000:-1;
    instance.illusionDefinitionBase64=appearance.definitionBase64;appearanceId=appearance.id;endTime=instance.illusionEndTime;
