@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {resolveAsset,textureUsage,atlasRows,GENERIC_REFERENCE_LIMIT} from '../tools/export-pet-reskin-templates.mjs';
+import {resolveAsset,textureUsage,atlasRows,cleanOutput,petSpriteOf,styleIndex,styleTargets,GENERIC_REFERENCE_LIMIT,SHARED_REFERENCE_LIMIT,PET_WORLD_BASE,PET_BATTLE_BASE} from '../tools/export-pet-reskin-templates.mjs';
 
 const model={
  files:[12017,12065],
@@ -62,4 +62,62 @@ test('通用件的阈值是「被几百个 model 引用」，别把主体误判�
  // 参考包里判「要不要画」用的就是这个阈值：几千个模型共用的才是阴影/光效。
  assert.equal(GENERIC_REFERENCE_LIMIT,500);
  assert.ok(GENERIC_REFERENCE_LIMIT>100,'阈值太低会把半通用的主体也划进去');
+ // 半通用（几十上百只宠物共用的小配件）另有一档：改了会连带改到别的宠物。
+ assert.ok(SHARED_REFERENCE_LIMIT<GENERIC_REFERENCE_LIMIT);
+});
+
+test('宠物精灵号 = 500/600 + 风格号 - 1，风格号取自 icon 低 6 位；`model` 字段不是精灵号',()=>{
+ // 这几个数都是拿真实宠物目录 + 客户端资源核过的：
+ //   哈士奇 icon=1  → 世界 500（拼出来确实是坐着的哈士奇）
+ //   萌系女仆 icon=2 → 501（女仆，端盘子）
+ //   玛玛哈哈 icon=68 → style 4、颜色 1 → 世界 503 / 战斗 603
+ //   红炎少女 icon=212 → style 20、颜色 3 → 世界 519 / 战斗 619（与魔法少女共用一套图）
+ assert.deepEqual(petSpriteOf({baseline:{icon:'1',headIcon:500}}),{style:1,color:0,world:500,battle:600,head:500});
+ assert.deepEqual(petSpriteOf({baseline:{icon:68,headIcon:503}}),{style:4,color:1,world:503,battle:603,head:503});
+ assert.deepEqual(petSpriteOf({baseline:{icon:212,headIcon:519}}),{style:20,color:3,world:519,battle:619,head:519});
+ // 风格号占满 6 位：63 是上限，不可能算出 500 号段以外的世界精灵。
+ assert.equal(petSpriteOf({baseline:{icon:63}}).world,562);
+ assert.equal(petSpriteOf({baseline:{icon:63}}).battle,662);
+ // 没有 icon / icon=0 的条目直接跳过，而不是退回 model 字段 ——
+ // model 是**模板号**，拿它查精灵表会得到一只毫不相干的宠物（参考包第一版就是这么错的）。
+ assert.equal(petSpriteOf({baseline:{model:504,headIcon:503}}),null);
+ assert.equal(petSpriteOf({baseline:{icon:0,model:504}}),null);
+ assert.equal(PET_WORLD_BASE,500);assert.equal(PET_BATTLE_BASE,600);
+});
+
+test('同一个风格号的宠物归成一个目录，展示名优先取颜色 0 那只',()=>{
+ const catalog={profiles:[
+  {key:'魔法少女:4',name:'魔法少女',baseline:{icon:20,headIcon:519}},
+  {key:'红炎少女:4',name:'红炎少女',baseline:{icon:212,headIcon:519}},
+  {key:'虚无少女:4',name:'虚无少女',baseline:{icon:148,headIcon:519}},
+  // 同名多阶只记一次（目录里每个宠物有 0~4 阶好几条）
+  {key:'魔法少女:0',name:'魔法少女',baseline:{icon:20,headIcon:519}},
+  {key:'复仇焰魂:0',name:'复仇焰魂',baseline:{model:331}},   // 没有 icon，整条跳过
+ ]};
+ const index=styleIndex(catalog);
+ assert.deepEqual([...index.keys()],[20]);
+ // 颜色 0 的魔法少女当代表（红炎少女是色 3、虚无少女是色 2）
+ const [target]=styleTargets(catalog,[20]);
+ assert.equal(target.label,'魔法少女-style20');
+ assert.equal(target.world,519);assert.equal(target.battle,619);
+ assert.equal(target.pets.length,3);
+ assert.match(target.title,/魔法少女/);
+ // 不存在的风格号要报错，而不是安静导出一个空目录
+ assert.throws(()=>styleTargets(catalog,[2]),/没有任何宠物/);
+});
+
+test('--clean 只删本工具产出的目录，别人的文件一律不碰',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-petclean-'));
+ try{
+  for(const name of ['世界女仆-style02','九尾灵狐-style34','哈士奇(进化)-model516','我的素材'])
+   fs.mkdirSync(path.join(dir,name),{recursive:true});
+  fs.writeFileSync(path.join(dir,'我的素材','body.png'),'x');
+  // 同名但**是文件**的不动：只清目录，免得误删谁的同名说明。
+  fs.writeFileSync(path.join(dir,'reskin.json'),'{}');
+  const removed=cleanOutput(dir);
+  assert.deepEqual(removed.sort(),['世界女仆-style02','哈士奇(进化)-model516','九尾灵狐-style34'].sort());
+  // 手工放的目录与文件必须原样还在
+  assert.ok(fs.existsSync(path.join(dir,'我的素材','body.png')));
+  assert.equal(fs.readFileSync(path.join(dir,'reskin.json'),'utf8'),'{}');
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

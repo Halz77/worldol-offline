@@ -6,18 +6,35 @@
 - `local-pets.json` —— 宠物叫什么、几阶、数值多少、用哪个外观编号
 - `local-pet-art/` —— 外观的图本身 + 换皮配置
 
-## 三步流程
+## 先搞清宠物外观的三个编号（最容易搞错的地方）
 
-1. **选底模**：从现有 136 个有精灵的宠物里挑一个当动画基底（朝向、动作、攻击帧全靠它）。
-   参考包（底稿 + 三份说明）可以随时重跑生成：
+```
+风格号 style  = 宠物数据里 icon 的低 6 位（1..63）
+世界/地图精灵 = 500 + style - 1     ← 地图上站着那只
+战斗精灵     = 600 + style - 1     ← 战斗里那只（**和世界是两套不同的图**）
+颜色         = icon 的第 6~7 位（0..3），引擎按它调色
+```
+（规则写在 `lib/pet-sprite.mjs`，参考包导出与换皮构建用的是同一份。）
+
+- **一个风格号 = 一整套贴图**，多只宠物共用，只差颜色位。所以重画 style2 的图，
+  世界女仆 / 朝比奈实玖琉 / 萌系女仆 / 守护女仆会**一起**变。
+- ⚠ `data/pet-catalog.json` 里的 `baseline.model` **不是精灵号**，是模板号。
+  拿它查精灵表会得到一只毫不相干的宠物（实测 template 504 → 火焰元素、516 → 天空战神、
+  708 → 骑马的骑士）。真正的入口只有 `baseline.icon`。
+
+## 四步流程
+
+1. **挑风格号**：先看参考包的 `README.md`（有「人形宠物挑哪个风格号」表和成本）。
+   参考包可以随时重跑生成：
    `node tools/export-pet-reskin-templates.mjs`（默认写到
-   `<项目根>/FileRecv/MobileFile/pet-reskin-templates/`，`--out` 可改）。
-   先看 `00-尺寸清单.md`：它标了每张贴图**要不要画** —— 几千个 model 共用的阴影/光效
-   一律不用画，真正要动手的通常只有 1~2 张（加头像 2~5 张）。
-2. **画贴图**：文件名里的 `slot<数字>` 就是底模 json 里 `files` 的下标，也是
-   `reskin.json` 的 `replace` 要填的数字。照**布局图 SVG 里的红框**画，**像素级一致**。
-   阴影之类的小件不用管 —— 那是几千个 model 共用的，构建时原样保留。
-3. **写 `reskin.json` 并构建**：
+   `<项目根>/FileRecv/MobileFile/pet-reskin-templates/`；`--styles 28,30` 指定、
+   `--all` 全导、`--list` 看清单、`--clean` 先清旧产物、`--out` 换目录）。
+   **做全新宠物就挑空风格号**（`--list` 会列出来，53~63 一定是空的），
+   这样不会连带改到原有宠物。
+2. **画贴图**：`世界/` 与 `战斗/` 各一套。文件名里的 `slot<数字>` 就是精灵 json 里
+   `files` 的下标，也是 `reskin.json` 的 `replace` 要填的数字。照**布局图 SVG 里的红框**画，
+   **像素级一致**。被上千个 model 共用的通用件（阴影/光效）不用管，构建时原样保留。
+3. **写 `reskin.json` 并构建**（以风格号 60 举例，即世界精灵 559 / 战斗精灵 659）：
 
 ```json
 {
@@ -25,11 +42,15 @@
   "modelIdStart": 60000,
   "entries": [
     {
-      "key": "冰霜幼龙:4",
-      "baseModel": 504,
-      "baseHead": 503,
-      "replace": { "model": [0], "head": [0] },
-      "textures": { "model": ["冰霜幼龙-body.png"], "head": ["冰霜幼龙-head.png"] }
+      "key": "冰魄剑姬:4",
+      "baseModel": 501,
+      "baseBattle": 601,
+      "modelIds": { "model": 559, "battle": 659 },
+      "replace": { "model": [0], "battle": [0] },
+      "textures": {
+        "model": ["冰魄剑姬/world.png"],
+        "battle": ["冰魄剑姬/battle.png"]
+      }
     }
   ]
 }
@@ -40,8 +61,19 @@ node tools/build-pet-reskin.mjs --check   # 先验尺寸，不写文件
 node tools/build-pet-reskin.mjs           # 构建
 ```
 
-构建完会打印 `冰霜幼龙:4 → model:60000 headIcon:60001`，把这两个号填进
-`data/local-pets.json` 里那只宠物的 `baseline.model` / `baseline.headIcon`。
+4. **在 `data/local-pets.json` 里把外观指过去**：
+
+```json
+{ "key": "冰魄剑姬:4", "extends": "魔法少女:4",
+  "baseline": { "icon": 60, "headIcon": 559 } }
+```
+
+- `icon` = 风格号（想换个配色就加颜色位，如 `60 | (1 << 6)` = 色 1）。
+- `headIcon` = 宠物栏头像用的精灵号；**不填就沿用底模头像**（推荐先不填）。
+- `model` / `templateId` 跟着 `extends` 走就行，它们不决定外观。
+
+构建时会检查：槽位越界、素材张数对不上、尺寸差一个像素 —— 都会**直接报错**；
+只给了世界观精灵没给 `baseBattle` 会打一条 ⚠ 提醒（那会导致「地图上换了、战斗里没换」）。
 
 ## 先看清一件事：贴图是「部件拼图」，不是一只宠物
 
@@ -51,7 +83,7 @@ node tools/build-pet-reskin.mjs           # 构建
 所以你要画的是**这些部件**，而且每个部件必须待在自己那一格 ——
 位置、尺寸差一个像素，拼出来的角色就散架。
 
-每个底模的部件布局已导出到 `pet-reskin-templates/<底模>/布局图-fragXXXX.svg`
+每个风格的部件布局已导出到 `pet-reskin-templates/<宠物>-style<号>/世界/布局图-fragXXXX.svg`
 （浏览器打开就能看，**红框 = 动画真正用到的部件**）和 `layout-fragXXXX.json`。
 `01-部件布局.md` 里有完整表格，标了哪些部件是动画真正用到的（没用到的可以先不画）。
 
@@ -100,13 +132,14 @@ node tools/build-pet-reskin.mjs           # 构建
 model json 里 `frames` 的 `fi` 是 **`files` 数组的下标**，不是贴图编号：
 
 ```
-files:  [12017]                    ← 贴图编号
+files:  [12005,11002]              ← 贴图编号
 frames: {0:[[0,sub,x,y,flag],...]} ← fi=0，指 files[0]
 anis:   [{id:0},{id:2}]            ← 待机 / 攻击
 ```
 
-所以把 `files[0]` 从 12017 换成新编号 40000，`frames` 和 `anis` **一个字节都不用动** ——
+所以把 `files[0]` 从 12005 换成新编号 40000，`frames` 和 `anis` **一个字节都不用动** ——
 朝向、动作、攻击帧全部白送。这也是为什么换皮只要 1~2 张图，而不是重画 300 帧。
+宠物的世界精灵与战斗精灵各自是一份 model，两份都要这样换一次。
 
 ## 注意
 

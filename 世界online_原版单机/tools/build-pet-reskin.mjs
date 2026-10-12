@@ -23,6 +23,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {isPetWorldModel} from '../lib/pet-sprite.mjs';
 
 const md5=buf=>crypto.createHash('md5').update(buf).digest('hex').slice(0,16);
 const assetPath=(raw,hash,ext)=>path.join(raw,'assets',hash.slice(0,2),hash+ext);
@@ -74,7 +75,11 @@ export function buildReskin({root,config,previous={},checkOnly=false,log=()=>{}}
   if(!slots.length)return null;
   if(slots.length!==textures.length)
    throw Error(`${entry.key} 的 ${part}：replace 有 ${slots.length} 个槽位，textures 只给了 ${textures.length} 张图。`);
-  const baseId=part==='model'?entry.baseModel:entry.baseHead;
+  // 宠物有**两套**精灵：地图上的（500 号段）和战斗里的（600 号段），实测没有一对相同，
+  // 所以 baseBattle 要单独给。head 是宠物栏头像那套。model 这个老名字保留 = 世界观精灵。
+  const baseId=part==='head'?entry.baseHead:part==='battle'?entry.baseBattle:entry.baseModel;
+  if(!Number.isInteger(baseId))
+   throw Error(`${entry.key} 的 ${part}：缺少 ${part==='head'?'baseHead':part==='battle'?'baseBattle':'baseModel'}。`);
   const base=JSON.parse(fs.readFileSync(modelFile(baseId),'utf8'));
   const files=[...base.files];
   for(let i=0;i<slots.length;i++){
@@ -104,7 +109,13 @@ export function buildReskin({root,config,previous={},checkOnly=false,log=()=>{}}
    log('  贴图 %s %sx%s → fragment %s（%s）',textures[i],gw,gh,id,hash);
    files[slot]=id;
   }
-  const modelId=previous.assign?.[entry.key]?.[part]??nextModelId();
+  // 宠物精灵的编号是**客户端算出来的**（500/600 + 风格号 - 1），不能自己随手发一个 60000 段，
+  // 所以这里允许 entry.modelIds 明确指定；没指定才走自动分配（自制宠物 → 空风格号时不用指定）。
+  const fixed=entry.modelIds?.[part];
+  if(fixed!==undefined&&!Number.isInteger(fixed))throw Error(`${entry.key} 的 ${part}：modelIds 必须是整数。`);
+  const modelId=Number.isInteger(fixed)?fixed:(previous.assign?.[entry.key]?.[part]??nextModelId());
+  if(Number.isInteger(fixed)&&modelTable[`${modelId}.json`]&&previous.assign?.[entry.key]?.[part]!==modelId)
+   log('  ⚠ 精灵号 %s 在客户端里已存在，这次会用你的图**覆盖**它（原来用这个号的宠物会一起变）。',modelId);
   // frames / anis 原样保留：只换 files 里的编号，朝向与动作全部沿用底模。
   const json={...base,files};
   const hash=md5(Buffer.from(JSON.stringify(json),'utf8'));
@@ -117,16 +128,22 @@ export function buildReskin({root,config,previous={},checkOnly=false,log=()=>{}}
    if(!fs.existsSync(dest))fs.writeFileSync(dest,Buffer.from(JSON.stringify(json),'utf8'));
    written.push(dest);
   }
-  log('  → model %s（%s）',modelId,hash);
+  log('  → 精灵 %s（%s）',modelId,hash);
   return modelId;
  }
 
  let built=0;
  for(const entry of config.entries||[]){
   log('\n=== %s ===',entry.key);
-  const model=reskin(entry,'model'),head=reskin(entry,'head');
-  if(model===null&&head===null){log('  （没有要换的贴图，跳过）');continue;}
-  next.assign[entry.key]={...(previous.assign?.[entry.key]||{}),...(model!==null?{model}:{}),...(head!==null?{head}:{})};
+  // 宠物换皮最常见的错：只给了世界观精灵。宠物在 500/600 两段里各有一套图，
+  // 只换一边 = 地图上是你画的那只、一进战斗变回原版。这里点出来，不当错误拦。
+  if(isPetWorldModel(entry.baseModel)&&!Number.isInteger(entry.baseBattle)&&(entry.replace?.model||[]).length)
+   log('  ⚠ 底模 %s 是**世界观**精灵（500 号段），但没给 baseBattle —— '
+    +'地图上会换成你画的，战斗里仍是原版。宠物的战斗精灵是另一套图（600 号段）。',entry.baseModel);
+  const model=reskin(entry,'model'),battle=reskin(entry,'battle'),head=reskin(entry,'head');
+  if(model===null&&battle===null&&head===null){log('  （没有要换的贴图，跳过）');continue;}
+  next.assign[entry.key]={...(previous.assign?.[entry.key]||{}),
+   ...(model!==null?{model}:{}),...(battle!==null?{battle}:{}),...(head!==null?{head}:{})};
   built++;
  }
 
@@ -154,12 +171,19 @@ if(isCli){
   const sample={
    fragmentIdStart:40000,modelIdStart:60000,
    entries:[{
-    key:'冰霜幼龙:4',baseModel:504,baseHead:503,
-    replace:{model:[0],head:[0]},
-    textures:{model:['冰霜幼龙/body.png'],head:['冰霜幼龙/head.png']},
+    key:'冰魄剑姬:4',
+    // 宠物有**两套**精灵：地图上的与战斗里的，实测没有一对相同，两套都要给。
+    baseModel:501,baseBattle:601,
+    // 客户端是按「500/600 + 风格号 - 1」去查精灵的，所以号必须指定。
+    // 559/659 = 风格号 60（53~63 是客户端里空着的号，给自制宠物用）。
+    modelIds:{model:559,battle:659},
+    replace:{model:[0],battle:[0]},
+    textures:{model:['冰魄剑姬/world.png'],battle:['冰魄剑姬/battle.png']},
    }],
   };
   console.log(JSON.stringify(sample,null,2));
+  console.log('\n再在 data/local-pets.json 里给这只宠物写 baseline.icon = 风格号'
+   +'（想要别的配色就再加颜色位，如 60 | (1 << 6)）。');
   process.exit(0);
  }
  const config=JSON.parse(fs.readFileSync(CONFIG,'utf8'));
@@ -175,5 +199,8 @@ if(isCli){
  console.log('登记表 → data/local-pet-assets.json');
  console.log('\n接下来把编号填进 data/local-pets.json 的 baseline：');
  for(const [key,a] of Object.entries(manifest.assign))
-  console.log('  %s → model:%s  headIcon:%s',key,a.model??'(沿用)',a.head??'(沿用)');
+  console.log('  %s → 世界精灵:%s  战斗精灵:%s  headIcon:%s',
+   key,a.model??'(沿用)',a.battle??'(沿用)',a.head??'(沿用)');
+ console.log('（宠物还要写 baseline.icon = 风格号，客户端按它算 500/600 号段的精灵；'
+  +'详见 data/local-pet-art/README.md）');
 }

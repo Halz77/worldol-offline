@@ -144,6 +144,54 @@ test('换皮：只改 files 里的编号，frames / anis 与底模逐字节一�
  }
 });
 
+test('换皮：宠物必须世界+战斗两套一起换，精灵号可以按风格号指定',()=>{
+ // 客户端是按「500/600 + 风格号 - 1」去查精灵的（SpriteTool.getPetSpriteByIcon），
+ // 所以自制宠物不能随手发一个 60000 段的号 —— modelIds 要写死，否则地图上换了、一进战斗变回原版。
+ const gd=JSON.parse(fs.readFileSync(path.join(raw,'v/gd/305.json'),'utf8'));
+ const frag=gd.url.assets.sprite.fragment;
+ const artDir=path.join(root,'data','local-pet-art');
+ fs.mkdirSync(artDir,{recursive:true});
+ const art=path.join(artDir,'__test-world.png');
+ fs.copyFileSync(path.join(raw,'assets',frag['12005.png'].slice(0,2),frag['12005.png']+'.png'),art);
+ try{
+  const {manifest,models}=buildReskin({root,checkOnly:true,
+   config:{fragmentIdStart:40000,modelIdStart:60000,
+    entries:[{key:'测试剑姬:4',baseModel:501,baseBattle:601,
+     modelIds:{model:559,battle:659},
+     replace:{model:[0],battle:[0]},
+     textures:{model:['__test-world.png'],battle:['__test-world.png']}}]}});
+  // 559/659 = 风格号 60（客户端里空着的号段），必须是我们指定的这个
+  assert.deepEqual(Object.keys(models).map(Number).sort((a,b)=>a-b),[559,659]);
+  assert.equal(manifest.assign['测试剑姬:4'].model,559);
+  assert.equal(manifest.assign['测试剑姬:4'].battle,659);
+  // 两套 frames 来自不同的底模（501 是世界、601 是战斗），逐字节照抄各自的
+  for(const [id,baseId] of [[559,501],[659,601]]){
+   const h=gd.url.assets.sprite.model[`${baseId}.json`];
+   const base=JSON.parse(fs.readFileSync(path.join(raw,'assets',h.slice(0,2),h+'.json'),'utf8'));
+   assert.deepEqual(models[id].frames,base.frames,`精灵 ${id} 的 frames 应等于底模 ${baseId}`);
+   assert.deepEqual(models[id].anis,base.anis);
+   assert.ok(models[id].files[0]>=40000);
+  }
+  assert.equal(Object.keys(manifest.fragments).length,2,'两套各占用一个新贴图编号');
+  // 只换世界观、忘了战斗 → 必须有一条 ⚠ 提醒（宠物的战斗精灵是另一套图）
+  const notes=[];
+  buildReskin({root,checkOnly:true,log:(...a)=>notes.push(String(a[0]).replace(/%s/g,'X'))||0,
+   config:{fragmentIdStart:40000,modelIdStart:60000,
+    entries:[{key:'只换一半:4',baseModel:501,modelIds:{model:559},
+     replace:{model:[0]},textures:{model:['__test-world.png']}}]}});
+  assert.ok(notes.some(n=>/没给 baseBattle/.test(n)),'只给世界观精灵时要有提醒');
+  // 要求换战斗却没给战斗底模 → 报错说清缺哪个
+  assert.throws(()=>buildReskin({root,checkOnly:true,config:{entries:[
+   {key:'缺战斗底模:4',baseModel:501,replace:{battle:[0]},textures:{battle:['__test-world.png']}}]}}),
+   /baseBattle/);
+  assert.throws(()=>buildReskin({root,checkOnly:true,config:{entries:[
+   {key:'坏号:4',baseModel:501,modelIds:{model:'559'},
+    replace:{model:[0]},textures:{model:['__test-world.png']}}]}}),/modelIds 必须是整数/);
+ }finally{
+  fs.rmSync(art,{force:true});
+ }
+});
+
 test('换皮：尺寸对不上底模就抛错，不让错位的帧进包',()=>{
  const art=path.join(root,'data','local-pet-art','__test-bad.png');
  // 1×1 的透明 PNG（底模 12017 是 118×80）
