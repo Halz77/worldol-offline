@@ -26,10 +26,21 @@ import {fileURLToPath} from 'node:url';
 
 const md5=buf=>crypto.createHash('md5').update(buf).digest('hex').slice(0,16);
 const assetPath=(raw,hash,ext)=>path.join(raw,'assets',hash.slice(0,2),hash+ext);
+const PNG_COLOR={0:'灰度',2:'RGB',3:'索引色',4:'灰度+α',6:'RGBA'};
 export function pngSize(file){
  const b=fs.readFileSync(file);
  if(b.length<24||b.slice(1,4).toString()!=='PNG')throw Error(`不是 PNG 文件：${file}`);
  return [b.readUInt32BE(16),b.readUInt32BE(20)];
+}
+/**
+ * 原版贴图**全部**是索引色（色型 3）+ tRNS，且 alpha 只有 0/255 两个值（硬边，无羽化）。
+ * 客户端解码器对别的色型能不能正确处理没有实测证据，所以这里只警告不阻止：
+ * 尺寸与布局是硬约束，色型是「未知风险」—— 交给玩家拿试包在手机上确认。
+ */
+export function pngColorType(file){
+ const b=fs.readFileSync(file);
+ if(b.length<26||b.slice(1,4).toString()!=='PNG')return null;
+ return {code:b[25],label:PNG_COLOR[b[25]]||`未知(${b[25]})`,depth:b[24]};
 }
 
 /**
@@ -77,6 +88,10 @@ export function buildReskin({root,config,previous={},checkOnly=false,log=()=>{}}
    const [ww,wh]=pngSize(want),[gw,gh]=pngSize(src);
    if(ww!==gw||wh!==gh)
     throw Error(`${entry.key} 的 ${part} 第 ${i+1} 张（${textures[i]}）尺寸 ${gw}×${gh}，底模要求 ${ww}×${wh} —— 必须像素级一致，否则帧坐标会全部错位。`);
+   const wantType=pngColorType(want),gotType=pngColorType(src);
+   if(wantType&&gotType&&gotType.code!==wantType.code)
+    log('  ⚠ %s 是 %s（%d 位），底模原图是 %s —— 原版贴图一律索引色+硬边，'
+      +'别的色型没实测过，建议先在手机上试一只再批量做。',textures[i],gotType.label,gotType.depth,wantType.label);
    const id=nextFragId(),buf=fs.readFileSync(src),hash=md5(buf);
    next.fragments[`${id}.png`]=hash;
    next.files[hash]={kind:'fragment',key:entry.key,part,slot};
