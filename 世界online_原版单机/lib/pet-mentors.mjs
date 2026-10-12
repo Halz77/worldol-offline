@@ -7,6 +7,18 @@ for(const s of petCatalog.skills.filter(s=>s.kind==='mentor'&&s.shops.length)){
  // native dialog, so a second click cannot restore an old level/price gate.
  groups.get(s.id).levels.push({...s,reqLevel:1,sp:0,money1:0,money2:0,money3:0});
 }
+/**
+ * 宠物训练师（商店 2001/2002/2003，走 14001/14002）能教到的技能编号全集 —— 唯一口径。
+ *
+ * 「装备与补给商人 → 技能书」要按它剔除：训练师那儿已经能免费逐级学到满级的技能，
+ * 再在商店摆一本书等于同一门技能两个来源。判定只认这份 groups（和 petMentorSkills
+ * 同源），不要另外重判一遍 kind/shops，否则两边迟早对不上。
+ */
+let taughtIds=null;
+export function mentorTaughtSkillIds(){
+ if(!taughtIds)taughtIds=new Set(groups.keys());
+ return taughtIds;
+}
 export function petMentorSkills(pet,shop){
  if(!pet)throw Error('请先让需要学习的宠物出战。');
  return [...groups.values()].filter(s=>s.shops.includes(shop)).map(s=>{

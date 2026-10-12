@@ -6,7 +6,7 @@ import {applyRecordedExpansion} from './recorded-expansion.mjs';
 import {nativeCommerce} from './native-commerce-data.mjs';
 import {applyOpenPortals} from './open-portals.mjs';
 import {applyBossHub} from './boss-hub.mjs';
-import {localPetSkillBooks,petSkillShopBooks} from './pet-skill-book-data.mjs';
+import {localPetSkillBooks,petSkillBookRegistry} from './pet-skill-book-data.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
 import {spiritData,applySpiritNpcs,spiritBoxDefinition,spiritBoxes} from './spirit-seal-data.mjs';
 import {LEGENDARY_EGG_ID,legendaryEggDefinition,selectablePetEggs} from './pet-catalog.mjs';
@@ -44,10 +44,12 @@ function ensure(){
   official.items.push(egg.item);
  }
  for(const item of localPetSkillBooks){if(official.items.some(x=>x.id===item.id))throw Error('Local pet skill book ID collision: '+item.id);official.items.push(item);}
- // 「装备与补给商人 → 技能书」上架的宠物满级技能书（每个宠物技能一本，见
- // lib/pet-skill-book-data.mjs）。它们必须进 official.items，restoration 的
- // equipment 表才会把定义（含 definitionBase64）带给商店与背包。
- for(const item of petSkillShopBooks()){if(official.items.some(x=>x.id===item.id))throw Error('Pet skill shop book ID collision: '+item.id);official.items.push(item);}
+ // 宠物满级技能书（目录里每个宠物技能各一本，见 lib/pet-skill-book-data.mjs）。
+ // 注意这里登记的是 **registry（全量）而不是 shop（在架）**：哪几本进商店由
+ // supply-shops 的 supplyCategory 决定，而定义必须一律留着 —— 商店名单会随版本变
+ // （第 45 版就把训练师能教到的那批下架了），玩家背包里已经买下的书不能因为下架
+ // 变成「未知道具」，否则 itemPacket 抛错、整个进入世界的包发不出去、角色黑屏。
+ for(const item of petSkillBookRegistry()){if(official.items.some(x=>x.id===item.id))throw Error('Pet skill book ID collision: '+item.id);official.items.push(item);}
  for(const item of localEnchantments){if(official.items.some(x=>x.id===item.id))throw Error('Local enchantment ID collision: '+item.id);official.items.push(item);}
  for(const item of spiritData.items){const index=official.items.findIndex(e=>e.id===item.id);if(index>=0)official.items[index]=item;else official.items.push(item);}
  for(const spiritBox of [spiritBoxDefinition(),...spiritBoxes.map(spiritBoxDefinition)]){

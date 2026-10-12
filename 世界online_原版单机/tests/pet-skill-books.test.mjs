@@ -94,8 +94,10 @@ test('50级魔力衰竭封印书保留本地外推出来的技能数值',()=>{
  assert.equal(book.learnSkill.useMP,875);
 });
 test('「技能书」商店卖的宠物满级书走的就是这条学习流程（最后一本用完从背包移除）',()=>{
- // 「装备与补给商人 → 技能书」上架的 345 本和封印产物共用同一段 definition() 编码，
- // 所以 14016/14017 的 selection() 必须同样认它们。这里用一个真实在架的编号跑一遍。
+// 「装备与补给商人 → 技能书」上架的是**训练师教不到**的那批宠物满级书（第 45 版起；
+// 训练师能逐级教到满级的技能不再摆书，见 lib/pet-skill-book-data.mjs），它们和封印
+// 产物共用同一段 definition() 编码，所以 14016/14017 的 selection() 必须同样认它们。
+// 这里用一个真实在架的编号跑一遍。
  const book=petSkillShopBooks().find(b=>b.powerValue1===6079);
  assert.ok(book,'商店应该有血雾的结界的满级技能书');
  assert.equal(book.powerValue2,9);

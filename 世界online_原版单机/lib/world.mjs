@@ -51,6 +51,9 @@ export function enterWorld(p){
     .byte(2).int(0) // forget skill cost
     .byte(2).int(0).int(0) // attribute reset
     .byte(2).int(0) // country activation
+    // 宠物改名费用：byte 货币类型 + short 金额。金额 0 = 免费（单机版约定），
+    // 客户端 getPetChangeNameMoneyText() 在金额 <= 0 时不显示费用行。
+    // 与 15511（lib/pet-rename-service.mjs）是同一条链：那边收改名请求、这边报价格。
     .byte(2).short(0) // pet rename
     .byte(2).int(0); // partner cost
   return w.raw(worldData(p).done());

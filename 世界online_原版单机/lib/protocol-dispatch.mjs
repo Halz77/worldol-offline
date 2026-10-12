@@ -38,6 +38,7 @@ import {handlePetEquipment} from './pet-equipment-service.mjs';
 import {handleEquipmentUpgrades} from './equipment-upgrade-service.mjs';
 import {handlePetItems} from './pet-service.mjs';
 import {handlePetIllusion} from './pet-illusion-service.mjs';
+import {handlePetRename} from './pet-rename-service.mjs';
 import {handleRoleRename} from './role-rename-service.mjs';
 import {handleRestoration} from './restoration-service.mjs';
 import {handleEnchantment} from './enchantment-service.mjs';
@@ -76,6 +77,8 @@ export const INBOUND_CHAIN=Object.freeze([
  {name:'equipmentUpgrades',file:'equipment-upgrade-service',handle:handleEquipmentUpgrades},
  {name:'petItems',file:'pet-service',handle:handlePetItems},
  {name:'petIllusion',file:'pet-illusion-service',handle:handlePetIllusion},
+ // 15511（宠物改名）全链只有这一段认领，位置不影响结果，放在宠物相关这几段旁边。
+ {name:'petRename',file:'pet-rename-service',handle:handlePetRename},
  {name:'roleRename',file:'role-rename-service',handle:handleRoleRename},
  // 12001 的兜底：穿戴/卸下/转职/丢弃/吃药都在这。
  {name:'restoration',file:'restoration-service',handle:handleRestoration},

@@ -6,8 +6,9 @@ import {Writer,Reader} from '../lib/codec.mjs';
 import {maps,walkable,reachable,normalizeRole} from '../lib/content.mjs';
 import {official,officialItems} from '../lib/official-data.mjs';
 import {supplyNpc,supplyShops,supplyDirectory,PURPLE_GRADE,PET_SHOP} from '../lib/supply-shops.mjs';
-import {MAGIC_EXHAUSTION_BOOK_ID,petSkillShopBooks,petSkillShopBookIds,KNIGHTS_DEVOTION_BOOK_ID} from '../lib/pet-skill-book-data.mjs';
+import {MAGIC_EXHAUSTION_BOOK_ID,petSkillBookRegistry,petSkillShopBooks,petSkillShopBookIds,KNIGHTS_DEVOTION_BOOK_ID} from '../lib/pet-skill-book-data.mjs';
 import {petSkillLevels,petSkillMaxima} from '../lib/pet-catalog.mjs';
+import {mentorTaughtSkillIds,petMentorSkills} from '../lib/pet-mentors.mjs';
 import {npcPacket} from '../lib/game-packets.mjs';
 import {buyItem,equipment} from '../lib/restoration.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
@@ -82,15 +83,24 @@ const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes
  }
 });
 
-test('技能书分类只有宠物满级技能书：每个宠物技能一本、上限与导师商店同口径、原版技能书全部下架',()=>{
- const books=petSkillShopBooks(),shop=supplyShops.find(s=>s.id===919),ids=new Set(supplyShops.flatMap(s=>s.items));
+test('技能书分类只卖训练师教不到的那批：上限与导师商店同口径、原版技能书全部下架',()=>{
+ const books=petSkillShopBooks(),registry=petSkillBookRegistry(),maxima=petSkillMaxima(),shop=supplyShops.find(s=>s.id===919),ids=new Set(supplyShops.flatMap(s=>s.items));
+ const taught=mentorTaughtSkillIds(),offered=new Set([2001,2002,2003].flatMap(shopId=>petMentorSkills({skills:[]},shopId).map(s=>s.id)));
+ // 0) 「训练师能教到的技能」只有一份定义：mentorTaughtSkillIds() 必须**正好**是三个
+ //    宠物训练师实际报出来的技能全集（别处再判一遍 kind/shops 就会从这条等式漏出去）。
+ assert.ok(taught.size>0,'宠物训练师至少要有技能，否则下面「剔除」的等式没意义');
+ assert.deepEqual([...offered].sort((a,b)=>a-b),[...taught].sort((a,b)=>a-b));
  // 1) 在架的正好是这一批（唯一来源），顺序按编号升序（reqLv 全 0，商店按 (reqLv,id) 排）。
  assert.deepEqual(shop.items,books.map(b=>b.id));
- assert.equal(books.length,petSkillMaxima().length);
  assert.equal(new Set(books.map(b=>b.id)).size,books.length);
- // 2) 「满级」与宠物导师商店（14001/14002 的 levels.at(-1)）是同一个口径：每个技能恰好一本、取最高档。
+ // 2) 剔除关系：登记表 = 全部满级书；在架 = 登记表剔掉训练师那批，一个不多一个不少。
+ assert.deepEqual(registry.map(b=>b.powerValue1).sort((a,b)=>a-b),maxima.map(s=>s.id).sort((a,b)=>a-b));
+ assert.deepEqual(books,registry.filter(b=>!taught.has(b.powerValue1)));
+ assert.equal(books.length,registry.length-taught.size);
+ for(const id of taught)assert.ok(!books.some(b=>b.powerValue1===id),'训练师能教到的技能不该再摆一本书：'+id);
+ // 3) 「满级」与宠物导师商店（14001/14002 的 levels.at(-1)）是同一个口径：每个技能恰好一本、取最高档。
  for(const [index,book] of books.entries()){
-  const skill=petSkillMaxima()[index];
+  const skill=maxima.filter(s=>!taught.has(s.id))[index];
   assert.equal(book.power1,186,'封印书标记');
   assert.equal(book.type,31);
   assert.equal(book.powerValue1,skill.id);
@@ -108,11 +118,11 @@ test('技能书分类只有宠物满级技能书：每个宠物技能一本、�
   assert.equal(equipment.get(book.id).localPrice,0,'单机版商店免费');
   assert.match(book.name,new RegExp(`满级技能书·${skill.level}级`));
  }
- // 3) 原版目录里那一批人物技能书一件都不在架（整个补给商人处都不该再有）。
+ // 4) 原版目录里那一批人物技能书一件都不在架（整个补给商人处都不该再有）。
  for(const id of [3192,3216,3234,3278,61001,43700,43705,43001,43002,43007,43011,43012,43016,43017,43021,43022,43023,43111,43691,9106079])
   assert.ok(!ids.has(id),'原版技能书应该已下架：'+id+' '+officialItems.get(id)?.name);
  for(const e of officialItems.values())if(isNativeSkillBook(e)&&e.id<900000)assert.ok(!ids.has(e.id),'原版技能书漏下架：'+e.id+' '+e.name);
- // 4) 每一本都必须能被宠物技能书流程识别（14016/14017 的 selection 校验的就是这三个字段）。
+ // 5) 每一本都必须能被宠物技能书流程识别（14016/14017 的 selection 校验的就是这三个字段）。
  const parseBook=d.native(32,'isPetSealSkillBook',{a:{default:d.module(4).constants}});
  const parseShopItem=d.native(67,'fromBytesShopItem',{t:d.Item,S:{default:d.Item}});
  for(const book of books){
@@ -122,6 +132,16 @@ test('技能书分类只有宠物满级技能书：每个宠物技能一本、�
   assert.equal(parseBook.call(item),true,book.name);
  }
  assert.equal(books.find(b=>b.powerValue1===6079).powerValue2,9,'血雾的结界满级 9 级');
+ // 6) **下架 ≠ 撤定义**：登记表是超集，训练师那批仍然能在 equipment 表里查到完整定义。
+ //    第 44 版把这些书摆在商店里卖过，玩家可能已经买了；itemPacket 遇到未知道具会抛错，
+ //    而它在「进入世界」的整包里 —— 定义一撤，那个角色就黑屏（第 43 版同类问题）。
+ for(const id of taught){
+  const gone=registry.find(b=>b.powerValue1===id);
+  assert.ok(gone,'登记表不能漏掉任何一本满级书：'+id);
+  assert.ok(!ids.has(gone.id),'但训练师那批不该出现在商店里:'+gone.id);
+  const item=parseShopItem(new NativeReader(shopItem(new Writer(),equipment.get(gone.id),0).done()),919);
+  assert.equal(item.id,gone.id);assert.equal(parseBook.call(item),true,'老存档里买过的书必须仍然解析得出来：'+gone.name);
+ }
 });
 
 test('freshly purchased mounts and costumes keep their identify menu flag before any bag reload',()=>{

@@ -2,7 +2,7 @@
  * 服务端分派与路由的守卫用例。
  *
  * 这套东西的两处「顺序」都是承重的，却完全看不出来：
- *   1. 入站分派链（lib/protocol-dispatch.mjs）：20 个 service 依次问「这个包是不是你的」。
+ *   1. 入站分派链（lib/protocol-dispatch.mjs）：21 个 service 依次问「这个包是不是你的」。
  *      约定是「认领就回 true，不认领就回 false 且一个字节都不许读」。谁把顺序调了、
  *      谁在拒绝时偷读了字节，症状都是「某个功能莫名其妙跑到别人手里」，而且往往只在
  *      特定操作下复现。
@@ -28,11 +28,11 @@ const P=loadProtocolConstants(root);
 
 // ───────────────────────── 分派链 ─────────────────────────
 
-test('分派链是 20 段且顺序被钉死',()=>{
+test('分派链是 21 段且顺序被钉死',()=>{
  // 顺序承重：同一个协议号被两段同时认领时，先到的接走。已知重叠只有 32110（illusion 抢先 official）。
- const expected=['characterFeatures','legion','city','systemSettings','attributes','nativeCommerce','illusion','homeFeatures','recorded','official','equipmentComposition','petEquipment','equipmentUpgrades','petItems','petIllusion','roleRename','restoration','enchantment','spiritSeals','game'];
+ const expected=['characterFeatures','legion','city','systemSettings','attributes','nativeCommerce','illusion','homeFeatures','recorded','official','equipmentComposition','petEquipment','equipmentUpgrades','petItems','petIllusion','petRename','roleRename','restoration','enchantment','spiritSeals','game'];
  assert.deepEqual(INBOUND_CHAIN.map(s=>s.name),expected);
- assert.equal(INBOUND_CHAIN.length,20);
+ assert.equal(INBOUND_CHAIN.length,21);
  // game 是兜底，必须留在最后：战斗/场景/任务的包全归它。
  assert.equal(INBOUND_CHAIN.at(-1).name,'game');
  assert.equal(INBOUND_CHAIN.at(-1).file,'game-service');
@@ -63,7 +63,7 @@ const PROBE_TYPES=[
  11003,11004,11006,11023,11024,11025,11026,11027,11038,11053,11054,11055,11078,11083,11160,11161,11163,11172,
  11501,11506,11507,11508,11520,11521,11528,11530,12001,12003,12004,12005,12006,12015,12019,12036,12037,12041,12052,12060,12061,
  12501,12502,13101,13529,13541,13542,13543,14001,14002,14003,14004,14005,14006,14009,14010,14016,14017,
- 14501,14502,14503,14504,14551,14553,14554,14562,15502,15512,15514,15516,15517,16009,16051,17001,17002,17015,17017,17101,17102,
+ 14501,14502,14503,14504,14551,14553,14554,14562,15502,15511,15512,15514,15516,15517,16009,16051,17001,17002,17015,17017,17101,17102,
  22106,24204,27301,27303,29000,29002,29004,29006,29008,29010,30001,30003,30005,30101,30103,30105,
  31051,31053,31055,31101,31103,31105,32101,32103,32107,32110,
  90001,90002,90003,90004,90015,90016,90017,90019,90020,90021,90022,90023,90024,
@@ -95,6 +95,7 @@ const EXPECTED_OWNER={
  equipmentUpgrades:[11506,11507,11508,11528,12015,12041],
  petItems:[14016,14017,15502,15516,15517],
  petIllusion:[90023,90024],
+ petRename:[15511],
  roleRename:[11038],
  restoration:[12001,12003,12004,12005,12006,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010],
  enchantment:[11520,11521],
@@ -209,13 +210,13 @@ test('全链在拒绝任何协议号时都不动读指针',()=>{
  }
 });
 
-test('没有 context.role 时，只有这四段会接走包（都是抛「请先进入角色」）',()=>{
+test('没有 context.role 时，只有这五段会接走包（都是抛「请先进入角色」）',()=>{
  // 分派链主要处理「已进入角色」的包：登录/选角由 server.mjs 排在链前。
  // 但有几段把自己的入参校验写在 `!context.role` 之后，于是没有角色时它们会认领并抛异常 ——
  // 服务端的 catch 会记一条 protocol-error（这几个号不在「回失败包」名单里，所以客户端收不到回包）。
  // 这是原有行为，本用例把它定死，免得哪天有人「顺手」把它们改成 return false，
  // 反而让请求掉进后面的段里被误处理。
- const expected={systemSettings:[11006],roleRename:[11038],illusion:[11530,32110],petIllusion:[90023,90024]};
+ const expected={systemSettings:[11006],roleRename:[11038],illusion:[11530,32110],petIllusion:[90023,90024],petRename:[15511]};
  const actual={};
  for(const type of PROBE_TYPES){
   const owner=ownerOf(type,null,{});
