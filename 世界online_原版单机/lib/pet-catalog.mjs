@@ -26,6 +26,7 @@ function ensure(){
  for(const p of local.profiles)petProfiles.set(p.key,p);
  // 追加在**末尾**：宠物蛋的道具号是 SELECTABLE_PET_EGG_ID_START+下标，插到前面的话
  // 老存档里已经存在的宠物蛋 itemId 会整体错位一只。
+ const upstreamPoolSize=petCatalog.legendaryPool.length;
  const legendaryPetPool=[...petCatalog.legendaryPool,...local.legendaryKeys].map(key=>petProfiles.get(key));
  if(legendaryPetPool.some(profile=>!profile))
   throw Error(`传说宠物池里有找不到的 key：${[...petCatalog.legendaryPool,...local.legendaryKeys].find(key=>!petProfiles.get(key))}`);
@@ -39,6 +40,9 @@ function ensure(){
  });
  const selectablePetEggsById=new Map(selectablePetEggs.map(egg=>[egg.id,egg]));
  if(selectablePetEggsById.size!==legendaryPetPool.length)throw Error('宠物蛋编号重复。');
+ // 自制宠物那几只的蛋（= 池子末尾新增的那些）。商店要把它们排在「宠物蛋」分类最前面：
+ // 这一档有一百多种，自制宠物却是要反复试外观的东西，排在末尾等于找不到。
+ const localEggIds=new Set(selectablePetEggs.slice(upstreamPoolSize).map(egg=>egg.id));
  // 每个宠物技能「已采集到的最高等级」—— 这是宠物世界的「满级」口径：
  // 宠物导师商店（14001/14002）能教到的上限用的也是它（offer.levels.at(-1)），
  // 「技能书」商店卖的满级技能书同样取这一份，避免同一个词出现两套算法。
@@ -52,6 +56,7 @@ function ensure(){
   legendaryPetPool,
   selectablePetEggs,
   selectablePetEggsById,
+  localEggIds,
   petSkillLevels:new Map(petCatalog.skills.map(s=>[`${s.id}:${s.level}`,s])),
   petSkillMaxima:[...petSkillMaxima.values()].sort((a,b)=>a.id-b.id),
  };
@@ -65,6 +70,8 @@ export const petSkillLevels=lazyBox(()=>ensure().petSkillLevels,'petSkillLevels'
 export const selectablePetEggs=()=>ensure().selectablePetEggs;
 /** 传说宠物池（数组），内部候选表。 */
 export const legendaryPetPool=()=>ensure().legendaryPetPool;
+/** 自制宠物生成的蛋编号（Set）。**必须是函数** —— Set 过不了代理（方法会拿到代理当 this）。 */
+export const localPetEggIds=()=>ensure().localEggIds;
 /** 每个宠物技能已采集到的最高等级定义（数组，按技能编号升序）。 */
 export const petSkillMaxima=()=>ensure().petSkillMaxima;
 

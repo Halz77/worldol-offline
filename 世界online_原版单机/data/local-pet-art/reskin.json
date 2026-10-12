@@ -1,0 +1,22 @@
+{
+ "_readme": [
+  "换皮配置：把 data/local-pet-art/ 里的贴图做成客户端能加载的精灵资源（tools/build-pet-reskin.mjs）。",
+  "冰冰 = 风格号 53（客户端里空着的号段，不会连带改到原有宠物）。",
+  "客户端按「500/600 + 风格号 - 1」查精灵，所以号必须写死：53 → 世界 552 / 战斗 652。",
+  "底模 519/619 都是 style20 那一套：两个 model 的槽位 0 是同一张图（frag12077），",
+  "且 headIcon == 世界号，所以这里一张图同时管住世界、战斗与头像。",
+  "槽位 0 = 主体贴图（槽位 1 是几千个 model 共用的阴影小件，不动）。"
+ ],
+ "fragmentIdStart": 40000,
+ "modelIdStart": 60000,
+ "entries": [
+  {
+   "key": "冰冰:4",
+   "baseModel": 519,
+   "baseBattle": 619,
+   "modelIds": { "model": 552, "battle": 652 },
+   "replace": { "model": [0], "battle": [0] },
+   "textures": { "model": ["冰冰/冰冰.png"], "battle": ["冰冰/冰冰.png"] }
+  }
+ ]
+}

@@ -15,7 +15,7 @@ import {handleRestoration} from '../lib/restoration-service.mjs';
 import {canIdentify} from '../lib/item-affixes.mjs';
 import {shopItem} from '../lib/restoration-packets.mjs';
 import {APPEARANCE_ITEM_IDS} from '../lib/local-fashion.mjs';
-import {soldPetItem,selectablePetEggs} from '../lib/pet-catalog.mjs';
+import {soldPetItem,selectablePetEggs,localPetEggIds} from '../lib/pet-catalog.mjs';
 const selectableEggIds=new Set(selectablePetEggs().map(e=>e.id));
 // 「技能书」分类的两条等式（见下面两条用例）：
 //   · petBookIds —— 唯一来源 lib/pet-skill-book-data.mjs 给出的在架编号；
@@ -81,6 +81,31 @@ const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes
    for(const id of shop.items){const item=parseShop(r,shop.id);assert.equal(item.id,id);assert.equal(item.money3,0);assert.ok(item.stackNum>=1);assert.equal(d.native(32,'isIdentifyItem',{e:d.Item}).call(item),canIdentify(officialItems.get(id)),`identification status for ${id}`);}
    r.finish();
  }
+});
+
+test('自制宠物的蛋置顶在「宠物蛋」分类最前面，且全店不重复',()=>{
+ // 宠物蛋这一档有一百多种，按 (reqLv,id) 排的话自制宠物（蛋号接在池子末尾）永远是最后一个，
+ // 等于找不到；自制宠物又是要反复试外观的东西，所以置顶。这条用例把「置顶」钉住。
+ const local=[...localPetEggIds()];
+ assert.ok(local.length>0,'仓库里现在有自制宠物（冰冰）');
+ const shop=supplyShops.find(s=>s.id===918);
+ assert.deepEqual(shop.items.slice(0,local.length),local,'自制宠物的蛋必须排在最前面');
+ assert.equal(shop.items.filter(id=>local.includes(id)).length,local.length,'不能重复上架');
+ const all=supplyShops.flatMap(s=>s.items);
+ assert.equal(all.length,new Set(all).size,'同一个编号不能在两个分类里各出现一次');
+ for(const id of local){
+  const egg=selectablePetEggs().find(e=>e.id===id);
+  assert.ok(egg,'自制蛋必须在可选购蛋的清单里');
+  assert.equal(egg.item.power1,109,'与普通宠物蛋同规格');
+  assert.ok(supplyShops.find(s=>s.id===918).items.includes(id),'必须在宠物蛋分类里（不是别的分类）');
+ }
+ // 置顶不影响 12004 的真实回包：顺序照发，客户端读到的是同一批。
+ const data=call(role(),12004,new Writer().short(918));
+ assert.equal(data.byte(),0);
+ assert.equal(data.short(),shop.items.length);
+ const r=new NativeReader(data.b.subarray(data.pos));
+ const parseShop=d.native(67,'fromBytesShopItem',{t:d.Item,S:{default:d.Item}});
+ assert.equal(parseShop(r,918).id,local[0],'第一个就是自制宠物的蛋');
 });
 
 test('技能书分类只卖训练师教不到的那批：上限与导师商店同口径、原版技能书全部下架',()=>{

@@ -8,6 +8,7 @@ import {mergeLocalPets,localPetData} from '../lib/local-pets.mjs';
 import {applyLocalPetAssets} from '../lib/local-pet-assets.mjs';
 import {buildReskin} from '../tools/build-pet-reskin.mjs';
 import {petProfiles,selectablePetEggs,legendaryPetPool,SELECTABLE_PET_EGG_ID_START} from '../lib/pet-catalog.mjs';
+import {petSpriteOf} from '../lib/pet-sprite.mjs';
 
 const root=fileURLToPath(new URL('..',import.meta.url));
 const raw=path.join(root,'client');
@@ -25,13 +26,38 @@ function upstream(){
  return {map:new Map([[parent.key,parent]]),parent};
 }
 
-test('本地宠物：没配（或文件不存在）时目录与上游逐项一致',()=>{
- assert.equal(localPetData(),null,'当前仓库的 local-pets.json 是空模板 → 整个目录与上游一致');
- assert.equal(petProfiles.size,504);
- assert.equal(legendaryPetPool().length,146);
- // 这两条是「空配置零变化」的硬证据：改坏了立刻就能看出来。
- assert.equal(selectablePetEggs().length,146);
- assert.equal(selectablePetEggs().at(-1).id,SELECTABLE_PET_EGG_ID_START+145);
+test('本地宠物：仓库里的 local-pets.json 现在有冰冰一只，上游 504 条与已有 146 个蛋的编号都不动',()=>{
+ const data=localPetData();
+ assert.ok(data,'仓库里已经有自制宠物（冰冰）—— 这份文件不再是空模板');
+ assert.equal(petProfiles.size,505,'504 条上游 + 1 只本地');
+ assert.equal(legendaryPetPool().length,147);
+ assert.equal(selectablePetEggs().length,147);
+ // 「新蛋只能追加在末尾」是硬约束：宠物蛋道具号 = 起始号 + 池子下标，
+ // 插到前面会让老存档里已经存在的蛋整体错位一只。前 146 个编号逐个钉住。
+ const eggs=selectablePetEggs();
+ for(let i=0;i<146;i++)assert.equal(eggs[i].id,SELECTABLE_PET_EGG_ID_START+i,'第 '+(i+1)+' 个蛋的编号不能动');
+ assert.equal(eggs[146].id,SELECTABLE_PET_EGG_ID_START+146,'新蛋接在末尾');
+ assert.match(eggs[146].item.name,/冰冰/);
+});
+
+test('冰冰：local-pets.json 写的外观号、换皮构建产出的号、客户端算出来的精灵号，三处必须一致',()=>{
+ // 同一个号只能有一处定义。这条用例把三处钉在一起：
+ //   配置 baseline.icon  →  构建产出的 model/战斗号  →  客户端按 500+风格号-1 算出来的号。
+ // 任何一处改了而别处没改（比如换了风格号却忘了重跑换皮工具），这里立刻报警。
+ const data=JSON.parse(fs.readFileSync(path.join(root,'data','local-pet-assets.json'),'utf8'));
+ const assign=data.assign['冰冰:4'];
+ assert.deepEqual(assign,{model:552,battle:652},'换皮产出：风格号 53 → 世界 552 / 战斗 652');
+ const pet=petProfiles.get('冰冰:4');
+ const sprite=petSpriteOf(pet);
+ assert.equal(sprite.style,53);
+ assert.equal(sprite.color,0,'色号必须是 0：客户端会在 fragment 号上叠加色号');
+ assert.equal(sprite.world,assign.model,'配置算出来的世界观精灵 = 构建产出的那个');
+ assert.equal(sprite.battle,assign.battle);
+ assert.equal(pet.baseline.headIcon,sprite.world,'headIcon 跟世界号走（与上游 style20 那几只同一规律）');
+ assert.equal(pet.name,'冰冰');
+ assert.equal(pet.extends,undefined);
+ assert.equal(pet.provenance.extends,'红炎少女(进化):4','数值/技能继承自红炎少女(进化)');
+ assert.deepEqual(pet.baseline.baseStats,petProfiles.get('红炎少女(进化):4').baseline.baseStats);
 });
 
 test('mergeLocalPets：继承上游数值，覆盖只影响写了的字段',()=>{
