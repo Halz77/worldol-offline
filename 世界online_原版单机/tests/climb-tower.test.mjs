@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {Writer,Reader} from '../lib/codec.mjs';
 import {normalizeRole,hpMax,mpMax} from '../lib/content.mjs';
 import {handleHomeFeatures} from '../lib/home-feature-service.mjs';
@@ -239,4 +240,21 @@ test('扫描：每层都有 preview，13101 原样回放 bodyBase64',()=>{
  h.sent.length=0;
  h.call(13101,new Writer().int(9999));
  assert.match(h.notice().errMsg,/尚未采集/);
+});
+
+test('客户端桥接：点「挑战」要真进战斗，塔组基数与服务端一致',async()=>{
+ const source=await readFile(new URL('../web/home-features.js',import.meta.url),'utf8');
+ // 客户端原生收到 30004 后没有任何模块去进战斗（TowerEvent.TowerChallenge 无人监听），
+ // 桥接必须自己调 World.toBattle，否则表现就是「点了挑战没反应」。
+ assert.match(source,/World\.toBattle\(/,'点挑战要能进战斗，必须调 World.toBattle');
+ // 触发条件用「收到塔组」而不是「发过请求」：服务端只在受理时才把塔组随 10503 下发，
+ // 被拒（次数用尽/未开放）只回 25003，所以「收到塔组」才是可靠的开始信号。
+ assert.match(source,/World\.addMonsterGroup=/,'要靠 World.addMonsterGroup 在收到塔组时开战');
+ assert.match(source,/sendClimbTowerChallenge/,'要接管原生挑战发送');
+ // 旧的占位补丁把 30003/30005 直接吞掉，删干净才算真修好。
+ assert.doesNotMatch(source,/挑战和扫荡待补/,'旧的「待补」占位必须删掉，否则 30003 根本不发');
+ // 塔组号 = BASE + 层号，客户端不能自己乱写一个基数。
+ const hit=source.match(/TOWER_GROUP_BASE=(\d+)/);
+ assert.ok(hit,'客户端要声明 TOWER_GROUP_BASE');
+ assert.equal(Number(hit[1]),TOWER_GROUP_BASE,'客户端组号基数必须与 lib/climb-tower.mjs 一致');
 });

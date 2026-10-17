@@ -127,6 +127,15 @@
   `isLeader()&&isHasPlayerMember()` / `isNetBattleID(t)` / `isEscortStatus()` 任一为真就走
   **12503 远程战斗**，而服务端只接 12501 → 客户端静默无反应。
   修法：三个条件都加 `&&null==e.getMonsterGroup(t)`（本地世界数据里有这组就别走远程）。
+- **永泽塔挑战进战斗是客户端补的桥**（第 69 版）：原生 `TowerProxy.onClimbTowerChallenge`
+  收到 30004 后只 `sendNt(TowerEvent.TowerChallenge)`，**全客户端没有监听者** → 点了没反应。
+  桥全在 `web/home-features.js`：接管 `req(1500).default.prototype.sendClimbTowerChallenge`
+  记层号，再包一层 `World.addMonsterGroup`（模块 0005；0018 解析 10503 时逐组调它），
+  收到 `23000+层号` 那一组才 `World.toBattle`。
+  ⚠️ 触发条件必须用「**收到塔组**」，不能用「发过请求」：服务端只在受理时才随 10503 下发该组，
+  而组一旦进 `monsterGroupList` 就长期不清 → 用「发过请求」会在「同层已缓存 + 这次被拒」时误开战。
+  （`sendClimbTowerChallenge` 是 UI 动态查属性、覆盖必命中；`onProto(proto,handler)` 是初始化时
+  按引用注册的，改原型对它无效 —— 别拿它当钩子。）
 - 图标 = bagIcon 十进制字符串作**全局数值子键**解析；item_icon0..7、bb_head（宠物头像）；
   蛋图标 = headIcon。资源表 `305.json` 顶层 `res.resources`。
 - **文本两套命名空间**：`GameText`(模块 10) 与 `GameText2`(模块 23)。`STR_ATTR_IGNORE_*`

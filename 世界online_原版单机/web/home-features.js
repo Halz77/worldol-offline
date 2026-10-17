@@ -90,7 +90,7 @@
   }
   async function preview(id){
    const token=++generation;status.textContent='正在读取怪物属性…';const r=await fetch('/api/tower-preview?id='+id);if(!r.ok)throw Error('怪物属性尚未采集。');const p=await r.json();if(token!==generation||activeRole!==World.myPlayer?.id)return;
-   body.replaceChildren();title.textContent=`永泽塔 · 关卡 ${id}`;button('返回塔层目录',()=>open('tower'));text('以下数值来自该关卡实际预览回包。技能、AI与战斗阵容待补。');
+   body.replaceChildren();title.textContent=`永泽塔 · 关卡 ${id}`;button('返回塔层目录',()=>open('tower'));text('以下数值来自该关卡实际预览回包。塔怪技能与AI待补（只会普攻），编队已可正常开战。');
    const fields={level:'等级',hpMax:'生命',mpMax:'法力',speed:'速度',atkType:'攻击类型',atkMin:'最小攻击',atkMax:'最大攻击',atk_time:'攻击次数',atk_str:'劈砍伤害',atk_agi:'穿刺伤害',atk_magic:'魔法伤害',def_str:'劈砍防御',def_agi:'穿刺防御',def_magic:'魔法防御',hitrate:'物理命中',hitMagic:'魔法命中',dodge:'闪避',critical:'致命',wil:'意志',tough:'韧性',block:'格挡',insight:'洞察',brkArmor:'破甲',magic_penetration:'魔法穿透',def_field:'伤害减免',life_absorption:'生命吸取',mana_absorption:'法力吸取'};
    for(const m of p.monsters){body.append(element('h3',`${m.name} · ${m.id}`));const table=element('dl');table.className='home-stats';for(const [key,label]of Object.entries(fields)){table.append(element('dt',label),element('dd',m[key]??'未下发'));}body.append(table);}
    status.textContent='';
@@ -120,7 +120,35 @@
   for(const method of ['onInit','onShow','updateIcon','updateChargeBtn','onBulkInfo','onShowBuddy','updateOpenLevel','onShowCampWar','onShowSailing','onSevenDay','onConquerBoss','dealIcon','updateAllIcon','addLevelOpenButton','levelOpenButton']){const original=Main[method];Main[method]=function(...args){const result=original?.apply(this,args);visible(this);return result;};}
   const setIcon=Main.setIconIncludeLayout;Main.setIconIncludeLayout=function(b,v,r){if(Object.keys(buttons).some(k=>this._view?.[k]===b)){b.mandatory=false;if(b.lock)b.lock.visible=false;return setIcon.call(this,b,true,false);}return setIcon.call(this,b,v,r);};
   const listeners=Main.addListeners;Main.addListeners=function(){listeners.call(this);for(const [key,id]of Object.entries(buttons)){const target=this._view[key];if(!target)continue;for(const h of [...(this.__egretHandler||[])])if(h.target===target&&h.type===egret.TouchEvent.TOUCH_TAP)this.offEgret(h.target,h.type,h.listener,h.thisObject);this.onEgret(target,egret.TouchEvent.TOUCH_TAP,()=>route(id,this),this);}};
-  const Tower=req(1500).default.prototype;for(const name of ['sendClimbTowerChallenge','sendClimbTowerSweep'])Tower[name]=()=>UI.alertMessage('战斗阵容、技能、AI与场景尚未录全，挑战和扫荡待补。可先查看已采集的怪物属性。');
+  // 永泽塔：塔层编队是服务端按「23000 + 层号」现场生成的（lib/climb-tower.mjs 的 TOWER_GROUP_BASE），
+  // 只在下一次 10503 世界数据里下发；而客户端原生收到 30004 后**没有任何模块**去进战斗
+  // （TowerEvent.TowerChallenge 全客户端无人监听），所以要在这里补桥接：
+  //   点「挑战/实战」→ 原生 sendClimbTowerChallenge 发 30003 → 服务端受理后回 30004 并把塔组随
+  //   10503 一起下发 → World.addMonsterGroup 收到这一组时才调 World.toBattle 进战斗。
+  // 与无限试炼（上面的 World.toBattle(t.groupId)）同一套做法，也和社区版注释一致。
+  // ⚠️ 只有服务端**受理**时塔组才会经过 addMonsterGroup；被拒（次数用尽/未开放）只回 25003 错误
+  //    提示，不会误进战斗 —— 所以触发条件是「收到塔组」，不是「发过请求」。
+  const TOWER_GROUP_BASE=23000;
+  const Tower=req(1500).default.prototype,nativeTowerChallenge=Tower.sendClimbTowerChallenge;
+  let pendingTowerFloor=0;
+  Tower.sendClimbTowerChallenge=function(floorId,type){
+   const floor=Number(floorId)||0;pendingTowerFloor=floor;
+   // 服务端拒绝时不推 10503，挂起标记要自己过期，免得之后的世界数据误触发。
+   if(floor)setTimeout(()=>{if(pendingTowerFloor===floor)pendingTowerFloor=0;},10000);
+   return nativeTowerChallenge.call(this,floorId,type);
+  };
+  const addMonsterGroup=World.addMonsterGroup;
+  if(typeof addMonsterGroup==='function')World.addMonsterGroup=function(group){
+   const result=addMonsterGroup.call(this,group);
+   const groupId=Number(group?.groupId)||0;
+   if(pendingTowerFloor&&groupId===TOWER_GROUP_BASE+pendingTowerFloor){
+    const floor=pendingTowerFloor;pendingTowerFloor=0;
+    // 下一帧再开战：现在还在解析 10503 的编队列表，就地开战会和读包打架。
+    // 塔面板不用手动关 —— 战斗开始会走原版 ON_BATTLE_START → StartBattleCmd → closeAllUI。
+    setTimeout(()=>World.toBattle(TOWER_GROUP_BASE+floor),0);
+   }
+   return result;
+  };
   // Settlement applies and saves recovery on the service. Suppress the same
   // native presentation-side addition so a late callback cannot add it twice.
   const Player=req(56).default.prototype,getPower=Player.getBagEquipPowerValue,recover=World.handeBattleEndHp;let settling=false;
