@@ -13,6 +13,9 @@ import {worldTravelMaps} from './world-travel.mjs';
 import {recordMissionCompletion} from './daily-activity.mjs';
 import {notifyDaily} from './daily-service.mjs';
 import {deferYunruoRewards} from './yunruo-temple.mjs';
+import {replayChainAfterSettlement} from './replayable-chains.mjs';
+import {isSolarMission} from './solar-challenge-data.mjs';
+import {startSolarBoard,clearSolarBoard,solarDepositText} from './solar-challenge-service.mjs';
 
 function vi(value){let n=BigInt.asUintN(64,BigInt(value||0)),a=[];do{let b=Number(n&127n);n>>=7n;if(n)b|=128;a.push(b);}while(n);return Buffer.from(a);}
 const integer=(n,v)=>Buffer.concat([vi(n*8),vi(v)]);
@@ -57,24 +60,67 @@ export function handleOfficial(type,r,context,{store,send,log}){
  const start=r.pos,npcId=type===14504?null:r.short(),id=r.short(),q=officialMissions.get(id);
  if(!q){r.pos=start;return false;}
  const before=structuredClone(p);
+ let reopenedChain=null;
  try{
   if(context.battle)throw Error('请先结束战斗。');
-  if(type===14504){if(!p.quests.active[id])throw Error('尚未接取此任务');delete p.quests.active[id];store.save();send(type,signUpdates(new Writer().byte(0),p));return true;}
+  if(type===14504){
+   if(!p.quests.active[id])throw Error('尚未接取此任务');
+   delete p.quests.active[id];
+   // 放弃英雄挑战赛要把棋盘上下文也清掉，否则 context.solar 还挂着旧赛程。
+   if(isSolarMission(id))clearSolarBoard(context);
+   store.save();send(type,signUpdates(new Writer().byte(0),p));return true;
+  }
   if(!near(p,npcById(p,npcId))||!npcEnabled(p,npcById(p,npcId)))throw Error('请走到任务 NPC 身边。');
-  if(type===14502){const target=cityTarget(q,p);if(!(atNpc(q,p.mapId,npcId)||isCityMission(q)&&target.mapId===p.mapId&&target.npcId===npcId))throw Error('请到任务接取 NPC 处接取。');if(!officialCanAccept(p,q))throw Error(prerequisiteMessage(p,q)||'任务条件未满足、已接取或今天已完成；缺少的城市条件待定。');if(Object.keys(p.quests.active).length>=127)throw Error('任务栏达到原版协议容量，请先交付或放弃部分任务。');p.quests.active[id]={official:true,counts:{},origin:originFor(p,q,npcId),acceptedAt:new Date().toISOString()};store.save();send(type,signUpdates(new Writer().byte(0),p).bool(false));}
-  else{const selected=r.int(),target=cityTarget(q,p);if(target.mapId!==p.mapId||target.npcId!==npcId||!officialComplete(p,q)||missionClosed(p,q))throw Error(prerequisiteMessage(p,q)||'请先完成条件，再到指定 NPC 交付。');
+  if(type===14502){
+   const target=cityTarget(q,p);
+   if(!(atNpc(q,p.mapId,npcId)||isCityMission(q)&&target.mapId===p.mapId&&target.npcId===npcId))throw Error('请到任务接取 NPC 处接取。');
+   // 英雄挑战赛：任务已经在身上时允许再点一次报名 —— 那是「重新打开棋盘」，
+   // 不是重复接任务（离开棋盘后再回来得靠这个入口，否则 officialCanAccept 会以
+   // 「已接取」挡掉，玩家再也进不去棋盘）。
+   if(!(isSolarMission(id)&&p.quests.active[id])){
+    if(!officialCanAccept(p,q))throw Error(prerequisiteMessage(p,q)||'任务条件未满足、已接取或今天已完成；缺少的城市条件待定。');
+    if(Object.keys(p.quests.active).length>=127)throw Error('任务栏达到原版协议容量，请先交付或放弃部分任务。');
+    p.quests.active[id]={official:true,counts:{},origin:originFor(p,q,npcId),acceptedAt:new Date().toISOString()};
+   }
+   const active=p.quests.active[id];
+   if(isSolarMission(id)){
+    if(active.solarDone)throw Error('赛程已完成，请交付任务领取奖励。');
+    // 报名押金（escortCost = [黄金,白银,铜币]）：只收一次，重开棋盘不重复扣。
+    if(!active.solarDepositPaid){
+     const [needGold=0,needSilver=0,needCoins=0]=q.escortCost||[];
+     const useSilver=Math.min(Number(p.silver||0),Number(needSilver)||0);
+     const useGold=(Number(needGold)||0)+(Number(needSilver)||0)-useSilver;
+     if((p.gold||0)<useGold||(p.coins||0)<(Number(needCoins)||0))throw Error('报名费不足，需要 '+solarDepositText(q)+'。');
+     p.gold=(p.gold||0)-useGold;p.silver=(p.silver||0)-useSilver;p.coins=(p.coins||0)-(Number(needCoins)||0);
+     active.solarDepositPaid=true;
+    }
+   }
+   store.save();send(type,signUpdates(new Writer().byte(0),p).bool(false));
+   // 接完立刻把棋盘推给客户端 —— 少了这一步玩家根本看不到挑战界面。
+   if(isSolarMission(id))startSolarBoard(context,send,p,id);
+  }
+  else{
+   // 棋盘还开着（没走 14509 离开 / 14511 结束）不许交付，否则等于绕过硬挑战。
+   if(isSolarMission(id)&&context.solar)throw Error('请先结束棋盘挑战，再回到报名点交付奖励。');
+   const selected=r.int(),target=cityTarget(q,p);if(target.mapId!==p.mapId||target.npcId!==npcId||!officialComplete(p,q)||missionClosed(p,q))throw Error(prerequisiteMessage(p,q)||'请先完成条件，再到指定 NPC 交付。');
    const choice=availableChoices(q),selectedReward=choice.length?choice.find(i=>i.id===selected):null;
    if(choice.length&&!selectedReward)throw Error('请选择已恢复属性的任务奖励。');
    const consumed=planItemRemoval(p,missionConditions(q,'submitCondition').filter(c=>c.type===7&&!c.not).map(c=>({id:c.itemId,quantity:c.required})));
    const rewardData=missionRewards(q),planned=planItemRewards({...p,inventory:consumed.inventory},[...(rewardData.rewardItems||[]),...(selectedReward?[selectedReward]:[])]);
    const cityReward=applyCityMission(p,q);p.inventory=planned.inventory;recordMissionCompletion(p,q);deferYunruoRewards(p,q);
-   delete p.quests.active[id];if(!p.quests.completed.includes(id))p.quests.completed.push(id);const reward=Object.assign(gain(p,vipMissionExperience(p,rewardData.exp),rewardData.money3),cityReward);reward.pet=gainPet(p,rewardData.challengeOnly?0:observedPetExperience('missionId',q.id,q.exp));reward.silver=rewardData.money2;reward.added=planned.added;reward.removed=consumed.removed;if(q.id===42){p.cityUnlocked=true;reward.cityChanged=true;}p.silver=(p.silver||0)+rewardData.money2;store.save();send(type,questReward(signUpdates(new Writer().byte(0),p),p,reward));send(11004,moneyUpdate(p,reward.coins,reward.silver));send(17601,healthUpdate(p));
+   delete p.quests.active[id];if(!p.quests.completed.includes(id))p.quests.completed.push(id);
+   // 可重复任务链：如果交付这一环让整条链通关了，就把整条链从完成记录里抹掉，
+   // 玩家可以立刻从第一环重接（不用等到明天）。必须在 store.save() 之前做。
+   reopenedChain=replayChainAfterSettlement(p,id);
+   const reward=Object.assign(gain(p,vipMissionExperience(p,rewardData.exp),rewardData.money3),cityReward);reward.pet=gainPet(p,rewardData.challengeOnly?0:observedPetExperience('missionId',q.id,q.exp));reward.silver=rewardData.money2;reward.added=planned.added;reward.removed=consumed.removed;if(q.id===42){p.cityUnlocked=true;reward.cityChanged=true;}p.silver=(p.silver||0)+rewardData.money2;store.save();send(type,questReward(signUpdates(new Writer().byte(0),p),p,reward));send(11004,moneyUpdate(p,reward.coins,reward.silver));send(17601,healthUpdate(p));
   }
   const jump=type===14502?q.acceptJumpMapID:q.submitJumpMapID;
   if(jump>0&&officialMaps.has(jump))context.questTeleport={mapId:jump,x:type===14502?q.acceptJumpMapGx:q.submitJumpMapGx,y:type===14502?q.acceptJumpMapGy:q.submitJumpMapGy};
   const group=missionBattleId(q,type===14502?'accept':'submit');if(group>0&&battleSupported(group))context.storyBattle={group,mapId:p.mapId,npcId,quest:id};
   pushNewbieMission(p,send);if(type===14503)notifyDaily(p,send);
-  log('official-quest',{role:p.id,type,quest:id});
- }catch(e){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);send(type,new Writer().byte(-1).string(e.message));log('official-quest-rejected',{role:p.id,type,quest:id,error:e.message});}
+  // 任务链通关复位后给一句提示，否则玩家不知道「可以重打」了。
+  if(reopenedChain)send(10509,new Writer().byte(2).string(`任务链「${reopenedChain.name}」已通关（共 ${reopenedChain.nodes} 环），可以从第一环重新接取。`));
+  log('official-quest',{role:p.id,type,quest:id,...(reopenedChain?{chainReopened:reopenedChain.id}:{})});
+ }catch(e){if(process.env.WOL_QUEST_STACK)console.error(e.stack);for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);send(type,new Writer().byte(-1).string(e.message));log('official-quest-rejected',{role:p.id,type,quest:id,error:e.message});}
  return true;
 }

@@ -9,6 +9,7 @@ import {VIP_MAX,localVipLevel} from './equipment-sets.mjs';
 import {hpMax,mpMax} from './content.mjs';
 import {dropCatalog,dropDirectory} from './loot.mjs';
 import {handleDaily} from './daily-service.mjs';
+import {achievementInfo,achievementList,claimAchievementReward} from './achievements.mjs';
 import {dailyData} from './daily-activity.mjs';
 import {homeFeatureData,vipBenefits,vipPending} from './home-feature-data.mjs';
 import {petCatalogSummary,petCatalog,LEGENDARY_EGG_ID} from './pet-catalog.mjs';
@@ -32,9 +33,18 @@ export function handleRecorded(type,r,context,{store,send,log}){
  if(handleDaily(type,r,context,{store,send,log}))return true;
  const commit=fn=>{const before=structuredClone(p);try{const result=fn();p.hp=Math.min(p.hp,hpMax(p));p.mp=Math.min(p.mp,mpMax(p));store.save();return result;}catch(e){for(const k of Object.keys(p))if(!(k in before))delete p[k];Object.assign(p,before);throw e;}};
  if(type===11026){send(type,titleList(new Writer()));return true;}
- if(type===11023){const w=new Writer().string(selectedTitle(p)?.name||'').int(0).short(-1).short(recordedTitles.size);for(let i=0;i<12;i++)w.short(0);send(type,w);return true;}
- if(type===11024){send(type,new Writer().int(0).short(0));return true;}
- if(type===11025){send(type,new Writer().byte(-1).string('成就进度与奖励规则待补。'));return true;}
+ // 成就（11023 概览 / 11024 列表 / 11025 领取）—— 数据 data/achievements.json，
+ // 实现在 lib/achievements.mjs（移植自社区单机版的单机推算规则）。
+ if(type===11023){send(type,achievementInfo(new Writer(),p));return true;}
+ if(type===11024){const big=r.byte(),small=r.byte(),size=r.int(),page=r.short();send(type,achievementList(new Writer(),p,big,small,size,page));return true;}
+ if(type===11025){
+  try{
+   if(context.battle)throw Error('请先结束战斗。');
+   const id=r.short(),sub=r.byte();
+   send(type,commit(()=>claimAchievementReward(p,id,sub)));
+  }catch(e){send(type,new Writer().byte(-3).string(e.message));}
+  return true;
+ }
  // The native social window queries each relationship tab independently.
  // A single-player save has no recorded relationships; answer with its native
  // empty-list shape so opening the restored entrance cannot time out.

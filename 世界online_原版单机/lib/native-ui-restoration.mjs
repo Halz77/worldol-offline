@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {battleFontAssets} from './client-battle-font-patch.mjs';
 import {applyFashionIcons} from './fashion-icons.mjs';
-import {applyLocalPetAssets} from './local-pet-assets.mjs';
 
 export const nativeUiRevision='native-windows-town-map-20260922-v2';
 
@@ -32,8 +31,5 @@ export function nativeResourceManifest(root,raw){
  // 美容院造型道具的图标图集：子键就是道具编号（900101… / 900201…），
  // 商店列表按 bagIcon 取图时会在这里命中。归档清单同样保持字节不变。
  applyFashionIcons(manifest,root);
- // 自制宠物的换皮贴图与 model：名字补进 sprite 表即可，实体在 client/assets/<hh>/<hash>。
- // 没有产出文件（data/local-pet-assets.json 不存在）时会安静返回 0。
- applyLocalPetAssets(manifest,root);
  return manifest;
 }

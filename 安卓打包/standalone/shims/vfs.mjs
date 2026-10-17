@@ -81,7 +81,7 @@ export function missCount() {
 function syncFetchText(sitePath) {
   try {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', siteOrigin + sitePath, false);
+    xhr.open('GET', siteOrigin + sitePath + cacheStamp(sitePath), false);
     // 同步模式下 responseType 只能是 ''；overrideMimeType 保证 JSON 也按 utf-8 解
     xhr.overrideMimeType('text/plain; charset=utf-8');
     xhr.send(null);
@@ -92,6 +92,23 @@ function syncFetchText(sitePath) {
   } catch (error) {
     return null;
   }
+}
+
+/**
+ * 按需抓取的 URL 上附带的构建指纹（由 standalone-boot.js 写进 globalThis）。
+ *
+ * 站点根的那几个入口（index.html / gd.js / 主包 / 305.json）都有版本号或会被
+ * primeChangedAssets 强制刷新，但 data/*.json 是这里现取的：URL 恒定不变，
+ * 覆盖安装后 WebView 的 HTTP 缓存会命中**上一版**的资料 —— 症状是
+ * 「新加的宠物/道具在商店里看不到，分类名里的『N 种』也停在上一版数字」。
+ * 加上指纹后，每次构建的 URL 都不同，旧缓存自然用不上。
+ *
+ * 拿不到指纹（桌面端直接引用 shim、或 boot 没替换占位符）就返回空串，行为不变。
+ */
+function cacheStamp(sitePath) {
+  const id = (typeof globalThis !== 'undefined' && globalThis.__worldolBuild) ? String(globalThis.__worldolBuild) : '';
+  if (!id) return '';
+  return (sitePath.indexOf('?') >= 0 ? '&' : '?') + 'b=' + encodeURIComponent(id);
 }
 
 /** 未命中时从站点取文本；取不到返回 null（调用方按 ENOENT 处理） */

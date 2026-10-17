@@ -16,6 +16,9 @@ import {notifyDaily} from './daily-service.mjs';
 import {legionBattleMembers,readLegionResult,pushLegionMembers,legionVitals,encodeLegion} from './legion-service.mjs';
 import {legionRoster} from './legion-state.mjs';
 import {nativeVitalsCeiling} from './restoration.mjs';
+import {towerFloorOfGroup,settleTowerBattleAndNotify} from './climb-tower.mjs';
+import {solarMissionOfGroup,clearSolarPending,settleSolarBattle} from './solar-challenge-service.mjs';
+import {pendingTrialGroup,clearTrialPending,isTrialGroup,settleTrialBattleAndNotify} from './trial-challenge.mjs';
 import {BATTLE_TRAILER_V2,readBattleResultTail} from './battle-result-wire.mjs';
 export const BATTLE_TRAILER=BATTLE_TRAILER_V2;
 // MOD(battle-entry-full-heal)：进入战斗前把人物与背包里全部宠物的血蓝原地回满
@@ -112,12 +115,24 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     // placed several times across one map, and the player has to be able to fight
     // whichever copy they walked up to.
     const pinned=origin?npcById(p,origin.npcId):null;
-    const n=pinned&&near(p,pinned,3)?pinned:battleNpc(p,group,spawn=>npcEnabled(p,spawn));
-    if(!n||!near(p,n,3))fail('请靠近当前任务的战斗目标。');
+    // 永泽塔：塔层编队（23000+层号）不在任何地图的 NPC 刷怪点里，走的是
+    // 「30003 挑战 → 客户端带着组号发 12501」这条路，所以没有可站的 NPC 要校验。
+    const towerFloorId=towerFloorOfGroup(group);
+    // 英雄挑战赛（太阳神殿棋盘）：编队由 14514 下发，地图 262 上没有对应的刷怪点，
+    // 与塔层编队同一套处理 —— 跳过「站到 NPC 旁边」的校验。
+    const solarMission=solarMissionOfGroup(group);
+    // 无限试炼：编队由试炼面板下发，同样不在地图上。
+    const trialGroup=pendingTrialGroup(context)===group&&isTrialGroup(group);
+    const scripted=!!towerFloorId||!!solarMission||trialGroup;
+    const n=scripted?null:(pinned&&near(p,pinned,3)?pinned:battleNpc(p,group,spawn=>npcEnabled(p,spawn)));
+    if(!scripted&&(!n||!near(p,n,3)))fail('请靠近当前任务的战斗目标。');
     if(p.hp<=0)fail('请先回村恢复生命。');
     if((p.battles.cooldowns[group]||0)>Date.now())fail('怪物正在重新出现，请稍候。');
     const token=randomBytes(4).readUInt32BE()&0x7fffffff;
-    const official=!!maps[p.mapId].official,ids=official?officialGroups.get(group)?.monsters.filter(id=>id>0):[n.monster];
+    // 塔战一律走官方怪物表（即便是本地地图 1/10），否则会按本地 NPC 的怪物去开战。
+    const official=!!maps[p.mapId].official||!!towerFloorId||!!solarMission;
+    const ids=scripted?(officialGroups.get(group)?.monsters||[]).filter(id=>id>0)
+     :(official?officialGroups.get(group)?.monsters.filter(id=>id>0):[n.monster]);
     if(!ids?.length||official&&ids.some(id=>!officialMonsters.has(id)))fail('这组怪物的数据尚未恢复。');
     const pet=activePet(p);
     // The native formation only inserts a living pet, even if a dead one is equipped.
@@ -131,7 +146,13 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
       if(battleEntryVitals.infos.length)send(31058,encodeLegion('s2c_LegionActorHp',battleEntryVitals));
       log('battle-entry-full-heal',{role:p.id,healed:battleEntryHealed});
     }
-    context.battle={token,group,monster:ids[0],monsters:ids,official,petUid:battleEntryPetUid,legion:legionBattleMembers(p),mapId:p.mapId,startedAt:Date.now()};
+    // 永泽塔：层号记进战斗快照 —— 结算时据此记通关并发首通奖励。
+    // 记在快照里而不是 p 上，是因为 p.towerPendingGroup 只负责「把组下发给客户端」，
+    // 开战后就该清掉（否则之后每次世界数据都白带一组）。
+    context.battle={token,group,monster:ids[0],monsters:ids,official,petUid:battleEntryPetUid,legion:legionBattleMembers(p),mapId:p.mapId,startedAt:Date.now(),towerFloorId,solarMission,trialGroup};
+    if(towerFloorId)p.towerPendingGroup=0;
+    if(solarMission)clearSolarPending(context);
+    if(trialGroup){clearTrialPending(context);delete p.trialPendingGroup;}
     // The cooldown only has to stop the player from re-entering the same group
     // within 1.5s, which is already enforced in memory. Skipping the save here
     // keeps entering a battle from serialising the whole save file — in the
@@ -205,7 +226,7 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     if(anomaly)reject(`战斗结果数据不完整（${anomaly}）`);
     // The preserved single-player client engine computes combat. This is not an online anti-cheat server.
     const before=structuredClone(p),storyBefore=context.storyBattle,legionBefore=legionResult.map(row=>[row.role,structuredClone(row.role)]);
-    let reward={exp:0,coins:0,levels:0},changeMap=false;
+    let reward={exp:0,coins:0,levels:0},changeMap=false,solarBoardReply=null;
     const killed=Object.entries((battle.monsters||[battle.monster]).reduce((o,id)=>(o[id]=(o[id]||0)+1,o),{})).map(([id,n])=>[Number(id),n]);
     try{
     p.hp=hp;p.mp=mp;if(pet){companion.hp=petHP;companion.mp=petMP;}
@@ -221,6 +242,19 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
       reward.pet=gainPet(p,observedPetExperience('groupId',group,reward.exp));
       const loot=rollBattleLoot(p,battle,random),delivery=applyLootDelivery(p,loot);
       reward.loot=loot;reward.added=delivery.added;reward.pending=delivery.pending;
+      // 永泽塔：打赢塔层就记通关 + 发首通奖励（同一层只发一次），并立刻推一次新塔信息
+      // 让客户端点亮下一层。跟 30005 扫荡的区别：首通 useFirst=true、通关记录写 1；
+      // 扫荡写 2。这段在 12502 的 try 块内 —— 抛错会连同整场结算一起回滚。
+      if(battle.towerFloorId){
+        const tower=settleTowerBattleAndNotify(p,battle.group,result,send,log);
+        if(tower){reward.towerPoint=tower.towerScore;reward.towerFloor=tower.floorId;reward.towerSkipped=tower.skipped;}
+      }
+      // 英雄挑战赛：打赢就记「这一格已通过」。棋盘包**先攒着**，等 12502 回包之后
+      // 再推（和社区版一致）—— 早发会被客户端战斗收尾时的 closeAllUI 冲掉。
+      // 打完终点格的龙才算赛程完成。同样在 try 块内，抛错随整场结算回滚。
+      if(battle.solarMission&&result===2)solarBoardReply=settleSolarBattle(context,p,battle.group);
+      // 无限试炼：打完自动按胜负结算并发奖（赢 = 满档，输 = 参与档），清掉待下发标记。
+      if(battle.trialGroup){const trial=settleTrialBattleAndNotify(p,result,send);if(trial){reward.trialTier=trial.tier;reward.trialDamage=trial.damage;}}
       if(context.storyBattle?.group===group)context.storyBattle=null;
     // MOD(no-defeat-teleport)：战斗失败不再传送回城、不再改 mapId/坐标。
     // 紧随其后的 applyBattleRecovery(p)（本来就无条件执行）会把人物与出战宠物的
@@ -233,6 +267,9 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);for(const [role,snapshot] of legionBefore){for(const key of Object.keys(role))if(!(key in snapshot))delete role[key];Object.assign(role,snapshot);}context.storyBattle=storyBefore;reject(error.message);}
     context.battle=null;context.rejectedBattle=null;settled=true;if(result===2)notifyDaily(p,send);
     send(type,battleReward(p,result,reward,killed,changeMap));send(11004,moneyUpdate(p,reward.coins));
+    // 棋盘包必须在 12502 回包之后推：客户端此刻已结束战斗，收到 14508 才会重新
+    // 打开棋盘窗口。顺序反了会被 closeAllUI 冲掉 → 棋盘消失、人卡在地图上。
+    if(solarBoardReply)send(solarBoardReply.type,solarBoardReply.body);
     if(legionResult.length)pushLegionMembers(p,send,{appearance:false});
     if(reward.pending?.length)send(10509,new Writer().byte(2).string('背包已满，未装下的掉落已保存。腾出空间后点击背包“整理”即可补发。'));
     pushHealth();pushNewbieMission(p,send);log('battle-settled',{role:p.id,...p.battles.last,commands,wireVersion});return true;

@@ -42,11 +42,15 @@ const EXPECTED_MAIN_STEPS=[
  'battleSpeedSteps',
  'battleSpeedPersist',
  'battleSkillPanel',
+ 'battleCheckFields',
+ 'battleMonsterBars',
+ 'battleMonsterMana',
  'battleFont',
  'weaponSlots',
  'phantomImmunity',
  'illusion',
- 'weaponIcon'
+ 'weaponIcon',
+ 'escortBattle'
 ];
 
 /** 收敛前散落在调用方里的补丁函数名，调用方不该再出现它们。 */
@@ -54,9 +58,9 @@ const PATCH_FUNCTIONS=[
  'patchOfflineLegionBattles','patchImmediateRoleDeletion','patchBattleDamageMath',
  'patchCombatLimits','patchGardenerManaRecovery','patchNpcRepeatableMissions',
  'patchOfflineStoryBattles','patchDailyCatalogVisibility','patchNpcMissionRefresh',
- 'patchPlayerLevelRewards','patchBulkItemUse','patchBattleSkillPanel','patchBattleFont',
+ 'patchPlayerLevelRewards','patchBulkItemUse','patchBattleSkillPanel','patchBattleCheckFields','patchBattleMonsterBars','patchBattleFont',
  'patchLegionSurvivors','patchLegionPetGuard','patchBattleSpeedSteps','patchBattleSpeedPersist',
- 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEmptyNativeShop'
+ 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEmptyNativeShop'
 ];
 
 function readIfPresent(file){
@@ -93,11 +97,13 @@ test('replaceOnce 要求锚点恰好出现一次',()=>{
 
 test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle,()=>{
  const original=fs.readFileSync(MAIN,'utf8');
- // 4557839 / 4564108 是 v305 主包打补丁前后的长度。原版换包或补丁增删都会
+ // 4557839 / 4565489 是 v305 主包打补丁前后的长度。
+ // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
+ //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4564108,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4565489,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 
@@ -169,4 +175,20 @@ test('全工程只有两处打补丁，且都指向同一份链（避免再次�
    assert.ok(!line.includes(name),label+' 仍在逐个 import '+name+'：'+line.trim());
   }
  }
+});
+
+test('escortBattle：isEscortStatus 不能把棋盘战斗推向 12503 远程战斗',skipNoBundle,async()=>{
+ const {patchEscortBattle}=await import('../lib/client-escort-battle-patch.mjs');
+ const main=fs.readFileSync(MAIN,'utf8');
+ const patched=patchEscortBattle(main);
+ // 这条是棋盘玩法唯一会踩的：棋盘一开 isEscortStatus() 恒真，不加固就一定走 12503，
+ // 而服务端只接 12501 → 客户端等不到回包、静默无反应（第 66 版玩家实测）。
+ assert.ok(patched.includes('e.isEscortStatus()&&null==e.getMonsterGroup(t)&&(s=!0)'),
+  'isEscortStatus 必须带上「本地没有这一组才走远程」');
+ assert.ok(!patched.includes('e.isEscortStatus()&&(s=!0)'),'不能留下没加固的原文');
+ // 另外两条同类条件：本补丁写成幂等的，前两个补丁打过就走跳过分支。
+ for(const anchor of ['1==f["default"].isNetBattleID(t)','!s&&this.myPlayer.checkIsHasLegionTem()'])
+  assert.ok(!patched.includes(anchor+'&&(s=!0)'),anchor+' 也不该留下没加固的原文');
+ // 再打一次必须原样返回（standalone 靠幂等跳过重打）。
+ assert.equal(patchEscortBattle(patched),patched,'补丁必须幂等');
 });

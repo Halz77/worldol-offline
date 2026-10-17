@@ -99,6 +99,13 @@
   async function open(shop=false){if(!World.myPlayer?.id)return;petShop=shop;category.disabled=false;for(const o of category.options)o.hidden=shop&&!['finishedPets','pets'].includes(o.value);if(shop){category.value='finishedPets';search.value='';page=0;}$('recorded-title').textContent=shop?'宠物商城':'已录内容还原';$('recorded-help').textContent=shop?'成品宠物免费购买，保留成长、技能和已有装备，购买后恢复100天寿命。可切换分类选购1级宠物。':'宠物可按录制模板免费领取，称号可直接使用。套装效果随穿戴和VIP等级自动生效。';$('offline-panel').classList.remove('open');if(!dialog.open)dialog.showModal();status.textContent='';try{data=await fetch('/api/recorded-content',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('读取录制资料失败');return r.json();});render();}catch(e){status.textContent=e.message;}}
   const openPetShop=()=>{if(dialog.open)dialog.close();$('offline-panel').classList.remove('open');return req(67).ShopItem.openItemShop(918);};
   $('recorded-open').onclick=()=>open();$('pet-shop-open').onclick=openPetShop;
+  // 「宠物商店（N种）」的数字原来是写死在 index.html 里的，宠物目录一变它就过期
+  // （新增自制宠物后按钮还显示旧数字，很容易被当成「新宠物没进商店」）。
+  // 这里按服务端的商店清单刷新一次；取不到就保留页面上的原文案。
+  fetch('/api/supply-shops',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(dir=>{
+   const shop=(dir?.shops||[]).find(s=>s.id===918);if(!shop)return;
+   $('pet-shop-open').textContent=`宠物商店（${shop.count}种）`;
+  }).catch(()=>{});
   $('recorded-close').onclick=()=>dialog.close();category.onchange=()=>{page=0;render();};search.oninput=()=>{page=0;render();};$('recorded-prev').onclick=()=>{page--;render();};$('recorded-next').onclick=()=>{page++;render();};
   return {open,openPetShop};
  };

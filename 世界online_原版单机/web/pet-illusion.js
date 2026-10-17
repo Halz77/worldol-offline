@@ -6,7 +6,9 @@
  // 与装备幻化的分工一致：
  //   · 服务端 lib/pet-illusion-service.mjs 负责规则、候选和存档（只换外观，不动属性）；
  //   · 客户端不做渲染改动 —— 服务端下发宠物的 icon/headIcon/model 已经是幻化后的值，
- //     原生界面/背包/场景照旧画，这里只负责「选哪个外观」和「选完把界面刷新一下」。
+ //     原生界面/背包/场景照旧画，这里只负责「选哪个外观」「选完把数据取回来」和「让场景与界面重画」。
+ //     注意：**必须显式通知场景**（resyncScenePet → setPet(vo,true)），
+ //     场景里的宠物实体不会自己跟着宠物数据变（原因见 resyncScenePet 的注释）。
  window.installPetIllusion=req=>{
   // PetInfoMdr 在主包模块 288（含 tapBtnEquip / tapBtnSeal / levelOpenButton）。
   // 拿不到就静默退出：附加功能不能把整个离线启动链带崩。
@@ -122,6 +124,39 @@
    return true;
   }
 
+  // 把「场景里那只随行宠物」重新绑到当前的宠物数据上。
+  //
+  // 为什么光刷新界面不够：场景里的宠物实体只在**玩家模型进场景那一次**拿到数据 ——
+  // SceneController.addObj 里是一句 `p.vo = t.pet`（t 是玩家 VO），之后只有
+  // Player.setPet(x, true) 发出的 ON_PET_ADD 会把它换成新对象（onPetAdd 里 `o.vo=t; o.onAdded()`）。
+  // 服务端每次下发 playerDetail 都会造一个**新的**宠物 VO 并 setPet（不带通知），
+  // 于是 myPlayer.pet 早就换过对象了，实体还拿着旧的 —— 宠物详情/头像跟着新对象走、
+  // 场景贴图跟着旧对象走，表现就是「幻化完界面变了、地上那只没变」。
+  //
+  // 原生「宠物出战」走的就是这条路（doEquipAction → setPet(vo, true)），照抄它最稳：
+  // 实体重新绑定 + onAdded 重算贴图。只对**正在出战的这只**做，换别的宠物的外观不该把它召出来。
+  function resyncScenePet(vo){
+   try{
+    const player=World.myPlayer,active=player?.getPet?.()||player?.pet||null;
+    if(!vo||!active)return false;
+    // 判定「正在被幻化的是不是地上这只」：**按槽位判，不能只按对象引用判**。
+    // 服务端每次下发 playerDetail 都会造一个新的宠物 VO，myPlayer.pet 可能已经换过对象，
+    // 这时它与界面里 selectedPet(mdr) 拿到的已经不是同一个引用了 —— 只比引用会漏判，
+    // 场景就永远不刷新（玩家看到的正是不刷新的那个版本）。槽位是宠物在背包里的位置，
+    // 不受 VO 重建影响；两者都认，任一条命中就算同一只。
+    const slotOf=target=>target?.petItem?.slotPos??target?.petItem?.slot;
+    const mine=Number.isInteger(slot)?slot:slotOf(vo);
+    const activeSlot=slotOf(active);
+    const samePet=active===vo
+     ||(vo.petItem&&active.petItem===vo.petItem)
+     ||(Number.isInteger(mine)&&Number.isInteger(activeSlot)&&mine===activeSlot);
+    if(!samePet)return false;           // 幻化的不是出战宠物 → 场景不该动
+    if(typeof player.setPet!=='function')return false;
+    player.setPet(active,true);         // → ON_PET_ADD → 实体 o.vo=active; o.onAdded()
+    return true;
+   }catch(error){return false;}
+  }
+
   // 通知各处重画。三条都走原生入口：
   //   · BAG_ITEM_UPDATE      —— 背包/宠物格按本地道具重画（道具刚刚已经改好了）
   //   · ON_PET_ATTR_UPDATE   —— 宠物头像等小组件
@@ -163,6 +198,8 @@
    // 不 await：网络慢的时候别把「正在保存」的提示卡住，界面先给反馈、晚一拍再重画。
    return pullPetDetail().then(vo=>{
     if(vo)try{applyAppearanceToItem(vo);}catch(error){}
+    // 顺序：先让场景把这套新外观拿过去（重算贴图），再通知各处重画界面。
+    resyncScenePet(vo);
     notifyAppearanceChanged();
     refreshPetListPage();
     try{mdr?.updateView?.();}catch(error){/* 界面已关掉就算了 */}
@@ -265,7 +302,7 @@
    return result;
   };
 
-  const api={open,revision:'pet-illusion-v3'};
+  const api={open,revision:'pet-illusion-v4'};
   window.offlinePetIllusion=api;
   return api;
  };

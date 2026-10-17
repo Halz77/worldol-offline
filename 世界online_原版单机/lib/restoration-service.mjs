@@ -18,6 +18,7 @@ import {selectablePetEggs,soldPetItem,petSkillLevels} from './pet-catalog.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
 import {spiritRules,spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
 import {appearanceShops,appearanceByItemId,applyAppearance} from './local-fashion.mjs';
+import {towerShopList,towerShopBuy} from './tower-shop.mjs';
 // 美容院的「更换发型 / 更换脸型 / 全新发型」在原版里也是普通道具商店（51 / 52 / 55），
 // 但卖的不是装备，而是**买下即生效**的造型道具：客户端读到购买回包的状态位 2 就调用
 // updateHair / updateFace 改写自己的外观位域（icon1 的发型 7..10 位 / 脸型 13..16 位），
@@ -39,7 +40,7 @@ export function shopItems(id){
  if(id===OFFICIAL_SHOP)return [...officialItems.keys()].map(id=>equipment.get(id)).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id)&&!isSpiritBox(e.id));
  return supplyShopById.get(id)?.items.map(id=>equipment.get(id));
 }
-const operations=new Set([12001,12003,12004,12005,12006,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010]);
+const operations=new Set([12001,12003,12004,12005,12006,12020,12021,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010]);
 export function handleRestoration(type,r,context,{store,send,log}){
  if(!operations.has(type)||!context.role)return false;
  const p=context.role;let shop;
@@ -120,6 +121,17 @@ export function handleRestoration(type,r,context,{store,send,log}){
   }
   // No items are automatically marked as junk. The native bag selection is
   // submitted separately by 12037 and remains the authority for what to sell.
+  // 永泽塔「兑换商店」——客户端原生支持（SHOP_TOWER_ID=23722），货币是勇气勋章 p.towerPoint。
+  if(type===12020){send(type,towerShopList(new Writer(),p));return true;}
+  if(type===12021){
+   const shopId=r.short(),itemId=r.int(),quantity=r.byte()&255,before=structuredClone(p);
+   let result;
+   try{result=towerShopBuy(p,shopId,itemId,quantity);if(!result.ok)throw Error(result.message);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   send(type,new Writer().byte(0).int(itemId).short(result.slot).byte(result.n).int(p.towerPoint||0).short(result.row.maxBuy).short(result.row.allCount));
+   log('tower-shop-buy',{role:p.id,itemId,quantity:result.n,point:result.row.point,left:p.towerPoint||0});
+   return true;
+  }
   if(type===12036){send(type,new Writer().short(0));return true;}
   if(type===12037){
    const count=r.short();if(count<1||count>300)throw Error('请选择要出售的背包道具。');

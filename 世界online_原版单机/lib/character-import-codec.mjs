@@ -35,19 +35,38 @@ export function exportEquipment(source,illusionDefinition){
 export function finishEquipment(e){
  return {...e,native:true,imported:true,level:e.reqLv||0,requirements:['Str','Con','Agi','Ilt','Wis'].map(k=>e['req'+k]||0),durability:e.durMax||0,localPrice:0,localIcon:e.bagIcon,attackTimes:(e.atk_time||0)+1,hit:e.hitrate||0,powers:[1,2,3].filter(n=>e['power'+n]).map(n=>[e['power'+n],e['powerValue'+n]]),definitionBase64:equipmentBytes(e).toString('base64')};
 }
-export function equipmentBytes(e){
+// 字节写出只有这一份实现：所有装备定义（官方抓包、本地补充、导入码）都走它，
+// 一漂移就是「鉴定属性错位」，所以别再另写一份。
+function writeEquipment(e,offsets){
  const weapon=(e.type>=13&&e.type<=24)||(e.type>=34&&e.type<=39),w=new Writer().byte(e.type).bool(!!e.handBookItem);
+ const mark=k=>{if(offsets)offsets[k]=w.done().length;};
  if(e.handBookItem){w.bool(!!e.isHandBookActivated).byte(e.illusion?.length||0);for(const i of e.illusion||[])w.byte(i.currency).int(i.day).int(i.price);w.int(e.illusionItemId||0).long(e.illusionEndTime||0);if(e.illusionItemId)w.raw(Buffer.from(e.illusionDefinitionBase64,'base64'));}
- w.int(e.id).string(e.name||'').int(e.bagIcon||0).string(e.info||'').byte(e.grade||0).byte(e.autoBinding||0).byte(e.stackNum||1).bool(!!e.decomCHest);
- w.short(e.icon||0).short(e.ownTime||0).int(e.durMax||0).int(e.price||0).byte(e.attachCount||0).byte(e.itemSet||0).byte(e.reqLv||0);
- for(const k of ['reqStr','reqCon','reqAgi','reqIlt','reqWis','def_str','def_agi','def_mag','power1','powerValue1','power2','powerValue2','power3','powerValue3'])w.short(e[k]||0);
- w.bool(!!e.skill);if(e.skill)w.raw(skillBytes(e.skill,true));w.byte(e.combinUpSkillList?.length||0);for(const s of e.combinUpSkillList||[])w.bool(true).raw(skillBytes(s,true));
- w.string(e.skillDesc||'');for(const k of ['bindPower1','bindPowerValue1','bindPower2','bindPowerValue2'])w.short(e[k]||0);
- if(weapon)w.byte(e.atkType||0).byte(e.atk_time||0).short(e.atkMin||0).short(e.atkMax||0);w.byte(e.ascensionStar||0).byte(e.star||0);
- if(weapon)w.byte(e.hitrate||0);else if(e.type===12)for(const k of ['fashIcon1','fashIcon2','fashIcon3'])w.long(e[k]||0);
- w.byte(e.vipLevelReq||0);for(const k of ['enchantPower1','enchantPowerValue1','enchantPower2','enchantPowerValue2','enchantLevel'])w.short(e[k]||0);
- for(const k of ['cssLeftChannel','cssRightChannel','cssLeftHasItem','cssRightHasItem'])w.bool(!!e[k]);w.short(e.cssLeftPowerPer||0).short(e.cssRightPowerPer||0);
+ mark('id');w.int(e.id).string(e.name||'');
+ mark('bagIcon');w.int(e.bagIcon||0).string(e.info||'');
+ mark('grade');w.byte(e.grade||0).byte(e.autoBinding||0);
+ mark('stackNum');w.byte(e.stackNum||1).bool(!!e.decomCHest);
+ mark('icon');w.short(e.icon||0).short(e.ownTime||0);
+ mark('durMax');w.int(e.durMax||0);
+ mark('price');w.int(e.price||0);
+ mark('attachCount');w.byte(e.attachCount||0).byte(e.itemSet||0);
+ mark('reqLv');w.byte(e.reqLv||0);
+ for(const k of ['reqStr','reqCon','reqAgi','reqIlt','reqWis','def_str','def_agi','def_mag']){mark(k);w.short(e[k]||0);}
+ for(const n of [1,2,3]){mark('power'+n);w.short(e['power'+n]||0);mark('powerValue'+n);w.short(e['powerValue'+n]||0);}
+ mark('skillFlag');w.bool(!!e.skill);if(e.skill)w.raw(skillBytes(e.skill,true));w.byte(e.combinUpSkillList?.length||0);for(const s of e.combinUpSkillList||[])w.bool(true).raw(skillBytes(s,true));
+ mark('skillEnd');mark('skillDesc');w.string(e.skillDesc||'');mark('skillDescEnd');
+ for(const k of ['bindPower1','bindPowerValue1','bindPower2','bindPowerValue2']){mark(k);w.short(e[k]||0);}
+ if(weapon){mark('atkType');w.byte(e.atkType||0).byte(e.atk_time||0);mark('atkMin');w.short(e.atkMin||0);mark('atkMax');w.short(e.atkMax||0);}
+ mark('ascensionStar');w.byte(e.ascensionStar||0);
+ mark('star');w.byte(e.star||0);
+ if(weapon){mark('hitrate');w.byte(e.hitrate||0);}else if(e.type===12)for(const k of ['fashIcon1','fashIcon2','fashIcon3'])w.long(e[k]||0);
+ mark('vipLevelReq');w.byte(e.vipLevelReq||0);
+ for(const k of ['enchantPower1','enchantPowerValue1','enchantPower2','enchantPowerValue2','enchantLevel']){mark(k);w.short(e[k]||0);}
+ for(const k of ['cssLeftChannel','cssRightChannel','cssLeftHasItem','cssRightHasItem'])w.bool(!!e[k]);
+ mark('cssLeftPowerPer');w.short(e.cssLeftPowerPer||0).short(e.cssRightPowerPer||0);
  for(const side of ['Left','Right'])if(e['css'+side+'HasItem']){const powers=Object.entries(e['css'+side+'ItemPower']||{});w.int(e['css'+side+'ItemId']||0).byte(e['css'+side+'ItemGrade']||0).short(e['css'+side+'ItemIcon']||0).byte(powers.length);for(const [id,value] of powers)w.short(Number(id)).short(value);}
- w.bool(!!e.isUpgradeItem);if(e.isUpgradeItem)for(const n of [4,5,6,7])w.short(e['power'+n]||0).short(e['powerValue'+n]||0);
- return w.byte(e.upgradeAscensionStar||0).byte(e.upgradeStar||0).done();
+ w.bool(!!e.isUpgradeItem);if(e.isUpgradeItem)for(const n of [4,5,6,7]){mark('power'+n);w.short(e['power'+n]||0);mark('powerValue'+n);w.short(e['powerValue'+n]||0);}
+ mark('upgradeAscensionStar');w.byte(e.upgradeAscensionStar||0);
+ mark('upgradeStar');w.byte(e.upgradeStar||0);
+ return w.done();
 }
+export function equipmentBytes(e){return writeEquipment(e,null);}

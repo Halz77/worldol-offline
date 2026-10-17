@@ -8,6 +8,7 @@ import {itemWithAffixes,equipmentPowers,nativeEquipmentSkill} from './item-affix
 import {setPowers} from './equipment-sets.mjs';
 import {reconcileAttributePoints} from './progression.mjs';
 import {careerSkills,migrateCareerSkills,careers} from './career-skills.mjs';
+import {migrateCaptured81Progress} from './captured81-progress.mjs';
 import {nativeCharacterStats} from './native-character-stats.mjs';
 import {INITIAL_BAG_CAPACITY} from './bag-capacity.mjs';
 import {automaticSkillSlots} from './automatic-skills.mjs';
@@ -17,6 +18,7 @@ import {spiritRules} from './spirit-seal-data.mjs';
 import {skillBytes} from './character-import-codec.mjs';
 import {IGNORE_REQUIREMENT_ITEM_ID} from './local-items.mjs';
 import {localCareerSkills,localCareerSkillIds} from './local-career-skills.mjs';
+import {applySkillOverrides,applyOverrideToDefinition,applyOverrideToDefinitions} from './local-skill-overrides.mjs';
 
 /**
  * 运行时物品表与技能表 —— 服务端每次算属性、每次开背包都要用，但**只有登录之后**才用。
@@ -49,6 +51,10 @@ function ensure(){
   for(const source of row.sources)if(source.origin==='shop'&&!s.shops.includes(source.shopId))s.shops.push(source.shopId);
   s.levels.sort((a,b)=>a.level-b.level);s.shop=s.shops[0];
  }
+ // MOD(local-skill-overrides)：本地技能效果覆盖（如「飘雪穿云掌去掉中毒/流血」）。
+ // data/career-skills.json 是上游验收契约不能改，覆盖写在 data/local-skill-overrides.json，
+ // 这里套用到运行时表（重算 powers 与 wireBase64，三处——结算/客户端定义/说明——保持一致）。
+ applySkillOverrides(skills);
  built={restored,equipment,skills};
  return built;
 }
@@ -62,13 +68,18 @@ export function normalizeRestoration(p){
  p.inventory??=[];p.skills??={};p.restoration??={};p.baseStats??=[10,10,10,10,10];p.initialStats??=[...p.baseStats];p.attributePoints??=0;p.skillPoints??=0;p.autoSkillIds??=p.progression==='xia-v05'?[...official.newbie.archetype.autoSkillIds]:[];p.initiativeSkillId??=p.progression==='xia-v05'&&p.skills[452]?452:-1;
  reconcileAttributePoints(p);
  migrateCareerSkills(p);
+ // 八一副本：旧版按推测写的 1422—1429 进度认不出新录制的怪，命中痕迹就归档重走。
+ migrateCaptured81Progress(p);
  if(!p.restoration.starterIssued){
   const slot=firstFree(p);
   if(slot!==undefined){p.inventory.push({itemId:800000,slot,quantity:1});p.restoration.starterIssued=true;}
  }
  return p;
 }
-export function learned(p){return Object.entries(p.skills||{}).map(([id,level])=>{const skill=skills.get(Number(id)),data=p.importedSkillDefinitions?.[`${id}:${level}`]||skill?.levels.find(x=>x.level===level);if(!data)throw Error('存档中的技能版本无法识别: '+id);return {...skill,...data};});}
+// MOD(local-skill-overrides)：本地技能效果覆盖（如「飘雪穿云掌去掉中毒/流血」）。
+// data/career-skills.json 是上游验收契约不能改，覆盖写在 data/local-skill-overrides.json，
+// 这里在建运行时技能表时套用。技能 id 与装备自带技能是同一套，见 activeSkills 里的第二次套用。
+export function learned(p){return Object.entries(p.skills||{}).map(([id,level])=>{const skill=skills.get(Number(id)),imported=p.importedSkillDefinitions?.[`${id}:${level}`],data=imported?applyOverrideToDefinition(Number(id),imported):skill?.levels.find(x=>x.level===level);if(!data)throw Error('存档中的技能版本无法识别: '+id);return {...skill,...data};});}
 export function activeSkills(p){
  const result=new Map(learned(p).map(s=>[s.id,{...s,addLevel:0}])),bonuses=new Map();
  for(const instance of (p.inventory||[]).filter(i=>i.slot>=0&&i.slot<30&&!i.pet)){
@@ -89,6 +100,10 @@ export function activeSkills(p){
   for(const [level,s] of bonus.definitions)definitions.set(level,s);
   for(const s of Object.values(p.importedSkillDefinitions||{}))if(s.id===id)definitions.set(s.level,s);
   const current=result.get(id);if(current&&!definitions.has(current.level))definitions.set(current.level,current);
+  // MOD(local-skill-overrides)：装备自带技能 / 两件同名装备叠加出来的等级池也吃技能覆盖。
+  // 技能 id 在人物技能表与装备技能表之间是共用的，所以在「技能编辑器」里改一次，
+  // 人物学到的、装备带的、叠加后的高等级三处都一致生效。
+  applyOverrideToDefinitions(id,definitions);
   // Never fabricate effects above the highest available restored skill level.
   let data=[...definitions.values()].filter(s=>s.level<=wanted).sort((a,b)=>b.level-a.level)[0];
   // MOD(equip-skill-stack)：两件相同装备的技能等级是相加的（两枚「天魔惊神の指」＝11+11＝22）。

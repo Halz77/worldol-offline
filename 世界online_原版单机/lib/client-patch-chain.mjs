@@ -30,11 +30,15 @@ import {patchBattleFont} from './client-battle-font-patch.mjs';
 import {patchLegionSurvivors} from './client-legion-survivors-patch.mjs';
 import {patchLegionPetGuard} from './client-legion-petguard-patch.mjs';
 import {patchBattleSpeedSteps,patchBattleSpeedPersist} from './client-battle-speed-patch.mjs';
+import {patchBattleCheckFields} from './client-battle-check-patch.mjs';
+import {patchBattleMonsterBars} from './client-battle-bars-patch.mjs';
+import {patchBattleMonsterManaRecovery} from './client-battle-mana-recovery-patch.mjs';
 import {patchWeaponSlots} from './client-weapon-slot-patch.mjs';
 import {patchPhantomImmunity} from './client-phantom-immunity-patch.mjs';
 import {patchIllusion} from './client-illusion-patch.mjs';
 import {patchWeaponIcon} from './client-weapon-icon-patch.mjs';
 import {patchEmptyNativeShop} from './native-ui-restoration.mjs';
+import {patchEscortBattle} from './client-escort-battle-patch.mjs';
 
 /** 原版主包在 v305 客户端里的相对路径（站点根 / client 根通用）。 */
 export const CLIENT_MAIN_PATH='js/ff/fff570bb4753f056432680e781d827dc.js';
@@ -96,11 +100,15 @@ export const CLIENT_MAIN_STEPS=[
  ['battleSpeedSteps',patchBattleSpeedSteps],
  ['battleSpeedPersist',patchBattleSpeedPersist],
  ['battleSkillPanel',patchBattleSkillPanel],
+ ['battleCheckFields',patchBattleCheckFields],
+ ['battleMonsterBars',patchBattleMonsterBars],
+ ['battleMonsterMana',patchBattleMonsterManaRecovery],
  ['battleFont',patchBattleFont],
  ['weaponSlots',patchWeaponSlots],
  ['phantomImmunity',patchPhantomImmunity],
  ['illusion',patchIllusion],
- ['weaponIcon',patchWeaponIcon]
+ ['weaponIcon',patchWeaponIcon],
+ ['escortBattle',patchEscortBattle]
 ];
 
 /** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */

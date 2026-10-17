@@ -38,8 +38,12 @@ export function missionPacket(q,p){
 export function missionsPacket(w,p){const active=Object.keys(p.quests.active).map(id=>quests[id]||officialMissions.get(Number(id))).filter(Boolean);w.byte(active.length);for(const q of active)w.bytes(missionPacket(q,p));return w;}
 export function missionBits(p){const b=Buffer.alloc(Math.floor(9003/8)+1);for(const id of p.quests.completed)if(id>=0&&id<9004&&missionDone(p,id))b[id>>3]|=1<<(id%8);return b;}
 export function signUpdates(w,p){const list=maps[p.mapId].npcs.filter(n=>n.type===0||n.type===5);w.byte(list.length);for(const n of list)w.byte(n.id).byte(npcSign(p,n));return w;}
-export function monsterGroups(w,p){if(maps[p?.mapId]?.official)return officialMonsterGroups(w,p);const list=maps[10].npcs.filter(n=>n.type===1);w.byte(list.length);for(const n of list){w.short(n.group).byte(0).short(0).byte(0).int(100);for(let i=0;i<10;i++)w.short(i===5?n.monster:0);}return w;}
-export function monsterModels(w,p){if(maps[p?.mapId]?.official)return officialMonsterModels(w,p);w.byte(Object.keys(monsters).length);for(const m of Object.values(monsters)){
+// extraGroups：本次要额外下发的战斗组（永泽塔按层现场生成的编队）。
+// 非官方地图（新手村/本地图）本身没有官方组，但塔战必须走完整格式，
+// 所以只要 extra 非空就强制走官方分支 —— 这两张图里没有官方 NPC 任务，
+// 混发不会串到别的东西上。
+export function monsterGroups(w,p,extraGroups){if(maps[p?.mapId]?.official||(extraGroups&&extraGroups.length))return officialMonsterGroups(w,p,extraGroups);const list=maps[10].npcs.filter(n=>n.type===1);w.byte(list.length);for(const n of list){w.short(n.group).byte(0).short(0).byte(0).int(100);for(let i=0;i<10;i++)w.short(i===5?n.monster:0);}return w;}
+export function monsterModels(w,p,extraGroups){if(maps[p?.mapId]?.official||(extraGroups&&extraGroups.length))return officialMonsterModels(w,p,extraGroups);w.byte(Object.keys(monsters).length);for(const m of Object.values(monsters)){
   w.int(m.id).string(m.name).long(m.icon).byte(m.level).byte(0).int(m.hp).int(m.mp).int(m.speed).byte(0)
     .int(m.atkMin).int(m.atkMax).byte(0).int(0);
   for(let i=0;i<14;i++)w.int(0);

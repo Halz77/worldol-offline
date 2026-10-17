@@ -5,24 +5,38 @@ import {cityTarget} from './city-state.mjs';
 import {officialCanAccept,missionBlockers,originFor,availableChoices,missionRewards,missionClientSetting,missionConditions,missionNotes,missionFollowupId,battleSupported,missionBattleId} from './official-rules.mjs';
 export function officialNpc(w,n,sign){const b=Buffer.from(n.wireBase64,'base64');b[0]=sign;return w.raw(b);}
 const battleCache=new Map();
-export function mapBattleData(mapId){
- if(battleCache.has(mapId))return battleCache.get(mapId);
+/**
+ * 一张地图要下发的战斗组 + 怪物 + 技能 + AI。
+ *
+ * `extraGroups` 是「临时附加组」：有些战斗不在任何地图的 spawn 里（永泽塔按层现场生成编队），
+ * 客户端要进本地战斗，必须先在这次 10503 里收到那一组，否则它会提示「这组怪物的数据尚未恢复」
+ * 并改发 12503 远程战斗。附加组会和地图自带的组合并去重，缓存键也带上它们。
+ */
+export function mapBattleData(mapId,extraGroups=[]){
+ const extra=(extraGroups||[]).map(Number).filter(id=>Number.isInteger(id)&&id>0);
+ const key=extra.length?`${mapId}|${[...new Set(extra)].sort((a,b)=>a-b).join(',')}`:mapId;
+ if(battleCache.has(key))return battleCache.get(key);
  const map=official.maps.find(m=>m.id===mapId),ids=new Set();
  for(const n of map?.npcs||[])for(const id of n.battleID||[])if(id>0)ids.add(id);
  for(const q of official.missions)if(q.mapId===mapId||q.sources.some(s=>s.mapId===mapId))for(const id of [missionBattleId(q),missionBattleId(q,'submit')])if(id>0)ids.add(id);
  for(const g of official.groups)if(g.sources.some(s=>s.mapId===mapId))ids.add(g.groupId);
  const byId=new Map(official.groups.map(g=>[g.groupId,g]));
  for(const id of ids){const next=byId.get(id)?.nextBattleGroupID;if(next>0)ids.add(next);}
- const groups=[...ids].map(id=>byId.get(id)).filter(Boolean),monsterIds=new Set(groups.flatMap(g=>[...g.monsters,...g.npcs]).filter(id=>id>0));
+ const groups=[...ids].map(id=>byId.get(id)).filter(Boolean);
+ for(const id of extra){const group=byId.get(id);if(group&&!groups.includes(group))groups.push(group);}
+ const monsterIds=new Set(groups.flatMap(g=>[...g.monsters,...g.npcs]).filter(id=>id>0));
  const monsters=official.monsters.filter(m=>monsterIds.has(m.id)),ai=official.ai.filter(a=>monsterIds.has(a.id));
  const neededSkills=new Set(ai.flatMap(a=>[...a.skill1,...a.skill2]).filter(s=>s.id>0).map(s=>`${s.id}:${s.level}`));
  const skills=official.skills.filter(s=>neededSkills.has(`${s.id}:${s.level}`));
  for(const [key,rows] of Object.entries({groups,monsters,skills,ai}))if(rows.length>127)throw Error(`Map ${mapId} ${key} exceeds native byte count: ${rows.length}`);
- const result={groups,monsters,skills,ai};battleCache.set(mapId,result);return result;
+ const result={groups,monsters,skills,ai};battleCache.set(key,result);return result;
 }
-export function officialMonsterGroups(w,p){const {groups}=mapBattleData(p.mapId);w.byte(groups.length);for(const g of groups)w.raw(rawRecord(g));return w;}
-export function officialMonsterModels(w,p){
- const {monsters,skills,ai}=mapBattleData(p.mapId);
+export function officialMonsterGroups(w,p,extraGroups){
+ const {groups}=mapBattleData(p.mapId,extraGroups);
+ w.byte(groups.length);for(const g of groups)w.raw(rawRecord(g));return w;
+}
+export function officialMonsterModels(w,p,extraGroups){
+ const {monsters,skills,ai}=mapBattleData(p.mapId,extraGroups);
  w.byte(monsters.length);for(const m of monsters)w.raw(balancedMonsterPacket(m));
  if(!monsters.length)return w; // Native processDataMonsterMsg skips the AI block when empty.
  w.byte(skills.length);for(const s of skills)w.raw(Buffer.from(s.monsterWireBase64||s.wireBase64,'base64'));

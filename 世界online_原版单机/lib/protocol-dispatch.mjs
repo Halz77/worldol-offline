@@ -44,6 +44,7 @@ import {handleRestoration} from './restoration-service.mjs';
 import {handleEnchantment} from './enchantment-service.mjs';
 import {handleSpiritSeals} from './spirit-seal-service.mjs';
 import {handleGame} from './game-service.mjs';
+import {handleSolarChallenge} from './solar-challenge-service.mjs';
 
 /**
  * 有序分派链。
@@ -85,6 +86,9 @@ export const INBOUND_CHAIN=Object.freeze([
  {name:'enchantment',file:'enchantment-service',handle:handleEnchantment},
  {name:'spiritSeals',file:'spirit-seal-service',handle:handleSpiritSeals},
  // 兜底，必须留在最后：它承担所有战斗/场景/任务包。
+ // 英雄挑战赛 / 团队副本（太阳神殿棋盘）：14508-14511/14514 全链只有这一段认领。
+ // 排在 official 之后：任务先按普通任务流程走，棋盘协议单独认领。
+ {name:'solarChallenge',file:'solar-challenge-service',handle:handleSolarChallenge},
  {name:'game',file:'game-service',handle:handleGame},
 ]);
 

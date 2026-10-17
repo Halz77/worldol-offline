@@ -20,6 +20,22 @@ test('failed save, stale character and full bag never consume a reward or balanc
 });
 test('VIP experience charges only recorded amounts and stops at the known boundary',()=>{let p=role();for(let i=0;i<4;i++)p=planHomeAction(p,{action:'vip-exp'},null,now).next;assert.equal(p.gold,1000);assert.equal(p.homeFeatures.vipExperience,2000);assert.equal(p.vipLevel2,2);const before=structuredClone(p);assert.throws(()=>planHomeAction(p,{action:'vip-exp'},null,now),/待补/);assert.deepEqual(p,before);});
 test('online rewards require this local session time, are replay-proof, and retain unsupported currency as pending',()=>{const p=role(),ctx={homeOnlineStart:now-600000};assert.throws(()=>planHomeAction(p,{action:'online',minutes:20},ctx,now),/时长/);const plan=planHomeAction(p,{action:'online',minutes:10},ctx,now);assert.equal(plan.items[0].id,352);assert.equal(plan.items[0].quantity,20);assert.throws(()=>planHomeAction(plan.next,{action:'online',minutes:10},ctx,now),/已经/);assert.throws(()=>planHomeAction(p,{action:'online',minutes:180},{homeOnlineStart:now-180*60000},now),/待补/);let saved=0;flushHomeSession({role:p,...ctx},{save(){saved++;}},now);assert.equal(saved,1);assert.equal(p.homeFeatures.onlineSeconds,600);});
-test('all 132 tower previews use the exact captured body; no preview copies live account completion state',()=>{const p=role(),before=structuredClone(p),h=harness(p);assert.equal(towerPreviews.size,132);assert.equal(towerInfo(1).infos.length,120);assert.equal(towerInfo(2).infos.length,12);for(const mode of [1,2])for(const f of towerInfo(mode).infos){assert.equal(f.receivedFirst,false);assert.equal(f.receivedNormal,false);assert.equal(f.state,1);}for(const [id,preview]of towerPreviews){const r=h.call(13101,new Writer().int(id));assert.deepEqual(r.b,Buffer.from(preview.bodyBase64,'base64'));}assert.deepEqual(p,before);h.call(30003);const notice=protobuf(h.sent[0].bytes,'s2c_errorNotice',homeFeatureData.schemas);assert.match(notice.errMsg,/待补/);assert.deepEqual(p,before);});
+test('all 132 tower previews use the exact captured body; tower info reflects per-role progress',()=>{
+ const p=role(),before=structuredClone(p),h=harness(p);
+ assert.equal(towerPreviews.size,132);
+ assert.equal(towerInfo(1,p).infos.length,120);
+ assert.equal(towerInfo(2,p).infos.length,12);
+ // 进度是**按角色**算的：新角色只有第 1 层可挑战，其它层未开放、奖励都没领。
+ const normal=towerInfo(1,p).infos;
+ assert.equal(normal.find(f=>f.id===1).state,1);
+ assert.equal(normal.filter(f=>f.state!==0).length,1);
+ for(const f of normal){assert.equal(f.receivedFirst,false);assert.equal(f.receivedNormal,false);}
+ for(const [id,preview]of towerPreviews){const r=h.call(13101,new Writer().int(id));assert.deepEqual(r.b,Buffer.from(preview.bodyBase64,'base64'));}
+ assert.deepEqual(p,before,'查预览不能让角色多出任何字段');
+ // 30003 带空包（没有层号）要被拒，且不能留下待下发标记
+ h.call(30003);
+ assert.match(protobuf(h.sent[0].bytes,'s2c_errorNotice',homeFeatureData.schemas).errMsg,/没有这一层/);
+ assert.deepEqual(p,before);
+});
 test('all recorded dungeon scenes appear at level one without altering character position',()=>{const p=role();p.level=1;const before=structuredClone(p),s=homeSnapshot(p,null,now);assert.equal(s.entries.length,20);for(const id of [829,843,988,940,35,965,457,12,273,501,260,840])assert.ok(s.dungeons.some(m=>m.id===id));assert.deepEqual(p,before);});
 test('native tower directory queries decode both modes and return the full recorded lists',()=>{const h=harness(role());for(const [mode,count]of [[1,120],[2,12]]){h.call(30001,Buffer.from([8,mode]));const reply=h.sent.find(p=>p.type===30002);assert.ok(reply);assert.equal(h.sent.some(p=>p.type===25003),false);const decoded=protobuf(reply.bytes,'s2c_ClimbTowerInfo',homeFeatureData.schemas);assert.equal(decoded.modeType,mode);assert.equal(decoded.infos.length,count);}});

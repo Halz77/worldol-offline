@@ -24,9 +24,13 @@ export function balancedMonster(monster){
  }
  return result;
 }
-export function balancedMonsterPacket(monster){
- if(!monsterBalance[monster.id])return Buffer.from(monster.wireBase64,'base64');
- const m=balancedMonster(monster),w=new Writer().int(m.id).string(m.name).long(m.icon1).byte(m.level).byte(m.monstertype);
- for(const [key,type] of fields)w[type](m[key]);
+/** 按 v305 字段顺序编码一只怪物（本地补录的怪物没有抓包 wire，只能现编）。 */
+export function monsterWireBytes(monster){
+ const w=new Writer().int(monster.id).string(monster.name).long(monster.icon1).byte(monster.level).byte(monster.monstertype);
+ for(const [key,type] of fields)w[type](monster[key]);
  return w.done();
+}
+export function balancedMonsterPacket(monster){
+ if(!monsterBalance[monster.id])return monster.wireBase64?Buffer.from(monster.wireBase64,'base64'):monsterWireBytes(monster);
+ return monsterWireBytes(balancedMonster(monster));
 }

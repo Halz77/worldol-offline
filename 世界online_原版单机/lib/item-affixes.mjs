@@ -36,8 +36,8 @@ export const canUpgradeIdentify=template=>!!layouts.items[String(template?.id)]&
 /** 可进阶鉴定的道具号（数组）：惰性数组不能走代理，所以是函数。 */
 export const upgradeIdentifyItemIds=()=>[...ranges.keys()].filter(id=>canUpgradeIdentify({id}));
 export const compositionRanges=template=>(ranges.get(template?.id)||[]).filter(slot=>allowed.has(slot.field)&&template[slot.field]===131&&slot.options?.length);
-export const compositionSkills=template=>template?.combinUpSkillList?.filter(s=>layouts.items[template.id]?.combinationSkill?.options.some(o=>o.id===s.id&&o.level===s.level))||[];
-export function nativeEquipmentSkill(template){if(template?.imported&&template.skill?.wireBase64)return template.skill;const wire=layouts.items[template?.id]?.nativeSkillWireBase64;return template?.skill&&wire?{...template.skill,wireBase64:Buffer.concat([Buffer.from(wire,'base64'),Buffer.from([0])]).toString('base64')}:null;}
+export const compositionSkills=template=>template?.combinUpSkillList?.filter(s=>layouts.items[String(template.id)]?.combinationSkill?.options.some(o=>o.id===s.id&&o.level===s.level))||[];
+export function nativeEquipmentSkill(template){if(template?.imported&&template.skill?.wireBase64)return template.skill;const wire=layouts.items[String(template?.id)]?.nativeSkillWireBase64;return template?.skill&&wire?{...template.skill,wireBase64:Buffer.concat([Buffer.from(wire,'base64'),Buffer.from([0])]).toString('base64')}:null;}
 export function starValue(value,ascension,star,bound,power){
   if(!bound||!ascension||!star||(power!==undefined&&!isStarPower(power)))return value||0;
   return Math.min(32767,(value||0)+Math.trunc((Math.abs(value||0)*ascension*star+500)/1000));

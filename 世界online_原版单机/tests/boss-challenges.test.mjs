@@ -10,6 +10,7 @@ import {decoders,Reader as NativeReader} from '../tools/capture-decoders.mjs';
 import {bossChallenges} from '../lib/boss-challenges.mjs';
 import {official,officialMissions,officialItems} from '../lib/official-data.mjs';
 import {mapBattleData,officialMonsterGroups,officialMonsterModels} from '../lib/official-packets.mjs';
+import {applyOverrideToDefinition} from '../lib/local-skill-overrides.mjs';
 import {missionsAt,missionBlockers,officialCanAccept,officialComplete,missionRewards} from '../lib/official-rules.mjs';
 import {missionData,npcPacket} from '../lib/game-packets.mjs';
 import {maps,reachable,hpMax,mpMax} from '../lib/content.mjs';
@@ -47,7 +48,15 @@ test('plaza packets retain every captured monster stat, AI, skill and all eleven
  assert.ok(actual.ai.length>=bossChallenges.ai.length,`ai ${actual.ai.length}`);
  for(const [key,id] of [['monsters','id'],['skills','id'],['ai','id'],['groups','groupId']])for(const recorded of bossChallenges[key]){
   const decoded=actual[key].find(x=>x[id]===recorded[id]&&(key!=='skills'||x.level===recorded.level));
-  assert.ok(decoded);const {sources,variants,...expected}=recorded;assert.deepEqual(JSON.parse(JSON.stringify(decoded)),expected,`${key}:${recorded[id]}`);
+  assert.ok(decoded);const {sources,variants,...expected}=recorded;
+  // MOD(captured81)：81 录制包会把同一批怪/技能/AI 的 sources **追加合并**
+  // （mergeSources 按「录制+序号+地图+NPC」去重，见 lib/captured81.mjs）。
+  // 业务字段（属性/技能效果/编队槽位）一个都不该变，变的只有来源条数 ——
+  // 而 sources 是**嵌套**的（怪物里带技能表，技能各自也有 sources），
+  // 所以要递归剥掉，不只是最外层。
+  const stripSources=v=>Array.isArray(v)?v.map(stripSources)
+   :(v&&typeof v==='object'?Object.fromEntries(Object.entries(v).filter(([k])=>k!=='sources').map(([k,x])=>[k,stripSources(x)])):v);
+  assert.deepEqual(stripSources(JSON.parse(JSON.stringify(decoded))),stripSources(expected),`${key}:${recorded[id]}`);
  }
  for(const c of cases){const m=actual.monsters.find(m=>m.id===c.boss);assert.equal(m.hpMax,c.hp);assert.equal(m.mpMax,c.mp);assert.equal(actual.groups.find(g=>g.groupId===c.group).monsters.filter(id=>id>0).length,11);}
  assert.equal(actual.monsters.find(m=>m.id===3350).tough,200000);assert.equal(actual.monsters.find(m=>m.id===3350).def_field,200000);
@@ -55,7 +64,15 @@ test('plaza packets retain every captured monster stat, AI, skill and all eleven
  assert.ok(actual.ai.every(a=>[...a.skill1,...a.skill2].every(s=>s.id<=0||s.definitionFound)));
  // Player skill definitions remain exactly as they were before this addition.
  const original=JSON.parse(fs.readFileSync(path.join(root,'data/official-v305.json'),'utf8'));
- for(const old of original.skills){const now=official.skills.find(s=>s.id===old.id&&s.level===old.level);const {monsterWireBase64,...a}=now,{monsterWireBase64:oldMonster,...b}=old;assert.deepEqual(a,b);}
+ // MOD(local-skill-overrides)：期望值也要过一遍「技能效果覆盖层」—— 本地主动改过效果的技能
+// （data/local-skill-overrides.json）本来就与抓包不同，lib/official-data.mjs 建索引前
+// 会对 official.skills 套用同一层覆盖，所以这里用同一函数算出期望。
+// 这条比的是「本地技能覆盖层有没有把人物技能改坏」，与来源条数无关；
+ // 而 81 录制包会给同一条技能追加 sources（mergeSources，见 lib/captured81.mjs），
+ // 两侧都剥掉再比。
+const stripSources=v=>Array.isArray(v)?v.map(stripSources)
+ :(v&&typeof v==='object'?Object.fromEntries(Object.entries(v).filter(([k])=>k!=='sources').map(([k,x])=>[k,stripSources(x)])):v);
+for(const old of original.skills){const now=official.skills.find(s=>s.id===old.id&&s.level===old.level);const covered=applyOverrideToDefinition(old.id,old);const {monsterWireBase64,...a}=now,{monsterWireBase64:oldMonster,...b}=covered;void oldMonster;assert.deepEqual(stripSources(JSON.parse(JSON.stringify(a))),stripSources(JSON.parse(JSON.stringify(b))));}
 });
 
 test('plaza travel and both visible NPC entrances round-trip with reachable independent positions',()=>{

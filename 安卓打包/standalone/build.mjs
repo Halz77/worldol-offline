@@ -262,6 +262,44 @@ const BUILD_FINGERPRINT_FILES = [
   'v/gd/305.json'
 ];
 
+const NUL = String.fromCharCode(0);
+const SEP = String.fromCharCode(1);
+
+/**
+ * 一棵目录树的内容哈希：按相对路径排序后逐文件喂进去。
+ *
+ * 只在这里用来给 data/** 记账 —— 理由见 applyBuildStamp 里「为什么要连 data 一起算」。
+ * 大文件用流式读，不把整个 30 MB 的 buffer 摊在内存里。
+ */
+function hashTree(hash, dir, label) {
+  const relatives = [];
+  const stack = [dir];
+  while (stack.length) {
+    const current = stack.pop();
+    for (const name of fs.readdirSync(current).sort()) {
+      const full = path.join(current, name);
+      if (fs.statSync(full).isDirectory()) stack.push(full);
+      else relatives.push([full, path.relative(dir, full).split(path.sep).join('/')]);
+    }
+  }
+  relatives.sort((a, b) => (a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0));
+  const chunk = Buffer.allocUnsafe(1024 * 1024);
+  for (const [full, rel] of relatives) {
+    hash.update(label + NUL + rel + NUL + String(fs.statSync(full).size) + SEP);
+    const fd = fs.openSync(full, 'r');
+    try {
+      for (;;) {
+        const read = fs.readSync(fd, chunk, 0, chunk.length, null);
+        if (!read) break;
+        hash.update(chunk.subarray(0, read));
+      }
+    } finally {
+      fs.closeSync(fd);
+    }
+  }
+  return relatives.length;
+}
+
 /**
  * 写 /build-version.json，并把版本号打进 index.html 与 standalone-boot.js。
  *
@@ -281,7 +319,23 @@ function applyBuildStamp() {
   const bundle = path.join(outRoot, 'worldol-standalone.js');
   if (fs.existsSync(bundle)) hash.update('worldol-standalone.js\u0000').update(fs.readFileSync(bundle));
   const modules = path.join(outRoot, 'analysis', 'modules-bundle.json');
-  if (fs.existsSync(modules)) hash.update('modules-bundle\u0000').update(fs.readFileSync(modules));
+  if (fs.existsSync(modules)) hash.update('modules-bundle' + NUL).update(fs.readFileSync(modules));
+
+  // 为什么要连 data/** 一起算指纹（这一步是「新版资料不生效」的根因）：
+  //   上面的几项都是**代码或入口资源**，但 data/*.json（宠物目录、道具图鉴、商店清单…）
+  //   既不预载、也不打包，是运行时由 VFS 用同步 XHR 现取的 —— URL 永远不带版本号。
+  //   于是「只改 data/local-pets.json」的构建，算出来的指纹与上一版一模一样，
+  //   覆盖安装后 WebView 的 HTTP 缓存直接命中旧资料：
+  //   APK 里确实有新宠物，商店里就是不出现（分类名里的「N 种」也停在旧数字）。
+  //   指纹变了 → __worldolBuild 变了 → VFS 的请求 URL 变了 → 旧缓存再也用不上。
+  // 161 MB 全量 sha256 大约一秒，比出一个「装了等于没装」的包便宜太多。
+  const dataDir = path.join(outRoot, 'data');
+  let dataFiles = 0;
+  if (fs.existsSync(dataDir)) {
+    const started = Date.now();
+    dataFiles = hashTree(hash, dataDir, 'data');
+    log(`  data/** 共 ${dataFiles} 个文件已计入指纹（${Date.now() - started} ms）`);
+  }
 
   const id = hash.digest('hex').slice(0, 12);
   const param = 't=' + id;

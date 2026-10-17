@@ -11,22 +11,31 @@ import path from 'node:path';
 // 注意：client/v/gd/305.json 是归档的原版清单，字节不能动（tests 会断言它的 sha256），
 // 所有补充都只发生在内存里生成的那份清单上。
 export function fashionIconData(root){
+ // 同 lib/local-skill-overrides.mjs：**不能**用 fs.existsSync 做门控 —— APK 里 node:fs 是
+ // VFS shim，existsSync 只查「已预载」的内存表，而 data/ 下的资料是运行时按需同步 XHR 取的
+ // （standalone-files.json 只预载 6 个文件），探测必定失败、图集永远不会注册。
+ // 直接读：未命中会触发按需加载，真不存在时抛 ENOENT，按「没有图集」处理。
  const file=path.join(root,'data','fashion-icons.json');
- if(!fs.existsSync(file))return null;
- return JSON.parse(fs.readFileSync(file,'utf8'));
+ try{
+  return JSON.parse(fs.readFileSync(file,'utf8'));
+ }catch(error){
+  if(error&&error.code==='ENOENT')return null;
+  throw error;
+ }
 }
 
 export function fashionAssetPath(root,hash,extension){
  return path.join(root,'client','assets',hash.slice(0,2),hash+extension);
 }
 
-/** 把图集注册进清单；产出文件缺失时返回 null，让调用方保持原样（不影响游戏启动）。 */
+/** 把图集注册进清单；data/fashion-icons.json 缺失时返回 null，让调用方保持原样。 */
 export function applyFashionIcons(manifest,root){
  const data=fashionIconData(root);
  if(!data)return null;
- const atlas=fashionAssetPath(root,data.atlas.hash,'.png');
- const table=fashionAssetPath(root,data.sheetTable.hash,'.json');
- if(!fs.existsSync(atlas)||!fs.existsSync(table))return null;
+ // 这里**不再**探测 atlas/sheet 文件是否存在：client/assets/** 同样不在预载清单里，
+ // existsSync 恒为 false，整块注册会被跳过（造型图标永远不显示）。hash 与文件是
+ // tools/build-fashion-icons.mjs 一起产出的，清单里记了 hash 就说明文件在站点里；
+ // 万一真缺失，客户端请求 404、退化成「图标不显示」，与跳过注册的结果一致。
  manifest.url.resource??={};
  manifest.url.resource.ui??={};
  manifest.url.resource.ui[`${data.sheet}.png`]=data.atlas.hash;

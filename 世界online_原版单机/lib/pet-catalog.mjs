@@ -1,6 +1,5 @@
 import {randomInt} from 'node:crypto';
 import {lazyBox,lazyJson} from './lazy-data.mjs';
-import {buildLocalPets} from './local-pets.mjs';
 import {Writer} from './codec.mjs';
 
 /**
@@ -16,52 +15,46 @@ export const petCatalog=lazyJson(new URL('../data/pet-catalog.json',import.meta.
 export const LEGENDARY_EGG_ID=30013,LEGENDARY_EGG_PRICE=500000;
 export const SELECTABLE_PET_EGG_ID_START=30000000;
 
-let built=null;
-function ensure(){
- if(built)return built;
- const petProfiles=new Map(petCatalog.profiles.map(p=>[p.key,p]));
- // 本地自制宠物（data/local-pets.json）。upstream 先建好再合并：extends 继承与重名校验
- // 都要拿它当参照。放在建池子之前，自制宠物才能像上游一样自动生成蛋。
- const local=buildLocalPets(petProfiles);
- for(const p of local.profiles)petProfiles.set(p.key,p);
- // 追加在**末尾**：宠物蛋的道具号是 SELECTABLE_PET_EGG_ID_START+下标，插到前面的话
- // 老存档里已经存在的宠物蛋 itemId 会整体错位一只。
- const upstreamPoolSize=petCatalog.legendaryPool.length;
- const legendaryPetPool=[...petCatalog.legendaryPool,...local.legendaryKeys].map(key=>petProfiles.get(key));
- if(legendaryPetPool.some(profile=>!profile))
-  throw Error(`传说宠物池里有找不到的 key：${[...petCatalog.legendaryPool,...local.legendaryKeys].find(key=>!petProfiles.get(key))}`);
- const selectablePetEggs=legendaryPetPool.map((profile,index)=>{
-  const id=SELECTABLE_PET_EGG_ID_START+index,item={id,type:28,name:`${profile.name}（${profile.grade}阶）宠物蛋`,bagIcon:29,
-     info:`免费宠物蛋；开启后固定获得${profile.name}（${profile.grade}阶）。`,grade:profile.grade,autoBinding:0,stackNum:1,
-     decomCHest:false,reqLv:0,ownTime:0,durMax:0,price:0,round:0,area:-1,power1:109,powerValue1:1,power2:0,powerValue2:0,
-     vipLevelReq:0,needShowRate:false};
-  item.definitionBase64=encodePetEgg(item);
-  return {id,profile,item};
- });
- const selectablePetEggsById=new Map(selectablePetEggs.map(egg=>[egg.id,egg]));
- if(selectablePetEggsById.size!==legendaryPetPool.length)throw Error('宠物蛋编号重复。');
- // 自制宠物那几只的蛋（= 池子末尾新增的那些）。商店要把它们排在「宠物蛋」分类最前面：
- // 这一档有一百多种，自制宠物却是要反复试外观的东西，排在末尾等于找不到。
- const localEggIds=new Set(selectablePetEggs.slice(upstreamPoolSize).map(egg=>egg.id));
- // 每个宠物技能「已采集到的最高等级」—— 这是宠物世界的「满级」口径：
- // 宠物导师商店（14001/14002）能教到的上限用的也是它（offer.levels.at(-1)），
- // 「技能书」商店卖的满级技能书同样取这一份，避免同一个词出现两套算法。
- const petSkillMaxima=new Map();
- for(const skill of petCatalog.skills){
-  const current=petSkillMaxima.get(skill.id);
-  if(!current||skill.level>current.level)petSkillMaxima.set(skill.id,skill);
+ let built=null;
+ function ensure(){
+  if(built)return built;
+  const petProfiles=new Map(petCatalog.profiles.map(p=>[p.key,p]));
+  const upstreamPoolSize=petCatalog.legendaryPool.length;
+  const legendaryPetPool=petCatalog.legendaryPool.map(key=>petProfiles.get(key));
+  if(legendaryPetPool.some(profile=>!profile))
+   throw Error(`传说宠物池里有找不到的 key：${petCatalog.legendaryPool.find(key=>!petProfiles.get(key))}`);
+  const selectablePetEggs=legendaryPetPool.map((profile,index)=>{
+   // 蛋图标用宠物自己的头像（baseline.headIcon，500~546 号段）：客户端把物品图标解析为
+   // 「全局数值子键」，bb_head 图集里正好登记了全部宠物头像，商店里一眼能认出是哪只。
+   // 原来写死的 29 是一张通用道具图（看着像技能书）。取不到 headIcon 时回退官方蛋图标 53。
+   const icon=Number(profile.baseline.headIcon)||53;
+   const id=SELECTABLE_PET_EGG_ID_START+index,item={id,type:28,name:`${profile.name}（${profile.grade}阶）宠物蛋`,bagIcon:icon,
+      info:`免费宠物蛋；开启后固定获得${profile.name}（${profile.grade}阶）。`,grade:profile.grade,autoBinding:0,stackNum:1,
+      decomCHest:false,reqLv:0,ownTime:0,durMax:0,price:0,round:0,area:-1,power1:109,powerValue1:1,power2:0,powerValue2:0,
+      vipLevelReq:0,needShowRate:false};
+   item.definitionBase64=encodePetEgg(item);
+   return {id,profile,item};
+  });
+  const selectablePetEggsById=new Map(selectablePetEggs.map(egg=>[egg.id,egg]));
+  if(selectablePetEggsById.size!==legendaryPetPool.length)throw Error('宠物蛋编号重复。');
+  // 每个宠物技能「已采集到的最高等级」—— 这是宠物世界的「满级」口径：
+  // 宠物导师商店（14001/14002）能教到的上限用的也是它（offer.levels.at(-1)），
+  // 「技能书」商店卖的满级技能书同样取这一份，避免同一个词出现两套算法。
+  const petSkillMaxima=new Map();
+  for(const skill of petCatalog.skills){
+   const current=petSkillMaxima.get(skill.id);
+   if(!current||skill.level>current.level)petSkillMaxima.set(skill.id,skill);
+  }
+  built={
+   petProfiles,
+   legendaryPetPool,
+   selectablePetEggs,
+   selectablePetEggsById,
+   petSkillLevels:new Map(petCatalog.skills.map(s=>[`${s.id}:${s.level}`,s])),
+   petSkillMaxima:[...petSkillMaxima.values()].sort((a,b)=>a.id-b.id),
+  };
+  return built;
  }
- built={
-  petProfiles,
-  legendaryPetPool,
-  selectablePetEggs,
-  selectablePetEggsById,
-  localEggIds,
-  petSkillLevels:new Map(petCatalog.skills.map(s=>[`${s.id}:${s.level}`,s])),
-  petSkillMaxima:[...petSkillMaxima.values()].sort((a,b)=>a.id-b.id),
- };
- return built;
-}
 
 export const petProfiles=lazyBox(()=>ensure().petProfiles,'petProfiles');
 export const selectablePetEggsById=lazyBox(()=>ensure().selectablePetEggsById,'selectablePetEggsById');
@@ -70,8 +63,6 @@ export const petSkillLevels=lazyBox(()=>ensure().petSkillLevels,'petSkillLevels'
 export const selectablePetEggs=()=>ensure().selectablePetEggs;
 /** 传说宠物池（数组），内部候选表。 */
 export const legendaryPetPool=()=>ensure().legendaryPetPool;
-/** 自制宠物生成的蛋编号（Set）。**必须是函数** —— Set 过不了代理（方法会拿到代理当 this）。 */
-export const localPetEggIds=()=>ensure().localEggIds;
 /** 每个宠物技能已采集到的最高等级定义（数组，按技能编号升序）。 */
 export const petSkillMaxima=()=>ensure().petSkillMaxima;
 

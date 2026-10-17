@@ -28,11 +28,11 @@ const P=loadProtocolConstants(root);
 
 // ───────────────────────── 分派链 ─────────────────────────
 
-test('分派链是 21 段且顺序被钉死',()=>{
+test('分派链是 22 段且顺序被钉死',()=>{
  // 顺序承重：同一个协议号被两段同时认领时，先到的接走。已知重叠只有 32110（illusion 抢先 official）。
- const expected=['characterFeatures','legion','city','systemSettings','attributes','nativeCommerce','illusion','homeFeatures','recorded','official','equipmentComposition','petEquipment','equipmentUpgrades','petItems','petIllusion','petRename','roleRename','restoration','enchantment','spiritSeals','game'];
+ const expected=['characterFeatures','legion','city','systemSettings','attributes','nativeCommerce','illusion','homeFeatures','recorded','official','equipmentComposition','petEquipment', 'equipmentUpgrades','petItems','petIllusion','petRename','roleRename','restoration','enchantment','spiritSeals','solarChallenge','game'];
  assert.deepEqual(INBOUND_CHAIN.map(s=>s.name),expected);
- assert.equal(INBOUND_CHAIN.length,21);
+ assert.equal(INBOUND_CHAIN.length,22);
  // game 是兜底，必须留在最后：战斗/场景/任务的包全归它。
  assert.equal(INBOUND_CHAIN.at(-1).name,'game');
  assert.equal(INBOUND_CHAIN.at(-1).file,'game-service');

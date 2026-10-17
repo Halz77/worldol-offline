@@ -15,7 +15,7 @@ import {maps,reachable,walkable,hpMax,mpMax} from '../lib/content.mjs';
 import {worldTravelMaps} from '../lib/world-travel.mjs';
 import {missionBlockers,missionConditions,officialComplete,officialCanAccept,npcEnabled,missionsAt,missionNotes,missionFollowupId} from '../lib/official-rules.mjs';
 import {planItemRewards} from '../lib/restoration.mjs';
-import {dailySnapshot,dailyKey,dailyData,ensureDaily} from '../lib/daily-activity.mjs';
+import {dailySnapshot,dailyKey,dailyData,ensureDaily,isDailyMission} from '../lib/daily-activity.mjs';
 import {handleOfficial} from '../lib/official-service.mjs';
 import {handleGame,BATTLE_TRAILER} from '../lib/game-service.mjs';
 import {missionData,npcPacket} from '../lib/game-packets.mjs';
@@ -75,7 +75,11 @@ test('all imported scenes are in free travel and every interactive NPC has a rea
   // the walkable festival paths. Preserve their positions without moving art.
   const balloon=maps[457].npcs.find(n=>n.id===32);assert.equal(balloon.npcType??balloon.type,4);assert.deepEqual([balloon.x,balloon.y],[19,29]);
   assert.equal(h.call(10523,new Writer().int(411)).byte(),0);assert.deepEqual([h.p.mapId,h.p.x,h.p.y],[411,43,37]);
-  const before=structuredClone(h.p);assert.equal(h.call(10523,new Writer().int(962)).byte(),-1);assert.deepEqual(h.p,before);
+  // MOD(maya-continuation)：原先断言 962 传不过去（地图没采集）。地下宫殿补齐后
+  // 它已经是正式场景，传送应当放行 —— 这里改成验证能进去且落点合法。
+  const before=structuredClone(h.p);assert.equal(h.call(10523,new Writer().int(962)).byte(),0);
+  assert.equal(h.p.mapId,962);assert.ok(walkable(962,h.p.x,h.p.y));
+  Object.assign(h.p,before);
 });
 
 test('every new recorded mission has a native packet and queries from its recorded NPC',t=>{
@@ -157,14 +161,27 @@ const routes=[
   {name:'小城市普通与高难双分支',ids:[1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1364,1365,1366]},
   {name:'MJ颤栗完整后续与高难彩蛋',ids:[2820,2821,2822,2823,2824,2825,2826,2827,2828,2829,2831]},
   {name:'奥哈拉与彩蛋森林完整事件',ids:[1450,1451,1452,1453,1454,1455,1456,1457,1458,1459,1460,1461,1462,1463,1464,1465,1478,1466,1467,1468,1469,1470,1471,1472,1473,1474,1475,1476,1477]},
-  {name:'已完成前章后的祭祀宫殿与先祖遗迹',seed:[1823],ids:[...Array.from({length:36},(_,i)=>1824+i),1861,1862,1863]},
+  // MOD(maya-continuation)：1824「蒂卡尔的自白」的前置不再是缺失的 1823，
+  // 而是地下宫殿十环（8700—8709，见 lib/maya-palace-story.mjs）。fixture 不进副本，
+  // 所以按「前置已完成」处理，把 8709 也种进 completed。
+  {name:'已完成前章后的祭祀宫殿与先祖遗迹',seed:[1823,3219,8709],ids:[...Array.from({length:36},(_,i)=>1824+i),1861,1862,1863]},
   {name:'机械城走廊之环与之心任务衔接',seed:[2051],ids:Array.from({length:38},(_,i)=>3420+i)}
 ];
 for(const route of routes)test(route.name+' progresses through native accept, battle and submit handlers',t=>{
-  const h=fixture(t),{p,call}=h;
-  // The source for this later chapter's earlier map is still pending. This
-  // fixture validates its recorded continuation without bypassing it in-game.
-  if(route.seed)p.quests.completed.push(...route.seed);
+ const h=fixture(t),{p,call}=h;
+ // The source for this later chapter's earlier map is still pending. This
+ // fixture validates its recorded continuation without bypassing it in-game.
+ if(route.seed)p.quests.completed.push(...route.seed);
+ // MOD(maya-continuation)：地下宫殿十环（8700—8709）插在 1823 与 1824 之间。
+ // 这一段（1824 往后的祭祀宫殿）全是日常任务：完成状态记在 dailyActivity.completed，
+ // 不在 quests.completed（见 lib/daily-activity.mjs 的 missionDone），
+ // 所以前置要种进日常表，否则蒂卡尔不出现、整条链都接不上。
+ // 必须用 ensureDaily —— recordMissionCompletion 会读 dailyActivity.credited，
+ // 手搓一个只有 completed 的对象会在提交时被 daily-activity 抛错。
+ if(route.name.includes('祭祀宫殿')){
+  const daily=ensureDaily(p);daily.completed??={};
+  for(const id of [3219,...Array.from({length:10},(_,i)=>8700+i)])daily.completed[id]=1;
+ }
   for(const id of route.ids){
     const q=officialMissions.get(id);assert.ok(q,'recorded '+id);assert.deepEqual(missionBlockers(q),[],id+' blockers');
     const origin=p.quests.active[id]?{mapId:q.mapId,npcId:q.npcId}:q.sources.find(s=>maps[s.mapId]?.npcs.some(n=>n.id===s.npcId&&npcEnabled(p,n)));assert.ok(origin,id+' visible quest origin');
@@ -193,7 +210,15 @@ for(const route of routes)test(route.name+' progresses through native accept, ba
     const choice=(q.selectItems||[]).find(i=>official.items.some(known=>known.id===i.id));const reward=call(14503,new Writer().short(q.npcId).short(id).int(choice?.id||0));assert.equal(reward.byte(),0,id+' submit '+reward.b.toString('hex'));
     if(id===1358)assert.equal(missionFollowupId(q),1359);
   }
-  const disk=h.reload();for(const id of route.ids)assert.ok(disk.quests.completed.includes(id),id+' saved');
+  // 落盘只校验非日常、非可重复的普通任务。
+  // 日常（setting&2）完成状态在 dailyActivity，可重复（setting&1）交付后会被清掉，
+  // 两者都不落在 quests.completed 里 —— 这条用例只验「接取→战斗→交付」全程走得通。
+  const disk=h.reload();
+  for(const id of route.ids){
+   const q=officialMissions.get(id);
+   if(q.setting&3)continue;
+   assert.ok(disk.quests.completed.includes(id),id+' saved');
+  }
 });
 
 test('MJ girl visibility uses the same native quest conditions before and after reload',t=>{
@@ -209,8 +234,13 @@ test('MJ girl visibility uses the same native quest conditions before and after 
 });
 
 test('unrecorded destination maps and missing kill definitions stay explicitly pending',()=>{
-  assert.ok(missionBlockers(officialMissions.get(3219)).some(s=>s.includes('地图尚未采集')));
-  assert.deepEqual(missionBlockers(officialMissions.get(2621)),[],'new recording restores the forest continuation');
-  assert.ok(!missionBlockers(officialMissions.get(3422)).some(s=>s.includes('地图尚未采集')),'new recording restores mechanical ring');
-  assert.ok(missionBlockers(officialMissions.get(2803)).includes('任务目标怪物资料尚未采集'));
+ // MOD(maya-continuation)：3219 原来的下一环 3220 不存在，整条玛雅链断在这里
+ // （missionBlockers 会报「地图尚未采集」）。地下宫殿补齐后 3219 → 8700 已经通了，
+ // 这条断言改成检查补齐之后的状态：不再有地图阻塞，但两条链各自仍然留在自己的环节上。
+ assert.ok(!missionBlockers(officialMissions.get(3219)).some(s=>s.includes('地图尚未采集')),
+  '3219 接的地下宫殿(962)应该已经通向8700');
+ assert.deepEqual(officialMissions.get(3219).submitNextMissionID,8700);
+ assert.deepEqual(missionBlockers(officialMissions.get(2621)),[],'new recording restores the forest continuation');
+ assert.ok(!missionBlockers(officialMissions.get(3422)).some(s=>s.includes('地图尚未采集')),'new recording restores mechanical ring');
+ assert.ok(missionBlockers(officialMissions.get(2803)).includes('任务目标怪物资料尚未采集'));
 });

@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>世界OL 单机版 · 技能编辑器</title>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#fff; --line:#d9dce3; --line-soft:#e8eaef;
+  --text:#1f2329; --dim:#6b7280; --accent:#2f6fed; --accent-soft:#e8f0ff;
+  --warn:#c2410c; --danger:#d94a3d; --ok:#177245; --edited:#7c3aed;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:13px/1.55 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+button{
+  font:inherit;padding:5px 11px;border:1px solid var(--line);border-radius:6px;
+  background:#fff;color:var(--text);cursor:pointer;
+}
+button:hover:not(:disabled){border-color:#b9c0cc;background:#fafbfc}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover:not(:disabled){background:#2560d8;border-color:#2560d8}
+button.ghost{border-color:transparent;background:transparent;color:var(--dim)}
+button.ghost:hover:not(:disabled){background:#eceef2;border-color:transparent}
+input,select{
+  font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:5px;
+  background:#fff;color:var(--text);height:28px;
+}
+input:focus,select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+input[type=number]{width:88px;text-align:right;font-family:var(--mono)}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent);height:auto;padding:0;border:none;border-radius:0;background:none}
+
+header{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;background:var(--panel);border-bottom:1px solid var(--line);
+}
+header h1{margin:0;font-size:14px;font-weight:700;letter-spacing:.2px}
+header h1 span{color:var(--dim);font-weight:400;margin-left:6px;font-size:12px}
+header .grow{flex:1}
+#status{
+  display:none;padding:7px 14px;font-size:12px;border-bottom:1px solid var(--line);
+  background:#fffbe9;color:#7a5b00;
+}
+#status.err{background:#fdeceb;color:#a3241a}
+#status.ok{background:#eaf7ef;color:#12603c}
+#status b{font-weight:600}
+
+main{flex:1;display:flex;min-height:0}
+#list-pane{
+  width:288px;min-width:288px;display:flex;flex-direction:column;
+  background:var(--panel);border-right:1px solid var(--line);
+}
+.filters{padding:9px 10px;border-bottom:1px solid var(--line-soft);display:flex;flex-direction:column;gap:7px}
+.filters input#search{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--dim)}
+.chips label{display:flex;align-items:center;gap:4px;cursor:pointer}
+#list-count{padding:5px 10px;font-size:11.5px;color:var(--dim);border-bottom:1px solid var(--line-soft)}
+#skill-list{flex:1;overflow:auto;margin:0;padding:0;list-style:none}
+#skill-list li{
+  padding:6px 10px;border-bottom:1px solid var(--line-soft);cursor:pointer;
+  display:flex;align-items:baseline;gap:6px;
+}
+#skill-list li:hover{background:#f7f9fc}
+#skill-list li.active{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+#skill-list .sid{font-family:var(--mono);font-size:11px;color:var(--dim);min-width:38px}
+#skill-list .sname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#skill-list .tag{font-size:10.5px;color:var(--dim);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+#skill-list li.edited .sname{color:var(--edited);font-weight:600}
+#skill-list li.edited::after{content:"已改";font-size:10px;color:var(--edited)}
+
+#edit-pane{flex:1;overflow:auto;padding:14px 18px 40px}
+.empty{color:var(--dim);margin-top:60px;text-align:center;line-height:2}
+.empty kbd{font-family:var(--mono);background:#eceef2;border-radius:4px;padding:1px 5px;font-size:11px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 15px;margin-bottom:13px}
+.card > h2{
+  margin:0 0 11px;font-size:12px;font-weight:600;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.6px;
+}
+.skill-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:13px}
+.skill-head .ttl{flex:1}
+.skill-head .ttl h2{margin:0;font-size:17px}
+.skill-head .meta{margin-top:3px;font-size:12px;color:var(--dim);display:flex;flex-wrap:wrap;gap:4px 9px}
+.skill-head .meta em{font-style:normal;background:#eef1f6;border-radius:4px;padding:0 5px}
+.pill{display:inline-block;font-size:11px;border-radius:20px;padding:1px 8px;background:#eef1f6;color:var(--dim)}
+.pill.eq{background:#eaf3ff;color:#1d4ed8}
+.pill.career{background:#eef7ee;color:#20603a}
+.pill.monster{background:#fdeef0;color:#a3241a}
+
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row + .row{margin-top:8px}
+.row > .lbl{width:74px;min-width:74px;color:var(--dim);font-size:12px}
+/* 技能参数：中文下拉 + 数值输入混排 */
+.params{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:9px 16px}
+.pcell{display:flex;align-items:center;gap:7px;min-width:0}
+.pcell.wide{grid-column:span 2}
+.pcell > .plbl{width:70px;min-width:70px;color:var(--dim);font-size:12px}
+.pcell > select{flex:1;min-width:0}
+.pcell > input[type=number]{width:86px}
+.pcell > .punit{color:var(--dim);font-size:12px;min-width:22px}
+.slot{
+  display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid var(--line-soft);
+  border-radius:7px;background:#fcfcfd;
+}
+.slot + .slot{margin-top:7px}
+.slot .no{font-family:var(--mono);font-size:11px;color:var(--dim);width:30px}
+.slot select.pw{width:236px}
+.slot input.v{width:96px}
+.slot select.bt{width:150px}
+.slot .unit{color:var(--dim);font-size:12px;width:12px}
+.revert{border:none;background:none;color:var(--dim);cursor:pointer;font-size:15px;padding:0 2px;line-height:1}
+.revert:hover{color:var(--danger)}
+
+.levels{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.levels label{
+  display:flex;align-items:center;justify-content:center;min-width:30px;padding:2px 6px;
+  border:1px solid var(--line);border-radius:5px;font-size:12px;font-family:var(--mono);cursor:pointer;
+}
+.levels label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:#1d4ed8;font-weight:600}
+.levels label input{display:none}
+.hint{color:var(--dim);font-size:11.5px;margin-top:6px}
+
+table.per{border-collapse:collapse;font-size:12px;width:100%}
+table.per th,table.per td{border:1px solid var(--line-soft);padding:2px 5px;text-align:center}
+table.per th{background:#f7f8fa;color:var(--dim);font-weight:600;font-size:11px;position:sticky;top:0}
+table.per td.lv{font-family:var(--mono);color:var(--dim);background:#fafbfc}
+table.per input{width:64px;height:auto;padding:1px 4px;font-family:var(--mono);font-size:11.5px;border-color:transparent;background:transparent}
+table.per input:hover{border-color:var(--line)}
+table.per select{padding:1px 3px;height:auto;font-size:11.5px;max-width:70px}
+table.per td.pick{cursor:pointer;min-width:80px;white-space:nowrap}
+table.per td.pick:hover{background:#eef4ff}
+table.per td.pick select{max-width:none;width:100%;font-size:11.5px}
+table.per tr.dirty td{background:#fbf7ff}
+table.per tr.dirty input{background:#fff;border-color:#ded0f5}
+.per-wrap{max-height:430px;overflow:auto;border:1px solid var(--line-soft);border-radius:7px}
+
+.preview{font-family:var(--mono);font-size:12px;white-space:pre-wrap;color:#334155;line-height:1.7}
+.preview .bad{color:var(--danger)}
+.preview .good{color:var(--ok)}
+.wire{font-family:var(--mono);font-size:11px;color:var(--dim);word-break:break-all;margin-top:7px}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+  background:#1f2329;color:#fff;padding:9px 16px;border-radius:8px;font-size:12.5px;
+  box-shadow:0 6px 24px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:opacity .18s;z-index:50;
+}
+.toast.show{opacity:1}
+dialog{
+  border:1px solid var(--line);border-radius:10px;padding:0;max-width:760px;width:calc(100% - 60px);
+  color:var(--text);background:var(--panel);
+}
+dialog::backdrop{background:rgba(20,22,26,.42)}
+dialog .dlg-head{padding:12px 16px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center}
+dialog .dlg-head h3{margin:0;font-size:14px;flex:1}
+dialog .dlg-body{padding:14px 18px;max-height:66vh;overflow:auto;font-size:12.5px;line-height:1.85}
+dialog .dlg-body h4{margin:15px 0 5px;font-size:12.5px}
+dialog .dlg-body h4:first-child{margin-top:0}
+dialog .dlg-body code{font-family:var(--mono);background:#eef1f6;border-radius:4px;padding:1px 5px;font-size:11.5px}
+dialog .dlg-body ol,dialog .dlg-body ul{margin:5px 0;padding-left:22px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>技能编辑器<span>世界OL 单机版 · 改完打包即生效</span></h1>
+  <span class="grow"></span>
+  <button id="btn-load-dir">载入 data 目录</button>
+  <button id="btn-load-files">选择 JSON 文件</button>
+  <button id="btn-save" class="primary" disabled>保存到 data/</button>
+  <button id="btn-download" disabled>下载覆盖文件</button>
+  <button id="btn-help" class="ghost">使用说明</button>
+  <input id="dir-input" type="file" webkitdirectory multiple hidden>
+  <input id="file-input" type="file" multiple accept=".json,application/json" hidden>
+</header>
+<div id="status"></div>
+
+<main>
+  <aside id="list-pane">
+    <div class="filters">
+      <input id="search" placeholder="搜索技能名 / 编号 / 职业…" autocomplete="off">
+      <div class="chips">
+        <label><input type="radio" name="src" value="all" checked>全部</label>
+        <label><input type="radio" name="src" value="career">人物技能</label>
+        <label><input type="radio" name="src" value="equipment">装备技能</label>
+        <label><input type="radio" name="src" value="monster">怪物技能</label>
+        <label><input type="checkbox" id="only-edited">只看已改</label>
+      </div>
+    </div>
+    <div id="list-count">尚未载入数据</div>
+    <ul id="skill-list"></ul>
+  </aside>
+  <section id="edit-pane">
+    <div class="empty" id="empty-pane">
+      <p><b>还没有载入游戏数据。</b></p>
+      <p>点左上角 <kbd>载入 data 目录</kbd>，选 <kbd>世界online_原版单机/data</kbd>；<br>
+         或者用 <kbd>选择 JSON 文件</kbd> 手动挑 <kbd>career-skills.json</kbd>、<kbd>equipment-skill-levels.json</kbd>。</p>
+      <p>改完点 <kbd>保存到 data/</kbd>（或下载覆盖文件放进 data/），再跑 <kbd>构建APK.ps1</kbd> 即可。</p>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<dialog id="help-dlg">
+  <div class="dlg-head"><h3>使用说明</h3><button class="ghost" data-close>关闭</button></div>
+  <div class="dlg-body">
+    <h4>它改的是什么</h4>
+    编辑器只写一个文件：<code>data/local-skill-overrides.json</code>（技能效果覆盖层）。它<b>不改</b>
+    <code>career-skills.json</code> 等抓包原始数据，而是把改动记成覆盖规则，服务端启动时套用 ——
+    所以既能改，又不会破坏上游验收数据。
+    <h4>三种来源：人物 / 装备 / 怪物</h4>
+    同一个技能 id 可能被多处使用，列表里会标出来：
+    <ul>
+      <li><b>人物</b>：职业/导师教的技能（<code>career-skills.json</code>）。</li>
+      <li><b>装备</b>：装备自带 / 组合技能（<code>equipment-skill-levels.json</code>），两件同名装备还能叠加等级。</li>
+      <li><b>怪物</b>：怪物 AI 放的主动与自动技能。这部分<b>已内嵌</b>在编辑器里，打开就能改；
+          其中约 200 个是怪物专属、人物学不到的技能。</li>
+    </ul>
+    改一个技能 id，三处会一起变（它们本来共用同一份定义）。
+    <h4>操作顺序</h4>
+    <ol>
+      <li>（可选）<b>载入 data 目录</b>：选源码里的 <code>世界online_原版单机/data</code> 文件夹，
+          读入人物/装备技能表；只改怪物技能的话可以跳过这一步。</li>
+      <li>左边搜索并选中技能（可用「人物技能 / 装备技能 / 怪物技能」筛选）。</li>
+      <li>选作用范围（全部等级 / 指定等级），改 <b>效果编号</b>、<b>数值</b>、<b>附加状态</b>。</li>
+      <li><b>保存到 data/</b>（浏览器不支持时改为下载文件，手动放进 <code>data/</code> 覆盖）。</li>
+      <li>跑 <code>安卓打包\构建APK.ps1</code> 重新打包，进游戏即生效。</li>
+    </ol>
+    <h4>字段含义</h4>
+    <ul>
+      <li><b>效果编号</b>：就是游戏里的 <code>power</code>。数值为负＝削减，为正＝增加。名称取自游戏自带文案。</li>
+      <li><b>附加状态</b>（<code>statusBit</code>）：和效果编号<b>一一对应</b>（槽1↔状态1…）。挂了减益类状态，这条效果会先过
+          「全减益免疫 / 状态抵抗」两道门槛 —— 打免疫怪时会被整段吃掉。想让削防等效果对免疫怪照常生效，把状态清成「无」。</li>
+      <li><b>持续回合</b>（<code>round</code>）：0 = 瞬时；大于 0 = 持续若干回合。</li>
+      <li><b>类型</b>：1 被动 / 2 自动 / 3 主动。被动的 wire 里不写范围、回合等字段。</li>
+      <li><b>逐级不同值</b>：勾上后用表格按等级逐个填，配合「指定等级」可以做出成长曲线。</li>
+    </ul>
+    <h4>注意</h4>
+    <ul>
+      <li>只覆盖 <b>已有等级定义</b>的技能；要新增技能请改 <code>data/local-career-skills.json</code>。</li>
+      <li>存档里 <b>已存在</b>的技能定义（导入的角色）也会吃覆盖，但重新导入旧角色代码可能带回旧定义。</li>
+      <li>编辑器显示的效果预览用游戏自带的文案表渲染，与游戏内技能说明一致。</li>
+    </ul>
+  </div>
+</dialog>
+
+<script id="game-labels" type="application/json">{"powers":{"0":{"k":"POWER_NONE","n":"NONE","p":false},"1":{"k":"POWER_STR","n":"力量","p":false},"2":{"k":"POWER_STR_PERCENT","n":"力量","p":true},"3":{"k":"POWER_CON","n":"体质","p":false},"4":{"k":"POWER_CON_PERCENT","n":"体质","p":true},"5":{"k":"POWER_AGI","n":"敏捷","p":false},"6":{"k":"POWER_AGI_PERCENT","n":"敏捷","p":true},"7":{"k":"POWER_ILT","n":"智力","p":false},"8":{"k":"POWER_ILT_PERCENT","n":"智力","p":true},"9":{"k":"POWER_WIS","n":"感知","p":false},"10":{"k":"POWER_WIS_PERCENT","n":"感知","p":true},"11":{"k":"POWER_HPMAX","n":"生命上限","p":false},"12":{"k":"POWER_HPMAX_PERCENT","n":"生命上限","p":true},"13":{"k":"POWER_MPMAX","n":"法力上限","p":false},"14":{"k":"POWER_MPMAX_PERCENT","n":"法力上限","p":true},"23":{"k":"POWER_SPEED_PERCENT","n":"出手速度","p":true},"24":{"k":"POWER_HITRATE_PERCENT","n":"命中率","p":true},"25":{"k":"POWER_DODGE_PERCENT","n":"躲闪","p":true},"26":{"k":"POWER_MAGIC_HITRATE_PERCENT","n":"魔法命中","p":true},"27":{"k":"POWER_CRITICAL_PERCENT","n":"致命率","p":true},"28":{"k":"POWER_ATK_STR_PERCENT","n":"劈砍攻击力","p":true},"29":{"k":"POWER_ATK_AGI_PERCENT","n":"穿刺攻击力","p":true},"30":{"k":"POWER_ATK_MAGIC_PERCENT","n":"魔法攻击力","p":true},"31":{"k":"POWER_DEF_STR_PERCENT","n":"劈砍防御力","p":true},"32":{"k":"POWER_DEF_AGI_PERCENT","n":"穿刺防御力","p":true},"33":{"k":"POWER_DEF_MAGIC_PERCENT","n":"魔法防御力","p":true},"34":{"k":"POWER_WIL_PERCENT","n":"基础状态抵抗","p":true},"35":{"k":"POWER_TOUGH_PERCENT","n":"伤害减免","p":true},"36":{"k":"POWER_REFLECTION_PERCENT","n":"REFLECTION_PERCENT","p":false},"37":{"k":"POWER_BLOCK_PERCENT","n":"格挡","p":true},"38":{"k":"POWER_INSIGHT_PERCENT","n":"洞察","p":true},"39":{"k":"POWER_PENETRATION_PERCENT","n":"破甲","p":true},"40":{"k":"POWER_DEF_FIELD_PERCENT","n":"法力护盾","p":true},"41":{"k":"POWER_BACK_PERCENT","n":"反击","p":true},"42":{"k":"POWER_MAGIC_BACK_PERCENT","n":"魔法反馈","p":true},"43":{"k":"POWER_LIFE_ABSORPTION_PERCENT","n":"生命吸收","p":true},"44":{"k":"POWER_MANA_ABSORPTION_PERCENT","n":"法力吸收","p":true},"45":{"k":"POWER_MAGIC_PENETRATION_PERCENT","n":"魔法穿透","p":true},"46":{"k":"POWER_HIT_FORCE_PERCENT","n":"强制命中率","p":true},"47":{"k":"POWER_HEAL_RECOVERY_PERCENT","n":"每回合自动恢复生命","p":true},"48":{"k":"POWER_MANA_RECOVERY_PERCENT","n":"每回合自动恢复法力","p":true},"49":{"k":"POWER_HP","n":"生命","p":false},"50":{"k":"POWER_HP_PERCENT","n":"按生命上限百分比扣血","p":true},"51":{"k":"POWER_MP","n":"法力","p":false},"52":{"k":"POWER_MP_PERCENT","n":"回复最大法力值","p":true},"53":{"k":"POWER_SPEED","n":"出手速度","p":false},"54":{"k":"POWER_HITRATE","n":"命中","p":false},"55":{"k":"POWER_DODGE","n":"躲闪","p":false},"56":{"k":"POWER_MAGIC_HITRATE","n":"魔法命中","p":false},"57":{"k":"POWER_CRITICAL","n":"致命点","p":false},"58":{"k":"POWER_ATK_STR","n":"劈砍攻击力","p":false},"59":{"k":"POWER_ATK_AGI","n":"穿刺攻击力","p":false},"60":{"k":"POWER_ATK_MAGIC","n":"魔法攻击力","p":false},"61":{"k":"POWER_DEF_STR","n":"劈砍防御力","p":false},"62":{"k":"POWER_DEF_AGI","n":"穿刺防御力","p":false},"63":{"k":"POWER_DEF_MAGIC","n":"魔法防御力","p":false},"64":{"k":"POWER_WIL","n":"状态抵抗值","p":false},"65":{"k":"POWER_TOUGH","n":"伤害减免","p":false},"66":{"k":"POWER_REFLECTION","n":"REFLECTION","p":false},"67":{"k":"POWER_BLOCK","n":"格挡","p":false},"68":{"k":"POWER_INSIGHT","n":"洞察","p":false},"69":{"k":"POWER_PENETRATION","n":"破甲","p":false},"70":{"k":"POWER_DEF_FIELD","n":"法力护盾","p":false},"71":{"k":"POWER_BACK","n":"反击","p":false},"72":{"k":"POWER_MAGIC_BACK","n":"魔法反馈","p":false},"73":{"k":"POWER_LIFE_ABSORPTION","n":"基础生命吸收","p":false},"74":{"k":"POWER_MANA_ABSORPTION","n":"基础法力吸收","p":false},"75":{"k":"POWER_MAGIC_PENETRATION","n":"魔法穿透","p":false},"76":{"k":"POWER_HIT_FORCE","n":"基础强制命中率","p":false},"77":{"k":"POWER_HEAL_RECOVERY","n":"每回合自动恢复生命","p":false},"78":{"k":"POWER_MANA_RECOVERY","n":"每回合自动恢复法力","p":false},"79":{"k":"POWER_REMOVE_STATUS","n":"REMOVE_STATUS","p":false},"80":{"k":"POWER_RECOVER","n":"RECOVER","p":false},"81":{"k":"POWER_SKILL_DAMAGE","n":"技能附带伤害","p":false},"82":{"k":"POWER_SKILL_HITRATE","n":"SKILL_HITRATE","p":false},"84":{"k":"POWER_SELF_CRITICAL","n":"附带致命点","p":false},"85":{"k":"POWER_SKILL_HIT_FORCE","n":"附加强制命中率","p":true},"86":{"k":"POWER_SKILL_MAGIC_PENETRATION","n":"无视目标+点法术防御","p":false},"87":{"k":"POWER_SKILL_BRK_ARMOR","n":"无视物理防御（破甲）","p":false},"88":{"k":"POWER_SKILL_REMOVE_STATUS","n":"SKILL_REMOVE_STATUS","p":false},"89":{"k":"POWER_PET_DAMAGE","n":"宠物伤害","p":true},"90":{"k":"POWER_PET_HPMAX_PERCENT","n":"宠物生命上限","p":true},"91":{"k":"POWER_PET_MPMAX_PERCENT","n":"宠物法力上限","p":true},"92":{"k":"POWER_PET_STR_PERCENT","n":"宠物力量","p":true},"93":{"k":"POWER_PET_CON_PERCENT","n":"宠物体质","p":true},"94":{"k":"POWER_PET_AGI_PERCENT","n":"宠物敏捷","p":true},"95":{"k":"POWER_PET_ILT_PERCENT","n":"宠物智力","p":true},"96":{"k":"POWER_PET_WIS_PERCENT","n":"宠物感知","p":true},"97":{"k":"POWER_RECOVER_PERCENT","n":"RECOVER_PERCENT","p":false},"98":{"k":"POWER_HPMP_RECOVER","n":"HPMP_RECOVER","p":false},"99":{"k":"POWER_OPEN_STORE","n":"OPEN_STORE","p":false},"100":{"k":"POWER_CHEST_LV1","n":"CHEST_LV1","p":false},"101":{"k":"POWER_CHEST_LV2","n":"CHEST_LV2","p":false},"102":{"k":"POWER_CHEST_LV3","n":"CHEST_LV3","p":false},"103":{"k":"POWER_REQ_SLOT","n":"REQ_SLOT","p":false},"104":{"k":"POWER_TO_WORLDMAP","n":"传送到世界地图","p":false},"105":{"k":"POWER_TO_GXGY","n":"ToXY","p":false},"106":{"k":"POWER_EXPIRE_TIME","n":"EXPIRE_TIME","p":false},"107":{"k":"POWER_RESET_MISSION","n":"重置任务","p":false},"108":{"k":"POWER_CHEST_KEY_LEVEL","n":"CHEST_KEY_LEVEL","p":false},"109":{"k":"POWER_PET_EGG","n":"PET_EGG","p":false},"110":{"k":"POWER_COSTUME","n":"COSTUME","p":false},"111":{"k":"POWER_TRANSPORT","n":"TRANSPORT","p":false},"112":{"k":"POWER_POWER_TITLE","n":"称号","p":false},"113":{"k":"POWER_GUARD_STR_ATTACK","n":"%几率替目标抵挡劈砍攻击","p":false},"114":{"k":"POWER_GUARD_AGI_ATTACK","n":"%几率替目标抵挡穿刺攻击","p":false},"115":{"k":"POWER_GUARD_MAGIC_ATTACK","n":"%几率替目标抵挡魔法攻击","p":false},"116":{"k":"POWER_GUARD_CURSE_ATTACK","n":"%几率替目标抵挡诅咒攻击","p":false},"117":{"k":"POWER_GUARD_ALL_ATTACK","n":"%几率替目标抵挡所有攻击","p":false},"118":{"k":"POWER_PET_ADD_EXP","n":"PET_ADD_EXP","p":false},"119":{"k":"POWER_ADD_EXP","n":"ADD_EXP","p":false},"120":{"k":"POWER_EXP_BY_TIME","n":"EXP_BY_TIME","p":false},"121":{"k":"POWER_IDENTIFY","n":"IDENTIFY","p":false},"122":{"k":"POWER_SWORD_ATK_TIME","n":"用剑时攻击次数","p":false},"123":{"k":"POWER_BLADE_ATK_TIME","n":"用刀时攻击次数","p":false},"124":{"k":"POWER_HEAVY_ATK_TIME","n":"用重型时攻击次数","p":false},"125":{"k":"POWER_LANCE_ATK_TIME","n":"用长柄时攻击次数","p":false},"126":{"k":"POWER_STAFF_ATK_TIME","n":"用法杖时攻击次数","p":false},"127":{"k":"POWER_HAND_ATK_TIME","n":"空手时攻击次数","p":false},"128":{"k":"POWER_BOW_ATK_TIME","n":"用远程武器时攻击次数","p":false},"129":{"k":"POWER_HAND_ITEM_ATK_TIME","n":"用手持物时攻击次数","p":false},"130":{"k":"POWER_ALL_ATK_TIME","n":"攻击次数","p":false},"131":{"k":"POWER_COMPOSITE","n":"COMPOSITE","p":false},"133":{"k":"POWER_SWORD_PERCENT","n":"剑类武器伤害、耐久","p":true},"134":{"k":"POWER_BLADE_PERCENT","n":"刀类伤害、耐久","p":true},"135":{"k":"POWER_HEAVY_PERCENT","n":"重型武器伤害、耐久","p":true},"136":{"k":"POWER_LANCE_PERCENT","n":"长柄武器伤害、耐久","p":true},"137":{"k":"POWER_STAFF_PERCENT","n":"法杖武器伤害、耐久","p":true},"138":{"k":"POWER_HAND_PERCENT","n":"空手伤害","p":true},"139":{"k":"POWER_BOW_PERCENT","n":"远程武器伤害、耐久","p":true},"140":{"k":"POWER_HAND_ITEM_PERCENT","n":"手持物伤害、耐久","p":true},"141":{"k":"POWER_ALL_PERCENT","n":"武器伤害、耐久","p":true},"142":{"k":"POWER_EQUIP_ARMOR_DUR_PERCENT","n":"装备防具耐久","p":true},"145":{"k":"POWER_SKILL_HP","n":"恢复自身生命","p":false},"146":{"k":"POWER_SKILL_HP_PERCENT","n":"恢复自身生命","p":true},"147":{"k":"POWER_SKILL_MP","n":"恢复自身法力","p":false},"148":{"k":"POWER_SKILL_MP_PERCENT","n":"恢复自身法力","p":true},"149":{"k":"POWER_SKILL_LIFE_ABSORPTION","n":"附带生命吸收","p":true},"150":{"k":"POWER_SKILL_MANA_ABSORPTION","n":"附带法力吸收","p":true},"151":{"k":"POWER_SKILL_TARGET_BACK","n":"目标反击值","p":false},"152":{"k":"POWER_SKILL_TARGET_MAGIC_BACK","n":"目标魔法反馈值","p":false},"153":{"k":"POWER_SKILL_TARGET_BLOCK","n":"目标格挡值","p":false},"154":{"k":"POWER_SKILL_TARGET_INSIGHT","n":"目标洞察值","p":false},"155":{"k":"POWER_SKILL_TARGET_WIL","n":"目标状态抵抗率","p":false},"156":{"k":"POWER_SKILL_TARGET_TOUCH","n":"目标伤害减免值","p":false},"157":{"k":"POWER_GRARD_MASTER_STR_ATTACK","n":"GRARD_MASTER_STR_ATTACK","p":false},"158":{"k":"POWER_GRARD_MASTER_AGI_ATTACK","n":"GRARD_MASTER_AGI_ATTACK","p":false},"159":{"k":"POWER_GRARD_MASTER_MAGIC_ATTACK","n":"GRARD_MASTER_MAGIC_ATTACK","p":false},"160":{"k":"POWER_GRARD_MASTER_CURSE_ATTACK","n":"GRARD_MASTER_CURSE_ATTACK","p":false},"161":{"k":"POWER_GRARD_MASTER_ALL_ATTACK","n":"GRARD_MASTER_ALL_ATTACK","p":false},"162":{"k":"POWER_PET_GRARD_STR_ATTACK","n":"PET_GRARD_STR_ATTACK","p":false},"163":{"k":"POWER_PET_GRARD_AGI_ATTACK","n":"PET_GRARD_AGI_ATTACK","p":false},"164":{"k":"POWER_PET_GRARD_MAGIC_ATTACK","n":"PET_GRARD_MAGIC_ATTACK","p":false},"165":{"k":"POWER_PET_GRARD_CURSE_ATTACK","n":"PET_GRARD_CURSE_ATTACK","p":false},"166":{"k":"POWER_PET_GRARD_ALL_ATTACK","n":"PET_GRARD_ALL_ATTACK","p":false},"167":{"k":"POWER_EXP_MISSION_BY_TIME","n":"EXP_MISSION_BY_TIME","p":false},"168":{"k":"POWER_IGNORE_BACK","n":"无视反击","p":false},"169":{"k":"POWER_IGNORE_MAGIC_BACK","n":"无视魔法反馈","p":false},"170":{"k":"POWER_IGNORE_BLOCK","n":"无视格挡","p":false},"171":{"k":"POWER_IGNORE_INSIGHT","n":"无视洞察","p":false},"172":{"k":"POWER_IGNORE_WIL","n":"无视状态抵抗","p":false},"173":{"k":"POWER_IGNORE_TOUCH","n":"无视伤害减免","p":false},"174":{"k":"POWER_BALL_ATK_TIME","n":"用法器时攻击次数","p":false},"175":{"k":"POWER_BALL_PERCENT","n":"法器武器伤害、耐久","p":true},"176":{"k":"POWER_SKILL_SCROLL","n":"SKILL_SCROLL","p":false},"177":{"k":"POWER_SKILL_SCROLL_PET","n":"SKILL_SCROLL_PET","p":false},"178":{"k":"POWER_KEEPOUT_ATK_TIME","n":"免伤护盾","p":false},"179":{"k":"POWER_NEW_GET_PET","n":"NEW_GET_PET","p":false},"180":{"k":"POWER_NEW_GET_ITEM","n":"NEW_GET_ITEM","p":false},"181":{"k":"POWER_ENCHANT_ITEM","n":"ENCHANT_ITEM","p":false},"182":{"k":"POWER_FORMATION_BOOK","n":"FORMATION_BOOK","p":false},"183":{"k":"POWER_CHEST_LV4","n":"CHEST_LV4","p":false},"184":{"k":"POWER_COLOR_BOX","n":"COLOR_BOX","p":false},"185":{"k":"POWER_TURN_MONSTER_CARD","n":"TURN_MONSTER_CARD","p":false},"186":{"k":"POWER_SKILL_BOOK_PET","n":"SKILL_BOOK_PET","p":false},"190":{"k":"POWER_GUN_ATK_TIME","n":"用火枪时攻击次数","p":false},"191":{"k":"POWER_GUN_PERCENT","n":"火枪类武器伤害、耐久","p":true},"192":{"k":"POWER_HAMMER_ATK_TIME","n":"用锤类时攻击次数","p":false},"193":{"k":"POWER_HAMMER_PERCENT","n":"锤类武器伤害、耐久","p":true},"194":{"k":"POWER_FAN_ATK_TIME","n":"用扇子时攻击次数","p":false},"195":{"k":"POWER_FAN_PERCENT","n":"扇类武器伤害、耐久","p":true},"196":{"k":"POWER_MAGIC_PERCENT","n":"MAGIC_PERCENT","p":false},"197":{"k":"POWER_PHYSICS_PERCENT","n":"PHYSICS_PERCENT","p":false},"201":{"k":"POWER_IGNORE_CRITICAL","n":"抗致命点数","p":false},"202":{"k":"POWER_IGNORE_CRITICAL_PERCENT","n":"抗致命点数百分比","p":true},"203":{"k":"POWER_CRITICAL_DAMAGE","n":"致命伤害","p":true},"204":{"k":"POWER_CRITICAL_DAMAGE_PERCENT","n":"CRITICAL_DAMAGE_PERCENT","p":false},"210":{"k":"POWER_BLADE_L_ATK_TIME","n":"用轻刀时攻击次数","p":false},"211":{"k":"POWER_BLADE_H_ATK_TIME","n":"用重刀时攻击次数","p":false},"212":{"k":"POWER_SWORD_L_ATK_TIME","n":"用轻剑时攻击次数","p":false},"213":{"k":"POWER_SWORD_H_ATK_TIME","n":"用重剑时攻击次数","p":false},"214":{"k":"POWER_CROSSBOW_L_ATK_TIME","n":"用轻弩时攻击次数","p":false},"215":{"k":"POWER_CROSSBOW_H_ATK_TIME","n":"用重弩时攻击次数","p":false},"216":{"k":"POWER_ARROW_ATK_TIME","n":"用弓箭时攻击次数","p":false},"230":{"k":"POWER_BLADE_L_DAMAGE_PERCENT","n":"轻刀武器伤害、耐久","p":true},"231":{"k":"POWER_BLADE_H_DAMAGE_PERCENT","n":"重刀武器伤害、耐久","p":true},"232":{"k":"POWER_SWORD_L_DAMAGE_PERCENT","n":"轻剑武器伤害、耐久","p":true},"233":{"k":"POWER_SWORD_H_DAMAGE_PERCENT","n":"重剑武器伤害、耐久","p":true},"234":{"k":"POWER_CROSSBOW_L_DAMAGE_PERCENT","n":"重弩武器伤害、耐久","p":true},"235":{"k":"POWER_CROSSBOW_H_DAMAGE_PERCENT","n":"轻弩武器伤害、耐久","p":true},"236":{"k":"POWER_ARROW_DAMAGE_PERCENT","n":"弓箭武器伤害、耐久","p":true},"250":{"k":"POWER_DEF_STR_RANGE","n":"远程劈砍防御点数","p":false},"251":{"k":"POWER_DEF_STR_RANGE_PERCENT","n":"远程劈砍防御百分比","p":true},"252":{"k":"POWER_DEF_STR_NEARBY","n":"近身劈砍防御点数","p":false},"253":{"k":"POWER_DEF_STR_NEARBY_PERCENT","n":"近身劈砍防御百分比","p":true},"254":{"k":"POWER_DEF_AGI_RANGE","n":"远程穿刺防御点数","p":false},"255":{"k":"POWER_DEF_AGI_RANGE_PERCENT","n":"远程穿刺防御百分比","p":true},"256":{"k":"POWER_DEF_AGI_NEARBY","n":"近身穿刺防御点数","p":false},"257":{"k":"POWER_DEF_AGI_NEARBY_PERCENT","n":"近身穿刺防御百分比","p":true},"258":{"k":"POWER_ATK_STR_NEARBY","n":"近身劈砍攻击点数","p":false},"259":{"k":"POWER_ATK_STR_NEARBY_PERCENT","n":"近身劈砍攻击百分比","p":true},"260":{"k":"POWER_ATK_STR_RANGE","n":"远程劈砍攻击点数","p":false},"261":{"k":"POWER_ATK_STR_RANGE_PERCENT","n":"远程劈砍攻击百分比","p":true},"262":{"k":"POWER_ATK_AGI_NEARBY","n":"近战穿刺攻击点数","p":false},"263":{"k":"POWER_ATK_AGI_NEARBY_PERCENT","n":"近战穿刺攻击百分比","p":true},"264":{"k":"POWER_ATK_AGI_RANGE","n":"远程穿刺攻击点数","p":false},"265":{"k":"POWER_ATK_AGI_RANGE_PERCENT","n":"远程穿刺攻击百分比","p":true},"301":{"k":"POWER_ADD_MOENY1","n":"ADD_MOENY1","p":false},"302":{"k":"POWER_ADD_MOENY2","n":"ADD_MOENY2","p":false},"303":{"k":"POWER_ADD_MOENY3","n":"ADD_MOENY3","p":false},"304":{"k":"POWER_ADD_ITEM","n":"ADD_ITEM","p":false}},"buffers":["无","中毒","火烧","流血","属性减少","禁言","封技","封魔","定身","混乱","衰弱","属性增加","持续回魔","持续回血","幻影","魔攻无效","物攻无效","免疫封魔","免疫定身","免疫混乱","全减益免疫","无敌","免疫禁言","免疫封技","免疫衰弱","增益","减益","不死意志","死者苏生","死亡傀儡","驱逐","嘲讽","免疫嘲讽"],"skillTypes":["","被动","自动","主动","阵型"],"skillWeapons":["无限制","空手、剑类、刀类、重型武器、长柄武器","轻剑、轻刀","重剑、重刀、重型武器、长柄武器","轻弩、重弩、弓","单手持武器或空手","单手剑限制","单手剑双持限制","重剑限制","刀类武器限制","单手刀双持限制","重刀限制","重型武器","长柄武器","轻弩、重弩","轻弩双持限制","重弩限制","弓","空手","法杖","剑类武器限制","单手刀限制","法器限制","轻枪、重枪","轻型火枪","重型火枪","轻锤、重锤","轻型锤","重型锤","扇"],"skillAtkTypes":["近身劈砍","远程劈砍","近身穿刺","远程穿刺","魔法攻击","诅咒攻击","祝福"],"skillAreas":["单体","前后两人","上下两人","上下三人","上下四人","上下五人","十字","正方","六人长方","全体","敌单体","敌前后两人","敌上下两人","敌上下三人","敌上下四人","敌上下五人","敌十字","敌正方","敌六人长方","敌全体","我单体","我前后两人","我上下两人","我上下三人","我上下四人","我上下五人","我十字","我正方","我六人长方","我全体","自身","敌当前生命最少者","敌当前生命最大者","我当前生命最少者","我当前生命最大者","自身主人","我全体(不包括自身)","全体(不包括自身)","宠物和主人"],"skillPositions":["原地","目标身前","中央"],"monsters":{"119":{"name":"拈花刀","type":2,"levels":[{"id":119,"level":22,"name":"拈花刀","type":2,"info":"","skillWeapon":10,"power1":87,"powerValue1":2890,"power2":156,"powerValue2":420,"power3":178,"powerValue3":-1,"skillAtkType":0,"area":18,"round":0,"atk_time":0,"useMP":220,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"120":{"name":"诸葛连弩","type":2,"levels":[{"id":120,"level":22,"name":"诸葛连弩","type":2,"info":"","skillWeapon":15,"power1":82,"powerValue1":500,"power2":87,"powerValue2":5300,"power3":50,"powerValue3":-15,"skillAtkType":3,"area":16,"round":3,"atk_time":3,"useMP":534,"useHP":0,"anime1":0,"anime2":1302,"anime3":1222,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":7}]},"121":{"name":"血雨","type":3,"levels":[{"id":121,"level":22,"name":"血雨","type":3,"info":"","skillWeapon":15,"power1":156,"powerValue1":600,"power2":178,"powerValue2":-2,"power3":23,"powerValue3":-50,"skillAtkType":3,"area":18,"round":2,"atk_time":0,"useMP":534,"useHP":0,"anime1":0,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"123":{"name":"斩阵刀法","type":3,"levels":[{"id":123,"level":11,"name":"斩阵刀法","type":3,"info":"","skillWeapon":10,"power1":153,"powerValue1":115,"power2":156,"powerValue2":115,"power3":178,"powerValue3":0,"skillAtkType":0,"area":13,"round":0,"atk_time":0,"useMP":140,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":123,"level":22,"name":"斩阵刀法","type":3,"info":"","skillWeapon":10,"power1":153,"powerValue1":300,"power2":156,"powerValue2":300,"power3":178,"powerValue3":-1,"skillAtkType":0,"area":15,"round":0,"atk_time":0,"useMP":250,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"132":{"name":"无尽怒火","type":2,"levels":[{"id":132,"level":22,"name":"无尽怒火","type":2,"info":"21、22级时，将获得混乱状态","skillWeapon":0,"power1":178,"powerValue1":-2,"power2":23,"powerValue2":-30,"power3":34,"powerValue3":-30,"skillAtkType":5,"area":15,"round":2,"atk_time":0,"useMP":1950,"useHP":0,"anime1":0,"anime2":1224,"anime3":1224,"position":0,"statusBit1":0,"statusBit2":9,"statusBit3":0}]},"133":{"name":"武圣附体","type":2,"levels":[{"id":133,"level":22,"name":"武圣附体","type":2,"info":"","skillWeapon":0,"power1":178,"powerValue1":2,"power2":64,"powerValue2":300,"power3":65,"powerValue3":300,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":6000,"useHP":0,"anime1":0,"anime2":1224,"anime3":1224,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"172":{"name":"弹雨流星","type":2,"levels":[{"id":172,"level":22,"name":"弹雨流星","type":2,"info":"","skillWeapon":24,"power1":50,"powerValue1":-9,"power2":52,"powerValue2":-9,"power3":156,"powerValue3":280,"skillAtkType":3,"area":18,"round":3,"atk_time":0,"useMP":400,"useHP":0,"anime1":0,"anime2":1356,"anime3":0,"position":0,"statusBit1":0,"statusBit2":3,"statusBit3":0}]},"182":{"name":"万弹齐发","type":3,"levels":[{"id":182,"level":22,"name":"万弹齐发","type":3,"info":"","skillWeapon":24,"power1":151,"powerValue1":450,"power2":153,"powerValue2":450,"power3":156,"powerValue3":450,"skillAtkType":3,"area":18,"round":0,"atk_time":2,"useMP":500,"useHP":0,"anime1":0,"anime2":1351,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"221":{"name":"沉静力场","type":2,"levels":[{"id":221,"level":22,"name":"沉静力场","type":2,"info":"","skillWeapon":22,"power1":155,"powerValue1":260,"power2":64,"powerValue2":-210,"power3":154,"powerValue3":260,"skillAtkType":5,"area":17,"round":4,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1311,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":0}]},"226":{"name":"生命陷落","type":2,"levels":[{"id":226,"level":22,"name":"生命陷落","type":2,"info":"","skillWeapon":0,"power1":49,"powerValue1":-1300,"power2":50,"powerValue2":-6,"power3":0,"powerValue3":0,"skillAtkType":5,"area":18,"round":5,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"239":{"name":"法力冲击","type":3,"levels":[{"id":239,"level":22,"name":"法力冲击","type":3,"info":"","skillWeapon":22,"power1":152,"powerValue1":490,"power2":82,"powerValue2":365,"power3":154,"powerValue3":490,"skillAtkType":4,"area":16,"round":0,"atk_time":6,"useMP":350,"useHP":0,"anime1":16,"anime2":1318,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"246":{"name":"法书密语","type":3,"levels":[{"id":246,"level":22,"name":"法书密语","type":3,"info":"","skillWeapon":22,"power1":50,"powerValue1":-9,"power2":156,"powerValue2":360,"power3":178,"powerValue3":-2,"skillAtkType":4,"area":18,"round":3,"atk_time":4,"useMP":3500,"useHP":0,"anime1":1,"anime2":1382,"anime3":0,"position":0,"statusBit1":6,"statusBit2":0,"statusBit3":0}]},"247":{"name":"法术霜冻","type":2,"levels":[{"id":247,"level":22,"name":"法术霜冻","type":2,"info":"","skillWeapon":22,"power1":50,"powerValue1":-9,"power2":65,"powerValue2":-240,"power3":154,"powerValue3":320,"skillAtkType":4,"area":18,"round":3,"atk_time":4,"useMP":3500,"useHP":0,"anime1":1,"anime2":1311,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"328":{"name":"灭空寒星","type":2,"levels":[{"id":328,"level":1,"name":"灭空寒星","type":2,"info":"","skillWeapon":17,"power1":87,"powerValue1":1000,"power2":151,"powerValue2":250,"power3":156,"powerValue3":250,"skillAtkType":3,"area":18,"round":0,"atk_time":4,"useMP":500,"useHP":0,"anime1":24,"anime2":1319,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"332":{"name":"雷爆术","type":3,"levels":[{"id":332,"level":1,"name":"雷爆术","type":3,"info":"","skillWeapon":0,"power1":63,"powerValue1":-600,"power2":84,"powerValue2":240,"power3":154,"powerValue3":240,"skillAtkType":4,"area":18,"round":5,"atk_time":1,"useMP":2000,"useHP":0,"anime1":1,"anime2":1305,"anime3":0,"position":0,"statusBit1":4,"statusBit2":0,"statusBit3":0}]},"337":{"name":"红星剑阵","type":2,"levels":[{"id":337,"level":2,"name":"红星剑阵","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-5,"power2":151,"powerValue2":300,"power3":156,"powerValue3":300,"skillAtkType":3,"area":11,"round":4,"atk_time":2,"useMP":400,"useHP":0,"anime1":16,"anime2":1325,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"362":{"name":"魔晶动能枪","type":3,"levels":[{"id":362,"level":9,"name":"魔晶动能枪","type":3,"info":"","skillWeapon":13,"power1":51,"powerValue1":-740,"power2":49,"powerValue2":-740,"power3":156,"powerValue3":440,"skillAtkType":3,"area":18,"round":3,"atk_time":4,"useMP":2300,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"363":{"name":"龙炎爆","type":3,"levels":[{"id":363,"level":9,"name":"龙炎爆","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":19,"power1":49,"powerValue1":-4400,"power2":152,"powerValue2":310,"power3":178,"powerValue3":-2,"skillAtkType":4,"area":19,"round":2,"atk_time":0,"useMP":6800,"useHP":0,"anime1":9,"anime2":1331,"anime3":0,"position":0,"statusBit1":30,"statusBit2":0,"statusBit3":0}]},"367":{"name":"除魔领域","type":2,"levels":[{"id":367,"level":7,"name":"除魔领域","type":2,"info":"消除增益的效果，只在释放的回合生效，没有持续效果。","skillWeapon":0,"power1":79,"powerValue1":25,"power2":51,"powerValue2":-2200,"power3":52,"powerValue3":-10,"skillAtkType":6,"area":16,"round":2,"atk_time":0,"useMP":3000,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"370":{"name":"冰箱术","type":3,"levels":[{"id":370,"level":1,"name":"冰箱术","type":3,"info":"","skillWeapon":0,"power1":25,"powerValue1":-70,"power2":152,"powerValue2":400,"power3":0,"powerValue3":0,"skillAtkType":4,"area":16,"round":3,"atk_time":0,"useMP":3000,"useHP":0,"anime1":25,"anime2":1311,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"372":{"name":"神圣驱逐","type":2,"levels":[{"id":372,"level":1,"name":"神圣驱逐","type":2,"info":"","skillWeapon":0,"power1":178,"powerValue1":-2,"power2":50,"powerValue2":-15,"power3":51,"powerValue3":-1500,"skillAtkType":5,"area":17,"round":2,"atk_time":0,"useMP":1500,"useHP":0,"anime1":1,"anime2":1326,"anime3":0,"position":0,"statusBit1":0,"statusBit2":30,"statusBit3":0}]},"382":{"name":"红色风暴","type":2,"levels":[{"id":382,"level":1,"name":"红色风暴","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":52,"powerValue2":-30,"power3":64,"powerValue3":-200,"skillAtkType":6,"area":18,"round":3,"atk_time":0,"useMP":900,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"395":{"name":"光芒之盾","type":2,"levels":[{"id":395,"level":22,"name":"光芒之盾","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":18,"power2":52,"powerValue2":18,"power3":178,"powerValue3":3,"skillAtkType":6,"area":29,"round":3,"atk_time":0,"useMP":1800,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":20,"statusBit2":0,"statusBit3":0}]},"435":{"name":"赤练神掌","type":3,"levels":[{"id":435,"level":22,"name":"赤练神掌","type":3,"info":"中毒状态法力恢复、吸收失效","skillWeapon":18,"power1":50,"powerValue1":-12,"power2":52,"powerValue2":-12,"power3":151,"powerValue3":553,"skillAtkType":0,"area":10,"round":5,"atk_time":0,"useMP":55,"useHP":0,"anime1":16,"anime2":1306,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"437":{"name":"飘雪穿云掌","type":3,"levels":[{"id":437,"level":22,"name":"飘雪穿云掌","type":3,"info":"","skillWeapon":18,"power1":61,"powerValue1":-6600,"power2":62,"powerValue2":-6600,"power3":87,"powerValue3":5300,"skillAtkType":2,"area":10,"round":8,"atk_time":4,"useMP":100,"useHP":0,"anime1":0,"anime2":1312,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"438":{"name":"落英神剑掌","type":3,"levels":[{"id":438,"level":22,"name":"落英神剑掌","type":3,"info":"","skillWeapon":18,"power1":151,"powerValue1":660,"power2":156,"powerValue2":660,"power3":82,"powerValue3":280,"skillAtkType":2,"area":11,"round":0,"atk_time":7,"useMP":110,"useHP":0,"anime1":2,"anime2":1313,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"441":{"name":"惊神指","type":3,"levels":[{"id":441,"level":22,"name":"惊神指","type":3,"info":"目标封魔后，无法使用任何技能","skillWeapon":5,"power1":151,"powerValue1":660,"power2":53,"powerValue2":-980,"power3":87,"powerValue3":5300,"skillAtkType":2,"area":10,"round":3,"atk_time":4,"useMP":534,"useHP":0,"anime1":0,"anime2":1331,"anime3":0,"position":1,"statusBit1":0,"statusBit2":7,"statusBit3":0}]},"452":{"name":"狂风快剑","type":3,"levels":[{"id":452,"level":22,"name":"狂风快剑","type":3,"info":"","skillWeapon":2,"power1":151,"powerValue1":360,"power2":156,"powerValue2":360,"power3":153,"powerValue3":360,"skillAtkType":2,"area":10,"round":0,"atk_time":6,"useMP":220,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"453":{"name":"破体无形剑气","type":3,"levels":[{"id":453,"level":22,"name":"破体无形剑气","type":3,"info":"","skillWeapon":8,"power1":87,"powerValue1":2270,"power2":151,"powerValue2":360,"power3":153,"powerValue3":240,"skillAtkType":2,"area":11,"round":0,"atk_time":0,"useMP":220,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"456":{"name":"天翔龙闪","type":3,"levels":[{"id":456,"level":22,"name":"天翔龙闪","type":3,"info":"","skillWeapon":9,"power1":84,"powerValue1":240,"power2":85,"powerValue2":36,"power3":0,"powerValue3":0,"skillAtkType":0,"area":18,"round":0,"atk_time":0,"useMP":534,"useHP":0,"anime1":8,"anime2":1324,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"458":{"name":"天魔邪刀追魂五式","type":3,"levels":[{"id":458,"level":22,"name":"天魔邪刀追魂五式","type":3,"info":"","skillWeapon":9,"power1":151,"powerValue1":385,"power2":51,"powerValue2":-600,"power3":52,"powerValue3":-13,"skillAtkType":0,"area":10,"round":5,"atk_time":5,"useMP":220,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":1,"statusBit1":0,"statusBit2":7,"statusBit3":0}]},"459":{"name":"血光刀气","type":3,"levels":[{"id":459,"level":22,"name":"血光刀气","type":3,"info":"","skillWeapon":21,"power1":149,"powerValue1":300,"power2":49,"powerValue2":-780,"power3":156,"powerValue3":360,"skillAtkType":0,"area":16,"round":6,"atk_time":2,"useMP":220,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"460":{"name":"绝情绝刀","type":3,"levels":[{"id":460,"level":22,"name":"绝情绝刀","type":3,"info":"","skillWeapon":9,"power1":151,"powerValue1":240,"power2":87,"powerValue2":3000,"power3":156,"powerValue3":240,"skillAtkType":0,"area":18,"round":0,"atk_time":3,"useMP":220,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"464":{"name":"压制攻击","type":2,"levels":[{"id":464,"level":22,"name":"压制攻击","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-6,"power2":54,"powerValue2":-260,"power3":56,"powerValue3":-260,"skillAtkType":3,"area":11,"round":6,"atk_time":3,"useMP":220,"useHP":0,"anime1":16,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"519":{"name":"蛛网术","type":2,"levels":[{"id":519,"level":10,"name":"蛛网术","type":2,"info":"","skillWeapon":0,"power1":55,"powerValue1":-73,"power2":25,"powerValue2":-17,"power3":53,"powerValue3":-165,"skillAtkType":6,"area":19,"round":4,"atk_time":0,"useMP":140,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":4,"statusBit2":4,"statusBit3":0}]},"524":{"name":"魔力增幅","type":2,"levels":[{"id":524,"level":1,"name":"魔力增幅","type":2,"info":"","skillWeapon":0,"power1":30,"powerValue1":3,"power2":0,"powerValue2":0,"power3":78,"powerValue3":10,"skillAtkType":6,"area":30,"round":1,"atk_time":0,"useMP":50,"useHP":0,"anime1":1,"anime2":1330,"anime3":0,"position":0,"statusBit1":22,"statusBit2":0,"statusBit3":0}]},"525":{"name":"法术无效力场","type":2,"levels":[{"id":525,"level":20,"name":"法术无效力场","type":2,"info":"","skillWeapon":0,"power1":51,"powerValue1":105,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":2,"atk_time":0,"useMP":500,"useHP":0,"anime1":1,"anime2":1225,"anime3":0,"position":0,"statusBit1":15,"statusBit2":0,"statusBit3":0}]},"533":{"name":"火球术","type":3,"levels":[{"id":533,"level":22,"name":"火球术","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":19,"power1":49,"powerValue1":-280,"power2":50,"powerValue2":-5,"power3":154,"powerValue3":280,"skillAtkType":4,"area":17,"round":4,"atk_time":0,"useMP":220,"useHP":0,"anime1":17,"anime2":1309,"anime3":0,"position":0,"statusBit1":2,"statusBit2":2,"statusBit3":0}]},"535":{"name":"流星爆","type":3,"levels":[{"id":535,"level":1,"name":"流星爆","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":19,"power1":49,"powerValue1":-20,"power2":86,"powerValue2":50,"power3":84,"powerValue3":10,"skillAtkType":4,"area":12,"round":2,"atk_time":0,"useMP":50,"useHP":0,"anime1":9,"anime2":1315,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0},{"id":535,"level":22,"name":"流星爆","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":19,"power1":49,"powerValue1":-600,"power2":86,"powerValue2":1400,"power3":84,"powerValue3":280,"skillAtkType":4,"area":18,"round":4,"atk_time":0,"useMP":682,"useHP":0,"anime1":9,"anime2":1315,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"538":{"name":"冰雪风暴","type":3,"levels":[{"id":538,"level":1,"name":"冰雪风暴","type":3,"info":"","skillWeapon":19,"power1":25,"powerValue1":-1,"power2":53,"powerValue2":-20,"power3":154,"powerValue3":10,"skillAtkType":4,"area":12,"round":4,"atk_time":0,"useMP":50,"useHP":0,"anime1":9,"anime2":1319,"anime3":0,"position":0,"statusBit1":4,"statusBit2":0,"statusBit3":0}]},"540":{"name":"死亡法阵","type":3,"levels":[{"id":540,"level":22,"name":"死亡法阵","type":3,"info":"","skillWeapon":19,"power1":49,"powerValue1":-700,"power2":50,"powerValue2":-5,"power3":154,"powerValue3":147,"skillAtkType":5,"area":18,"round":6,"atk_time":0,"useMP":2310,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":10,"statusBit2":1,"statusBit3":0}]},"542":{"name":"毒云术","type":3,"levels":[{"id":542,"level":22,"name":"毒云术","type":3,"info":"中毒状态法力恢复、吸收无效","skillWeapon":0,"power1":49,"powerValue1":-420,"power2":55,"powerValue2":-210,"power3":65,"powerValue3":-210,"skillAtkType":5,"area":19,"round":5,"atk_time":0,"useMP":242,"useHP":0,"anime1":9,"anime2":1304,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"543":{"name":"女妖之嚎","type":3,"levels":[{"id":543,"level":22,"name":"女妖之嚎","type":3,"info":"衰弱状态额外受20%伤害","skillWeapon":0,"power1":63,"powerValue1":-4200,"power2":34,"powerValue2":-70,"power3":35,"powerValue3":-70,"skillAtkType":5,"area":18,"round":7,"atk_time":0,"useMP":682,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":10,"statusBit2":0,"statusBit3":0}]},"546":{"name":"法力燃烧","type":3,"levels":[{"id":546,"level":20,"name":"法力燃烧","type":3,"info":"","skillWeapon":0,"power1":51,"powerValue1":-1000,"power2":52,"powerValue2":-11,"power3":154,"powerValue3":105,"skillAtkType":5,"area":16,"round":3,"atk_time":0,"useMP":620,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":546,"level":22,"name":"法力燃烧","type":3,"info":"","skillWeapon":0,"power1":51,"powerValue1":-1400,"power2":52,"powerValue2":-15,"power3":154,"powerValue3":147,"skillAtkType":5,"area":16,"round":3,"atk_time":0,"useMP":682,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"548":{"name":"解除魔法","type":3,"levels":[{"id":548,"level":11,"name":"解除魔法","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":79,"powerValue2":26,"power3":0,"powerValue3":0,"skillAtkType":6,"area":16,"round":0,"atk_time":0,"useMP":1300,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":548,"level":20,"name":"解除魔法","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":79,"powerValue2":26,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":0,"atk_time":0,"useMP":500,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":548,"level":22,"name":"解除魔法","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":79,"powerValue2":26,"power3":52,"powerValue3":-8,"skillAtkType":6,"area":19,"round":2,"atk_time":0,"useMP":300,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":7}]},"549":{"name":"幻影法球","type":3,"levels":[{"id":549,"level":1,"name":"幻影法球","type":3,"info":"幻影状态不受物理范围(群体）攻击伤害","skillWeapon":0,"power1":78,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":20,"round":2,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1225,"anime3":0,"position":0,"statusBit1":14,"statusBit2":0,"statusBit3":0}]},"550":{"name":"反魔力场","type":3,"levels":[{"id":550,"level":1,"name":"反魔力场","type":3,"info":"","skillWeapon":0,"power1":78,"powerValue1":50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":20,"round":1,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":1225,"anime3":0,"position":0,"statusBit1":15,"statusBit2":0,"statusBit3":0}]},"554":{"name":"混乱术","type":3,"levels":[{"id":554,"level":20,"name":"混乱术","type":3,"info":"目标混乱后，将随机攻击任意目标","skillWeapon":0,"power1":154,"powerValue1":240,"power2":64,"powerValue2":-40,"power3":82,"powerValue3":-105,"skillAtkType":5,"area":16,"round":4,"atk_time":0,"useMP":1050,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":9,"statusBit3":0}]},"567":{"name":"流星炎爆","type":3,"levels":[{"id":567,"level":22,"name":"流星炎爆","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":19,"power1":49,"powerValue1":-4400,"power2":152,"powerValue2":280,"power3":154,"powerValue3":280,"skillAtkType":4,"area":19,"round":2,"atk_time":0,"useMP":6800,"useHP":0,"anime1":9,"anime2":1315,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"619":{"name":"战术补给","type":2,"levels":[{"id":619,"level":10,"name":"战术补给","type":2,"info":"","skillWeapon":0,"power1":49,"powerValue1":185,"power2":50,"powerValue2":1,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":1,"atk_time":0,"useMP":55,"useHP":0,"anime1":2,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":619,"level":20,"name":"战术补给","type":2,"info":"","skillWeapon":0,"power1":49,"powerValue1":420,"power2":50,"powerValue2":3,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":105,"useHP":0,"anime1":2,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"620":{"name":"挫志怒吼","type":2,"levels":[{"id":620,"level":10,"name":"挫志怒吼","type":2,"info":"","skillWeapon":0,"power1":65,"powerValue1":-46,"power2":61,"powerValue2":-470,"power3":62,"powerValue3":-470,"skillAtkType":6,"area":19,"round":4,"atk_time":0,"useMP":55,"useHP":0,"anime1":2,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"624":{"name":"反击姿态","type":2,"levels":[{"id":624,"level":20,"name":"反击姿态","type":2,"info":"","skillWeapon":0,"power1":71,"powerValue1":200,"power2":41,"powerValue2":20,"power3":65,"powerValue3":200,"skillAtkType":6,"area":30,"round":2,"atk_time":0,"useMP":105,"useHP":0,"anime1":2,"anime2":1224,"anime3":0,"position":0,"statusBit1":18,"statusBit2":11,"statusBit3":0}]},"626":{"name":"先制攻击","type":2,"levels":[{"id":626,"level":22,"name":"先制攻击","type":2,"info":"","skillWeapon":17,"power1":151,"powerValue1":100,"power2":82,"powerValue2":-14,"power3":156,"powerValue3":260,"skillAtkType":3,"area":18,"round":0,"atk_time":4,"useMP":220,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"627":{"name":"斩击","type":3,"levels":[{"id":627,"level":22,"name":"斩击","type":3,"info":"","skillWeapon":1,"power1":50,"powerValue1":-12,"power2":0,"powerValue2":0,"power3":82,"powerValue3":-127,"skillAtkType":0,"area":11,"round":2,"atk_time":0,"useMP":253,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"637":{"name":"霸王枪法","type":3,"levels":[{"id":637,"level":22,"name":"霸王枪法","type":3,"info":"","skillWeapon":13,"power1":81,"powerValue1":770,"power2":156,"powerValue2":350,"power3":151,"powerValue3":350,"skillAtkType":2,"area":18,"round":0,"atk_time":3,"useMP":500,"useHP":0,"anime1":0,"anime2":1326,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"639":{"name":"冲锋","type":3,"levels":[{"id":639,"level":22,"name":"冲锋","type":3,"info":"","skillWeapon":13,"power1":153,"powerValue1":602,"power2":151,"powerValue2":602,"power3":87,"powerValue3":5120,"skillAtkType":2,"area":16,"round":0,"atk_time":0,"useMP":264,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"642":{"name":"扰乱射击","type":3,"levels":[{"id":642,"level":22,"name":"扰乱射击","type":3,"info":"","skillWeapon":4,"power1":24,"powerValue1":-60,"power2":25,"powerValue2":-60,"power3":151,"powerValue3":516,"skillAtkType":3,"area":18,"round":6,"atk_time":1,"useMP":160,"useHP":0,"anime1":8,"anime2":1302,"anime3":0,"position":0,"statusBit1":0,"statusBit2":4,"statusBit3":0}]},"655":{"name":"大地一击","type":3,"levels":[{"id":655,"level":22,"name":"大地一击","type":3,"info":"","skillWeapon":12,"power1":151,"powerValue1":530,"power2":153,"powerValue2":530,"power3":156,"powerValue3":530,"skillAtkType":0,"area":18,"round":0,"atk_time":1,"useMP":590,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"738":{"name":"定身咒","type":3,"levels":[{"id":738,"level":22,"name":"定身咒","type":3,"info":"目标定身后，将无法进行攻击","skillWeapon":0,"power1":82,"powerValue1":140,"power2":155,"powerValue2":217,"power3":64,"powerValue3":-84,"skillAtkType":5,"area":10,"round":4,"atk_time":0,"useMP":1155,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":8}]},"739":{"name":"妙法莲华","type":3,"levels":[{"id":739,"level":22,"name":"妙法莲华","type":3,"info":"","skillWeapon":0,"power1":51,"powerValue1":600,"power2":49,"powerValue2":2400,"power3":0,"powerValue3":0,"skillAtkType":6,"area":26,"round":5,"atk_time":0,"useMP":1500,"useHP":0,"anime1":1,"anime2":1215,"anime3":0,"position":0,"statusBit1":12,"statusBit2":20,"statusBit3":0}]},"752":{"name":"还魂咒","type":3,"levels":[{"id":752,"level":22,"name":"还魂咒","type":3,"info":"","skillWeapon":0,"power1":97,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":20,"round":0,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"755":{"name":"金刚法咒","type":3,"levels":[{"id":755,"level":21,"name":"金刚法咒","type":3,"info":"","skillWeapon":0,"power1":77,"powerValue1":440,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":20,"round":3,"atk_time":0,"useMP":2750,"useHP":2500,"anime1":1,"anime2":1225,"anime3":0,"position":0,"statusBit1":16,"statusBit2":0,"statusBit3":0}]},"756":{"name":"混乱咒","type":3,"levels":[{"id":756,"level":22,"name":"混乱咒","type":3,"info":"目标混乱后，将随机进行攻击","skillWeapon":0,"power1":82,"powerValue1":120,"power2":155,"powerValue2":187,"power3":64,"powerValue3":-72,"skillAtkType":5,"area":10,"round":4,"atk_time":0,"useMP":1155,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":9}]},"758":{"name":"除魔法阵","type":2,"levels":[{"id":758,"level":22,"name":"除魔法阵","type":2,"info":"消除魔法效果只能在第一回合生效","skillWeapon":0,"power1":79,"powerValue1":25,"power2":52,"powerValue2":-14,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":2,"atk_time":0,"useMP":1100,"useHP":0,"anime1":1,"anime2":1215,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"762":{"name":"三味真火","type":3,"levels":[{"id":762,"level":22,"name":"三味真火","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-9,"power2":49,"powerValue2":-2200,"power3":156,"powerValue3":345,"skillAtkType":4,"area":18,"round":3,"atk_time":5,"useMP":5000,"useHP":0,"anime1":25,"anime2":1306,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"806":{"name":"撕裂攻击","type":3,"levels":[{"id":806,"level":5,"name":"撕裂攻击","type":3,"info":"迅捷","skillWeapon":0,"power1":53,"powerValue1":-70,"power2":55,"powerValue2":-42,"power3":65,"powerValue3":-30,"skillAtkType":2,"area":10,"round":4,"atk_time":1,"useMP":35,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"904":{"name":"火焰弹","type":3,"levels":[{"id":904,"level":5,"name":"火焰弹","type":3,"info":"睿智","skillWeapon":0,"power1":49,"powerValue1":-42,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":4,"area":10,"round":1,"atk_time":1,"useMP":70,"useHP":0,"anime1":1,"anime2":1306,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"1001":{"name":"龙威","type":2,"levels":[{"id":1001,"level":1,"name":"龙威","type":2,"info":"怪物技能","skillWeapon":0,"power1":52,"powerValue1":-1,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":6,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":10,"statusBit2":0,"statusBit3":0}]},"1004":{"name":"先制攻击","type":2,"levels":[{"id":1004,"level":10,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":85,"powerValue1":-23,"power2":82,"powerValue2":-110,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":0,"atk_time":3,"useMP":190,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1005":{"name":"顺势斩","type":3,"levels":[{"id":1005,"level":10,"name":"顺势斩","type":3,"info":"","skillWeapon":0,"power1":81,"powerValue1":230,"power2":82,"powerValue2":28,"power3":0,"powerValue3":0,"skillAtkType":0,"area":12,"round":0,"atk_time":0,"useMP":130,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1006":{"name":"蛛网术","type":2,"levels":[{"id":1006,"level":10,"name":"蛛网术","type":2,"info":"","skillWeapon":0,"power1":55,"powerValue1":-73,"power2":25,"powerValue2":-17,"power3":53,"powerValue3":-400,"skillAtkType":6,"area":19,"round":1,"atk_time":0,"useMP":140,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":4,"statusBit2":4,"statusBit3":0}]},"1007":{"name":"火球术","type":3,"levels":[{"id":1007,"level":10,"name":"火球术","type":3,"info":"","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":50,"powerValue2":-3,"power3":0,"powerValue3":0,"skillAtkType":4,"area":11,"round":1,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1309,"anime3":0,"position":0,"statusBit1":2,"statusBit2":2,"statusBit3":0}]},"1008":{"name":"刀法-回天剑舞二连","type":3,"levels":[{"id":1008,"level":10,"name":"刀法-回天剑舞二连","type":3,"info":"","skillWeapon":0,"power1":81,"powerValue1":190,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":0,"atk_time":2,"useMP":100,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1101":{"name":"流星爆","type":3,"levels":[{"id":1101,"level":1,"name":"流星爆","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":86,"powerValue2":1000,"power3":84,"powerValue3":200,"skillAtkType":4,"area":18,"round":3,"atk_time":0,"useMP":620,"useHP":0,"anime1":9,"anime2":1315,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"1104":{"name":"冰雪风暴","type":3,"levels":[{"id":1104,"level":1,"name":"冰雪风暴","type":3,"info":"AI","skillWeapon":0,"power1":25,"powerValue1":-50,"power2":53,"powerValue2":-400,"power3":0,"powerValue3":0,"skillAtkType":4,"area":18,"round":2,"atk_time":0,"useMP":620,"useHP":0,"anime1":1,"anime2":1310,"anime3":0,"position":0,"statusBit1":4,"statusBit2":0,"statusBit3":0}]},"1105":{"name":"定身术","type":3,"levels":[{"id":1105,"level":1,"name":"定身术","type":3,"info":"AI","skillWeapon":0,"power1":154,"powerValue1":240,"power2":64,"powerValue2":-40,"power3":0,"powerValue3":0,"skillAtkType":5,"area":16,"round":3,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1305,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1111":{"name":"先制攻击","type":2,"levels":[{"id":1111,"level":10,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":85,"powerValue1":-23,"power2":82,"powerValue2":-110,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":0,"atk_time":0,"useMP":190,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1118":{"name":"伏魔金刚刀","type":3,"levels":[{"id":1118,"level":1,"name":"伏魔金刚刀","type":3,"info":"","skillWeapon":0,"power1":87,"powerValue1":310,"power2":84,"powerValue2":45,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":0,"atk_time":0,"useMP":80,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1119":{"name":"天魔邪刀追魂贰式","type":3,"levels":[{"id":1119,"level":1,"name":"天魔邪刀追魂贰式","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":51,"powerValue2":-130,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":0,"atk_time":1,"useMP":50,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":1,"statusBit1":0,"statusBit2":3,"statusBit3":0}]},"1120":{"name":"斩击","type":3,"levels":[{"id":1120,"level":1,"name":"斩击","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-5,"power2":85,"powerValue2":-21,"power3":82,"powerValue3":-155,"skillAtkType":0,"area":10,"round":0,"atk_time":0,"useMP":130,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"1121":{"name":"舍身一击","type":3,"levels":[{"id":1121,"level":1,"name":"舍身一击","type":3,"info":"","skillWeapon":0,"power1":85,"powerValue1":39,"power2":153,"powerValue2":100,"power3":87,"powerValue3":230,"skillAtkType":0,"area":10,"round":0,"atk_time":0,"useMP":55,"useHP":500,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1123":{"name":"瞄准射击","type":3,"levels":[{"id":1123,"level":1,"name":"瞄准射击","type":3,"info":"","skillWeapon":0,"power1":82,"powerValue1":73,"power2":151,"powerValue2":230,"power3":153,"powerValue3":230,"skillAtkType":3,"area":10,"round":0,"atk_time":0,"useMP":95,"useHP":0,"anime1":16,"anime2":1301,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1124":{"name":"瞄准射击","type":3,"levels":[{"id":1124,"level":1,"name":"瞄准射击","type":3,"info":"","skillWeapon":0,"power1":82,"powerValue1":73,"power2":151,"powerValue2":230,"power3":153,"powerValue3":230,"skillAtkType":3,"area":10,"round":0,"atk_time":0,"useMP":95,"useHP":0,"anime1":16,"anime2":1301,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1125":{"name":"冰墙术","type":3,"levels":[{"id":1125,"level":1,"name":"冰墙术","type":3,"info":"","skillWeapon":0,"power1":25,"powerValue1":-10,"power2":53,"powerValue2":-200,"power3":0,"powerValue3":0,"skillAtkType":4,"area":13,"round":4,"atk_time":0,"useMP":100,"useHP":0,"anime1":25,"anime2":1311,"anime3":0,"position":0,"statusBit1":4,"statusBit2":0,"statusBit3":0}]},"1126":{"name":"斩击","type":3,"levels":[{"id":1126,"level":1,"name":"斩击","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-5,"power2":85,"powerValue2":-21,"power3":82,"powerValue3":-155,"skillAtkType":0,"area":10,"round":0,"atk_time":0,"useMP":130,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"1127":{"name":"先制攻击","type":2,"levels":[{"id":1127,"level":1,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":85,"powerValue1":-23,"power2":82,"powerValue2":-110,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":0,"atk_time":-5,"useMP":190,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1127,"level":2,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":85,"powerValue1":-23,"power2":82,"powerValue2":-110,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":0,"atk_time":0,"useMP":190,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1130":{"name":"多重射击","type":3,"levels":[{"id":1130,"level":1,"name":"多重射击","type":3,"info":"","skillWeapon":0,"power1":81,"powerValue1":230,"power2":151,"powerValue2":230,"power3":156,"powerValue3":28,"skillAtkType":3,"area":16,"round":0,"atk_time":2,"useMP":95,"useHP":0,"anime1":16,"anime2":1302,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1131":{"name":"高伤害减免","type":2,"levels":[{"id":1131,"level":1,"name":"高伤害减免","type":2,"info":"","skillWeapon":0,"power1":65,"powerValue1":600,"power2":64,"powerValue2":1000,"power3":71,"powerValue3":400,"skillAtkType":6,"area":30,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1132":{"name":"魔法攻击无效","type":2,"levels":[{"id":1132,"level":1,"name":"魔法攻击无效","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":1,"power2":64,"powerValue2":1000,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":1224,"anime3":0,"position":0,"statusBit1":15,"statusBit2":0,"statusBit3":0}]},"1133":{"name":"高恢复能力","type":2,"levels":[{"id":1133,"level":1,"name":"高恢复能力","type":2,"info":"","skillWeapon":0,"power1":73,"powerValue1":1000,"power2":50,"powerValue2":1,"power3":50,"powerValue3":1,"skillAtkType":6,"area":30,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":1224,"anime3":0,"position":0,"statusBit1":17,"statusBit2":18,"statusBit3":22}]},"1134":{"name":"龙炎","type":3,"levels":[{"id":1134,"level":1,"name":"龙炎","type":3,"info":"怪物技能","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":50,"powerValue2":-2,"power3":0,"powerValue3":0,"skillAtkType":4,"area":16,"round":2,"atk_time":1,"useMP":100,"useHP":0,"anime1":0,"anime2":1331,"anime3":0,"position":0,"statusBit1":9,"statusBit2":0,"statusBit3":0}]},"1135":{"name":"爆炸","type":2,"levels":[{"id":1135,"level":1,"name":"爆炸","type":2,"info":"怪物技能","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":16,"round":0,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1309,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1136":{"name":"吸血","type":2,"levels":[{"id":1136,"level":1,"name":"吸血","type":2,"info":"怪物技能","skillWeapon":0,"power1":49,"powerValue1":-300,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":2,"area":10,"round":0,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1137":{"name":"毒箭","type":3,"levels":[{"id":1137,"level":1,"name":"毒箭","type":2,"info":"怪物技能","skillWeapon":0,"power1":51,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":12,"round":1,"atk_time":1,"useMP":0,"useHP":0,"anime1":0,"anime2":1302,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0},{"id":1137,"level":2,"name":"毒箭","type":3,"info":"怪物技能","skillWeapon":0,"power1":51,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":12,"round":1,"atk_time":1,"useMP":0,"useHP":0,"anime1":0,"anime2":1302,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"1138":{"name":"绝情绝刀","type":3,"levels":[{"id":1138,"level":1,"name":"绝情绝刀","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":87,"powerValue2":1150,"power3":0,"powerValue3":0,"skillAtkType":0,"area":13,"round":0,"atk_time":3,"useMP":200,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1138,"level":2,"name":"绝情绝刀","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":87,"powerValue2":1150,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":0,"atk_time":3,"useMP":200,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1139":{"name":"战术补给","type":2,"levels":[{"id":1139,"level":1,"name":"战术补给","type":2,"info":"","skillWeapon":0,"power1":49,"powerValue1":420,"power2":50,"powerValue2":3,"power3":52,"powerValue3":3,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":0,"useHP":1000,"anime1":2,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1140":{"name":"燃烧之手","type":3,"levels":[{"id":1140,"level":1,"name":"燃烧之手","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":0,"power1":49,"powerValue1":-200,"power2":82,"powerValue2":100,"power3":86,"powerValue3":200,"skillAtkType":4,"area":15,"round":2,"atk_time":1,"useMP":105,"useHP":0,"anime1":25,"anime2":1306,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"1141":{"name":"先制攻击","type":2,"levels":[{"id":1141,"level":1,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":85,"powerValue1":-10,"power2":82,"powerValue2":-10,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":0,"atk_time":0,"useMP":100,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1142":{"name":"狂风快剑","type":3,"levels":[{"id":1142,"level":1,"name":"狂风快剑","type":3,"info":"","skillWeapon":0,"power1":151,"powerValue1":200,"power2":153,"powerValue2":200,"power3":81,"powerValue3":200,"skillAtkType":2,"area":10,"round":0,"atk_time":5,"useMP":105,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1200":{"name":"物理协防","type":2,"levels":[{"id":1200,"level":1,"name":"物理协防","type":2,"info":"怪物技能","skillWeapon":0,"power1":117,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":34,"round":1,"atk_time":0,"useMP":225,"useHP":0,"anime1":0,"anime2":1125,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1202":{"name":"亡灵洗礼","type":2,"levels":[{"id":1202,"level":1,"name":"亡灵洗礼","type":2,"info":"怪物技能","skillWeapon":0,"power1":97,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":23,"round":0,"atk_time":0,"useMP":215,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1203":{"name":"劈砍防御","type":3,"levels":[{"id":1203,"level":1,"name":"劈砍防御","type":3,"info":"怪物技能","skillWeapon":0,"power1":113,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":5,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1204":{"name":"穿刺防御","type":3,"levels":[{"id":1204,"level":1,"name":"穿刺防御","type":3,"info":"怪物技能","skillWeapon":0,"power1":114,"powerValue1":50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":5,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1205":{"name":"诅咒防御","type":3,"levels":[{"id":1205,"level":1,"name":"诅咒防御","type":3,"info":"怪物技能","skillWeapon":0,"power1":116,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":5,"atk_time":0,"useMP":100,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1206":{"name":"自动魔法防御","type":2,"levels":[{"id":1206,"level":1,"name":"自动魔法防御","type":2,"info":"怪物技能","skillWeapon":0,"power1":115,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":5,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1207":{"name":"战斗光环","type":2,"levels":[{"id":1207,"level":1,"name":"战斗光环","type":2,"info":"我方全体挡格+100持续2回合","skillWeapon":0,"power1":37,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":4002,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1208":{"name":"幻影无极","type":3,"levels":[{"id":1208,"level":1,"name":"幻影无极","type":3,"info":"我前后两格复活30%幻影","skillWeapon":0,"power1":80,"powerValue1":30,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":21,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":1215,"anime3":0,"position":0,"statusBit1":14,"statusBit2":0,"statusBit3":0}]},"1209":{"name":"碎骨打击","type":3,"levels":[{"id":1209,"level":1,"name":"碎骨打击","type":3,"info":"","skillWeapon":0,"power1":55,"powerValue1":-430,"power2":53,"powerValue2":-430,"power3":0,"powerValue3":0,"skillAtkType":0,"area":17,"round":6,"atk_time":0,"useMP":105,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":10,"statusBit3":0}]},"1210":{"name":"哀嚎","type":3,"levels":[{"id":1210,"level":1,"name":"哀嚎","type":3,"info":"目前该技能存在BUG,无法清除增益效果.我们将在稍后修复","skillWeapon":0,"power1":0,"powerValue1":0,"power2":52,"powerValue2":-10,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":5,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1311,"anime3":0,"position":0,"statusBit1":0,"statusBit2":9,"statusBit3":0}]},"1211":{"name":"万剑决","type":3,"levels":[{"id":1211,"level":1,"name":"万剑决","type":3,"info":"","skillWeapon":0,"power1":85,"powerValue1":20,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":2,"area":18,"round":0,"atk_time":0,"useMP":100,"useHP":0,"anime1":8,"anime2":1327,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1212":{"name":"毒云术","type":2,"levels":[{"id":1212,"level":1,"name":"毒云术","type":2,"info":"中毒状态法力恢复、吸收无效","skillWeapon":0,"power1":49,"powerValue1":-300,"power2":55,"powerValue2":-150,"power3":65,"powerValue3":-150,"skillAtkType":5,"area":19,"round":2,"atk_time":0,"useMP":220,"useHP":0,"anime1":9,"anime2":1304,"anime3":0,"position":0,"statusBit1":1,"statusBit2":0,"statusBit3":0}]},"1213":{"name":"压制攻击","type":2,"levels":[{"id":1213,"level":1,"name":"压制攻击","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":0,"power1":130,"powerValue1":-4,"power2":54,"powerValue2":-105,"power3":56,"powerValue3":-105,"skillAtkType":3,"area":32,"round":4,"atk_time":2,"useMP":200,"useHP":0,"anime1":16,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1214":{"name":"上清破云剑","type":3,"levels":[{"id":1214,"level":1,"name":"上清破云剑","type":3,"info":"","skillWeapon":0,"power1":81,"powerValue1":500,"power2":85,"powerValue2":50,"power3":64,"powerValue3":-50,"skillAtkType":2,"area":10,"round":1,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":7}]},"1215":{"name":"魔化武器","type":2,"levels":[{"id":1215,"level":1,"name":"魔化武器","type":2,"info":"","skillWeapon":0,"power1":130,"powerValue1":5,"power2":28,"powerValue2":20,"power3":29,"powerValue3":20,"skillAtkType":6,"area":30,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1216":{"name":"天马流星拳","type":3,"levels":[{"id":1216,"level":1,"name":"天马流星拳","type":3,"info":"","skillWeapon":0,"power1":82,"powerValue1":300,"power2":151,"powerValue2":300,"power3":153,"powerValue3":300,"skillAtkType":0,"area":16,"round":0,"atk_time":1,"useMP":390,"useHP":0,"anime1":16,"anime2":1310,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1217":{"name":"破甲射击","type":3,"levels":[{"id":1217,"level":1,"name":"破甲射击","type":3,"info":"","skillWeapon":0,"power1":87,"powerValue1":1200,"power2":151,"powerValue2":290,"power3":153,"powerValue3":430,"skillAtkType":3,"area":11,"round":0,"atk_time":1,"useMP":145,"useHP":0,"anime1":16,"anime2":1301,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1218":{"name":"碎骨打击","type":3,"levels":[{"id":1218,"level":1,"name":"碎骨打击","type":3,"info":"","skillWeapon":0,"power1":55,"powerValue1":-430,"power2":53,"powerValue2":-430,"power3":0,"powerValue3":0,"skillAtkType":0,"area":17,"round":6,"atk_time":0,"useMP":105,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":1,"statusBit1":0,"statusBit2":10,"statusBit3":0}]},"1222":{"name":"光速拳","type":3,"levels":[{"id":1222,"level":1,"name":"光速拳","type":3,"info":"","skillWeapon":0,"power1":82,"powerValue1":300,"power2":151,"powerValue2":300,"power3":153,"powerValue3":300,"skillAtkType":0,"area":18,"round":0,"atk_time":2,"useMP":390,"useHP":0,"anime1":8,"anime2":1310,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1223":{"name":"南瓜防御","type":2,"levels":[{"id":1223,"level":1,"name":"南瓜防御","type":2,"info":"怪物技能","skillWeapon":0,"power1":117,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":8,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1224":{"name":"南瓜自爆","type":3,"levels":[{"id":1224,"level":1,"name":"南瓜自爆","type":3,"info":"怪物技能","skillWeapon":0,"power1":50,"powerValue1":-100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1309,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1225":{"name":"南瓜自爆","type":3,"levels":[{"id":1225,"level":1,"name":"南瓜自爆","type":3,"info":"怪物技能","skillWeapon":0,"power1":50,"powerValue1":-100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1309,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1225,"level":2,"name":"以血爆血","type":3,"info":"怪物技能","skillWeapon":0,"power1":50,"powerValue1":-100,"power2":49,"powerValue2":-3000,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":34464,"anime1":1,"anime2":1343,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1225,"level":3,"name":"以血爆蓝","type":3,"info":"怪物技能","skillWeapon":0,"power1":52,"powerValue1":-100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":34464,"anime1":1,"anime2":1343,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1225,"level":4,"name":"解除魔法","type":3,"info":"怪物技能","skillWeapon":0,"power1":79,"powerValue1":25,"power2":79,"powerValue2":26,"power3":0,"powerValue3":0,"skillAtkType":6,"area":17,"round":0,"atk_time":0,"useMP":0,"useHP":34464,"anime1":1,"anime2":1343,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1225,"level":5,"name":"回蓝","type":3,"info":"怪物技能","skillWeapon":0,"power1":52,"powerValue1":10,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":27,"round":2,"atk_time":0,"useMP":0,"useHP":34464,"anime1":1,"anime2":1343,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1226":{"name":"城墙防御","type":3,"levels":[{"id":1226,"level":1,"name":"城墙防御","type":3,"info":"怪物技能","skillWeapon":0,"power1":117,"powerValue1":50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1227":{"name":"死亡旋律","type":2,"levels":[{"id":1227,"level":1,"name":"死亡旋律","type":2,"info":"怪物技能","skillWeapon":0,"power1":53,"powerValue1":-600,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"1228":{"name":"高级还魂咒","type":3,"levels":[{"id":1228,"level":1,"name":"还魂咒","type":3,"info":"怪物技能","skillWeapon":0,"power1":97,"powerValue1":50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":0,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1228,"level":2,"name":"高级还魂咒","type":3,"info":"怪物技能","skillWeapon":0,"power1":97,"powerValue1":10,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":0,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1229":{"name":"协助防御","type":2,"levels":[{"id":1229,"level":1,"name":"协助防御","type":2,"info":"怪物技能","skillWeapon":0,"power1":117,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":34,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1229,"level":3,"name":"协助防御","type":2,"info":"怪物技能","skillWeapon":0,"power1":114,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1230":{"name":"虚弱术","type":2,"levels":[{"id":1230,"level":1,"name":"虚弱术","type":2,"info":"怪物技能","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":130,"powerValue3":-8,"skillAtkType":5,"area":19,"round":3,"atk_time":0,"useMP":240,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":9}]},"1231":{"name":"死亡旋律","type":2,"levels":[{"id":1231,"level":1,"name":"死亡旋律","type":2,"info":"怪物技能","skillWeapon":0,"power1":53,"powerValue1":-600,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"1232":{"name":"狂怒火焰","type":2,"levels":[{"id":1232,"level":1,"name":"狂怒火焰","type":2,"info":"怪物技能","skillWeapon":0,"power1":97,"powerValue1":1,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":0,"atk_time":0,"useMP":300,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1233":{"name":"虚弱术","type":2,"levels":[{"id":1233,"level":1,"name":"虚弱术","type":2,"info":"怪物技能","skillWeapon":0,"power1":79,"powerValue1":25,"power2":130,"powerValue2":-4,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":3,"atk_time":0,"useMP":240,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":9,"statusBit3":0}]},"1242":{"name":"虚弱术","type":2,"levels":[{"id":1242,"level":1,"name":"虚弱术","type":2,"info":"虚弱状态角色将额外遭受20%伤害","skillWeapon":0,"power1":28,"powerValue1":-30,"power2":29,"powerValue2":-30,"power3":130,"powerValue3":-5,"skillAtkType":6,"area":19,"round":3,"atk_time":0,"useMP":240,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":10}]},"1243":{"name":"死亡收割","type":2,"levels":[{"id":1243,"level":1,"name":"死亡收割","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":-40,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":4,"atk_time":3,"useMP":0,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1244":{"name":"复苏","type":3,"levels":[{"id":1244,"level":1,"name":"复苏","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":20,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":1,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1245":{"name":"龙炎喷吐","type":3,"levels":[{"id":1245,"level":1,"name":"龙炎喷吐","type":3,"info":"怪物技能","skillWeapon":0,"power1":23,"powerValue1":-60,"power2":53,"powerValue2":-1000,"power3":0,"powerValue3":0,"skillAtkType":3,"area":18,"round":2,"atk_time":1,"useMP":100,"useHP":0,"anime1":8,"anime2":1318,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1246":{"name":"龙威","type":2,"levels":[{"id":1246,"level":1,"name":"龙威","type":2,"info":"怪物技能","skillWeapon":0,"power1":130,"powerValue1":-5,"power2":79,"powerValue2":25,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":5,"atk_time":0,"useMP":100,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1248":{"name":"扰乱射击","type":3,"levels":[{"id":1248,"level":1,"name":"扰乱射击","type":3,"info":"怪物技能","skillWeapon":0,"power1":24,"powerValue1":-50,"power2":25,"powerValue2":-50,"power3":151,"powerValue3":430,"skillAtkType":3,"area":18,"round":5,"atk_time":1,"useMP":145,"useHP":0,"anime1":8,"anime2":1302,"anime3":0,"position":0,"statusBit1":4,"statusBit2":4,"statusBit3":0}]},"1249":{"name":"石化视线","type":3,"levels":[{"id":1249,"level":1,"name":"石化视线","type":3,"info":"怪物技能","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":64,"powerValue3":-60,"skillAtkType":4,"area":10,"round":3,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1326,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":8}]},"1250":{"name":"利爪突击","type":3,"levels":[{"id":1250,"level":1,"name":"利爪突击","type":3,"info":"怪物技能","skillWeapon":0,"power1":0,"powerValue1":0,"power2":49,"powerValue2":-200,"power3":49,"powerValue3":-200,"skillAtkType":2,"area":10,"round":5,"atk_time":3,"useMP":100,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":3}]},"1251":{"name":"上空攻击","type":2,"levels":[{"id":1251,"level":1,"name":"上空攻击","type":2,"info":"怪物技能","skillWeapon":0,"power1":156,"powerValue1":240,"power2":56,"powerValue2":-50,"power3":130,"powerValue3":-3,"skillAtkType":2,"area":10,"round":1,"atk_time":3,"useMP":100,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1252":{"name":"龙炎喷吐","type":3,"levels":[{"id":1252,"level":1,"name":"龙炎喷吐","type":3,"info":"怪物技能","skillWeapon":0,"power1":23,"powerValue1":-60,"power2":53,"powerValue2":-1000,"power3":0,"powerValue3":0,"skillAtkType":4,"area":18,"round":2,"atk_time":1,"useMP":100,"useHP":0,"anime1":8,"anime2":1331,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1253":{"name":"龙威","type":2,"levels":[{"id":1253,"level":1,"name":"龙威","type":2,"info":"怪物技能","skillWeapon":0,"power1":130,"powerValue1":-5,"power2":79,"powerValue2":25,"power3":0,"powerValue3":0,"skillAtkType":5,"area":19,"round":5,"atk_time":0,"useMP":100,"useHP":0,"anime1":0,"anime2":1222,"anime3":0,"position":0,"statusBit1":5,"statusBit2":0,"statusBit3":0}]},"1254":{"name":"火焰蔓延","type":3,"levels":[{"id":1254,"level":1,"name":"火焰蔓延","type":3,"info":"怪物技能","skillWeapon":0,"power1":49,"powerValue1":-100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":2,"atk_time":0,"useMP":100,"useHP":0,"anime1":8,"anime2":1306,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1255":{"name":"冰墙防御","type":3,"levels":[{"id":1255,"level":1,"name":"冰墙防御","type":3,"info":"怪物技能","skillWeapon":0,"power1":117,"powerValue1":80,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1256":{"name":"寒冷气息","type":2,"levels":[{"id":1256,"level":1,"name":"寒冷气息","type":2,"info":"怪物技能","skillWeapon":0,"power1":25,"powerValue1":-40,"power2":53,"powerValue2":-500,"power3":154,"powerValue3":105,"skillAtkType":5,"area":18,"round":3,"atk_time":0,"useMP":300,"useHP":0,"anime1":9,"anime2":1311,"anime3":0,"position":0,"statusBit1":4,"statusBit2":0,"statusBit3":0},{"id":1256,"level":2,"name":"寒冷喷吐","type":2,"info":"怪物技能","skillWeapon":0,"power1":25,"powerValue1":-40,"power2":53,"powerValue2":-590,"power3":154,"powerValue3":105,"skillAtkType":4,"area":18,"round":3,"atk_time":0,"useMP":300,"useHP":0,"anime1":9,"anime2":1318,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"1257":{"name":"怒吼","type":2,"levels":[{"id":1257,"level":1,"name":"怒吼","type":2,"info":"怪物技能","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":79,"powerValue3":25,"skillAtkType":6,"area":18,"round":2,"atk_time":0,"useMP":30,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1258":{"name":"鞭炮震天","type":3,"levels":[{"id":1258,"level":1,"name":"鞭炮震天","type":3,"info":"怪物技能","skillWeapon":0,"power1":64,"powerValue1":-300,"power2":71,"powerValue2":-300,"power3":151,"powerValue3":300,"skillAtkType":0,"area":10,"round":3,"atk_time":0,"useMP":300,"useHP":0,"anime1":16,"anime2":1309,"anime3":1306,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1259":{"name":"压制攻击","type":2,"levels":[{"id":1259,"level":1,"name":"压制攻击","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-4,"power2":54,"powerValue2":-105,"power3":56,"powerValue3":-105,"skillAtkType":3,"area":32,"round":4,"atk_time":2,"useMP":200,"useHP":0,"anime1":16,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1260":{"name":"缠绕","type":2,"levels":[{"id":1260,"level":1,"name":"缠绕","type":2,"info":"怪物技能","skillWeapon":0,"power1":79,"powerValue1":20,"power2":130,"powerValue2":-5,"power3":0,"powerValue3":0,"skillAtkType":6,"area":16,"round":2,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1308,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0},{"id":1260,"level":2,"name":"缠绕","type":2,"info":"怪物技能","skillWeapon":0,"power1":79,"powerValue1":20,"power2":130,"powerValue2":-5,"power3":0,"powerValue3":0,"skillAtkType":5,"area":16,"round":2,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1308,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1261":{"name":"先制攻击","type":2,"levels":[{"id":1261,"level":2,"name":"先制攻击","type":2,"info":"","skillWeapon":0,"power1":151,"powerValue1":350,"power2":82,"powerValue2":-12,"power3":156,"powerValue3":230,"skillAtkType":3,"area":11,"round":0,"atk_time":3,"useMP":220,"useHP":0,"anime1":24,"anime2":1328,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1262":{"name":"红月领域","type":2,"levels":[{"id":1262,"level":1,"name":"红月领域","type":2,"info":"随机净化敌方十字范围，有可能会落空","skillWeapon":0,"power1":79,"powerValue1":25,"power2":51,"powerValue2":-1000,"power3":52,"powerValue3":-11,"skillAtkType":6,"area":16,"round":1,"atk_time":0,"useMP":500,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1264":{"name":"英勇打击","type":3,"levels":[{"id":1264,"level":1,"name":"英勇打击","type":3,"info":"","skillWeapon":0,"power1":151,"powerValue1":473,"power2":153,"powerValue2":473,"power3":156,"powerValue3":473,"skillAtkType":0,"area":10,"round":0,"atk_time":0,"useMP":116,"useHP":0,"anime1":0,"anime2":1309,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1265":{"name":"吞噬","type":3,"levels":[{"id":1265,"level":1,"name":"吞噬","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-500,"power2":146,"powerValue2":30,"power3":145,"powerValue3":10000,"skillAtkType":0,"area":10,"round":5,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1268":{"name":"喷吐","type":3,"levels":[{"id":1268,"level":1,"name":"喷吐","type":3,"info":"","skillWeapon":0,"power1":54,"powerValue1":-400,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":4,"area":16,"round":0,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1331,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0},{"id":1268,"level":2,"name":"抓击","type":3,"info":"","skillWeapon":0,"power1":52,"powerValue1":-20,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":1,"area":17,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":0,"statusBit1":9,"statusBit2":0,"statusBit3":0},{"id":1268,"level":3,"name":"尾击","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-10,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":15,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"1269":{"name":"咆哮","type":2,"levels":[{"id":1269,"level":1,"name":"咆哮","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":14,"power2":64,"powerValue2":-100,"power3":0,"powerValue3":0,"skillAtkType":5,"area":16,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":0},{"id":1269,"level":2,"name":"龙族恢复","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":5,"power2":31,"powerValue2":30,"power3":32,"powerValue3":30,"skillAtkType":6,"area":30,"round":3,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1338,"anime3":0,"position":0,"statusBit1":13,"statusBit2":0,"statusBit3":0},{"id":1269,"level":3,"name":"风暴","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":15,"power2":64,"powerValue2":-100,"power3":0,"powerValue3":0,"skillAtkType":5,"area":17,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":0,"statusBit1":0,"statusBit2":6,"statusBit3":0}]},"1286":{"name":"寒冰箭","type":3,"levels":[{"id":1286,"level":20,"name":"寒冰箭","type":3,"info":"","skillWeapon":0,"power1":151,"powerValue1":290,"power2":54,"powerValue2":-120,"power3":0,"powerValue3":0,"skillAtkType":3,"area":10,"round":1,"atk_time":2,"useMP":400,"useHP":0,"anime1":16,"anime2":1318,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1288":{"name":"天翔龙闪","type":3,"levels":[{"id":1288,"level":20,"name":"天翔龙闪","type":3,"info":"","skillWeapon":0,"power1":84,"powerValue1":200,"power2":85,"powerValue2":30,"power3":0,"powerValue3":0,"skillAtkType":0,"area":18,"round":0,"atk_time":0,"useMP":485,"useHP":0,"anime1":8,"anime2":1324,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1300":{"name":"震地一击","type":3,"levels":[{"id":1300,"level":1,"name":"震地一击","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":62,"powerValue2":-1560,"power3":0,"powerValue3":0,"skillAtkType":1,"area":19,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1323,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1304":{"name":"毒气弹","type":2,"levels":[{"id":1304,"level":1,"name":"毒气弹","type":2,"info":"中毒状态法力恢复、吸收无效","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":155,"powerValue2":400,"power3":64,"powerValue3":-150,"skillAtkType":5,"area":19,"round":20,"atk_time":0,"useMP":220,"useHP":0,"anime1":9,"anime2":1304,"anime3":0,"position":0,"statusBit1":1,"statusBit2":0,"statusBit3":0}]},"1305":{"name":"生化毒气","type":3,"levels":[{"id":1305,"level":1,"name":"生化毒气","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":9,"anime2":1304,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1305,"level":2,"name":"生化毒气","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-30,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":17,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":9,"anime2":1304,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1314":{"name":"复活术","type":3,"levels":[{"id":1314,"level":1,"name":"流星爆","type":3,"info":"","skillWeapon":0,"power1":49,"powerValue1":-500,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":4,"area":18,"round":4,"atk_time":2,"useMP":50,"useHP":0,"anime1":8,"anime2":1315,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1314,"level":2,"name":"复活术","type":3,"info":"","skillWeapon":0,"power1":80,"powerValue1":10,"power2":64,"powerValue2":100,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":2,"atk_time":0,"useMP":50,"useHP":0,"anime1":8,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":29,"statusBit3":0}]},"1318":{"name":"全力防御","type":2,"levels":[{"id":1318,"level":1,"name":"全力防御","type":2,"info":"","skillWeapon":0,"power1":117,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":34,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1320":{"name":"乾坤剑诀","type":2,"levels":[{"id":1320,"level":1,"name":"乾坤剑诀","type":2,"info":"","skillWeapon":20,"power1":122,"powerValue1":7,"power2":25,"powerValue2":22,"power3":39,"powerValue3":22,"skillAtkType":6,"area":30,"round":5,"atk_time":0,"useMP":400,"useHP":0,"anime1":0,"anime2":1338,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1322":{"name":"破胆怒吼","type":2,"levels":[{"id":1322,"level":1,"name":"破胆怒吼","type":2,"info":"","skillWeapon":0,"power1":64,"powerValue1":-350,"power2":65,"powerValue2":-350,"power3":79,"powerValue3":11,"skillAtkType":6,"area":19,"round":6,"atk_time":0,"useMP":116,"useHP":0,"anime1":2,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1324":{"name":"血光刀气","type":3,"levels":[{"id":1324,"level":1,"name":"血光刀气","type":3,"info":"","skillWeapon":21,"power1":149,"powerValue1":300,"power2":49,"powerValue2":-780,"power3":156,"powerValue3":360,"skillAtkType":0,"area":16,"round":6,"atk_time":2,"useMP":220,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1325":{"name":"压制攻击","type":2,"levels":[{"id":1325,"level":1,"name":"压制攻击","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-6,"power2":54,"powerValue2":-260,"power3":56,"powerValue3":-260,"skillAtkType":3,"area":11,"round":6,"atk_time":3,"useMP":220,"useHP":0,"anime1":16,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1326":{"name":"寒冰箭","type":3,"levels":[{"id":1326,"level":1,"name":"寒冰箭","type":3,"info":"","skillWeapon":17,"power1":151,"powerValue1":348,"power2":54,"powerValue2":-144,"power3":0,"powerValue3":0,"skillAtkType":3,"area":10,"round":3,"atk_time":3,"useMP":800,"useHP":0,"anime1":16,"anime2":1318,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1328":{"name":"定身咒","type":3,"levels":[{"id":1328,"level":1,"name":"定身咒","type":3,"info":"目标定身后，将无法进行攻击","skillWeapon":0,"power1":82,"powerValue1":140,"power2":155,"powerValue2":217,"power3":64,"powerValue3":-84,"skillAtkType":5,"area":10,"round":4,"atk_time":0,"useMP":1155,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":8}]},"1336":{"name":"律令死亡","type":3,"levels":[{"id":1336,"level":2,"name":"律令死亡","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":49,"powerValue2":-4900,"power3":50,"powerValue3":-16,"skillAtkType":5,"area":11,"round":5,"atk_time":2,"useMP":3850,"useHP":0,"anime1":1,"anime2":1326,"anime3":0,"position":0,"statusBit1":0,"statusBit2":30,"statusBit3":0}]},"1337":{"name":"强愈术","type":3,"levels":[{"id":1337,"level":1,"name":"强愈术","type":3,"info":"","skillWeapon":0,"power1":49,"powerValue1":4100,"power2":50,"powerValue2":12,"power3":0,"powerValue3":0,"skillAtkType":6,"area":26,"round":5,"atk_time":0,"useMP":3500,"useHP":0,"anime1":1,"anime2":1215,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1338":{"name":"生命陷落","type":2,"levels":[{"id":1338,"level":1,"name":"生命陷落","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":15,"power2":49,"powerValue2":-1300,"power3":50,"powerValue3":-6,"skillAtkType":5,"area":18,"round":5,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1222,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1339":{"name":"喷吐","type":3,"levels":[{"id":1339,"level":1,"name":"喷吐","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":4,"area":16,"round":0,"atk_time":2,"useMP":500,"useHP":0,"anime1":0,"anime2":1331,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1339,"level":2,"name":"抓击","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":1,"area":17,"round":0,"atk_time":2,"useMP":0,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1339,"level":3,"name":"摔击","type":3,"info":"","skillWeapon":0,"power1":0,"powerValue1":0,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":15,"round":0,"atk_time":2,"useMP":0,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1340":{"name":"咆哮","type":2,"levels":[{"id":1340,"level":1,"name":"咆哮","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":64,"powerValue2":-100,"power3":0,"powerValue3":0,"skillAtkType":5,"area":16,"round":2,"atk_time":2,"useMP":200,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":0},{"id":1340,"level":2,"name":"化神恢复能力","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":5,"power2":31,"powerValue2":60,"power3":32,"powerValue3":60,"skillAtkType":6,"area":30,"round":3,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1338,"anime3":0,"position":0,"statusBit1":13,"statusBit2":0,"statusBit3":0},{"id":1340,"level":3,"name":"巨风暴","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":64,"powerValue2":-100,"power3":0,"powerValue3":0,"skillAtkType":5,"area":17,"round":2,"atk_time":2,"useMP":200,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":0,"statusBit1":0,"statusBit2":6,"statusBit3":0}]},"1342":{"name":"斩击","type":3,"levels":[{"id":1342,"level":2,"name":"斩击","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-25,"power2":0,"powerValue2":0,"power3":82,"powerValue3":-127,"skillAtkType":0,"area":10,"round":5,"atk_time":0,"useMP":253,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":30,"statusBit2":0,"statusBit3":0}]},"1350":{"name":"古道无常剑","type":3,"levels":[{"id":1350,"level":1,"name":"古道无常剑","type":3,"info":"　　","skillWeapon":20,"power1":54,"powerValue1":-100,"power2":151,"powerValue2":400,"power3":156,"powerValue3":100,"skillAtkType":2,"area":11,"round":2,"atk_time":0,"useMP":200,"useHP":500,"anime1":0,"anime2":1318,"anime3":0,"position":1,"statusBit1":6,"statusBit2":0,"statusBit3":0}]},"1351":{"name":"镜花水月","type":3,"levels":[{"id":1351,"level":2,"name":"镜花水月","type":3,"info":"　　","skillWeapon":7,"power1":71,"powerValue1":300,"power2":72,"powerValue2":300,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":2,"atk_time":0,"useMP":300,"useHP":700,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":14,"statusBit2":0,"statusBit3":0}]},"1352":{"name":"玫瑰剑阵","type":2,"levels":[{"id":1352,"level":2,"name":"玫瑰剑阵","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-5,"power2":56,"powerValue2":-200,"power3":0,"powerValue3":0,"skillAtkType":3,"area":11,"round":4,"atk_time":2,"useMP":400,"useHP":0,"anime1":16,"anime2":1325,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1353":{"name":"冲撞","type":3,"levels":[{"id":1353,"level":3,"name":"冲撞","type":3,"info":"","skillWeapon":1,"power1":153,"powerValue1":300,"power2":49,"powerValue2":-1000,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":1,"atk_time":-1,"useMP":400,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":1,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"1354":{"name":"夜天连刃","type":3,"levels":[{"id":1354,"level":2,"name":"夜天连刃","type":3,"info":"","skillWeapon":10,"power1":151,"powerValue1":140,"power2":156,"powerValue2":330,"power3":87,"powerValue3":2500,"skillAtkType":0,"area":11,"round":0,"atk_time":6,"useMP":500,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1355":{"name":"天道无常","type":3,"levels":[{"id":1355,"level":1,"name":"天道无常","type":3,"info":"","skillWeapon":8,"power1":155,"powerValue1":400,"power2":49,"powerValue2":-500,"power3":151,"powerValue3":350,"skillAtkType":2,"area":16,"round":4,"atk_time":2,"useMP":600,"useHP":0,"anime1":0,"anime2":1331,"anime3":0,"position":0,"statusBit1":0,"statusBit2":3,"statusBit3":0}]},"1356":{"name":"霸王烈风剑","type":3,"levels":[{"id":1356,"level":1,"name":"霸王烈风剑","type":3,"info":"","skillWeapon":20,"power1":151,"powerValue1":300,"power2":156,"powerValue2":300,"power3":0,"powerValue3":0,"skillAtkType":2,"area":17,"round":0,"atk_time":4,"useMP":600,"useHP":0,"anime1":8,"anime2":1329,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1357":{"name":"红星剑阵","type":2,"levels":[{"id":1357,"level":2,"name":"红星剑阵","type":2,"info":"命中敌人后,敌人将大幅度削减攻击次数","skillWeapon":2,"power1":130,"powerValue1":-5,"power2":151,"powerValue2":300,"power3":156,"powerValue3":300,"skillAtkType":3,"area":11,"round":4,"atk_time":2,"useMP":400,"useHP":0,"anime1":16,"anime2":1325,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1358":{"name":"三决霸剑","type":3,"levels":[{"id":1358,"level":1,"name":"三决霸剑","type":3,"info":"","skillWeapon":1,"power1":50,"powerValue1":-5,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":4,"atk_time":3,"useMP":253,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"1359":{"name":"除魔领域","type":2,"levels":[{"id":1359,"level":1,"name":"除魔领域","type":2,"info":"消除增益的效果，只在释放的回合生效，没有持续效果。","skillWeapon":0,"power1":79,"powerValue1":25,"power2":51,"powerValue2":-2200,"power3":52,"powerValue3":-8,"skillAtkType":6,"area":19,"round":4,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1360":{"name":"虚弱领域","type":2,"levels":[{"id":1360,"level":1,"name":"虚弱领域","type":2,"info":"消除增益的效果，只在释放的回合生效，没有持续效果。","skillWeapon":0,"power1":130,"powerValue1":-10,"power2":28,"powerValue2":-80,"power3":29,"powerValue3":-80,"skillAtkType":6,"area":19,"round":4,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1223,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1375":{"name":"水突刺","type":3,"levels":[{"id":1375,"level":1,"name":"水突刺","type":3,"info":"","skillWeapon":0,"power1":178,"powerValue1":-2,"power2":172,"powerValue2":200,"power3":0,"powerValue3":0,"skillAtkType":5,"area":17,"round":2,"atk_time":0,"useMP":500,"useHP":0,"anime1":1,"anime2":1345,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"1377":{"name":"阿尔法突袭","type":2,"levels":[{"id":1377,"level":1,"name":"阿尔法突袭","type":2,"info":"","skillWeapon":0,"power1":64,"powerValue1":-300,"power2":54,"powerValue2":-300,"power3":178,"powerValue3":-1,"skillAtkType":2,"area":19,"round":3,"atk_time":4,"useMP":1000,"useHP":0,"anime1":0,"anime2":1345,"anime3":0,"position":1,"statusBit1":6,"statusBit2":5,"statusBit3":0}]},"1378":{"name":"神圣复活","type":3,"levels":[{"id":1378,"level":1,"name":"神圣复活","type":3,"info":"","skillWeapon":0,"power1":97,"powerValue1":50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1338,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1379":{"name":"天使的祝福","type":2,"levels":[{"id":1379,"level":1,"name":"天使的祝福","type":2,"info":"","skillWeapon":0,"power1":79,"powerValue1":25,"power2":50,"powerValue2":-100,"power3":178,"powerValue3":-5,"skillAtkType":6,"area":19,"round":1,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1408,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":30}]},"1380":{"name":"能量射击","type":2,"levels":[{"id":1380,"level":1,"name":"能量射击","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":-18,"power2":52,"powerValue2":-18,"power3":65,"powerValue3":-600,"skillAtkType":3,"area":19,"round":3,"atk_time":0,"useMP":1000,"useHP":0,"anime1":0,"anime2":1445,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1381":{"name":"盾飞湮灭","type":3,"levels":[{"id":1381,"level":1,"name":"盾飞湮灭","type":3,"info":"","skillWeapon":0,"power1":178,"powerValue1":-10,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1391":{"name":"boss抽蓝","type":3,"levels":[{"id":1391,"level":1,"name":"boss抽蓝","type":3,"info":"敌方","skillWeapon":0,"power1":52,"powerValue1":-60,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":0,"area":19,"round":4,"atk_time":1,"useMP":0,"useHP":0,"anime1":8,"anime2":1333,"anime3":0,"position":1,"statusBit1":1,"statusBit2":0,"statusBit3":0},{"id":1391,"level":2,"name":"boss抽血","type":3,"info":"敌方","skillWeapon":0,"power1":50,"powerValue1":-60,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":4,"atk_time":2,"useMP":0,"useHP":0,"anime1":8,"anime2":1330,"anime3":0,"position":1,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"1392":{"name":"小怪回蓝","type":3,"levels":[{"id":1392,"level":1,"name":"小怪回蓝","type":3,"info":"我方","skillWeapon":0,"power1":52,"powerValue1":5,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1402,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1392,"level":2,"name":"小怪回血","type":3,"info":"我方","skillWeapon":0,"power1":50,"powerValue1":5,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":29,"round":3,"atk_time":0,"useMP":0,"useHP":0,"anime1":8,"anime2":1401,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1393":{"name":"清除正面状态","type":2,"levels":[{"id":1393,"level":1,"name":"清除正面状态","type":2,"info":"敌方","skillWeapon":0,"power1":79,"powerValue1":25,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":2,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1406,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1393,"level":2,"name":"减免伤护盾定身","type":2,"info":"敌方","skillWeapon":0,"power1":178,"powerValue1":-1,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":14,"round":4,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1398,"anime3":0,"position":2,"statusBit1":8,"statusBit2":0,"statusBit3":0},{"id":1393,"level":3,"name":"复活","type":2,"info":"我方","skillWeapon":0,"power1":97,"powerValue1":100,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":23,"round":0,"atk_time":0,"useMP":0,"useHP":0,"anime1":0,"anime2":1408,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1393,"level":4,"name":"嘲讽加驱逐","type":3,"info":"敌方","skillWeapon":0,"power1":35,"powerValue1":-10,"power2":64,"powerValue2":-500,"power3":155,"powerValue3":300,"skillAtkType":4,"area":14,"round":4,"atk_time":2,"useMP":0,"useHP":0,"anime1":0,"anime2":1409,"anime3":0,"position":1,"statusBit1":30,"statusBit2":31,"statusBit3":0}]},"1394":{"name":"减对面魔法属性","type":2,"levels":[{"id":1394,"level":1,"name":"减对面魔法属性","type":2,"info":"敌方","skillWeapon":0,"power1":30,"powerValue1":-150,"power2":26,"powerValue2":-150,"power3":45,"powerValue3":-150,"skillAtkType":6,"area":13,"round":3,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1400,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1394,"level":2,"name":"减对面劈砍属性","type":2,"info":"敌方","skillWeapon":0,"power1":28,"powerValue1":-150,"power2":24,"powerValue2":-150,"power3":39,"powerValue3":-150,"skillAtkType":6,"area":13,"round":3,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1400,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1394,"level":3,"name":"减对面穿刺属性","type":2,"info":"敌方","skillWeapon":0,"power1":29,"powerValue1":-150,"power2":24,"powerValue2":-150,"power3":39,"powerValue3":-150,"skillAtkType":6,"area":13,"round":3,"atk_time":0,"useMP":500,"useHP":0,"anime1":0,"anime2":1400,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1395":{"name":"鹿boss抽蓝","type":3,"levels":[{"id":1395,"level":1,"name":"鹿boss抽蓝","type":3,"info":"敌方","skillWeapon":0,"power1":52,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":2,"area":19,"round":3,"atk_time":2,"useMP":0,"useHP":0,"anime1":8,"anime2":1333,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0},{"id":1395,"level":2,"name":"鹿boss抽血","type":3,"info":"敌方","skillWeapon":0,"power1":50,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":19,"round":3,"atk_time":2,"useMP":0,"useHP":0,"anime1":8,"anime2":1330,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1420":{"name":"小怪扣劈砍防和生命","type":3,"levels":[{"id":1420,"level":1,"name":"小怪扣劈砍防和生命","type":3,"info":"　","skillWeapon":0,"power1":31,"powerValue1":-20,"power2":50,"powerValue2":-20,"power3":0,"powerValue3":0,"skillAtkType":0,"area":11,"round":1,"atk_time":2,"useMP":260,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":2,"statusBit1":6,"statusBit2":1,"statusBit3":0}]},"1421":{"name":"毒箭","type":2,"levels":[{"id":1421,"level":1,"name":"毒箭","type":2,"info":"怪物技能","skillWeapon":0,"power1":51,"powerValue1":-40,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":12,"round":1,"atk_time":1,"useMP":0,"useHP":0,"anime1":0,"anime2":1425,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0},{"id":1421,"level":4,"name":"毒箭魔法","type":3,"info":"怪物技能","skillWeapon":0,"power1":51,"powerValue1":-50,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":3,"area":12,"round":1,"atk_time":1,"useMP":20000,"useHP":0,"anime1":0,"anime2":1425,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"1423":{"name":"小怪套幻影单体","type":2,"levels":[{"id":1423,"level":1,"name":"小怪套幻影单体","type":2,"info":"","skillWeapon":0,"power1":49,"powerValue1":555,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":1,"atk_time":1,"useMP":30,"useHP":0,"anime1":0,"anime2":1403,"anime3":0,"position":0,"statusBit1":14,"statusBit2":0,"statusBit3":0}]},"1424":{"name":"小怪套物攻无效","type":3,"levels":[{"id":1424,"level":1,"name":"小怪套物攻无效","type":3,"info":"","skillWeapon":0,"power1":49,"powerValue1":555,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":21,"round":1,"atk_time":1,"useMP":30,"useHP":0,"anime1":0,"anime2":1405,"anime3":0,"position":0,"statusBit1":16,"statusBit2":0,"statusBit3":0}]},"1425":{"name":"怪物用邪恶飓风","type":2,"levels":[{"id":1425,"level":9,"name":"怪物用邪恶飓风","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":-9,"power2":34,"powerValue2":-9,"power3":52,"powerValue3":-9,"skillAtkType":6,"area":18,"round":3,"atk_time":0,"useMP":1000,"useHP":0,"anime1":0,"anime2":1483,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1427":{"name":"单人清除防御和状态","type":3,"levels":[{"id":1427,"level":1,"name":"单人清除防御和状态","type":3,"info":"","skillWeapon":0,"power1":79,"powerValue1":15,"power2":79,"powerValue2":16,"power3":178,"powerValue3":-2,"skillAtkType":6,"area":11,"round":0,"atk_time":4,"useMP":0,"useHP":0,"anime1":1,"anime2":1376,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"1428":{"name":"怪物用 全屏减免伤护盾","type":3,"levels":[{"id":1428,"level":1,"name":"怪物用 全屏减免伤护盾","type":3,"info":"火烧状态生命恢复、吸收失效","skillWeapon":0,"power1":49,"powerValue1":-4400,"power2":152,"powerValue2":310,"power3":178,"powerValue3":-10,"skillAtkType":4,"area":19,"round":2,"atk_time":3,"useMP":6000,"useHP":0,"anime1":9,"anime2":1331,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"1429":{"name":"怪物用 魔法 减免伤","type":3,"levels":[{"id":1429,"level":1,"name":"怪物用 魔法 减免伤","type":3,"info":"前后2盾","skillWeapon":0,"power1":49,"powerValue1":-1100,"power2":152,"powerValue2":310,"power3":178,"powerValue3":-2,"skillAtkType":4,"area":11,"round":2,"atk_time":1,"useMP":0,"useHP":0,"anime1":0,"anime2":1472,"anime3":0,"position":1,"statusBit1":8,"statusBit2":0,"statusBit3":0},{"id":1429,"level":2,"name":"怪物用 魔法 减免伤","type":3,"info":"正方4盾","skillWeapon":0,"power1":49,"powerValue1":-1100,"power2":152,"powerValue2":310,"power3":178,"powerValue3":-4,"skillAtkType":4,"area":17,"round":2,"atk_time":1,"useMP":0,"useHP":0,"anime1":0,"anime2":1472,"anime3":0,"position":1,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"5000":{"name":"飞鹰急袭","type":2,"levels":[{"id":5000,"level":6,"name":"飞鹰急袭","type":2,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":55,"powerValue1":-300,"power2":53,"powerValue2":-600,"power3":0,"powerValue3":0,"skillAtkType":2,"area":32,"round":4,"atk_time":3,"useMP":35,"useHP":0,"anime1":0,"anime2":1329,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"5001":{"name":"治愈系光环","type":2,"levels":[{"id":5001,"level":5,"name":"治愈系光环","type":2,"info":"宠物升级时有机会提升该等级，5级之后将不产生状态","skillWeapon":0,"power1":115,"powerValue1":90,"power2":52,"powerValue2":5,"power3":50,"powerValue3":6,"skillAtkType":6,"area":38,"round":3,"atk_time":0,"useMP":100,"useHP":0,"anime1":1,"anime2":1215,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":13}]},"5010":{"name":"咆哮如雷","type":2,"levels":[{"id":5010,"level":5,"name":"咆哮如雷","type":2,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":65,"powerValue1":-190,"power2":64,"powerValue2":-190,"power3":82,"powerValue3":150,"skillAtkType":5,"area":17,"round":4,"atk_time":4,"useMP":35,"useHP":0,"anime1":0,"anime2":0,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"5033":{"name":"毒龙剑","type":3,"levels":[{"id":5033,"level":6,"name":"毒龙剑","type":3,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":51,"powerValue1":-600,"power2":49,"powerValue2":-600,"power3":0,"powerValue3":0,"skillAtkType":0,"area":10,"round":4,"atk_time":2,"useMP":200,"useHP":0,"anime1":0,"anime2":1304,"anime3":0,"position":0,"statusBit1":1,"statusBit2":0,"statusBit3":0}]},"5034":{"name":"无敌姿态","type":2,"levels":[{"id":5034,"level":6,"name":"无敌姿态","type":2,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":130,"powerValue1":7,"power2":67,"powerValue2":800,"power3":65,"powerValue3":850,"skillAtkType":6,"area":30,"round":4,"atk_time":0,"useMP":400,"useHP":0,"anime1":2,"anime2":1224,"anime3":0,"position":0,"statusBit1":20,"statusBit2":0,"statusBit3":0}]},"6006":{"name":"领悟－快攻","type":2,"levels":[{"id":6006,"level":9,"name":"领悟－快攻","type":2,"info":"　","skillWeapon":0,"power1":82,"powerValue1":400,"power2":54,"powerValue2":-250,"power3":56,"powerValue3":-250,"skillAtkType":2,"area":11,"round":3,"atk_time":3,"useMP":230,"useHP":0,"anime1":0,"anime2":1320,"anime3":0,"position":0,"statusBit1":0,"statusBit2":6,"statusBit3":5}]},"6011":{"name":"领悟－勇者无惧","type":2,"levels":[{"id":6011,"level":9,"name":"领悟－勇者无惧","type":2,"info":"　","skillWeapon":0,"power1":114,"powerValue1":100,"power2":64,"powerValue2":172,"power3":65,"powerValue3":172,"skillAtkType":6,"area":38,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":0,"anime2":1125,"anime3":0,"position":0,"statusBit1":0,"statusBit2":11,"statusBit3":11}]},"6012":{"name":"领悟－强化装备","type":1,"levels":[{"id":6012,"level":5,"name":"领悟－强化装备","type":1,"info":"　","skillWeapon":0,"power1":24,"powerValue1":17,"power2":130,"powerValue2":2,"power3":69,"powerValue3":1100}]},"6015":{"name":"十字斩","type":3,"levels":[{"id":6015,"level":9,"name":"十字斩","type":3,"info":"　","skillWeapon":0,"power1":87,"powerValue1":1650,"power2":82,"powerValue2":36,"power3":156,"powerValue3":150,"skillAtkType":2,"area":16,"round":0,"atk_time":2,"useMP":330,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6017":{"name":"散魂裂爪","type":3,"levels":[{"id":6017,"level":9,"name":"散魂裂爪","type":3,"info":"　","skillWeapon":0,"power1":61,"powerValue1":-2000,"power2":62,"powerValue2":-2000,"power3":49,"powerValue3":-460,"skillAtkType":2,"area":10,"round":4,"atk_time":3,"useMP":330,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":2,"statusBit1":0,"statusBit2":0,"statusBit3":3}]},"6019":{"name":"领悟－燃烧","type":2,"levels":[{"id":6019,"level":1,"name":"领悟－燃烧","type":2,"info":"　","skillWeapon":0,"power1":65,"powerValue1":-10,"power2":49,"powerValue2":-50,"power3":50,"powerValue3":-1,"skillAtkType":4,"area":17,"round":2,"atk_time":0,"useMP":400,"useHP":0,"anime1":8,"anime2":1306,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":2}]},"6024":{"name":"熊猫神掌","type":3,"levels":[{"id":6024,"level":9,"name":"熊猫神掌","type":3,"info":"　","skillWeapon":0,"power1":81,"powerValue1":1000,"power2":156,"powerValue2":550,"power3":82,"powerValue3":200,"skillAtkType":0,"area":11,"round":0,"atk_time":7,"useMP":100,"useHP":0,"anime1":16,"anime2":1313,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6028":{"name":"震撼弹","type":2,"levels":[{"id":6028,"level":9,"name":"震撼弹","type":2,"info":"　","skillWeapon":0,"power1":34,"powerValue1":-43,"power2":155,"powerValue2":210,"power3":178,"powerValue3":-4,"skillAtkType":5,"area":16,"round":3,"atk_time":2,"useMP":400,"useHP":0,"anime1":8,"anime2":1309,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"6041":{"name":"灯灵之怒","type":3,"levels":[{"id":6041,"level":9,"name":"灯灵之怒","type":3,"info":"　","skillWeapon":0,"power1":81,"powerValue1":1300,"power2":82,"powerValue2":183,"power3":154,"powerValue3":430,"skillAtkType":4,"area":11,"round":0,"atk_time":4,"useMP":380,"useHP":0,"anime1":1,"anime2":1326,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6043":{"name":"背后袭击","type":3,"levels":[{"id":6043,"level":9,"name":"背后袭击","type":3,"info":"　","skillWeapon":0,"power1":49,"powerValue1":-660,"power2":50,"powerValue2":-4,"power3":0,"powerValue3":0,"skillAtkType":6,"area":10,"round":5,"atk_time":0,"useMP":700,"useHP":0,"anime1":0,"anime2":1308,"anime3":0,"position":1,"statusBit1":0,"statusBit2":3,"statusBit3":0}]},"6048":{"name":"火雨术","type":3,"levels":[{"id":6048,"level":9,"name":"火雨术","type":3,"info":"　","skillWeapon":0,"power1":49,"powerValue1":-370,"power2":82,"powerValue2":225,"power3":154,"powerValue3":430,"skillAtkType":4,"area":19,"round":5,"atk_time":0,"useMP":900,"useHP":0,"anime1":9,"anime2":1314,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6053":{"name":"伤心小箭","type":2,"levels":[{"id":6053,"level":9,"name":"伤心小箭","type":2,"info":"　","skillWeapon":0,"power1":82,"powerValue1":270,"power2":151,"powerValue2":270,"power3":0,"powerValue3":0,"skillAtkType":3,"area":17,"round":0,"atk_time":0,"useMP":460,"useHP":0,"anime1":0,"anime2":1301,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6058":{"name":"恐惧凝视","type":2,"levels":[{"id":6058,"level":9,"name":"恐惧凝视","type":2,"info":"　","skillWeapon":0,"power1":155,"powerValue1":210,"power2":64,"powerValue2":-290,"power3":68,"powerValue3":-290,"skillAtkType":5,"area":16,"round":3,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":6}]},"6063":{"name":"万剑穿心","type":2,"levels":[{"id":6063,"level":9,"name":"万剑穿心","type":2,"info":"　","skillWeapon":0,"power1":156,"powerValue1":240,"power2":67,"powerValue2":-270,"power3":56,"powerValue3":-50,"skillAtkType":3,"area":18,"round":3,"atk_time":1,"useMP":430,"useHP":0,"anime1":8,"anime2":1307,"anime3":0,"position":0,"statusBit1":0,"statusBit2":10,"statusBit3":0}]},"6071":{"name":"鬼神不死咒","type":2,"levels":[{"id":6071,"level":9,"name":"鬼神不死咒","type":2,"info":"拥有这个状态的角色，死亡后会复活并剩下1点生命。一场战斗只能生效一次。","skillWeapon":0,"power1":64,"powerValue1":130,"power2":0,"powerValue2":0,"power3":0,"powerValue3":0,"skillAtkType":6,"area":38,"round":2,"atk_time":0,"useMP":1100,"useHP":0,"anime1":0,"anime2":1333,"anime3":0,"position":0,"statusBit1":27,"statusBit2":0,"statusBit3":0}]},"6074":{"name":"自动暴走","type":2,"levels":[{"id":6074,"level":9,"name":"自动暴走","type":2,"info":"　","skillWeapon":0,"power1":50,"powerValue1":9,"power2":57,"powerValue2":340,"power3":53,"powerValue3":1400,"skillAtkType":6,"area":30,"round":3,"atk_time":0,"useMP":400,"useHP":0,"anime1":0,"anime2":1225,"anime3":0,"position":0,"statusBit1":21,"statusBit2":0,"statusBit3":0}]},"6088":{"name":"龙威","type":2,"levels":[{"id":6088,"level":9,"name":"龙威","type":2,"info":"　","skillWeapon":0,"power1":154,"powerValue1":210,"power2":64,"powerValue2":-290,"power3":0,"powerValue3":0,"skillAtkType":5,"area":16,"round":3,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":0,"statusBit2":8,"statusBit3":0}]},"6090":{"name":"大扫除","type":3,"levels":[{"id":6090,"level":9,"name":"大扫除","type":3,"info":"忽略任何的防御效果,扫飞他们!","skillWeapon":0,"power1":79,"powerValue1":25,"power2":65,"powerValue2":-370,"power3":151,"powerValue3":602,"skillAtkType":0,"area":11,"round":4,"atk_time":1,"useMP":260,"useHP":0,"anime1":0,"anime2":1323,"anime3":0,"position":1,"statusBit1":0,"statusBit2":5,"statusBit3":0}]},"6096":{"name":"龙族吐炎","type":3,"levels":[{"id":6096,"level":9,"name":"龙族吐炎","type":3,"info":"　","skillWeapon":0,"power1":50,"powerValue1":-9,"power2":82,"powerValue2":225,"power3":156,"powerValue3":430,"skillAtkType":4,"area":18,"round":2,"atk_time":0,"useMP":5800,"useHP":0,"anime1":9,"anime2":1331,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6106":{"name":"龙族禁咒","type":2,"levels":[{"id":6106,"level":9,"name":"龙族禁咒","type":2,"info":"　","skillWeapon":0,"power1":154,"powerValue1":420,"power2":64,"powerValue2":-370,"power3":155,"powerValue3":420,"skillAtkType":5,"area":19,"round":3,"atk_time":0,"useMP":3000,"useHP":0,"anime1":9,"anime2":1224,"anime3":0,"position":0,"statusBit1":0,"statusBit2":7,"statusBit3":0}]},"6107":{"name":"天雷破","type":2,"levels":[{"id":6107,"level":9,"name":"天雷破","type":2,"info":"　","skillWeapon":0,"power1":82,"powerValue1":240,"power2":63,"powerValue2":-450,"power3":0,"powerValue3":0,"skillAtkType":4,"area":11,"round":1,"atk_time":6,"useMP":3000,"useHP":0,"anime1":9,"anime2":1305,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6108":{"name":"风雪冰天","type":3,"levels":[{"id":6108,"level":9,"name":"风雪冰天","type":3,"info":"　","skillWeapon":0,"power1":25,"powerValue1":-50,"power2":53,"powerValue2":-590,"power3":155,"powerValue3":145,"skillAtkType":4,"area":19,"round":4,"atk_time":0,"useMP":4000,"useHP":0,"anime1":9,"anime2":1319,"anime3":0,"position":0,"statusBit1":8,"statusBit2":0,"statusBit3":0}]},"6110":{"name":"炼狱真火","type":3,"levels":[{"id":6110,"level":9,"name":"炼狱真火","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-6,"power2":49,"powerValue2":-2000,"power3":156,"powerValue3":275,"skillAtkType":4,"area":16,"round":2,"atk_time":0,"useMP":5100,"useHP":0,"anime1":25,"anime2":1306,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6131":{"name":"狐火","type":2,"levels":[{"id":6131,"level":9,"name":"狐火","type":2,"info":"妖狐最高可学习8级，灵狐可学习满级9级","skillWeapon":0,"power1":65,"powerValue1":-300,"power2":82,"powerValue2":400,"power3":63,"powerValue3":-800,"skillAtkType":4,"area":19,"round":2,"atk_time":3,"useMP":3400,"useHP":0,"anime1":1,"anime2":1306,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"6132":{"name":"九尾缠绕","type":3,"levels":[{"id":6132,"level":9,"name":"九尾缠绕","type":3,"info":"妖狐最高可学习8级，灵狐可学习满级9级","skillWeapon":0,"power1":23,"powerValue1":-40,"power2":34,"powerValue2":-20,"power3":178,"powerValue3":-3,"skillAtkType":4,"area":0,"round":2,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":1320,"anime3":0,"position":1,"statusBit1":30,"statusBit2":0,"statusBit3":0}]},"6133":{"name":"诱惑红唇","type":3,"levels":[{"id":6133,"level":9,"name":"诱惑红唇","type":3,"info":"","skillWeapon":0,"power1":23,"powerValue1":-45,"power2":64,"powerValue2":-380,"power3":178,"powerValue3":-1,"skillAtkType":5,"area":18,"round":3,"atk_time":0,"useMP":2000,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":9,"statusBit2":0,"statusBit3":0}]},"6137":{"name":"祝贺庆典","type":2,"levels":[{"id":6137,"level":1,"name":"祝贺庆典","type":2,"info":"","skillWeapon":0,"power1":68,"powerValue1":200,"power2":178,"powerValue2":1,"power3":0,"powerValue3":0,"skillAtkType":6,"area":27,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":20,"statusBit2":0,"statusBit3":0},{"id":6137,"level":2,"name":"祝贺庆典","type":2,"info":"","skillWeapon":0,"power1":68,"powerValue1":200,"power2":178,"powerValue2":2,"power3":0,"powerValue3":0,"skillAtkType":6,"area":27,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":14,"statusBit2":0,"statusBit3":0},{"id":6137,"level":6,"name":"祝贺庆典","type":3,"info":"","skillWeapon":0,"power1":68,"powerValue1":200,"power2":178,"powerValue2":6,"power3":0,"powerValue3":0,"skillAtkType":6,"area":27,"round":4,"atk_time":0,"useMP":200,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":15,"statusBit2":0,"statusBit3":0},{"id":6137,"level":7,"name":"祝贺庆典","type":2,"info":"","skillWeapon":0,"power1":68,"powerValue1":200,"power2":178,"powerValue2":7,"power3":0,"powerValue3":0,"skillAtkType":6,"area":27,"round":2,"atk_time":0,"useMP":200,"useHP":0,"anime1":1,"anime2":1333,"anime3":0,"position":0,"statusBit1":16,"statusBit2":0,"statusBit3":0}]},"6143":{"name":"阳炎","type":3,"levels":[{"id":6143,"level":9,"name":"阳炎","type":3,"info":"","skillWeapon":0,"power1":52,"powerValue1":10,"power2":68,"powerValue2":2000,"power3":0,"powerValue3":0,"skillAtkType":6,"area":30,"round":2,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1309,"anime3":1309,"position":0,"statusBit1":16,"statusBit2":0,"statusBit3":0}]},"6144":{"name":"大炎界","type":3,"levels":[{"id":6144,"level":9,"name":"大炎界","type":3,"info":"","skillWeapon":0,"power1":170,"powerValue1":1000,"power2":173,"powerValue2":1000,"power3":0,"powerValue3":0,"skillAtkType":3,"area":19,"round":2,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1306,"anime3":1309,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6145":{"name":"炎界.火柱","type":3,"levels":[{"id":6145,"level":9,"name":"炎界.火柱","type":3,"info":"","skillWeapon":0,"power1":178,"powerValue1":-5,"power2":172,"powerValue2":1000,"power3":52,"powerValue3":-10,"skillAtkType":3,"area":10,"round":2,"atk_time":0,"useMP":1000,"useHP":0,"anime1":1,"anime2":1332,"anime3":1309,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":30}]},"6146":{"name":"棍棒乱舞","type":3,"levels":[{"id":6146,"level":9,"name":"棍棒乱舞","type":3,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":52,"powerValue1":-15,"power2":130,"powerValue2":-3,"power3":49,"powerValue3":-900,"skillAtkType":4,"area":16,"round":3,"atk_time":1,"useMP":3000,"useHP":0,"anime1":1,"anime2":1339,"anime3":0,"position":0,"statusBit1":1,"statusBit2":0,"statusBit3":0}]},"6153":{"name":"生死裁决咒","type":2,"levels":[{"id":6153,"level":9,"name":"生死裁决咒","type":2,"info":"升级时有机会提升该等级","skillWeapon":0,"power1":50,"powerValue1":-15,"power2":154,"powerValue2":200,"power3":64,"powerValue3":-200,"skillAtkType":5,"area":19,"round":3,"atk_time":3,"useMP":3000,"useHP":0,"anime1":1,"anime2":1308,"anime3":0,"position":0,"statusBit1":5,"statusBit2":0,"statusBit3":0}]},"6156":{"name":"火焰光环","type":3,"levels":[{"id":6156,"level":9,"name":"火焰光环","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-15,"power2":38,"powerValue2":-20,"power3":23,"powerValue3":-20,"skillAtkType":4,"area":18,"round":3,"atk_time":0,"useMP":3500,"useHP":0,"anime1":1,"anime2":1347,"anime3":0,"position":0,"statusBit1":30,"statusBit2":0,"statusBit3":0}]},"6157":{"name":"蓝色诅咒","type":2,"levels":[{"id":6157,"level":9,"name":"蓝色诅咒","type":2,"info":"","skillWeapon":0,"power1":34,"powerValue1":-25,"power2":178,"powerValue2":-2,"power3":79,"powerValue3":25,"skillAtkType":5,"area":19,"round":3,"atk_time":3,"useMP":3500,"useHP":0,"anime1":1,"anime2":1347,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6160":{"name":"声东击西","type":3,"levels":[{"id":6160,"level":9,"name":"声东击西","type":3,"info":"","skillWeapon":0,"power1":155,"powerValue1":270,"power2":50,"powerValue2":-11,"power3":68,"powerValue3":-220,"skillAtkType":2,"area":16,"round":2,"atk_time":2,"useMP":400,"useHP":0,"anime1":0,"anime2":1345,"anime3":0,"position":1,"statusBit1":0,"statusBit2":1,"statusBit3":0}]},"6161":{"name":"疯狂乱抓","type":3,"levels":[{"id":6161,"level":9,"name":"疯狂乱抓","type":3,"info":"","skillWeapon":0,"power1":51,"powerValue1":-900,"power2":52,"powerValue2":-11,"power3":151,"powerValue3":200,"skillAtkType":2,"area":10,"round":2,"atk_time":2,"useMP":450,"useHP":0,"anime1":0,"anime2":1321,"anime3":0,"position":1,"statusBit1":9,"statusBit2":0,"statusBit3":0}]},"6163":{"name":"雷霆怒爪","type":2,"levels":[{"id":6163,"level":9,"name":"雷霆怒爪","type":2,"info":"","skillWeapon":0,"power1":156,"powerValue1":380,"power2":50,"powerValue2":-9,"power3":178,"powerValue3":-1,"skillAtkType":2,"area":18,"round":2,"atk_time":3,"useMP":450,"useHP":0,"anime1":0,"anime2":1346,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6500":{"name":"邪恶飓风","type":2,"levels":[{"id":6500,"level":9,"name":"邪恶飓风","type":2,"info":"","skillWeapon":0,"power1":50,"powerValue1":-9,"power2":34,"powerValue2":-9,"power3":52,"powerValue3":-9,"skillAtkType":6,"area":18,"round":3,"atk_time":0,"useMP":1000,"useHP":0,"anime1":0,"anime2":1339,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6516":{"name":"天使的裁决","type":3,"levels":[{"id":6516,"level":22,"name":"天使的裁决","type":3,"info":"正义的裁决之镰","skillWeapon":0,"power1":56,"powerValue1":-240,"power2":154,"powerValue2":280,"power3":178,"powerValue3":-3,"skillAtkType":4,"area":19,"round":2,"atk_time":3,"useMP":5000,"useHP":0,"anime1":1,"anime2":1376,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"6517":{"name":"腥红之月","type":3,"levels":[{"id":6517,"level":22,"name":"腥红之月","type":3,"info":"","skillWeapon":12,"power1":24,"powerValue1":-18,"power2":156,"powerValue2":390,"power3":156,"powerValue3":390,"skillAtkType":0,"area":18,"round":3,"atk_time":3,"useMP":1000,"useHP":0,"anime1":0,"anime2":1392,"anime3":1398,"position":2,"statusBit1":1,"statusBit2":0,"statusBit3":0}]},"6518":{"name":"星流冰寒","type":2,"levels":[{"id":6518,"level":22,"name":"星流冰寒","type":2,"info":"","skillWeapon":0,"power1":52,"powerValue1":-22,"power2":34,"powerValue2":-22,"power3":178,"powerValue3":-3,"skillAtkType":4,"area":19,"round":3,"atk_time":3,"useMP":3500,"useHP":0,"anime1":1,"anime2":1380,"anime3":0,"position":0,"statusBit1":7,"statusBit2":9,"statusBit3":0}]},"6520":{"name":"乱剑飞舞","type":3,"levels":[{"id":6520,"level":22,"name":"乱剑飞舞","type":3,"info":"","skillWeapon":0,"power1":87,"powerValue1":3500,"power2":51,"powerValue2":-2200,"power3":50,"powerValue3":-18,"skillAtkType":3,"area":18,"round":3,"atk_time":4,"useMP":800,"useHP":0,"anime1":0,"anime2":1413,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":0}]},"6522":{"name":"放逐之锋-疾风斩","type":3,"levels":[{"id":6522,"level":22,"name":"放逐之锋-疾风斩","type":3,"info":"技能等级越高、伤害越高","skillWeapon":11,"power1":54,"powerValue1":-360,"power2":84,"powerValue2":360,"power3":156,"powerValue3":450,"skillAtkType":0,"area":18,"round":3,"atk_time":3,"useMP":800,"useHP":0,"anime1":0,"anime2":1391,"anime3":0,"position":2,"statusBit1":10,"statusBit2":0,"statusBit3":0}]},"6524":{"name":"诛仙剑阵","type":3,"levels":[{"id":6524,"level":22,"name":"诛仙剑阵","type":3,"info":"","skillWeapon":8,"power1":81,"powerValue1":1350,"power2":50,"powerValue2":-15,"power3":151,"powerValue3":420,"skillAtkType":2,"area":18,"round":3,"atk_time":3,"useMP":800,"useHP":0,"anime1":0,"anime2":1412,"anime3":0,"position":1,"statusBit1":0,"statusBit2":2,"statusBit3":0}]},"6529":{"name":"恶魔光标","type":3,"levels":[{"id":6529,"level":22,"name":"恶魔光标","type":3,"info":"","skillWeapon":0,"power1":153,"powerValue1":440,"power2":156,"powerValue2":440,"power3":84,"powerValue3":440,"skillAtkType":2,"area":18,"round":0,"atk_time":5,"useMP":800,"useHP":0,"anime1":0,"anime2":1372,"anime3":0,"position":1,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6534":{"name":"乱箭齐飞","type":3,"levels":[{"id":6534,"level":22,"name":"乱箭齐飞","type":3,"info":"","skillWeapon":0,"power1":50,"powerValue1":-15,"power2":23,"powerValue2":-22,"power3":178,"powerValue3":-2,"skillAtkType":3,"area":15,"round":3,"atk_time":4,"useMP":800,"useHP":0,"anime1":0,"anime2":1381,"anime3":0,"position":0,"statusBit1":30,"statusBit2":0,"statusBit3":0}]},"6539":{"name":"穿刺之箭","type":3,"levels":[{"id":6539,"level":22,"name":"穿刺之箭","type":3,"info":"","skillWeapon":0,"power1":87,"powerValue1":4500,"power2":52,"powerValue2":-9,"power3":178,"powerValue3":-2,"skillAtkType":3,"area":10,"round":3,"atk_time":3,"useMP":400,"useHP":0,"anime1":0,"anime2":1381,"anime3":0,"position":0,"statusBit1":0,"statusBit2":5,"statusBit3":0}]},"6540":{"name":"星光漫爆","type":3,"levels":[{"id":6540,"level":22,"name":"星光漫爆","type":3,"info":"","skillWeapon":0,"power1":86,"powerValue1":2750,"power2":52,"powerValue2":-15,"power3":156,"powerValue3":420,"skillAtkType":4,"area":19,"round":3,"atk_time":3,"useMP":5500,"useHP":0,"anime1":1,"anime2":1421,"anime3":0,"position":0,"statusBit1":0,"statusBit2":30,"statusBit3":0}]},"6546":{"name":"黑暗法球","type":3,"levels":[{"id":6546,"level":22,"name":"黑暗法球","type":3,"info":"","skillWeapon":0,"power1":52,"powerValue1":-18,"power2":155,"powerValue2":220,"power3":178,"powerValue3":-3,"skillAtkType":4,"area":18,"round":3,"atk_time":5,"useMP":3500,"useHP":0,"anime1":1,"anime2":1428,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"6551":{"name":"黑暗闪击","type":3,"levels":[{"id":6551,"level":22,"name":"黑暗闪击","type":3,"info":"","skillWeapon":13,"power1":49,"powerValue1":-2200,"power2":85,"powerValue2":22,"power3":156,"powerValue3":500,"skillAtkType":2,"area":18,"round":3,"atk_time":4,"useMP":500,"useHP":0,"anime1":0,"anime2":1416,"anime3":0,"position":1,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"6557":{"name":"灭世魔法箭（自）","type":2,"levels":[{"id":6557,"level":22,"name":"灭世魔法箭（自）","type":2,"info":"","skillWeapon":0,"power1":130,"powerValue1":-6,"power2":50,"powerValue2":-15,"power3":52,"powerValue3":-9,"skillAtkType":3,"area":18,"round":3,"atk_time":5,"useMP":500,"useHP":0,"anime1":0,"anime2":1430,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"6558":{"name":"灭世魔法箭（主）","type":3,"levels":[{"id":6558,"level":22,"name":"灭世魔法箭（主）","type":3,"info":"","skillWeapon":0,"power1":130,"powerValue1":-6,"power2":50,"powerValue2":-15,"power3":52,"powerValue3":-9,"skillAtkType":3,"area":18,"round":3,"atk_time":5,"useMP":500,"useHP":0,"anime1":0,"anime2":1430,"anime3":0,"position":0,"statusBit1":7,"statusBit2":0,"statusBit3":0}]},"6574":{"name":"分导式电火","type":3,"levels":[{"id":6574,"level":22,"name":"分导式电火","type":3,"info":"","skillWeapon":0,"power1":51,"powerValue1":-1100,"power2":50,"powerValue2":-18,"power3":156,"powerValue3":600,"skillAtkType":3,"area":18,"round":3,"atk_time":4,"useMP":800,"useHP":0,"anime1":0,"anime2":1446,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"7000":{"name":"光与暗之仆从A型","type":2,"levels":[{"id":7000,"level":1,"name":"光与暗之仆从A型","type":2,"info":"正方形魔攻，驱散目标增益，火烧","skillWeapon":0,"power1":50,"powerValue1":-10,"power2":79,"powerValue2":25,"power3":0,"powerValue3":0,"skillAtkType":4,"area":17,"round":1,"atk_time":2,"useMP":500,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":2,"statusBit2":0,"statusBit3":0}]},"7001":{"name":"光与暗之仆从A型","type":3,"levels":[{"id":7001,"level":1,"name":"光与暗之仆从A型","type":3,"info":"魔攻无效，伤害减免，状态抵抗，魔法反馈","skillWeapon":0,"power1":34,"powerValue1":15,"power2":35,"powerValue2":15,"power3":42,"powerValue3":10,"skillAtkType":6,"area":29,"round":1,"atk_time":1,"useMP":500,"useHP":0,"anime1":1,"anime2":1405,"anime3":0,"position":0,"statusBit1":16,"statusBit2":0,"statusBit3":0}]},"7002":{"name":"光与暗之仆从B型","type":2,"levels":[{"id":7002,"level":1,"name":"光与暗之仆从B型","type":2,"info":"劈砍攻击，破甲，流血","skillWeapon":0,"power1":50,"powerValue1":-5,"power2":39,"powerValue2":10,"power3":0,"powerValue3":0,"skillAtkType":1,"area":17,"round":1,"atk_time":2,"useMP":500,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"7003":{"name":"光与暗之仆从B型","type":2,"levels":[{"id":7003,"level":1,"name":"光与暗之仆从B型","type":2,"info":"穿刺攻击，破甲，流血","skillWeapon":0,"power1":50,"powerValue1":-5,"power2":39,"powerValue2":10,"power3":0,"powerValue3":0,"skillAtkType":3,"area":17,"round":1,"atk_time":2,"useMP":500,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":3,"statusBit2":0,"statusBit3":0}]},"7004":{"name":"光与暗之仆从B型","type":3,"levels":[{"id":7004,"level":1,"name":"光与暗之仆从B型","type":3,"info":"物攻无效，伤害减免，状态抵抗，反击","skillWeapon":0,"power1":34,"powerValue1":15,"power2":35,"powerValue2":15,"power3":41,"powerValue3":10,"skillAtkType":6,"area":29,"round":1,"atk_time":1,"useMP":500,"useHP":0,"anime1":1,"anime2":1405,"anime3":0,"position":0,"statusBit1":15,"statusBit2":0,"statusBit3":0}]},"7006":{"name":"光与暗之守护者","type":2,"levels":[{"id":7006,"level":1,"name":"光与暗之守护者","type":2,"info":"正方形劈砍攻击","skillWeapon":0,"power1":50,"powerValue1":-8,"power2":52,"powerValue2":-5,"power3":79,"powerValue3":25,"skillAtkType":1,"area":17,"round":1,"atk_time":4,"useMP":500,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"7007":{"name":"光与暗之守护者","type":2,"levels":[{"id":7007,"level":1,"name":"光与暗之守护者","type":2,"info":"正方形穿刺攻击","skillWeapon":0,"power1":50,"powerValue1":-8,"power2":52,"powerValue2":-5,"power3":79,"powerValue3":25,"skillAtkType":3,"area":17,"round":1,"atk_time":4,"useMP":500,"useHP":0,"anime1":1,"anime2":0,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]},"7008":{"name":"光与暗之守护者","type":2,"levels":[{"id":7008,"level":1,"name":"光与暗之守护者","type":2,"info":"我方回血","skillWeapon":0,"power1":50,"powerValue1":50,"power2":79,"powerValue2":26,"power3":154,"powerValue3":5000,"skillAtkType":6,"area":29,"round":1,"atk_time":1,"useMP":500,"useHP":0,"anime1":1,"anime2":1405,"anime3":0,"position":0,"statusBit1":0,"statusBit2":0,"statusBit3":0}]}}}</script>
+
+<script>
+"use strict";
+/* ============================ 游戏标签表 ============================ */
+const LABELS=JSON.parse(document.getElementById("game-labels").textContent||"{}");
+const POWERS=LABELS.powers||{};          // {"61":{k:"POWER_DEF_STR",n:"劈砍防御力",p:false}}
+const BUFFERS=LABELS.buffers||["无"];    // 索引 = 状态编号
+// 下面几张是客户端显示技能信息时用的官方文案表，索引就是写入值
+const SKILL_TYPES=LABELS.skillTypes||[];
+const SKILL_WEAPONS=LABELS.skillWeapons||[];
+const SKILL_ATK_TYPES=LABELS.skillAtkTypes||[];
+const SKILL_AREAS=LABELS.skillAreas||[];
+const SKILL_POSITIONS=LABELS.skillPositions||[];
+// 怪物自带技能（内嵌）：{id:{name,type,levels:[...]}}。怪物技能与人技能共用 id，
+// 所以只按 id 合并来源标记；怪物专属技能（人物/装备表里没有的）也只有这里有定义。
+const MONSTER_SKILLS=LABELS.monsters||{};
+const powerName=id=>{const e=POWERS[String(id)];return e?e.n:"未知效果 "+id;};
+const powerPercent=id=>!!(POWERS[String(id)]&&POWERS[String(id)].p);
+const bufferName=id=>BUFFERS[Number(id)]||("状态 "+id);
+/** 效果编号按数组索引排好，给「点击改」的下拉用。 */
+const POWER_TABLE=(()=>{
+  const ids=Object.keys(POWERS).map(Number);
+  if(!ids.length)return [];
+  const out=new Array(Math.max(...ids)+1).fill("");
+  for(const [id,info] of Object.entries(POWERS))out[Number(id)]=info.n;
+  return out;
+})();
+/** 取「编号 → 官方文案」；表里没有就显示未知（编辑器显示未知值，但原值保留）。 */
+const pickText=(table,value)=>{
+  const v=Number(value);
+  const hit=table[v];
+  if(hit)return hit;
+  if(table.length&&v>=0&&v<table.length)return "未命名（"+v+"）";
+  return "未知（"+v+"）";
+};
+/** getPowerDesc 的复刻：正值显示「名称+X」，负值显示「名称-X」，百分比带 %。 */
+function describePower(power,value){
+  if(!power)return null;
+  const name=powerName(power),pct=powerPercent(power)?"%":"";
+  if(value>=0)return name+"+"+value+pct;
+  return name+value+pct;
+}
+/* 技能说明（info）与「效果行」的关系 —— 与服务端 lib/local-skill-overrides.mjs 同一套规则。
+   客户端 SkillVo.getDesc() 会按当前 power 渲染效果行，再把 info 原样追加在后面；而构建工具
+   给重建等级写的 info 恰好是「标题 + 每个效果一行」。所以改了 power 却留着旧 info，游戏里会
+   新旧混排（看着像没生效）。服务端套用覆盖时会自动丢掉那几行旧效果 —— 这里同步展示结果。*/
+const INFO_HEAD="单机重建（含社区资料与推算）";
+const INFO_TAIL="部分特殊效果沿用已录定义";
+function dropStaleEffectLines(info){
+  if(!info)return info;
+  const lines=String(info).split("\n");
+  const head=lines[0]===INFO_HEAD?lines[0]:null;
+  const last=lines.length>1?lines[lines.length-1]:null;
+  const tail=last&&last.startsWith(INFO_TAIL)?last:null;
+  if(!head&&!tail)return info;                 // 手写说明/装备技能说明：不是效果快照，不动
+  return [...(head?[head]:[]),...(tail?[tail]:[])].join("\n");
+}
+
+/* ============== 技能 wire 编码器（与服务端 skillBytes 等价）==============
+   服务端 lib/character-import-codec.mjs 的 skillBytes() 决定客户端最终收到的定义，
+   这里复刻一份用于即时预览与校验；tests/skill-editor.test.mjs 会拿真数据逐字节对拍。
+   big-endian：short=uint16、byte=uint8、string=3 字节长度 + 每字符 2 字节。 */
+//<<<CODEC-START>>>
+function codecWriter(){
+  const parts=[];
+  const put=a=>{parts.push(a);return w;};
+  const w={
+    byte(n){return put([Number(n)&255]);},
+    bool(n){return this.byte(n?1:0);},
+    short(n){const v=Number(n)&65535;return put([(v>>8)&255,v&255]);},
+    string(v){const s=String(v==null?"":v);put([(s.length>>16)&255,(s.length>>8)&255,s.length&255]);
+      for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);parts.push([(c>>8)&255,c&255]);}return w;},
+    done(){const out=[];for(const part of parts)for(const b of part)out.push(b);return out;}
+  };
+  return w;
+}
+function skillBytesBrowser(s,item){
+  const w=codecWriter();
+  w.short(s.id).byte(s.level).string(s.name||"").byte(s.type).string(s.info||"").byte(s.skillWeapon||0);
+  for(const n of [1,2,3])w.short(s["power"+n]||0).short(s["powerValue"+n]||0);
+  if(s.type!==1)w.byte(s.skillAtkType||0).byte(s.area||0).byte(s.round||0).byte(s.atk_time||0)
+    .short(s.useMP||0).short(s.useHP||0).byte(s.anime1||0).short(s.anime2||0).short(s.anime3||0)
+    .byte(s.position||0).byte(s.statusBit1||0).byte(s.statusBit2||0).byte(s.statusBit3||0);
+  if(!item)w.bool(!!s.isLearnByBook);
+  return w.done();
+}
+function bytesToBase64(bytes){
+  let s="";
+  for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.slice(i,i+0x8000));
+  return btoa(s);
+}
+//<<<CODEC-END>>>
+
+/* ============================== 状态 ============================== */
+const SOURCE_LABEL={career:"人物",equipment:"装备",monster:"怪物",local:"本地"};
+/** 一个技能可能同时是人物技能/装备技能/怪物技能（共用 id），这里拼成「人物/装备/怪物」。 */
+function sourceTags(rec){return Object.keys(SOURCE_LABEL).filter(k=>rec.sources.has(k)).map(k=>SOURCE_LABEL[k]).join("/");}
+const state={
+  skills:new Map(),     // id -> {id,name,profession,category,type,levels:[],sources:Set,origins:[]}
+  rules:new Map(),      // id -> {levels:'all'|number[], set:{}, perLevel:{}, _note}
+  readme:null,
+  loaded:false,
+  selected:null,
+  rangeMode:"all",
+  picked:new Set(),
+  perLevel:false,
+  dirHandle:null,
+  filter:"all",
+  onlyEdited:false,
+  query:""
+};
+
+const $=sel=>document.querySelector(sel);
+const el=(tag,cls,txt)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let toastTimer=null;
+function toast(msg,ms=2200){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),ms);}
+function status(msg,kind=""){const s=$("#status");if(!msg){s.style.display="none";return;}s.className=kind;s.innerHTML=msg;s.style.display="block";}
+
+/* =========================== 数据载入 =========================== */
+function indexSkill(map,row,source){
+  const id=Number(row.id);
+  if(!Number.isInteger(id)||id<=0)return;
+  let rec=map.get(id);
+  if(!rec){rec={id,name:row.name||"",profession:row.profession||"",category:row.category||"",type:row.type,levels:[],sources:new Set(),byLevel:new Map()};map.set(id,rec);}
+  rec.sources.add(source);
+  if(row.name)rec.name=row.name;
+  if(row.profession)rec.profession=row.profession;
+  if(row.category)rec.category=row.category;
+  if(row.type!=null)rec.type=row.type;
+  for(const lv of (row.levels||[])){
+    const level=Number(lv.level);
+    if(!Number.isInteger(level))continue;
+    // 同名等级：人物技能表优先（它带完整 1–22 级），装备/怪物表只补缺
+    const prev=rec.byLevel.get(level);
+    if(prev&&prev.__source==="career"&&source!=="career")continue;
+    const copy={...lv,__source:source};
+    rec.byLevel.set(level,copy);
+  }
+}
+/** 合并「内置怪物技能 + 载入的人物/装备/本地技能」。同一 id 会带多个来源标记。 */
+function collectSkills({career,equipment,extra,local}={}){
+  const map=new Map();
+  for(const [id,rec] of Object.entries(MONSTER_SKILLS)){
+    indexSkill(map,{id:Number(id),name:rec.name,type:rec.type,levels:rec.levels},"monster");
+  }
+  if(career)for(const row of career.skills||[])indexSkill(map,row,"career");
+  if(equipment)for(const row of equipment.skills||[])indexSkill(map,row,"equipment");
+  if(extra)for(const row of extra.skills||[])indexSkill(map,row,"equipment");
+  if(local)for(const row of local.skills||[])indexSkill(map,row,"local");
+  finalize(map);
+  return map;
+}
+function finalize(map){
+  for(const rec of map.values()){
+    rec.levels=[...rec.byLevel.values()].sort((a,b)=>a.level-b.level);
+    if(!rec.name&&rec.levels.length)rec.name=rec.levels[0].name||"";
+    rec.maxLevel=rec.levels.length?rec.levels[rec.levels.length-1].level:0;
+  }
+}
+
+async function loadFromFiles(files){
+  const byName=new Map();
+  for(const f of files){
+    const base=f.name;
+    if(!byName.has(base))byName.set(base,[]);
+    byName.get(base).push(f);
+  }
+  const readJson=async name=>{
+    const hits=byName.get(name);
+    if(!hits||!hits.length)return null;
+    // 同名文件优先取路径里带 data/ 的那个
+    const f=hits.find(x=>(x.webkitRelativePath||"").includes("/data/"))||hits[0];
+    try{return JSON.parse(await f.text());}catch(e){throw Error(name+" 解析失败："+e.message);}
+  };
+  const career=await readJson("career-skills.json");
+  const equipment=await readJson("equipment-skill-levels.json");
+  const extra=await readJson("equipment-skill-levels-extra.json");
+  const local=await readJson("local-career-skills.json");
+  const overrides=await readJson("local-skill-overrides.json");
+  const monsterFile=await readJson("official-v305.json")||await readJson("recorded-expansion-20260922.json");
+  if(!career&&!equipment&&!local&&!monsterFile)throw Error("这堆文件里没有 career-skills.json / equipment-skill-levels.json，请选 data 目录。");
+  // 官方资料里带 monsterAI 来源的技能 —— 与内置清单互补（重新抓包后新出现的怪物技能）。
+  // 只有用户愿意载入 official-v305.json 这类大文件时才有；不载入也不影响内置的怪物标记。
+  let extraMonsters=null;
+  if(monsterFile){
+    const keep=s=>({id:s.id,level:s.level,name:s.name,type:s.type,info:s.info,skillWeapon:s.skillWeapon,
+      power1:s.power1,powerValue1:s.powerValue1,power2:s.power2,powerValue2:s.powerValue2,power3:s.power3,powerValue3:s.powerValue3,
+      skillAtkType:s.skillAtkType,area:s.area,round:s.round,atk_time:s.atk_time,useMP:s.useMP,useHP:s.useHP,
+      anime1:s.anime1,anime2:s.anime2,anime3:s.anime3,position:s.position,
+      statusBit1:s.statusBit1,statusBit2:s.statusBit2,statusBit3:s.statusBit3});
+    const rows=(monsterFile.skills||[]).filter(s=>(s.sources||[]).some(x=>/monster/i.test(x.origin||"")));
+    if(rows.length){
+      const byId=new Map();
+      for(const s of rows){
+        const rec=byId.get(s.id)||{id:s.id,name:s.name||"",type:s.type,levels:[]};
+        if(!rec.levels.some(x=>x.level===s.level))rec.levels.push(keep(s));
+        byId.set(s.id,rec);
+      }
+      extraMonsters=[...byId.values()];
+    }
+  }
+
+  const map=collectSkills({career,equipment,extra,local});
+  for(const row of extraMonsters||[])indexSkill(map,row,"monster");
+  finalize(map);
+
+  state.skills=map;
+  state.rules=new Map();
+  if(overrides){
+    state.readme=overrides._readme||null;
+    for(const [id,rule] of Object.entries(overrides.skills||{})){
+      const entry={levels:rule.levels==="all"?"all":(Array.isArray(rule.levels)?rule.levels.map(Number):"all"),set:clone(rule.set||{}),perLevel:clone(rule.perLevel||{})};
+      if(rule._note)entry._note=rule._note;
+      state.rules.set(Number(id),entry);
+    }
+  }
+  state.loaded=true;
+  state.selected=null;
+  $("#btn-save").disabled=false;
+  $("#btn-download").disabled=false;
+  renderList();
+  renderEditor();
+  const parts=[];
+  if(career)parts.push("人物技能 "+(career.skills||[]).length);
+  if(equipment)parts.push("装备技能 "+(equipment.skills||[]).length);
+  if(local)parts.push("本地技能 "+(local.skills||[]).length);
+  if(extraMonsters&&extraMonsters.length)parts.push("官方资料里的怪物技能 "+extraMonsters.length);
+  status("已载入：<b>"+(parts.join("</b> ｜ <b>")||"—")+"</b>（加内置怪物技能，合并后 <b>"+map.size+"</b> 个技能 id）"+
+    (state.rules.size?"；已读取现有覆盖 <b>"+state.rules.size+"</b> 条":""));
+}
+
+$("#btn-load-dir").onclick=()=>$("#dir-input").click();
+$("#btn-load-files").onclick=()=>$("#file-input").click();
+$("#dir-input").onchange=async e=>{
+  try{status("正在读取…");await loadFromFiles([...e.target.files]);}
+  catch(err){status("载入失败："+err.message,"err");}
+  e.target.value="";
+};
+$("#file-input").onchange=async e=>{
+  try{status("正在读取…");await loadFromFiles([...e.target.files]);}
+  catch(err){status("载入失败："+err.message,"err");}
+  e.target.value="";
+};
+
+/* =========================== 规则读写 =========================== */
+function ruleOf(id,create){
+  let rule=state.rules.get(id);
+  if(!rule&&create){rule={levels:"all",set:{},perLevel:{}};state.rules.set(id,rule);}
+  return rule;
+}
+function isEdited(id){
+  const rule=state.rules.get(id);
+  if(!rule)return false;
+  return Object.keys(rule.set||{}).length>0||Object.keys(rule.perLevel||{}).length>0;
+}
+/** 某个等级的「当前生效值」＝原始值 + 覆盖。 */
+function effective(id,level){
+  const base=state.skills.get(id).byLevel.get(level);
+  const out=clone(base);
+  delete out.__source;
+  const rule=state.rules.get(id);
+  if(!rule)return out;
+  const inRange=rule.levels==="all"||rule.levels.includes(level);
+  if(inRange&&rule.set)Object.assign(out,rule.set);
+  const per=rule.perLevel&&rule.perLevel[String(level)];
+  if(per)Object.assign(out,per);
+  return out;
+}
+/** 把「想要的字段值」写进规则；等于原始值就删掉，保持覆盖文件干净。 */
+function setField(id,rawLevel,field,value){
+  const rec=state.skills.get(id);
+  // 统一模式传 null：拿一个「基准等级」的原值做比较，改动写进 set（对范围内所有等级生效）
+  const level=rawLevel==null?pickRefLevel(rec.levels.map(l=>l.level)):rawLevel;
+  const base=rec.byLevel.get(level);
+  if(!base)return;
+  const rule=ruleOf(id,true);
+  // 作用范围与当前选择保持一致
+  rule.levels=state.rangeMode==="custom"?[...state.picked].sort((a,b)=>a-b):"all";
+  if(rule.levels!=="all"&&!rule.levels.length)rule.levels="all";
+  const numFields=["power1","powerValue1","power2","powerValue2","power3","powerValue3","statusBit1","statusBit2","statusBit3",
+    "skillAtkType","area","round","atk_time","useMP","useHP","position","anime1","anime2","anime3","skillWeapon","type"];
+  const v=numFields.includes(field)?Number(value):String(value);
+  const write=(obj)=>{
+    if(String(base[field]==null?"":base[field])===String(v))delete obj[field];
+    else obj[field]=v;
+  };
+  if(rawLevel!=null&&state.perLevel){
+    rule.perLevel[String(rawLevel)]=rule.perLevel[String(rawLevel)]||{};
+    write(rule.perLevel[String(rawLevel)]);
+    if(!Object.keys(rule.perLevel[String(rawLevel)]).length)delete rule.perLevel[String(rawLevel)];
+  }else{
+    rule.set=rule.set||{};
+    write(rule.set);
+  }
+  if(!Object.keys(rule.set||{}).length&&!Object.keys(rule.perLevel||{}).length&&!rule._note)state.rules.delete(id);
+  else state.rules.set(id,rule);
+}
+$("#btn-help").onclick=()=>$("#help-dlg").showModal();
+for(const b of document.querySelectorAll("[data-close]"))b.onclick=()=>b.closest("dialog").close();
+
+/* ============================ 左侧列表 ============================ */
+function visibleSkills(){
+  const q=state.query.trim().toLowerCase();
+  const out=[];
+  for(const rec of state.skills.values()){
+    if(state.filter!=="all"&&!rec.sources.has(state.filter))continue;
+    if(state.onlyEdited&&!isEdited(rec.id))continue;
+    if(q){
+      const hay=(rec.id+" "+rec.name+" "+(rec.profession||"")+" "+(rec.category||"")+" "+sourceTags(rec)).toLowerCase();
+      if(!hay.includes(q))continue;
+    }
+    out.push(rec);
+  }
+  out.sort((a,b)=>a.id-b.id);
+  return out;
+}
+function renderList(){
+  const list=$("#skill-list");
+  list.innerHTML="";
+  if(!state.loaded){$("#list-count").textContent="尚未载入数据";return;}
+  const rows=visibleSkills();
+  $("#list-count").textContent="共 "+rows.length+" 个技能"+(rows.length>400?"（只显示前 400 个，请用搜索缩小）":"")+
+    (state.rules.size?" ｜ 已改 "+state.rules.size:"");
+  for(const rec of rows.slice(0,400)){
+    const li=el("li");
+    if(rec.id===state.selected)li.classList.add("active");
+    if(isEdited(rec.id))li.classList.add("edited");
+    li.appendChild(el("span","sid",String(rec.id)));
+    li.appendChild(el("span","sname",rec.name||"(无名)"));
+    const tags=sourceTags(rec);
+    if(tags)li.appendChild(el("span","tag",tags));
+    li.onclick=()=>{selectSkill(rec.id);};
+    list.appendChild(li);
+  }
+}
+function selectSkill(id){
+  state.selected=id;
+  const rule=state.rules.get(id);
+  state.rangeMode=rule&&Array.isArray(rule.levels)?"custom":"all";
+  state.picked=new Set(rule&&Array.isArray(rule.levels)?rule.levels:[]);
+  state.perLevel=!!(rule&&Object.keys(rule.perLevel||{}).length);
+  renderList();
+  renderEditor();
+  $("#edit-pane").scrollTop=0;
+}
+$("#search").oninput=e=>{state.query=e.target.value;renderList();};
+$("#only-edited").onchange=e=>{state.onlyEdited=e.target.checked;renderList();};
+for(const r of document.querySelectorAll("input[name=src]"))r.onchange=e=>{state.filter=e.target.value;renderList();};
+
+/* ============================ 右侧编辑 ============================ */
+function renderEditor(){
+  const pane=$("#edit-pane");
+  pane.innerHTML="";
+  if(!state.loaded||!state.selected){
+    pane.innerHTML='<div class="empty">左侧选一个技能开始编辑。<br>左边可以按名字/编号搜索。</div>';
+    return;
+  }
+  const rec=state.skills.get(state.selected);
+  const levels=rec.levels.map(l=>l.level);
+  const rule=state.rules.get(rec.id);
+
+  /* --- 头部 --- */
+  const head=el("div","skill-head");
+  const ttl=el("div","ttl");
+  ttl.appendChild(el("h2",null,rec.name||"(无名)"));
+  const meta=el("div","meta");
+  meta.appendChild(el("em",null,"#"+rec.id));
+  if(rec.profession)meta.appendChild(el("span",null,rec.profession));
+  if(rec.category)meta.appendChild(el("span",null,rec.category));
+  meta.appendChild(el("span",null,pickText(SKILL_TYPES,rec.type)));
+  meta.appendChild(el("span",null,levels[0]+"–"+levels[levels.length-1]+" 级"));
+  const pills=el("span");
+  if(rec.sources.has("career"))pills.appendChild(el("span","pill career","人物技能"));
+  if(rec.sources.has("equipment"))pills.appendChild(el("span","pill eq","装备技能"));
+  if(rec.sources.has("monster"))pills.appendChild(el("span","pill monster","怪物技能"));
+  if(rec.sources.has("local"))pills.appendChild(el("span","pill","本地新增"));
+  meta.appendChild(pills);
+  ttl.appendChild(meta);
+  head.appendChild(ttl);
+  if(isEdited(rec.id)){
+    const clear=el("button",null,"清除此技能的覆盖");
+    clear.onclick=()=>{state.rules.delete(rec.id);renderList();renderEditor();toast("已清除");};
+    head.appendChild(clear);
+  }
+  pane.appendChild(head);
+
+  /* --- 作用范围 --- */
+  const range=el("div","card");
+  range.appendChild(el("h2",null,"作用范围"));
+  const row1=el("div","row");
+  row1.appendChild(el("span","lbl","等级"));
+  const mkRadio=(label,val)=>{
+    const l=el("label");
+    const r=document.createElement("input");r.type="radio";r.name="range";r.checked=state.rangeMode===val;
+    r.onchange=()=>{
+      state.rangeMode=val;
+      const ru=ruleOf(rec.id,false);
+      if(ru){ru.levels=val==="all"?"all":[...state.picked].sort((a,b)=>a-b);if(val==="custom"&&!state.picked.size)state.picked=new Set(levels);}
+      renderEditor();
+    };
+    l.appendChild(r);l.appendChild(document.createTextNode(label));
+    return l;
+  };
+  row1.appendChild(mkRadio("全部等级","all"));
+  row1.appendChild(mkRadio("指定等级","custom"));
+  if(state.rangeMode==="custom"){
+    const quick=el("span","hint");
+    const b1=el("button");b1.textContent="全选";b1.style.marginLeft="8px";
+    b1.onclick=()=>{state.picked=new Set(levels);syncRange();renderEditor();};
+    const b2=el("button");b2.textContent="清空";b2.style.marginLeft="4px";
+    b2.onclick=()=>{state.picked=new Set();syncRange();renderEditor();};
+    const b3=el("button");b3.textContent="1–10";b3.style.marginLeft="4px";
+    b3.onclick=()=>{state.picked=new Set(levels.filter(n=>n<=10));syncRange();renderEditor();};
+    quick.appendChild(b1);quick.appendChild(b2);quick.appendChild(b3);
+    row1.appendChild(quick);
+  }
+  range.appendChild(row1);
+  if(state.rangeMode==="custom"){
+    const box=el("div","levels");
+    for(const lv of levels){
+      const l=el("label");
+      const c=document.createElement("input");c.type="checkbox";c.checked=state.picked.has(lv);
+      c.onchange=()=>{c.checked?state.picked.add(lv):state.picked.delete(lv);syncRange();renderEditor();};
+      l.appendChild(c);l.appendChild(document.createTextNode(String(lv)));
+      box.appendChild(l);
+    }
+    range.appendChild(box);
+  }
+  const modeRow=el("div","row");
+  modeRow.style.marginTop="10px";
+  const pl=el("label");
+  const plc=document.createElement("input");plc.type="checkbox";plc.checked=state.perLevel;
+  plc.onchange=()=>{state.perLevel=plc.checked;renderEditor();};
+  pl.appendChild(plc);pl.appendChild(document.createTextNode(" 逐级不同值（表格编辑）"));
+  modeRow.appendChild(pl);
+  if(state.perLevel){
+    modeRow.appendChild(el("span","hint","表格里改哪一级，就只对那一级生效；其余级别仍用上面的统一值。"));
+  }
+  range.appendChild(modeRow);
+  pane.appendChild(range);
+
+  /* --- 效果槽 / 逐级表格 --- */
+  const isPassive=effective(rec.id,levels[0]).type===1;
+  const refLevel=pickRefLevel(levels);
+  if(state.perLevel)buildPerTable(pane,rec,levels);
+  else buildSlots(pane,rec,refLevel,isPassive);
+
+  /* --- 技能参数（类型始终可改，被动技能隐藏攻击参数）--- */
+  buildParams(pane,rec,refLevel);
+
+  /* --- 预览 --- */
+  buildPreview(pane,rec,levels);
+}
+function pickRefLevel(levels){
+  if(state.rangeMode==="custom"&&state.picked.size)return [...state.picked].sort((a,b)=>a-b)[0];
+  return levels[0];
+}
+function syncRange(){
+  const ru=ruleOf(state.selected,false);
+  if(!ru)return;
+  ru.levels=[...state.picked].sort((a,b)=>a-b);
+  if(!ru.levels.length){ru.levels="all";state.rangeMode="all";}
+}
+
+const SLOT_FIELDS=[["power1","powerValue1","statusBit1"],["power2","powerValue2","statusBit2"],["power3","powerValue3","statusBit3"]];
+function powerOptions(select,current){
+  select.innerHTML="";
+  const add=(value,text)=>{
+    const o=document.createElement("option");o.value=String(value);o.textContent=text;select.appendChild(o);
+  };
+  add(0,"（不产生效果）");
+  for(const [id,info] of Object.entries(POWERS)){
+    if(Number(id)===0)continue;
+    add(id,info.n||("未命名（"+id+"）"));
+  }
+  const v=String(current||0);
+  if(!POWERS[v])add(v,"未知（"+v+"）");
+  select.value=v;
+  select.title="写入值："+v;   // 界面只看中文名，编号放在悬停提示里方便排查
+}
+function bufferOptions(select,current){
+  select.innerHTML="";
+  BUFFERS.forEach((name,i)=>{
+    const o=document.createElement("option");
+    o.value=String(i);o.textContent=name||("未命名（"+i+"）");
+    select.appendChild(o);
+  });
+  const v=String(current||0);
+  if(BUFFERS[Number(v)]===undefined){const o=document.createElement("option");o.value=v;o.textContent="未知（"+v+"）";select.appendChild(o);}
+  select.value=v;
+  select.title="写入值："+v;
+}
+function slotRow(rec,levelSpec,vals,fields,label){
+  const row=el("div","slot");
+  row.appendChild(el("span","no",label));
+  const pw=el("select","pw");powerOptions(pw,vals[fields[0]]);
+  const pv=el("input","v");pv.type="number";pv.value=vals[fields[1]]||0;
+  const bt=el("select","bt");bufferOptions(bt,vals[fields[2]]);
+  const unit=el("span","unit",powerPercent(vals[fields[0]])?"%":"");
+  pw.onchange=()=>applyEdit(rec,levelSpec,fields[0],pw.value);
+  pv.onchange=()=>applyEdit(rec,levelSpec,fields[1],pv.value);
+  pv.oninput=()=>{/* 实时预览用 */}
+  bt.onchange=()=>applyEdit(rec,levelSpec,fields[2],bt.value);
+  row.appendChild(pw);row.appendChild(pv);row.appendChild(unit);row.appendChild(bt);
+  const name=el("span","hint",describePower(Number(vals[fields[0]]),Number(vals[fields[1]]))||"");
+  row.appendChild(name);
+  return row;
+}
+function applyEdit(rec,levelSpec,field,value){
+  // 统一模式传 null：写进 set（作用范围内所有等级一起改）；逐级模式才带上具体等级
+  setField(rec.id,state.perLevel?levelSpec:null,field,value);
+  renderList();renderEditor();
+}
+function buildSlots(pane,rec,level,isPassive){
+  const card=el("div","card");
+  const h=el("h2",null,"效果（基准 "+(state.rangeMode==="all"?"全部等级":[...state.picked].sort((a,b)=>a-b).join(",")||"—")+" 级）");
+  card.appendChild(h);
+  const vals=effective(rec.id,level);
+  SLOT_FIELDS.forEach((fields,i)=>{
+    card.appendChild(slotRow(rec,level,vals,fields,"槽"+(i+1)));
+  });
+  card.appendChild(el("div","hint","数值为负＝削减，为正＝增加；槽位与「附加状态」一一对应（槽1↔状态1）。"));
+  pane.appendChild(card);
+}
+/* 技能参数：有官方文案表的走下拉（只显示中文名，写入值藏在 option.value 里），
+   纯数值的（回合/次数/耗蓝耗血）保留输入框并标注单位。 */
+const PARAM_FIELDS=[
+  {field:"type",label:"技能类型",table:SKILL_TYPES},
+  {field:"skillWeapon",label:"武器限制",table:SKILL_WEAPONS,wide:true,active:true},
+  {field:"skillAtkType",label:"攻击方式",table:SKILL_ATK_TYPES,active:true},
+  {field:"area",label:"作用范围",table:SKILL_AREAS,active:true},
+  {field:"position",label:"站位/目标",table:SKILL_POSITIONS,active:true},
+  {field:"round",label:"持续回合",unit:"回合",active:true},
+  {field:"atk_time",label:"攻击次数",unit:"次",active:true},
+  {field:"useMP",label:"消耗法力",unit:"点",active:true},
+  {field:"useHP",label:"消耗生命",unit:"点",active:true}
+];
+function paramControl(rec,level,def,value){
+  const v=Number(value==null?0:value);
+  if(def.table&&def.table.length){
+    const sel=document.createElement("select");
+    def.table.forEach((name,i)=>{
+      const o=document.createElement("option");
+      o.value=String(i);o.textContent=name||("未命名（"+i+"）");
+      sel.appendChild(o);
+    });
+    if(!def.table[v]){   // 取值超出文案表：保留原值，别让用户的技能被悄悄改掉
+      const o=document.createElement("option");
+      o.value=String(v);o.textContent="未知（"+v+"）";
+      sel.appendChild(o);
+    }
+    sel.value=String(v);
+    sel.onchange=()=>applyEdit(rec,level,def.field,sel.value);
+    return sel;
+  }
+  const inp=document.createElement("input");
+  inp.type="number";inp.value=v;
+  inp.onchange=()=>applyEdit(rec,level,def.field,inp.value);
+  return inp;
+}
+function buildParams(pane,rec,level){
+  const card=el("div","card");
+  card.appendChild(el("h2",null,"技能参数"));
+  const vals=effective(rec.id,level);
+  const isPassive=Number(vals.type)===1;
+  const grid=el("div","params");
+  for(const def of PARAM_FIELDS){
+    if(def.active&&isPassive)continue;
+    const cell=el("div","pcell"+(def.wide?" wide":""));
+    cell.dataset.field=def.field;   // 便于自测/调试定位
+    cell.appendChild(el("span","plbl",def.label));
+    cell.appendChild(paramControl(rec,level,def,vals[def.field]));
+    if(def.unit)cell.appendChild(el("span","punit",def.unit));
+    grid.appendChild(cell);
+  }
+  card.appendChild(grid);
+  if(isPassive)card.appendChild(el("div","hint","被动技能不写攻击方式/范围/回合这些字段；把「技能类型」改成「主动」或「自动」它们就会出现。"));
+  pane.appendChild(card);
+}
+/** 表格单元格：平时显示中文名，点一下才变成下拉（避免一屏塞几千个 option）。 */
+function inlinePick(cell,table,current,onPick,text){
+  cell.classList.add("pick");
+  cell.textContent=text;
+  cell.title="点击修改";
+  cell.onclick=()=>{
+    if(cell.querySelector("select"))return;
+    const sel=document.createElement("select");
+    table.forEach((name,i)=>{
+      const o=document.createElement("option");
+      o.value=String(i);o.textContent=name||("未命名（"+i+"）");
+      sel.appendChild(o);
+    });
+    const v=Number(current==null?0:current);
+    if(!table[v]){const o=document.createElement("option");o.value=String(v);o.textContent="未知（"+v+"）";sel.appendChild(o);}
+    sel.value=String(v);
+    sel.onchange=()=>onPick(sel.value);
+    cell.textContent="";
+    cell.appendChild(sel);
+    sel.focus();
+  };
+}
+function buildPerTable(pane,rec,levels){
+  const card=el("div","card");
+  card.appendChild(el("h2",null,"逐级表格（改哪格，哪一级单独生效）"));
+  const wrap=el("div","per-wrap");
+  const table=el("table","per");
+  const thead=document.createElement("thead");
+  const hr=document.createElement("tr");
+  for(const t of ["等级","类型","效果1","值1","状态1","效果2","值2","状态2","效果3","值3","状态3"])hr.appendChild(el("th",null,t));
+  thead.appendChild(hr);table.appendChild(thead);
+  const body=document.createElement("tbody");
+  for(const lv of levels){
+    const tr=document.createElement("tr");
+    const rule=state.rules.get(rec.id);
+    const dirty=rule&&rule.perLevel&&rule.perLevel[String(lv)];
+    if(dirty)tr.classList.add("dirty");
+    const vals=effective(rec.id,lv);
+    tr.appendChild(el("td","lv",String(lv)));
+    // 类型
+    const tdType=el("td");
+    const tSel=document.createElement("select");
+    SKILL_TYPES.forEach((name,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=name||("未命名（"+i+"）");tSel.appendChild(o);});
+    if(!SKILL_TYPES[Number(vals.type)]){const o=document.createElement("option");o.value=String(vals.type);o.textContent="未知（"+vals.type+"）";tSel.appendChild(o);}
+    tSel.value=String(vals.type||0);
+    tSel.onchange=()=>applyPerEdit(rec,lv,"type",tSel.value);
+    tdType.appendChild(tSel);tr.appendChild(tdType);
+    // 三组效果：效果编号与状态都用「点击改」的中文单元格，值直接填数字
+    for(const [a,b,c] of SLOT_FIELDS){
+      const tdp=el("td");
+      inlinePick(tdp,POWER_TABLE,vals[a],v=>applyPerEdit(rec,lv,a,v),vals[a]?powerName(vals[a]):"—");
+      tr.appendChild(tdp);
+      const tdv=el("td");
+      const vi=document.createElement("input");vi.type="number";vi.value=vals[b]||0;vi.onchange=()=>applyPerEdit(rec,lv,b,vi.value);tdv.appendChild(vi);tr.appendChild(tdv);
+      const tdb=el("td");
+      inlinePick(tdb,BUFFERS,vals[c],v=>applyPerEdit(rec,lv,c,v),bufferName(vals[c]||0));
+      tr.appendChild(tdb);
+    }
+    body.appendChild(tr);
+  }
+  table.appendChild(body);wrap.appendChild(table);card.appendChild(wrap);
+  card.appendChild(el("div","hint","效果/状态点一下变下拉直接选名字；紫色行表示这一级被单独改过（其余等级仍用上面的统一值）。"));
+  pane.appendChild(card);
+}
+function applyPerEdit(rec,level,field,value){
+  const rule=ruleOf(rec.id,true);
+  rule.perLevel=rule.perLevel||{};
+  rule.perLevel[String(level)]=rule.perLevel[String(level)]||{};
+  const base=state.skills.get(rec.id).byLevel.get(level);
+  const v=field==="type"||field.startsWith("power")||field.startsWith("statusBit")?Number(value):value;
+  if(String(base[field]==null?"":base[field])===String(v))delete rule.perLevel[String(level)][field];
+  else rule.perLevel[String(level)][field]=v;
+  if(!Object.keys(rule.perLevel[String(level)]).length)delete rule.perLevel[String(level)];
+  if(!Object.keys(rule.set||{}).length&&!Object.keys(rule.perLevel||{}).length&&!rule._note)state.rules.delete(rec.id);
+  renderList();renderEditor();
+}
+function buildPreview(pane,rec,levels){
+  const card=el("div","card");
+  card.appendChild(el("h2",null,"预览"));
+  const shown=state.rangeMode==="custom"&&state.picked.size?[...state.picked].sort((a,b)=>a-b):[pickRefLevel(levels)];
+  const box=el("div","preview");
+  for(const lv of shown.slice(0,24)){
+    const vals=effective(rec.id,lv);
+    const lines=[];
+    for(const [a,b,c] of SLOT_FIELDS){
+      const d=describePower(Number(vals[a]),Number(vals[b]));
+      if(d)lines.push(d+(vals[c]?"（附加："+bufferName(vals[c])+"）":""));
+    }
+    const row=el("div");
+    row.textContent="Lv"+lv+"："+(lines.length?lines.join("　"):"（无效果）")+
+      (vals.round>0?"　持续 "+vals.round+" 回合":"");
+    box.appendChild(row);
+  }
+  if(shown.length>24)box.appendChild(el("div","hint","（只预览前 24 级）"));
+  card.appendChild(box);
+  const ref=effective(rec.id,pickRefLevel(levels));
+  try{
+    // 技能**等级定义**的 wire 一律走 item=false（服务端 applySkillOverrides 与
+    // restoration.activeSkills 都用 skillBytes(data) 重算）；item=true 只用于
+    // 物品定义里内嵌的那份技能，多/少一个字节都会与客户端对不上。
+    const bytes=skillBytesBrowser(ref);
+    card.appendChild(el("div","wire","wire："+bytes.length+" 字节 ｜ base64 "+bytesToBase64(bytes).slice(0,44)+"…"));
+  }catch(err){
+    card.appendChild(el("div","wire bad","wire 编码失败："+err.message));
+  }
+  if(ref&&ref.info&&String(ref.info).trim()){
+    const after=dropStaleEffectLines(ref.info);
+    card.appendChild(el("div","hint",after===ref.info
+      ? "技能说明（游戏里接在效果行后面）："+JSON.stringify(String(ref.info))
+      : "技能说明：原文里构建工具写的旧效果行会被自动清掉（保留来源标题）→ "+JSON.stringify(after)));
+  }
+  pane.appendChild(card);
+}
+
+/* ============================ 导出 / 保存 ============================ */
+const DEFAULT_README=[
+  "本地技能效果覆盖层。data/career-skills.json 是上游验收契约（与 2026-09-23 原始包",
+  "逐字节一致，tests/career-skills.test.mjs 会验），不能直接改；要调整某个技能的",
+  "效果就在这里写覆盖，由 lib/restoration.mjs 在建运行时技能表时套用。",
+  "覆盖只允许改 wire 字段（power/powerValue/statusBit 等），改完会自动重算",
+  "powers 数组与 wireBase64，客户端收到的定义与战斗结算保持一致。",
+  "改了 power/powerValue/statusBit 时，还会自动清掉 info（技能说明）里构建工具写的",
+  "旧效果行（保留来源标题）—— 客户端会把 info 原样接在效果行后面显示，不清就会新旧混排。",
+  "skills[技能id].levels = 'all' 或等级数组；set = 这些等级统一改成这套值；",
+  "perLevel = 逐级给不同值（与 set 可叠加，perLevel 优先）。"
+];
+function revisionValue(){
+  const d=new Date(),p=n=>String(n).padStart(2,"0");
+  return "local-skill-overrides-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-v1";
+}
+function buildOverrideText(){
+  const skills={};
+  for(const [id,rule] of [...state.rules.entries()].sort((a,b)=>a[0]-b[0])){
+    const entry={};
+    if(rule._note)entry._note=rule._note;
+    const hasSet=rule.set&&Object.keys(rule.set).length;
+    const hasPer=rule.perLevel&&Object.keys(rule.perLevel).length;
+    if(!hasSet&&!hasPer)continue;
+    if(state.perLevel||hasPer){
+      entry.levels=rule.levels==="all"?"all":rule.levels;
+      if(hasSet)entry.set=rule.set;
+      if(hasPer)entry.perLevel=rule.perLevel;
+    }else{
+      entry.levels=rule.levels==="all"?"all":rule.levels;
+      entry.set=rule.set;
+    }
+    skills[String(id)]=entry;
+  }
+  return JSON.stringify({_readme:state.readme||DEFAULT_README,revision:revisionValue(),skills},null,1)+"\n";
+}
+function download(name,text){
+  const blob=new Blob([text],{type:"application/json;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+}
+$("#btn-download").onclick=()=>{
+  if(!state.rules.size){toast("还没有任何改动");return;}
+  download("local-skill-overrides.json",buildOverrideText());
+  toast("已下载，请覆盖到 data/ 目录");
+};
+$("#btn-save").onclick=async()=>{
+  if(!state.rules.size){toast("还没有任何改动");return;}
+  const text=buildOverrideText();
+  if(typeof window.showDirectoryPicker==="function"){
+    try{
+      let dir=state.dirHandle;
+      if(!dir){
+        dir=await window.showDirectoryPicker({mode:"readwrite",id:"worldol-data"});
+        state.dirHandle=dir;
+      }
+      const fh=await dir.getFileHandle("local-skill-overrides.json",{create:true});
+      const w=await fh.createWritable();
+      await w.write(text);await w.close();
+      status("已写入所选目录下的 <b>local-skill-overrides.json</b>（"+state.rules.size+" 条覆盖）。接着跑 构建APK.ps1 即可。","ok");
+      toast("写入成功");
+      return;
+    }catch(err){
+      if(err&&err.name==="AbortError"){state.dirHandle=null;return;}
+      status("直接写入失败（"+err.message+"），已改为下载文件，请手动放进 data/ 目录。","err");
+    }
+  }
+  download("local-skill-overrides.json",text);
+  toast("浏览器不支持直接写入，已下载文件");
+};
+
+/* ============================== 初始化 ============================== */
+(function bootstrap(){
+  if(!Object.keys(POWERS).length){
+    status("游戏标签表是空的 —— 请先跑 <b>node tools/build-skill-editor-data.mjs</b> 生成（需要 client/ 与 analysis/）。","err");
+    return;
+  }
+  // 怪物技能是内嵌的，打开就能改；人物/装备技能要载入 data 目录
+  const map=collectSkills({});
+  if(!map.size)return;
+  state.skills=map;
+  state.loaded=true;
+  $("#btn-save").disabled=false;
+  $("#btn-download").disabled=false;
+  renderList();
+  const monsterCount=Object.keys(MONSTER_SKILLS).length;
+  status("已内置 <b>"+monsterCount+"</b> 个怪物自带技能（列表里带「怪物」标签，可直接改）。"
+    +"要同时改人物与装备技能，点左上角 <b>载入 data 目录</b> 选 data 文件夹。");
+})();
+</script>
+</body>
+</html>

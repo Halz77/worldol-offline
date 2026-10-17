@@ -84,6 +84,7 @@ function harness(source=SOURCE){
  const decoded=[];
  const sent=[];
  const notifies=[];
+ const sceneResets=[];
  let worldRefreshes=0;
  const listPayload={
   slot:30,name:'六耳猕猴',current:null,
@@ -101,7 +102,12 @@ function harness(source=SOURCE){
  };
  const modules={
   288:{PetInfoMdr},
-  5:{default:{myPlayer:{id:7,refreshWorldSprite(){worldRefreshes++;}}}},
+  // myPlayer 是玩家 VO：pet 指向场景里那只宠物对象（同一个引用），
+  // getPet()/setPet() 都是主包 PlayerVO 上的方法 —— setPet(vo,true) 会发 ON_PET_ADD。
+  5:{default:{myPlayer:{id:7,pet:null,
+    refreshWorldSprite(){worldRefreshes++;},
+    getPet(){return this.pet;},
+    setPet(vo,notify){sceneResets.push({vo,notify});this.pet=vo;}}}},
   1:{default:{alertMessage:message=>alerts.push(message)}},
   // 事件常量模块（主包 module 2 同时导出 BagEvent / MainEvent / PetEvent）
   2:{BagEvent:{BAG_ITEM_UPDATE:'bag_item_update',BAG_EQUIPMENT_UPDATE:'bag_equipment_update'},
@@ -120,7 +126,7 @@ function harness(source=SOURCE){
  const req=id=>modules[id];
  vm.runInNewContext(source,{window,document,eui,egret,Promise,JSON,Number,Error,Object,String,Array,console});
  const api=window.installPetIllusion(req);
- assert.equal(api.revision,'pet-illusion-v3');
+ assert.equal(api.revision,'pet-illusion-v4');
  const mdr=new PetInfoMdr();
  mdr._view.__mdr__=mdr;
  mdr._view.parent=new FakeNode('parent');
@@ -134,7 +140,7 @@ function harness(source=SOURCE){
  const tap=node=>{
   for(const item of [...node.listeners])if(item.type===egret.TouchEvent.TOUCH_TAP)item.listener({target:node});
  };
- return {api,eui,egret,document,window,mdr,button,tap,calls,alerts,decoded,sent,notifies,listPayload,fail,listPage,world,
+ return {api,eui,egret,document,window,mdr,button,tap,calls,alerts,decoded,sent,notifies,sceneResets,listPayload,fail,listPage,world,
   worldRefreshes:()=>worldRefreshes};
 }
 
@@ -206,13 +212,59 @@ test('幻化后背包宠物道具、宠物列表、场景贴图都要跟着更�
  assert.equal(h.mdr.pet.petItem.petHeadIcon,22,'宠物头像用的 petItem.petHeadIcon 要更新');
  // 通知：背包/宠物格重画 + 宠物头像组件
  assert.deepEqual(h.notifies.map(item=>item.type),['bag_item_update','ON_PET_ATTR_UPDATE']);
- // 场景里的随行宠物贴图：靠玩家 refreshWorldSprite 连带重建（光发 ON_PET_ADD 不够）
+ // 场景里的随行宠物贴图：光靠玩家 refreshWorldSprite 还不够 —— 场景里那只宠物实体是在
+ // 「玩家模型进场景」那一次把数据绑死的（主包 SceneController.addObj 里的 `p.vo = t.pet`），
+ // 服务端每次下发 playerDetail 又会造一个新的宠物 VO，实体手里那个就过期了。
+ // 所以还要按原生「宠物出战」那条路重绑一次：setPet(vo, true) → ON_PET_ADD → 实体 o.vo=vo; o.onAdded()。
  assert.equal(h.worldRefreshes(),1,'要触发一次玩家/随行宠物的贴图重建');
+ assert.equal(h.sceneResets.length,1,'幻化后要把场景里的宠物实体重新绑一次');
+ assert.equal(h.sceneResets[0].vo,h.world.pet,'重新绑的必须是出战宠物那个对象');
+ assert.equal(h.sceneResets[0].notify,true,'必须带通知（true），否则场景实体不会换数据');
  // 宠物列表页要就地重建一次（它只在 onShow 时重建，幻化时它并没有被重新显示）
  assert.equal(h.listPage.rebuilds,1,'宠物列表页要重新组装一次');
  // 解析器必须写进「场景里那只宠物对象」本身（myPlayer.pet），否则随行宠物贴图不会变
  assert.equal(h.decoded[0],h.world.pet,'要把新外观写回出战宠物同一个对象');
  assert.equal(h.mdr.pet.petItem.icon,1111);
+});
+
+test('服务端重建过宠物 VO 后（对象引用变了、槽位不变）场景照样要刷新',async()=>{
+ // 服务端每次下发 playerDetail 都会造一个新的宠物 VO，myPlayer.pet 被换成新对象，
+ // 而界面里 selectedPet() 拿到的还是旧对象 —— 两者不再是同一个引用。
+ // 只按引用判定「是不是出战宠物」会在这里漏判，场景永远不刷新。
+ // 这正是玩家报的那个「幻化完界面变了、地上那只没变」。
+ const h=harness();
+ const fresh={petItem:{slotPos:30,icon:7,petHeadIcon:8},icon1:1,PetHeadIcon:2,modelForPet:3};
+ h.world.pet=fresh;                       // 出战宠物换成了新对象，槽位仍是 30
+ h.mdr.addListeners();h.mdr.onShow();
+ h.tap(h.button());
+ await tick();
+ const dialog=h.document.body.children[0];
+ const listNode=dialog.children.find(child=>child.className==='pet-illusion-list');
+ listNode.children[0].onclick();
+ await tick();
+ await tick();
+ assert.notEqual(h.world.pet,h.mdr.pet,'前置条件：出战 VO 与界面选中的不是同一个对象');
+ assert.equal(h.sceneResets.length,1,'槽位相同就该认作同一只，仍然要重绑场景');
+ assert.equal(h.sceneResets[0].vo,fresh,'重绑的是场景当前拿着的那个 VO');
+});
+
+test('幻化的不是出战宠物时，不去动场景里的那只',async()=>{
+ const h=harness();
+ // 把「宠物界面选中的那只」换成另一只（背包里的第二只宠物），出战宠物还是原来那只。
+ // 换它的外观不该影响地上跟着走的那只 —— 更不能把没出战的宠物召出来。
+ const other={petItem:{slotPos:31,icon:9,petHeadIcon:10},icon1:5,PetHeadIcon:6,modelForPet:7};
+ h.mdr.pet=other;h.mdr._proxy.data.getSelectedPet=()=>other;
+ h.mdr.addListeners();h.mdr.onShow();
+ h.tap(h.button());
+ await tick();
+ const dialog=h.document.body.children[0];
+ const listNode=dialog.children.find(child=>child.className==='pet-illusion-list');
+ listNode.children[0].onclick();
+ await tick();
+ await tick();
+ assert.equal(h.decoded[0],other,'新外观写回的是界面里选中的那只');
+ assert.equal(h.world.pet.petItem.slotPos,30,'出战宠物不能被换掉');
+ assert.equal(h.sceneResets.length,0,'幻化的不是在出战的那只 → 不该动场景实体');
 });
 
 test('重拉宠物详情失败时不写坏背包道具，幻化本身照常成功',async()=>{

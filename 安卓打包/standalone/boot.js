@@ -84,6 +84,14 @@
 
   function placeholder(text) { return !text || text.charAt(0) === '_'; }
 
+  // 把构建指纹交给运行核心：VFS 按需抓取 data/*.json 时会在 URL 上带它。
+  //
+  // 为什么必须带：那些资料是服务端用同步 XHR 现取的，URL 常年不变、又没有版本号，
+  // 覆盖安装后 WebView 的 HTTP 缓存会把**上一版**的内容喂给服务端 —— 表现为
+  // 「补丁在 APK 里，商店里的新宠物/新道具就是不出现，分类名里的『N 种』也停在上一版」。
+  // primeChangedAssets 只刷客户端自己写死 URL 的那两个资源，管不到这里。
+  if (!placeholder(BUILD_ID)) globalThis.__worldolBuild = BUILD_ID;
+
   async function primeChangedAssets() {
     if (placeholder(BUILD_ID) || placeholder(MAIN_JS)) return;
     var changed = true;

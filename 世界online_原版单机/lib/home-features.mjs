@@ -4,6 +4,7 @@ import {equipment,planItemRewards} from './restoration.mjs';
 import {official,officialMaps,origins} from './official-data.mjs';
 import {isNewbieMission} from './newbie-missions.mjs';
 import {planCommerceAction} from './native-commerce.mjs';
+import {trialSnapshot,planTrialAction,TRIAL_ACTIONS} from './trial-challenge.mjs';
 
 export const homeEntries=[
  ['charge','充值','原版首充、每日首充、特惠礼包和充值奖励；单机免费领取并保存。'],
@@ -13,7 +14,7 @@ export const homeEntries=[
  ['notice','公告','单机版欢迎公告与非商用说明。'],
  ['tower','永泽塔','普通120层、困难12关及160种怪物属性预览；阵容、技能、AI与场景待补。'],
  ['mine','矿洞','已采集5个矿点入口及次数配置；产出、宠物驻守与战斗规则待补。'],
- ['trial','试炼','试炼关卡、战斗配置与奖励结算待补。'],
+ ['trial','试炼','无限试炼：三只 BOSS 按时段轮换，按造成的伤害比例领三档奖励。'],
  ['bulk','超值','超值商品目录、价格与奖励配置待补。'],
  ['buddy','聚义酒馆','伙伴招募、成长、技能及抽取概率待补；可使用已实装的军团五人队伍。'],
  ['daily','日常','日常任务、前置任务、完成进度和活跃奖励。'],
@@ -26,7 +27,7 @@ export const homeEntries=[
  ['map','地图','进入已恢复的地图。'],
  ['shop','商店','已收录的装备、材料与技能商店。'],
  ['city','主城','个人城市、等级、繁荣度、军力、金库及城市任务。'],
-].map(([id,name,description])=>({id,name,description,pending:['lottery','mine','trial','bulk','buddy','country'].includes(id)}));
+].map(([id,name,description])=>({id,name,description,pending:['lottery','mine','bulk','buddy','country'].includes(id)}));
 export function homeState(p,now=Date.now()){
  const stored=p.homeFeatures||{},day=dailyKey(now);
  return {version:1,vipGrowthClaimed:!!stored.vipGrowthClaimed,vipExperience:stored.vipExperience||0,
@@ -48,6 +49,7 @@ export function homeSnapshot(p,context,now=Date.now()){
   online:{seconds,rewards:(data.online?.levels||[]).map(r=>({minutes:r.minutes,items:r.items.map(itemSummary),currencies:r.currencies,claimed:state.onlineClaimed.includes(r.minutes),ready:seconds>=r.minutes*60,pending:r.currencies.some(c=>![-1,-2,-3].includes(c.id))})).sort((a,b)=>a.minutes-b.minutes)},
   tower:data.tower.map(t=>({mode:t.mode,levels:t.levels.map(f=>({...f,previewAvailable:towerPreviews.has(f.id)}))})),
   dungeons:official.maps.filter(m=>!m.cityTemplate).map(m=>({id:m.id,name:m.name,npcs:m.npcs.length,missions:official.missions.filter(q=>origins(q).some(o=>o.mapId===m.id)).length})),
+  trial:trialSnapshot(p,now),
   daily:dailySnapshot(p,now),mail:[],lottery:homeFeatureCatalogs.lottery,mine:homeFeatureCatalogs.mine,
   newbie:official.missions.filter(q=>isNewbieMission(q.id)).map(q=>({id:q.id,name:q.name,level:q.level,completed:(p.quests?.completed||[]).includes(q.id),active:!!p.quests?.active?.[q.id],locations:origins(q).map(o=>({...o,mapName:officialMaps.get(o.mapId)?.name}))})),
  };
@@ -58,10 +60,11 @@ function money(p,key,amount){
 }
 export function planHomeAction(p,request,context,now=Date.now()){
  if(request?.action==='commerce'){const result=planCommerceAction(p,request,now);result.next.homeFeatures=homeState(result.next,now);return result;}
- if(!request||!['charge','vip-daily','vip-growth','online','vip-exp'].includes(request.action))throw Error('未知功能操作。');
+ if(!request||!['charge','vip-daily','vip-growth','online','vip-exp',...TRIAL_ACTIONS].includes(request.action))throw Error('未知功能操作。');
  const next=structuredClone(p),state=homeState(next,now);next.homeFeatures=state;
  const result={next,items:[],currencies:{gold:0,silver:0,coins:0},action:request.action};
- if(request.action==='charge'){money(next,request.currency,request.amount);result.currencies[request.currency]=request.amount;}
+ if(TRIAL_ACTIONS.includes(request.action))Object.assign(result,planTrialAction(next,request,context,now));
+ else if(request.action==='charge'){money(next,request.currency,request.amount);result.currencies[request.currency]=request.amount;}
  else if(request.action==='vip-exp'){
   if(vipBenefits(p).level!==1)throw Error('已核实的经验升级仅包含VIP1至VIP2，其他等级待补。');
   if(state.vipExperience>=data.vip.nextLevelExp)throw Error('VIP1经验已满，请将VIP等级设置为2。');
@@ -85,8 +88,6 @@ export function planHomeAction(p,request,context,now=Date.now()){
  }
  const plan=planItemRewards(next,result.items);next.inventory=plan.inventory;result.added=plan.added;return result;
 }
-export function towerInfo(mode){
- const tower=data.tower.find(t=>t.mode===mode);if(!tower)throw Error('没有这个爬塔模式。');
- return {id:0,leftCount:0,totalCount:0,score:0,modeType:mode,isMock:false,isChallenge:false,sweepItem:tower.sweepItem,
-  infos:tower.levels.map(f=>({...f,state:1,receivedFirst:false,receivedNormal:false,info:f.info+'\n【待补】战斗阵容、技能、AI和场景尚未录全，可查看已采集的怪物属性。'}))};
-}
+// 塔信息已挪到 lib/climb-tower.mjs（那里要读「每日次数 / 通关记录 / 逐层解锁」），
+// 这里保留同名重导出，老的调用点与测试不用改 import 路径。
+export {towerInfo} from './climb-tower.mjs';

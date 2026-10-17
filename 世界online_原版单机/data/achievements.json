@@ -1,0 +1,823 @@
+{
+ "schema": 1,
+ "revision": "2026-09-30-standalone-v2",
+ "notes": [
+  "官方成就进度与奖励规则未录到（11023/11024 只有空包），本表为单机推算规则：",
+  "属性成就 400/1000/2500 档、充值成就档及对应称号取自社区公开攻略（见 community-titles.json 来源），",
+  "等级/传奇/杀怪/黄金/VIP 档为单机自拟，奖励数值按单机经济自定。",
+  "大类型映射（1个人成长 2任务成就 3荣耀 4综合）官方未录到，按常识归类；客户端按小类型(1-14)请求列表，不影响功能。",
+  "metric.kind: level人物等级 legend传奇等级 stat最终属性(base下标0力1体2敏3智4感) recharge累计充值元 kills累计杀怪 gold持有黄金 vipVIP等级。",
+  "v1.7.4 批次（id 100-110，配称号 314-324）：metric.kind 新增 illusion已幻化件数 fashion/distinct时装 mount/distinct坐骑 pet宠物数 wins战斗胜场 point成就点；称号颜色见 community-titles.json。",
+    "id 111「神话·虎威天纵」：metric kind=mythicSpear（持有 9300017 即达成），奖励称号「神威如龙」（community-titles id 325，含 power3 扩展位）。",
+    "id 112-114（2026-10-06 用户需求，配称号 326-328）：metric kind=mythicFan（玄枢卧龙·八阵天章 9300016）/ mythicChunqiu（春秋·孤行 9300015）/ mythicTwinSwords（飞景 9300003 与流彩 9300004 两把都要，用户拍板）；均「达成成就→领取成就奖励」获得对应称号，称号属性走 power1/2 + power3 扩展位。"
+  ],
+ "bigTypes": {
+  "1": [
+   2,
+   5,
+   11,
+   14
+  ],
+  "2": [
+   9,
+   13
+  ],
+  "3": [
+   3,
+   6,
+   10
+  ],
+  "4": [
+   1,
+   4,
+   7,
+   8,
+   12
+  ]
+ },
+ "achievements": [
+  {
+   "id": 1,
+   "type": 2,
+   "name": "初入江湖",
+   "point": 5,
+   "title": "",
+   "desc": "人物等级达到10级。",
+   "exp": 2000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 5000,
+   "metric": {
+    "kind": "level",
+    "threshold": 10
+   }
+  },
+  {
+   "id": 2,
+   "type": 2,
+   "name": "小有所成",
+   "point": 10,
+   "title": "",
+   "desc": "人物等级达到30级。",
+   "exp": 30000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 20000,
+   "metric": {
+    "kind": "level",
+    "threshold": 30
+   }
+  },
+  {
+   "id": 3,
+   "type": 2,
+   "name": "渐入佳境",
+   "point": 20,
+   "title": "",
+   "desc": "人物等级达到60级。",
+   "exp": 150000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "level",
+    "threshold": 60
+   }
+  },
+  {
+   "id": 4,
+   "type": 2,
+   "name": "登峰造极",
+   "point": 50,
+   "title": "",
+   "desc": "人物等级达到97级。",
+   "exp": 0,
+   "gold": 50,
+   "silver": 0,
+   "coins": 200000,
+   "metric": {
+    "kind": "level",
+    "threshold": 97
+   }
+  },
+  {
+   "id": 5,
+   "type": 2,
+   "name": "传奇启程",
+   "point": 30,
+   "title": "",
+   "desc": "传奇等级达到5级。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "legend",
+    "threshold": 5
+   }
+  },
+  {
+   "id": 6,
+   "type": 2,
+   "name": "传奇小成",
+   "point": 50,
+   "title": "",
+   "desc": "传奇等级达到20级。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 200000,
+   "metric": {
+    "kind": "legend",
+    "threshold": 20
+   }
+  },
+  {
+   "id": 7,
+   "type": 2,
+   "name": "传奇不朽",
+   "point": 100,
+   "title": "",
+   "desc": "传奇等级达到50级。",
+   "exp": 0,
+   "gold": 200,
+   "silver": 0,
+   "coins": 500000,
+   "metric": {
+    "kind": "legend",
+    "threshold": 50
+   }
+  },
+  {
+   "id": 10,
+   "type": 5,
+   "name": "力大无穷",
+   "point": 20,
+   "title": "狂战士",
+   "desc": "力量达到400。",
+   "exp": 20000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 40000,
+   "metric": {
+    "kind": "stat",
+    "stat": 0,
+    "threshold": 400
+   }
+  },
+  {
+   "id": 11,
+   "type": 5,
+   "name": "神力惊天",
+   "point": 40,
+   "title": "大力神",
+   "desc": "力量达到1000。",
+   "exp": 50000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "stat",
+    "stat": 0,
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 12,
+   "type": 5,
+   "name": "九天神力",
+   "point": 80,
+   "title": "九天神力",
+   "desc": "力量达到2500。",
+   "exp": 125000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 250000,
+   "metric": {
+    "kind": "stat",
+    "stat": 0,
+    "threshold": 2500
+   }
+  },
+  {
+   "id": 13,
+   "type": 5,
+   "name": "钢筋铁骨",
+   "point": 20,
+   "title": "圣骑士",
+   "desc": "体质达到400。",
+   "exp": 20000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 40000,
+   "metric": {
+    "kind": "stat",
+    "stat": 1,
+    "threshold": 400
+   }
+  },
+  {
+   "id": 14,
+   "type": 5,
+   "name": "神圣之躯",
+   "point": 40,
+   "title": "神圣骑士",
+   "desc": "体质达到1000。",
+   "exp": 50000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "stat",
+    "stat": 1,
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 15,
+   "type": 5,
+   "name": "盘古之躯",
+   "point": 80,
+   "title": "盘古之躯",
+   "desc": "体质达到2500。",
+   "exp": 125000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 250000,
+   "metric": {
+    "kind": "stat",
+    "stat": 1,
+    "threshold": 2500
+   }
+  },
+  {
+   "id": 16,
+   "type": 5,
+   "name": "身轻如燕",
+   "point": 20,
+   "title": "影舞者",
+   "desc": "敏捷达到400。",
+   "exp": 20000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 40000,
+   "metric": {
+    "kind": "stat",
+    "stat": 2,
+    "threshold": 400
+   }
+  },
+  {
+   "id": 17,
+   "type": 5,
+   "name": "追风逐电",
+   "point": 40,
+   "title": "风行者",
+   "desc": "敏捷达到1000。",
+   "exp": 50000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "stat",
+    "stat": 2,
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 18,
+   "type": 5,
+   "name": "无影无形",
+   "point": 80,
+   "title": "无影者",
+   "desc": "敏捷达到2500。",
+   "exp": 125000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 250000,
+   "metric": {
+    "kind": "stat",
+    "stat": 2,
+    "threshold": 2500
+   }
+  },
+  {
+   "id": 19,
+   "type": 5,
+   "name": "聪慧过人",
+   "point": 20,
+   "title": "大法师",
+   "desc": "智力达到400。",
+   "exp": 20000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 40000,
+   "metric": {
+    "kind": "stat",
+    "stat": 3,
+    "threshold": 400
+   }
+  },
+  {
+   "id": 20,
+   "type": 5,
+   "name": "博学多才",
+   "point": 40,
+   "title": "魔导师",
+   "desc": "智力达到1000。",
+   "exp": 50000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "stat",
+    "stat": 3,
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 21,
+   "type": 5,
+   "name": "上古智慧",
+   "point": 80,
+   "title": "上古智慧",
+   "desc": "智力达到2500。",
+   "exp": 125000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 250000,
+   "metric": {
+    "kind": "stat",
+    "stat": 3,
+    "threshold": 2500
+   }
+  },
+  {
+   "id": 22,
+   "type": 5,
+   "name": "明察秋毫",
+   "point": 20,
+   "title": "大贤者",
+   "desc": "感知达到400。",
+   "exp": 20000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 40000,
+   "metric": {
+    "kind": "stat",
+    "stat": 4,
+    "threshold": 400
+   }
+  },
+  {
+   "id": 23,
+   "type": 5,
+   "name": "先知先觉",
+   "point": 40,
+   "title": "圣贤",
+   "desc": "感知达到1000。",
+   "exp": 50000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "stat",
+    "stat": 4,
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 24,
+   "type": 5,
+   "name": "天行者",
+   "point": 80,
+   "title": "天行者",
+   "desc": "感知达到2500。",
+   "exp": 125000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 250000,
+   "metric": {
+    "kind": "stat",
+    "stat": 4,
+    "threshold": 2500
+   }
+  },
+  {
+   "id": 30,
+   "type": 1,
+   "name": "初次充值",
+   "point": 10,
+   "title": "给力！",
+   "desc": "累计充值达到1元。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 10000,
+   "metric": {
+    "kind": "recharge",
+    "threshold": 1
+   }
+  },
+  {
+   "id": 31,
+   "type": 1,
+   "name": "充值达人",
+   "point": 30,
+   "title": "颇负盛名",
+   "desc": "累计充值达到500元。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "recharge",
+    "threshold": 500
+   }
+  },
+  {
+   "id": 32,
+   "type": 1,
+   "name": "充值豪杰",
+   "point": 50,
+   "title": "大名鼎鼎",
+   "desc": "累计充值达到1000元。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "recharge",
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 33,
+   "type": 1,
+   "name": "充值传奇",
+   "point": 100,
+   "title": "名士风流",
+   "desc": "累计充值达到2000元。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 200000,
+   "metric": {
+    "kind": "recharge",
+    "threshold": 2000
+   }
+  },
+  {
+   "id": 40,
+   "type": 9,
+   "name": "初试锋芒",
+   "point": 10,
+   "title": "",
+   "desc": "累计击杀100个怪物。",
+   "exp": 5000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 10000,
+   "metric": {
+    "kind": "kills",
+    "threshold": 100
+   }
+  },
+  {
+   "id": 41,
+   "type": 9,
+   "name": "百战不殆",
+   "point": 30,
+   "title": "",
+   "desc": "累计击杀1000个怪物。",
+   "exp": 30000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "kills",
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 42,
+   "type": 9,
+   "name": "怪物猎人",
+   "point": 60,
+   "title": "怪物猎人",
+   "desc": "累计击杀10000个怪物。",
+   "exp": 150000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "kills",
+    "threshold": 10000
+   }
+  },
+  {
+   "id": 50,
+   "type": 7,
+   "name": "小有钱财",
+   "point": 10,
+   "title": "富贵逼人",
+   "desc": "持有黄金达到1000。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 20000,
+   "metric": {
+    "kind": "gold",
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 51,
+   "type": 7,
+   "name": "家财万贯",
+   "point": 30,
+   "title": "富商巨贾",
+   "desc": "持有黄金达到10000。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "gold",
+    "threshold": 10000
+   }
+  },
+  {
+   "id": 52,
+   "type": 7,
+   "name": "腰缠万贯",
+   "point": 60,
+   "title": "腰缠万贯",
+   "desc": "持有黄金达到100000。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "gold",
+    "threshold": 100000
+   }
+  },
+  {
+   "id": 60,
+   "type": 11,
+   "name": "世界VIP",
+   "point": 20,
+   "title": "世界VIP",
+   "desc": "开通世界VIP。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "vip",
+    "threshold": 1
+   }
+  },
+  {
+   "id": 100,
+   "type": 12,
+   "name": "初试幻化",
+   "point": 20,
+   "title": "幻影初拥",
+   "desc": "幻化 1 件时装或坐骑。",
+   "exp": 200000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 20000,
+   "metric": {
+    "kind": "illusion",
+    "threshold": 1
+   }
+  },
+  {
+   "id": 101,
+   "type": 12,
+   "name": "幻化成瘾",
+   "point": 30,
+   "title": "千面幻师",
+   "desc": "身上或背包中已幻化的时装/坐骑达到 8 件。",
+   "exp": 2000000,
+   "gold": 20,
+   "silver": 0,
+   "coins": 0,
+   "metric": {
+    "kind": "illusion",
+    "threshold": 8
+   }
+  },
+  {
+   "id": 102,
+   "type": 12,
+   "name": "幻化宗师",
+   "point": 50,
+   "title": "万象幻灭",
+   "desc": "身上或背包中已幻化的时装/坐骑达到 20 件。",
+   "exp": 0,
+   "gold": 50,
+   "silver": 0,
+   "coins": 200000,
+   "metric": {
+    "kind": "illusion",
+    "threshold": 20
+   }
+  },
+  {
+   "id": 103,
+   "type": 12,
+   "name": "时装收藏家",
+   "point": 30,
+   "title": "华服天成",
+   "desc": "收藏 20 件不同的时装。",
+   "exp": 2000000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "fashion",
+    "threshold": 20
+   }
+  },
+  {
+   "id": 104,
+   "type": 12,
+   "name": "坐骑收藏家",
+   "point": 30,
+   "title": "驭兽天君",
+   "desc": "收藏 15 只不同的坐骑。",
+   "exp": 2000000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "mount",
+    "threshold": 15
+   }
+  },
+  {
+   "id": 105,
+   "type": 12,
+   "name": "灵宠成群",
+   "point": 30,
+   "title": "万灵之友",
+   "desc": "拥有 5 只宠物。",
+   "exp": 1000000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "pet",
+    "threshold": 5
+   }
+  },
+  {
+   "id": 106,
+   "type": 9,
+   "name": "百战精英",
+   "point": 30,
+   "title": "百战英魂",
+   "desc": "战斗胜利 100 场。",
+   "exp": 1000000,
+   "gold": 0,
+   "silver": 0,
+   "coins": 50000,
+   "metric": {
+    "kind": "wins",
+    "threshold": 100
+   }
+  },
+  {
+   "id": 107,
+   "type": 9,
+   "name": "千战战神",
+   "point": 40,
+   "title": "不灭战魂",
+   "desc": "战斗胜利 1000 场。",
+   "exp": 3000000,
+   "gold": 30,
+   "silver": 0,
+   "coins": 100000,
+   "metric": {
+    "kind": "wins",
+    "threshold": 1000
+   }
+  },
+  {
+   "id": 108,
+   "type": 9,
+   "name": "血染杀神",
+   "point": 60,
+   "title": "血染杀神",
+   "desc": "累计击杀 100000 只怪物。",
+   "exp": 0,
+   "gold": 66,
+   "silver": 0,
+   "coins": 300000,
+   "metric": {
+    "kind": "kills",
+    "threshold": 100000
+   }
+  },
+  {
+   "id": 109,
+   "type": 2,
+   "name": "传奇觉醒",
+   "point": 50,
+   "title": "超凡入圣",
+   "desc": "传奇等级达到 10 级。",
+   "exp": 5000000,
+   "gold": 20,
+   "silver": 0,
+   "coins": 0,
+   "metric": {
+    "kind": "legend",
+    "threshold": 10
+   }
+  },
+  {
+   "id": 110,
+   "type": 3,
+   "name": "荣耀之巅",
+   "point": 80,
+   "title": "荣耀之巅",
+   "desc": "成就点数达到 1500 点。",
+   "exp": 0,
+   "gold": 100,
+   "silver": 0,
+   "coins": 500000,
+   "metric": {
+    "kind": "point",
+    "threshold": 1500
+   }
+  },
+  {
+   "id": 111,
+   "type": 12,
+   "name": "神话·虎威天纵",
+   "point": 20,
+   "title": "神威如龙",
+   "desc": "获得神话武器「虎威·天纵」。奖励称号「神威如龙」：破甲+30%、致命率+30%、无视伤害减免+888。",
+   "exp": 0,
+   "gold": 0,
+   "silver": 0,
+   "coins": 0,
+    "metric": {
+      "kind": "mythicSpear",
+      "threshold": 1
+    }
+  },
+  {
+    "id": 112,
+    "type": 12,
+    "name": "神话·卧龙八阵",
+    "point": 20,
+    "title": "千古一相",
+    "desc": "获得神话武器「玄枢卧龙·八阵天章」。奖励称号「千古一相」：无视状态抵抗+500、无视洞察+500、出手速度+30%。",
+    "exp": 0,
+    "gold": 0,
+    "silver": 0,
+    "coins": 0,
+    "metric": {
+      "kind": "mythicFan",
+      "threshold": 1
+    }
+  },
+  {
+    "id": 113,
+    "type": 12,
+    "name": "神话·春秋孤行",
+    "point": 20,
+    "title": "弼朝博虬",
+    "desc": "获得神话武器「春秋·孤行」。奖励称号「弼朝博虬」：基础强制命中率+20、穿刺攻击力+20%、敏捷+30%。",
+    "exp": 0,
+    "gold": 0,
+    "silver": 0,
+    "coins": 0,
+    "metric": {
+      "kind": "mythicChunqiu",
+      "threshold": 1
+    }
+  },
+  {
+    "id": 114,
+    "type": 12,
+    "name": "神话·飞景流彩",
+    "point": 20,
+    "title": "诰天仰颂",
+    "desc": "同时获得神话武器「飞景」与「流彩」（两把都要）。奖励称号「诰天仰颂」：出手速度+30%、剑类武器伤害耐久+30%、魔法命中+1500。",
+    "exp": 0,
+    "gold": 0,
+    "silver": 0,
+    "coins": 0,
+    "metric": {
+      "kind": "mythicTwinSwords",
+      "threshold": 1
+    }
+  }
+]
+}

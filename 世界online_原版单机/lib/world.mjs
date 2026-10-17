@@ -11,6 +11,8 @@ import {isPersonalCity,cityState} from './city-state.mjs';
 import {legionAppearance} from './legion-packets.mjs';
 import {importedCombatFields} from './character-import-codec.mjs';
 import {actorSettings} from './system-settings-service.mjs';
+import {towerExtraGroups} from './climb-tower.mjs';
+import {trialExtraGroups} from './trial-challenge.mjs';
 // Native v305 actor layout, populated from this local character.
 export function playerDetail(w,p,{includeLegion=true}={}){
   normalizeRole(p);
@@ -42,7 +44,12 @@ export function worldData(p,detail=true){
   w.int(p.mapId||1).byte(p.x??19).byte(p.y??15).int(flags);
   if(detail){playerDetail(w,p);w.bytes(missionBits(p));missionsPacket(w,p);bagPacket(w,p);skillList(w,p);}
   w.string(maps[p.mapId].name).string('').byte(0);
-  npcPacket(w,p);monsterGroups(w,p);monsterModels(w,p);
+  // 永泽塔按层现场生成编队（不在任何地图的 spawn 里），挑战期间要把那一组一起下发，
+  // 否则客户端 World.toBattle(group) 找不到组、会改发 12503 远程战斗。
+  // 无限试炼的编队同样不在任何地图上，挑战期间要一起下发（trialExtraGroups 内部
+  // 会先确认这一组真的存在，避免存档里残留的标记把整包写歪 → 客户端 Error #1025）。
+  const extra=[...towerExtraGroups(p),...trialExtraGroups(p)];
+  npcPacket(w,p);monsterGroups(w,p,extra);monsterModels(w,p,extra);
   if(city)w.int(p.id).string(city.name).int(city.prosperity).int(city.army).byte(0).byte(city.level-1);
   return w;
 }

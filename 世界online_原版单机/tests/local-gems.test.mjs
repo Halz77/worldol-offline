@@ -13,6 +13,7 @@ import {gemAttachment} from '../lib/item-affixes.mjs';
 import {planGem,gemReplaceQuote,planGemReplace,upgradeTarget} from '../lib/equipment-upgrades.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 import {handleEquipmentUpgrades} from '../lib/equipment-upgrade-service.mjs';
+import {sellItem} from '../lib/bag-actions.mjs';
 import {PLUS4_GEM_POWERS,plus4GemItemId} from '../lib/local-gems.mjs';
 
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
@@ -117,6 +118,48 @@ test('宝石替换的每一条门槛都拒绝，且不花掉任何宝石',()=>{
   assert.deepEqual(short,before);
   // ⑥ 报价与确认之间材料变了
   assert.throws(()=>planGemReplace(normal,30,equipmentId,32,[{slot:32,quantity:39}]),/替换材料已变化/);
+});
+
+test('宝石替换：数量正好用完的槽位要整条移除，不能留下数量为 0 的“幽灵宝石”',()=>{
+  // 曾经写成 next.inventory.filter(i=>(i.quantity||1)!==0)：quantity 是 0 时 (0||1) 得 1，
+  // 表达式恒为真 = 没过滤，于是背包里留下一条数量 0 的宝石。客户端按 1 颗显示它，
+  // 但服务端镶嵌要求 (quantity||1)>0、出售时数量也对不上 —— 玩家看到的就是
+  // 「剩下一颗加4宝石，既不能镶嵌也不能出售」。
+  const p=role();gemState(p).push({itemId:plus3Wisdom,quantity:20});
+  p.inventory=p.inventory.map(i=>i.slot===32?{...i,quantity:40}:i);      // 正好 40 颗
+  const quote=gemReplaceQuote(p,30,equipmentId,32);
+  assert.equal(quote.need,40);assert.equal(quote.missing,0);
+  const planned=planGemReplace(p,30,equipmentId,32,quote.rows);
+  assert.equal(planned.consumed,40);
+  assert.equal(planned.next.inventory.some(i=>i.slot===32),false,'用完的槽位必须从背包移除');
+  assert.equal(planned.next.inventory.some(i=>!(i.quantity>0)),false,'背包里不能留数量 ≤0 的条目');
+  assert.deepEqual(planned.item.gems,[{itemId:strength4,quantity:20}]);
+});
+
+test('宝石替换：材料分散在多个槽位、正好用完时每一格都要清掉',()=>{
+  const p=role();gemState(p).push({itemId:plus3Wisdom,quantity:20});
+  p.inventory=p.inventory.map(i=>i.slot===32?{...i,quantity:20}:i);
+  p.inventory.push({itemId:strength4,slot:36,quantity:20});
+  const quote=gemReplaceQuote(p,30,equipmentId,32);
+  assert.equal(quote.need,40);
+  assert.deepEqual(quote.rows,[{slot:32,quantity:20},{slot:36,quantity:20}]);
+  const planned=planGemReplace(p,30,equipmentId,32,quote.rows);
+  assert.equal(planned.next.inventory.some(i=>i.slot===32||i.slot===36),false,'两个槽都要移除');
+  assert.equal(planned.next.inventory.every(i=>i.quantity>0),true);
+  assert.equal(planned.next.inventory.some(i=>i.itemId===strength4),false);
+});
+
+test('宝石替换：剩下的是真宝石时仍然能正常出售（对照“幽灵宝石”卖不掉）',()=>{
+  const p=role();gemState(p).push({itemId:plus3Wisdom,quantity:20});
+  p.inventory=p.inventory.map(i=>i.slot===32?{...i,quantity:41}:i);      // 41 颗 → 替换后真剩 1 颗
+  const quote=gemReplaceQuote(p,30,equipmentId,32),planned=planGemReplace(p,30,equipmentId,32,quote.rows);
+  const left=planned.next.inventory.find(i=>i.slot===32);
+  assert.ok(left,'剩下的 1 颗应当还在背包里');
+  assert.equal(left.quantity,1);
+  planned.next.coins=0;
+  sellItem(planned.next,32,strength4,1);
+  assert.equal(planned.next.coins,500,'真实宝石出售要正常给钱');
+  assert.equal(planned.next.inventory.some(i=>i.slot===32),false);
 });
 
 // 11507 的应答形状必须和客户端一致：客户端把它放在 sendProtoAsync 的 resultMsg 集合里，

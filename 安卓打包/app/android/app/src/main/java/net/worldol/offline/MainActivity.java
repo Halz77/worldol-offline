@@ -41,6 +41,10 @@ public class MainActivity extends BridgeActivity {
         // 必须赶在 super 之前：BridgeActivity.onCreate 会立刻加载首页，
         // 之后清缓存就晚了 —— 页面已经把旧资源读进了 WebView。
         clearStaleAssetCache();
+        // 排查用：允许 adb/chrome 远程调试 WebView（inspect 看 console 与运行时状态）。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUi();

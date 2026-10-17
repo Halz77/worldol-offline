@@ -165,7 +165,11 @@ export function planGemReplace(p,slot,id,gemSlot,rows){
     if(!entry||entry.itemId!==quote.gem.itemId||(entry.quantity||1)<row.quantity)throw Error('替换材料已变化，请重新打开宝石替换。');
     entry.quantity-=row.quantity;consumed+=row.quantity;
   }
-  next.inventory=next.inventory.filter(i=>(i.quantity||1)!==0);
+  // 用完的槽位必须整条删掉。这里**不能**写成 (i.quantity||1)!==0：
+  // quantity 是 0 时 (0||1) 得 1，表达式恒为真，等于没过滤 —— 于是背包里会留下
+  // 一条数量为 0 的宝石，客户端按 1 颗显示，但镶嵌时服务端要求 (quantity||1)>0、
+  // 出售时数量也对不上，表现就是「剩下一颗既不能镶嵌也不能出售」的幽灵宝石。
+  next.inventory=next.inventory.filter(i=>i.quantity!==0);
   clampVitals(next);
   const attachment=gemAttachment(equipment.get(target.itemId)||target.recordedDefinition,target);
   return {next,item:target,gem:quote.gem,attachment,consumed,replaced:quote.attachment};

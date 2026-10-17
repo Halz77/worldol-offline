@@ -1,5 +1,5 @@
 import {official,officialItems} from './official-data.mjs';
-import {soldPetItem,selectablePetEggs,localPetEggIds} from './pet-catalog.mjs';
+import {soldPetItem,selectablePetEggs} from './pet-catalog.mjs';
 import {MAGIC_EXHAUSTION_BOOK_ID,KNIGHTS_DEVOTION_BOOK_ID,petSkillShopBooks,petSkillShopBookIds} from './pet-skill-book-data.mjs';
 import {spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
 import {PINNED_SUPPLY_ITEM_IDS} from './local-items.mjs';
@@ -74,11 +74,6 @@ export const supplyShopById=new Map(supplyShops.map(s=>[s.id,s]));
 // 判进 906 的道具（如两张经验卷，type 28）在列表里出现两次。
 for(const shop of supplyShops)shop.items=[...new Set(shop.items)];
 {const pinned=PINNED_SUPPLY_ITEM_IDS,shop=supplyShopById.get(906);shop.items=[...new Set([...pinned,...shop.items.filter(id=>!pinned.includes(id))])];}
-// 自制宠物的蛋置顶到「宠物蛋」分类最前面：这一档有一百多种，按 (reqLv,id) 排的话
-// 自制宠物（蛋号接在池子末尾）永远在最后一个，等于找不到。写法与上面 906 的置顶一致
-// —— 先滤掉再插到前面，避免同一个编号在列表里出现两次。
-{const shop=supplyShopById.get(918),local=[...localPetEggIds()];
- if(local.length)shop.items=[...new Set([...local,...shop.items.filter(id=>!local.includes(id))])];}
 export const supplyNpc={id:126,type:5,name:'装备与补给商人',icon:5133,x:20,y:18,local:true,
   welcome:'装备、材料与自选宠物蛋。',
   talk:'宠物蛋可免费选择并固定孵化对应宠物。上下滑动选择分类。\n「技能书」分类只卖宠物训练师教不到的那些宠物技能书。\n强化、鉴定、镶嵌可从背包或装备工坊进入。',

@@ -1,0 +1,112 @@
+{
+ "_readme": [
+  "本地技能效果覆盖层。data/career-skills.json 是上游验收契约（与 2026-09-23 原始包",
+  "逐字节一致，tests/career-skills.test.mjs 会验），不能直接改；要调整某个技能的",
+  "效果就在这里写覆盖，由 lib/restoration.mjs 在建运行时技能表时套用。",
+  "覆盖只允许改 wire 字段（power/powerValue/statusBit 等），改完会自动重算",
+  "powers 数组与 wireBase64，客户端收到的定义与战斗结算保持一致。",
+  "改了 power/powerValue/statusBit 时，还会自动清掉 info（技能说明）里构建工具写的",
+  "旧效果行（保留来源标题）—— 客户端会把 info 原样接在效果行后面显示，不清就会新旧混排。"
+ ],
+ "revision": "local-skill-overrides-20261017-v1",
+ "skills": {
+  "129": {
+   "levels": "all",
+   "set": {
+    "area": 10,
+    "position": 1,
+    "power1": 168,
+    "powerValue1": 5000,
+    "powerValue2": 30,
+    "power2": 85,
+    "power3": 71,
+    "powerValue3": -1000,
+    "round": 3,
+    "atk_time": 2,
+    "useMP": 1000,
+    "useHP": 5000
+   },
+   "perLevel": {
+    "1": {
+     "powerValue2": 1,
+     "powerValue1": 3000
+    },
+    "2": {
+     "powerValue2": 2,
+     "powerValue1": 3000
+    },
+    "3": {
+     "powerValue2": 3,
+     "powerValue1": 3000
+    },
+    "4": {
+     "powerValue2": 4,
+     "powerValue1": 3000
+    },
+    "5": {
+     "powerValue2": 5,
+     "powerValue1": 3000
+    },
+    "6": {
+     "powerValue2": 6
+    },
+    "7": {
+     "powerValue2": 7
+    },
+    "8": {
+     "powerValue2": 8
+    },
+    "9": {
+     "powerValue2": 9
+    },
+    "10": {
+     "powerValue2": 10
+    },
+    "11": {
+     "powerValue2": 11
+    },
+    "12": {
+     "powerValue2": 12
+    },
+    "13": {
+     "powerValue2": 13
+    },
+    "14": {
+     "powerValue2": 14
+    },
+    "15": {
+     "powerValue2": 15
+    },
+    "16": {
+     "powerValue2": 16
+    },
+    "17": {
+     "powerValue2": 17
+    },
+    "18": {
+     "powerValue2": 18
+    },
+    "19": {
+     "powerValue2": 19
+    },
+    "20": {
+     "powerValue2": 20
+    },
+    "21": {
+     "powerValue2": 25
+    }
+   }
+  },
+  "437": {
+   "_note": "飘雪穿云掌（侠客主动，round 4~8 的持续技能）。原版三段效果：power1=61(POWER_DEF_STR 削劈砍防御, statusBit1=1 中毒) / power2=62(POWER_DEF_AGI 削穿刺防御, statusBit2=3 流血) / power3=87(POWER_SKILL_BRK_ARMOR 破甲=「无视目标X点物理防御」, 无状态)。statusBit 与 power 是**一一对应**的（power1←statusBit1…），原版给两段削防套了中毒/流血标签，战斗里会显示这两个状态图标，而且带减益标签的属性变化会先过「全减益免疫 / 状态抵抗」两道门槛（客户端 processBattlePower 里 getBufferType(statusBit)==DEBUFF 就整段 return）。按需求「去掉中毒和流血，只保留劈砍防御和穿刺防御削减」：三个 statusBit 全清零。清掉后就不再走减益门槛，削防对全减益免疫的怪也照常生效（tests/battle-power-rules.test.mjs 有真代码验证），持续回合仍由 round 控制。power3=87 是破甲效果、不是附加状态，也一并按「只保留两种削防」清零。",
+   "levels": "all",
+   "set": {
+    "power3": 0,
+    "powerValue3": 0,
+    "statusBit1": 0,
+    "statusBit2": 0,
+    "statusBit3": 0
+   }
+  }
+ }
+}

@@ -4,6 +4,7 @@ import {officialMissions} from './official-data.mjs';
 import {isNewbieMission} from './newbie-missions.mjs';
 import {applyYunruoDaily,yunruoTempleRevision} from './yunruo-temple.mjs';
 import {applyRecordedExpansionDaily,recordedExpansionRevision} from './recorded-expansion.mjs';
+import {applyLostSoulDesertDaily} from './lost-soul-desert.mjs';
 import {vipBenefits} from './home-feature-data.mjs';
 
 /**
@@ -17,6 +18,9 @@ function ensure(){
  const dailyData=JSON.parse(fs.readFileSync(new URL('../data/daily-activity-v1.json',import.meta.url),'utf8'));
  applyYunruoDaily(dailyData);
  applyRecordedExpansionDaily(dailyData);
+ // 迷失之魂沙漠 10/11 两环（见 lib/lost-soul-desert.mjs）要出现在每日看板里，
+ // 否则玩家在「疯狂元素」之后看不到任何线索。
+ applyLostSoulDesertDaily(dailyData);
  dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision();
  built={
   data:dailyData,

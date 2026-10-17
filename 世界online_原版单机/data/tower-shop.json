@@ -1,0 +1,11 @@
+{
+  "revision": "tower-shop-20261016",
+  "note": "永泽塔「兑换商店」商品表（货币 = 勇气勋章 p.towerPoint）。移植自社区版；其中「御宠圣物」(9300025) 依赖社区版自带的 ported-gear 装备包（大天造化披风/开天/寸芒/御宠系列），本工程未引入那批装备，故从本表移除，等以后搬装备包时再补回。",
+  "shopId": 23722,
+  "items": [
+    { "itemId": 28005, "name": "开拓者时装（魔导学）", "point": 300, "maxBuy": -1, "allCount": -1 },
+    { "itemId": 28006, "name": "开拓者时装（物理学）", "point": 300, "maxBuy": -1, "allCount": -1 },
+    { "itemId": 28019, "name": "福音天使（完全体）",  "point": 300, "maxBuy": -1, "allCount": -1 },
+    { "itemId": 28100, "name": "勇气使徒",          "point": 300, "maxBuy": -1, "allCount": -1 }
+  ]
+}

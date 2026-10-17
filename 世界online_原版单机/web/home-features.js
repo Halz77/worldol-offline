@@ -69,6 +69,20 @@
    }else if(current==='notice'){
     text('已接入截图中的20个主页入口。VIP、在线福利、已恢复地图和任务使用角色存档；永泽塔已收录132个关卡、160种怪物的属性预览。');
     for(const entry of state.entries){const row=element('article');row.className='home-row';button(entry.name,()=>route(entry.id,main),row);text(entry.description,row);body.append(row);}
+   }else if(current==='trial'&&state.trial){
+    const t=state.trial;
+    text(`${t.name}：打一只超肉 BOSS，按造成的伤害比例领奖。三只 BOSS 按时间段轮换。`);
+    if(t.boss){body.append(element('h3',`当前 BOSS · ${t.boss.name}`));text(`${t.boss.level}级 · 生命 ${t.boss.hpMax} · 攻击 ${t.boss.atkMin}-${t.boss.atkMax}`,body);}
+    else text('试炼 BOSS 尚未就绪。');
+    for(const b of t.bosses)text(`${b.fromHour} 点 – ${b.toHour} 点：${b.name||('怪物'+b.id)}${b.exists?'':'（未就绪）'}`);
+    text(`今日剩余 ${t.challenge.left} / ${t.challenge.total} 次（已购 ${t.challenge.bought} 次） · 我的最高伤害 ${t.bestDamage}`);
+    button('挑战（打完自动结算发奖）',async()=>{
+     state=await wire(90020,{action:'trial-challenge'});render();dialog.close();World.toBattle(t.groupId);
+    },body,!t.available||t.challenge.left<=0);
+    button(`购买 1 次（${t.challenge.buyPrice} 黄金，今日还可买 ${t.challenge.buyLeft} 次）`,()=>action({action:'trial-buy'}),body,t.challenge.buyLeft<=0);
+    body.append(element('h3','奖励档位'));
+    for(const r of t.rewards)text(`${r.label}：${itemText(r.items)}`);
+    if(t.rankInfo.length)for(const row of t.rankInfo)text(`我的排名：第 ${row.rank} 名 · 伤害 ${row.hurt}`);
    }else if(current==='mail'){text('当前本地收件箱为空。录制中的其他玩家来信不会复制到本地角色。附件投递机制待补，福利请在“福利”中领取。');button('福利',()=>open('welfare'));}
    else if(current==='country'){button('个人城市',()=>{dialog.close();document.getElementById('city-open').click();});}
    else if(current==='buddy'){button('打开军团',()=>{dialog.close();main?.onTapLegion();});}

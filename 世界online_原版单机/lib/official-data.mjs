@@ -6,12 +6,21 @@ import {applyRecordedExpansion} from './recorded-expansion.mjs';
 import {nativeCommerce} from './native-commerce-data.mjs';
 import {applyOpenPortals} from './open-portals.mjs';
 import {applyBossHub} from './boss-hub.mjs';
+import {applyDungeonChallengeRepairs} from './dungeon-challenge-data.mjs';
+import {applySolarChallenges} from './solar-challenge-data.mjs';
+import {registerTrialChallenge} from './trial-challenge-data.mjs';
 import {localPetSkillBooks,petSkillBookRegistry} from './pet-skill-book-data.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
 import {spiritData,applySpiritNpcs,spiritBoxDefinition,spiritBoxes} from './spirit-seal-data.mjs';
 import {LEGENDARY_EGG_ID,legendaryEggDefinition,selectablePetEggs} from './pet-catalog.mjs';
 import {localGems} from './local-gems.mjs';
 import {localFashion} from './local-fashion.mjs';
+import {applyOverrideToDefinition} from './local-skill-overrides.mjs';
+import {applyCaptured81} from './captured81.mjs';
+import {applyMayaContinuation} from './maya-continuation.mjs';
+import {applyLostSoulDesert} from './lost-soul-desert.mjs';
+import {fixMidAutumnFinalBoss} from './mid-autumn-final-boss.mjs';
+import {applyDungeonStoryRepairs} from './dungeon-story-repairs.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -63,7 +72,41 @@ function ensure(){
  // 原版这两个菜单是普通道具商店，卖的是改写角色外观位域的 type 12 时装；商品清单
  // 从来没有采集到，这里按「世界OL_源码」下的发型/脸型贴图还原一套：一件道具对应一张
  // 贴图，道具编号即图标子键（见 lib/local-fashion.mjs 与 tools/build-fashion-icons.mjs）。
- for(const fashion of localFashion(official.items))official.items.push(fashion);
+for(const fashion of localFashion(official.items))official.items.push(fashion);
+// MOD(local-skill-overrides)：怪物自带技能也吃技能覆盖。
+ // 怪物 AI 放的技能定义就在 official.skills 里（sources 带 monsterAI），战斗包发的是
+ // monsterWireBase64||wireBase64（见 official-packets.mapBattleData）；怪物技能与
+ // 人物技能共用 id，所以在所有补丁合完之后、建索引之前对整张表套一次覆盖。
+ // 覆盖只改命中规则的记录，未命中的保持原对象引用。
+ for(let i=0;i<official.skills.length;i++){
+  const skill=official.skills[i];
+  const next=applyOverrideToDefinition(skill.id,skill);
+  if(next!==skill)official.skills[i]=next;
+ }
+ // 日常副本扩展：给「任务齐了但编队没采集到」的 9 个副本补编队（本地推算，带 sources 标记）。
+ // 必须在建索引之前：battleSupported() 查的是建好的 officialGroups。
+ applyDungeonChallengeRepairs(official);
+// 英雄挑战赛 / 团队副本（太阳神殿棋盘）：81 只怪 + 76 个编队。
+// 同样必须在建索引之前 —— 12501 与棋盘协议都查 officialGroups / officialMonsters。
+applySolarChallenges(official);
+// 无限试炼：三只 BOSS + 编队 24000。与上面两批同理，必须在建索引之前。
+registerTrialChallenge(official);
+// 八一副本（81 后续）：2026-09-26 录制包，31 个任务 + 15 组 + 20 怪 + 2 张地图。
+// 必须在建索引之前 —— 战斗组与怪物都要被12501 和任务导航查到。
+applyCaptured81(official);
+// 玛雅副本地下宫殿：新建地图 962 + 8700—8709 十环，并把 3219 / 1824 / 1831
+// 三处指向缺失任务的边改接过来。依赖 applyRecordedExpansion 补出的 3219/1824/1831
+// 与地图 838，同样必须在建索引之前。
+applyMayaContinuation(official);
+// 迷失之魂沙漠：补上录制缺失的 10 / 11 两环，让 9 → 10 → 11 → 12 接得上。
+applyLostSoulDesert(official);
+// 中秋最终 BOSS：原版编队 11733 放的是分身 3298，任务 1940 却要真身 3297 的击杀数，
+// 赢了不算完成。克隆一只真身进编队（见 lib/mid-autumn-final-boss.mjs）。
+fixMidAutumnFinalBoss(official);
+ // 单机副本续篇补完（移植自社区 dungeon-story-repairs）：恢复 13 张残缺地图几何 +
+ // 加出口 + 复活/补 NPC + 克隆怪 + 生成【单机续篇】任务链。必须在建索引之前：
+ // 新加的地图/NPC/任务/组/怪都要被任务导航与 12501 战斗协议查到。
+ applyDungeonStoryRepairs(official);
  built={
   official,
   officialMaps:new Map(official.maps.map(m=>[m.id,m])),
