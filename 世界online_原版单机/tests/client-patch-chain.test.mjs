@@ -50,7 +50,8 @@ const EXPECTED_MAIN_STEPS=[
  'phantomImmunity',
  'illusion',
  'weaponIcon',
- 'escortBattle'
+ 'escortBattle',
+ 'escortBoard'
 ];
 
 /** 收敛前散落在调用方里的补丁函数名，调用方不该再出现它们。 */
@@ -60,7 +61,7 @@ const PATCH_FUNCTIONS=[
  'patchOfflineStoryBattles','patchDailyCatalogVisibility','patchNpcMissionRefresh',
  'patchPlayerLevelRewards','patchBulkItemUse','patchBattleSkillPanel','patchBattleCheckFields','patchBattleMonsterBars','patchBattleFont',
  'patchLegionSurvivors','patchLegionPetGuard','patchBattleSpeedSteps','patchBattleSpeedPersist',
- 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEmptyNativeShop'
+ 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEscortBoard','patchEmptyNativeShop'
 ];
 
 function readIfPresent(file){
@@ -97,13 +98,14 @@ test('replaceOnce 要求锚点恰好出现一次',()=>{
 
 test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle,()=>{
  const original=fs.readFileSync(MAIN,'utf8');
- // 4557839 / 4565489 是 v305 主包打补丁前后的长度。
+ // 4557839 / 4565641 是 v305 主包打补丁前后的长度。
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
- //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。）原版换包或补丁增删都会
+  //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
+  //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4565489,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4565641,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 
@@ -191,4 +193,20 @@ test('escortBattle：isEscortStatus 不能把棋盘战斗推向 12503 远程战�
   assert.ok(!patched.includes(anchor+'&&(s=!0)'),anchor+' 也不该留下没加固的原文');
  // 再打一次必须原样返回（standalone 靠幂等跳过重打）。
  assert.equal(patchEscortBattle(patched),patched,'补丁必须幂等');
+});
+
+test('escortBoard：exitBattle 必须把还开着的棋盘排进战后恢复（viewData）',skipNoBundle,async()=>{
+ const {patchEscortBoard}=await import('../lib/client-escort-board-patch.mjs');
+ const main=fs.readFileSync(MAIN,'utf8');
+ const patched=patchEscortBoard(main);
+ // 棋盘先被 closeAllUI（StartBattleCmd）藏掉，退战斗时 showMain 又 hideTop+clearStack
+ // 藏一次，而 escort 一直没清 → MyPlayer.isCanMove() 恒 false
+ // →「打赢了棋盘消失、人物卡住不能走」（第 70 版玩家实测）。
+ // exitBattle 末尾的 if(t) 本来就会按 viewData 恢复界面，缺的只是「把棋盘排进去」。
+ assert.ok(patched.includes('o.viewData||null==s["default"].getEscort()||null==s["default"].getEscort().pointList||(o.viewData={modName:"Escort",viewType:"EscortNewMain",isWin:!0})'),
+  'exitBattle 必须把还开着的新版棋盘塞进 viewData（用 pointList 认新版，别误伤旧版护送）');
+ assert.ok(patched.includes('isWin:!0'),'要走 showWin：原版开棋盘（14508）就是 showWin，棋盘得留在 UISTACK 上');
+ assert.ok(!patched.includes(',o.isChangeMap=!1}var S=s["default"].myPlayer;'),
+  '不能留下没有恢复棋盘的原文');
+ assert.equal(patchEscortBoard(patched),patched,'补丁必须幂等');
 });

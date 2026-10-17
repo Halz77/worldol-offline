@@ -39,6 +39,7 @@ import {patchIllusion} from './client-illusion-patch.mjs';
 import {patchWeaponIcon} from './client-weapon-icon-patch.mjs';
 import {patchEmptyNativeShop} from './native-ui-restoration.mjs';
 import {patchEscortBattle} from './client-escort-battle-patch.mjs';
+import {patchEscortBoard} from './client-escort-board-patch.mjs';
 
 /** 原版主包在 v305 客户端里的相对路径（站点根 / client 根通用）。 */
 export const CLIENT_MAIN_PATH='js/ff/fff570bb4753f056432680e781d827dc.js';
@@ -108,7 +109,8 @@ export const CLIENT_MAIN_STEPS=[
  ['phantomImmunity',patchPhantomImmunity],
  ['illusion',patchIllusion],
  ['weaponIcon',patchWeaponIcon],
- ['escortBattle',patchEscortBattle]
+ ['escortBattle',patchEscortBattle],
+ ['escortBoard',patchEscortBoard]
 ];
 
 /** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */

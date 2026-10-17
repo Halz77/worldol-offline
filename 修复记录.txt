@@ -5707,3 +5707,70 @@ sha256 314a75a6b50b6faff98f5150698702eaf255d23cb307a2d0de5bc894a42cc4ee）。
 【五、仍未处理】
   塔怪没有技能与 AI（抓包时就没录到），只会普攻 —— 见 lib/climb-tower.mjs 顶部注释。
   扫荡按原型原样恢复（服务端已实现 30005）：不再有占位拦截。
+
+════════════════ 第 70 版 · 太阳神殿棋盘：打赢之后棋盘消失、人物卡住（客户端补丁：战后把棋盘弹回来） ════════════════
+
+【一、玩家的症状】
+  太阳神殿（英雄挑战赛 / 团队副本）：走棋盘 → 走到有事件的格子 → 打赢 → 点掉胜利面板之后，
+  棋盘直接消失、人物在地图上走不动；但「背包 / 人物 / 宠物」这些按钮还点得动。
+  （另外报了一句「打赢了但进度不对」，这一版没找到确定性的服务端原因 —— 见第五节。）
+
+【二、定位：客户端战后流程藏了两遍棋盘，服务端一行没错】
+  进战斗藏一次：
+    World.toBattle → BattleProxy.enterBattle → doBattleStart → sendNt(ON_BATTLE_START)
+      → StartBattleCmd.exec → World.closeAllUI()（clearStack + hideMdr(Layer.window)）
+  赢完点「确定」又藏一次：
+    BattleWin.onHide → exitBattle(!0) → sendNt(ON_BATTLE_END)
+      → EndBattleCmd.exec → World.showMain()（hideTop + clearStack）
+  这两处**只藏窗口，不动 World.escort**；而 MyPlayer.isCanMove()（模块 0031）是
+  「… : !World.isEscortStatus()」，isEscortStatus() = null!=this.escort
+  → 棋盘没了、escort 还在 → 人物永远走不动。
+  背包/人物/宠物能用，是因为那些是 Main 自己的按钮，而 Main 在 showMain 里被重新 showView 了。
+
+  为什么第 67 版的「12502 回包之后补发 14508」救不回来：
+    · 补发时机在玩家点「确定」之前，棋盘被 showWin 弹出来之后又被 showMain 藏掉；
+    · 棋盘一藏起来，客户端就**不再发 14511 轮询**（轮询挂在棋盘视图的 update 上），
+      服务端没有别的时机能知道「战斗界面已经收尾」。
+
+【三、修法（客户端补丁，与「幻想世界OL 2.0 新版」同一处、同一手法）】
+  客户端本来就有一个「战后恢复界面」的开关：BattleProxy.exitBattle 末尾的 if(t) 块里，
+  只要 this.viewData 有值，就按 m.isWin 决定 showWin 还是 showView 把界面恢复回来 ——
+  原版只用于「战斗期间自己弹出来的界面」，不含护送棋盘。所以在算 viewData 之前补一句：
+    o.viewData||null==s["default"].getEscort()||null==s["default"].getEscort().pointList||
+      (o.viewData={modName:"Escort",viewType:"EscortNewMain",isWin:!0})
+  · 用 .pointList 认新版棋盘（0183 的 Escort183 才有这个字段；旧版护送 0088 是
+    moveList/eventList），不然会把旧版护送也弹成新版棋盘。
+  · 和对方那份的唯一差别：多补了 isWin:!0。对方走 showView（不压 UISTACK），而原版开棋盘
+    （14508 → processEscortStartMsg）本来就是 showWin、棋盘在栈上：
+      ① 从棋盘点背包/人物时靠 hideTop/showTop 收起再弹回；
+      ② 离开棋盘（14509 → showMain → hideTop）也靠栈把棋盘关掉。
+  · 落点 lib/client-escort-board-patch.mjs（原来那版改 World.showMain 的写法已弃用：
+    一次战斗结束时两处都会 show 一遍棋盘，而 EscortNewMain.onShow 不幂等 —— 会重复塞一套
+    格子按钮并再挂一个 1 秒轮询 —— 只能在一处修）。
+
+【四、顺手核过、确认没问题的点】
+  · 14508 棋盘包字段序与 Escort183.fromBytes 完全一致（含 short round=passed.size-1、
+    byte turnType=1（FAVOURER）、战力对数）。
+  · 14511 刷新包：byte 状态(0)/奖励数(0)/escortType(1=NEW)/pos、int nextMoveTime、
+    int nextOverTime、short round、bool hasRob(0)、byte 图标数(0) —— 与
+    Escort183.processEscrotRefreshPosMsg 对得上。
+  · 14511 结束包：byte 状态(1)/奖励数(0)、bool 有无奖励块(0)、byte 原因(0)、string 文案
+    （escortType=FAVOURER 才读）、byte u(0)，之后接数据块 int mapId、byte x、byte y、
+    int flags(0) —— 与 processEscostEndMsg + processDataBlockFlagMsg 对得上
+    （map 262 不在镜像/城市/国家分配段，不会多读一个 short）。14509 离开包同一口径。
+  · 棋盘进度（pos/passed/completed/solarDone）与存档恢复链自洽：handleSolarChallenge 的
+    会话恢复、settleSolarBattle 用 board.pos 记「这格通过」、14510 走到 100 号格置 solarDone、
+    official-rules 用 solarDone 判可交付。
+
+【五、仍未处理】
+  · 「打赢了但进度不对」没有找到确定性的服务端 BUG（棋盘包/刷新包/结束包逐字段核过，
+    进度与存档恢复链也自洽）。玩家是在**棋盘看不见**的状态下报的，倾向与「棋盘消失」同源 ——
+    本版把棋盘恢复之后请再复验；若仍不对，请说明是哪一格、棋盘上看到了什么。
+  · exitBattle() 不带参数（客户端 12502 报错那条路：worldReflashType=ALL + exitBattle()）
+    只会把棋盘排进 viewData 而当场不恢复，要等下一场战斗结束才弹回来；正常胜负不走这条。
+
+【六、验证】
+  · tests/client-patch-chain.test.mjs：主包长度断言 4565616 → 4565641（本补丁 +152）；
+    escortBoard 用例改成断言 viewData 注入 + isWin:!0 + 幂等；node --test 12/12 过。
+  · npm test 84 文件 / 587 用例全过，新增失败 0；npm run check 323 文件 0 错。
+  · 上机复验（打包 + 走棋盘打一场）由用户做。

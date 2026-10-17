@@ -117,7 +117,7 @@
 
 ## 客户端要点
 
-- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,565,461 字符**
+- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,565,641 字符**
   （链测试用**字符数**，别用字节数）。`.orig` 必须保持未打补丁的原始版本。
 - **补丁注入点分「语句 / 表达式」上下文**：webpack 类成员常是
   `return __extends(t,e),t.prototype.a=…,t.prototype.b=…,t` 逗号链。
@@ -127,6 +127,16 @@
   `isLeader()&&isHasPlayerMember()` / `isNetBattleID(t)` / `isEscortStatus()` 任一为真就走
   **12503 远程战斗**，而服务端只接 12501 → 客户端静默无反应。
   修法：三个条件都加 `&&null==e.getMonsterGroup(t)`（本地世界数据里有这组就别走远程）。
+- **打完棋盘战斗必须把棋盘自己弹回来**（第 70 版）：棋盘（英雄挑战赛/团队副本）一行棋就进
+  `StartBattleCmd → World.closeAllUI()` 把棋盘藏掉，打完点「确定」又走
+  `exitBattle → ON_BATTLE_END → EndBattleCmd → World.showMain()` 再藏一次；
+  而这两处**只藏窗口、不清 `World.escort`** → `MyPlayer.isCanMove()=!World.isEscortStatus()`
+  恒 false → 表现是「棋盘没了 + 人物走不动」（背包/人物/宠物照常，那些是 Main 自己的按钮）。
+  服务端补发 14508 救不回来（时机早于玩家点「确定」，且棋盘一藏起来客户端就停发 14511 轮询）。
+  修法在 `lib/client-escort-board-patch.mjs`：`BattleProxy.exitBattle` 里把棋盘排进 `viewData`
+  （客户端自带的「战后恢复界面」开关，`if(t)` 块会按它 showWin 回来）；
+  与「幻想世界OL 2.0 新版」同一处、同一手法（对方漏了 `isWin:!0`，我们补上——
+  原版开棋盘（14508）就是 showWin，棋盘得留在 UISTACK 上）。
 - **永泽塔挑战进战斗是客户端补的桥**（第 69 版）：原生 `TowerProxy.onClimbTowerChallenge`
   收到 30004 后只 `sendNt(TowerEvent.TowerChallenge)`，**全客户端没有监听者** → 点了没反应。
   桥全在 `web/home-features.js`：接管 `req(1500).default.prototype.sendClimbTowerChallenge`
