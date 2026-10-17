@@ -7,6 +7,7 @@ import {activePet} from './pet-state.mjs';
 import {petReward} from './pet-packets.mjs';
 import {addedItems} from './restoration-packets.mjs';
 import {missionDone} from './daily-activity.mjs';
+import {completedCityUpgrades} from './city-progress.mjs';
 export function npcPacket(w,p,npcs=maps[p.mapId].npcs){
   w.byte(0).byte(0).byte(0).byte(npcs.length);
   for(const n of npcs){
@@ -36,7 +37,7 @@ export function missionPacket(q,p){
   return w.int(0).utf('村落委托').int(1).int(1).byte(1).bool(false);
 }
 export function missionsPacket(w,p){const active=Object.keys(p.quests.active).map(id=>quests[id]||officialMissions.get(Number(id))).filter(Boolean);w.byte(active.length);for(const q of active)w.bytes(missionPacket(q,p));return w;}
-export function missionBits(p){const b=Buffer.alloc(Math.floor(9003/8)+1);for(const id of p.quests.completed)if(id>=0&&id<9004&&missionDone(p,id))b[id>>3]|=1<<(id%8);return b;}
+export function missionBits(p){const b=Buffer.alloc(Math.floor(9003/8)+1);for(const id of new Set([...p.quests.completed,...completedCityUpgrades(p)]))if(id>=0&&id<9004&&missionDone(p,id))b[id>>3]|=1<<(id%8);return b;}
 export function signUpdates(w,p){const list=maps[p.mapId].npcs.filter(n=>n.type===0||n.type===5);w.byte(list.length);for(const n of list)w.byte(n.id).byte(npcSign(p,n));return w;}
 // extraGroups：本次要额外下发的战斗组（永泽塔按层现场生成的编队）。
 // 非官方地图（新手村/本地图）本身没有官方组，但塔战必须走完整格式，

@@ -6,6 +6,7 @@ import {applyYunruoDaily,yunruoTempleRevision} from './yunruo-temple.mjs';
 import {applyRecordedExpansionDaily,recordedExpansionRevision} from './recorded-expansion.mjs';
 import {applyLostSoulDesertDaily} from './lost-soul-desert.mjs';
 import {vipBenefits} from './home-feature-data.mjs';
+import {cityUpgradeDone} from './city-progress.mjs';
 
 /**
  * 每日活动表（100 KB）本身很小，但它的顶层三步 `applyYunruoDaily` /
@@ -52,12 +53,17 @@ export function ensureDaily(p,now=Date.now()){
   // Undated legacy saves establish their first day without deleting history.
   if(p.dailyActivity?.day&&p.dailyActivity.day<state.day&&p.quests)p.quests={...p.quests,
    active:Object.fromEntries(Object.entries(p.quests.active||{}).filter(([id])=>isNewbieMission(id))),
-   completed:(p.quests.completed||[]).filter(isNewbieMission)};
+   // 城市升级任务（3002—3005）不留在 completed 里也无所谓 —— missionDone() 会用城市等级补判，
+   // 但记录留着更好：其它模块也读这份数组（home-features / 任务位图 / 重玩链节点统计）。
+   completed:(p.quests.completed||[]).filter(id=>isNewbieMission(id)||cityUpgradeDone(p,id))};
   p.dailyActivity=state;
  }
  return state;
 }
 export function missionDone(p,id,now=Date.now()){
+ // 城市升级任务（3002—3005）按城市等级判定，不看完成记录 —— 记录会被跨天重置清掉，
+ // 而等级留着。详见 lib/city-progress.mjs。
+ if(cityUpgradeDone(p,id))return true;
  const q=officialMissions.get(id);
  return isDailyMission(q)?!!dailyState(p,now).completed[id]:(p.quests?.completed||[]).includes(id);
 }

@@ -9,6 +9,7 @@ import {setPowers} from './equipment-sets.mjs';
 import {reconcileAttributePoints} from './progression.mjs';
 import {careerSkills,migrateCareerSkills,careers} from './career-skills.mjs';
 import {migrateCaptured81Progress} from './captured81-progress.mjs';
+import {migrateMayaProgress} from './maya-progress.mjs';
 import {nativeCharacterStats} from './native-character-stats.mjs';
 import {INITIAL_BAG_CAPACITY} from './bag-capacity.mjs';
 import {automaticSkillSlots} from './automatic-skills.mjs';
@@ -70,6 +71,9 @@ export function normalizeRestoration(p){
  migrateCareerSkills(p);
  // 八一副本：旧版按推测写的 1422—1429 进度认不出新录制的怪，命中痕迹就归档重走。
  migrateCaptured81Progress(p);
+ // 玛雅：8700—8709 十环取代了原版 3219→3220…→1823→1824，旧任务号已不再注册，
+ // 从正式服导入的存档会把它们一直挂在 active 里（见 lib/maya-progress.mjs）。
+ migrateMayaProgress(p);
  if(!p.restoration.starterIssued){
   const slot=firstFree(p);
   if(slot!==undefined){p.inventory.push({itemId:800000,slot,quantity:1});p.restoration.starterIssued=true;}

@@ -407,3 +407,32 @@ petInnateAttribute(+-older) / talent / vocationalSkills）。
 
 > ⚠ 这些是 **131 MB 解包产物 + 中间结论**，我没有写进仓库（`data/*.json` 有一字节不改的规矩，
 > 对方的解包也不该混进来）。要长期留着的话说一声，我把它挪到项目里某个 gitignore 目录。
+
+---
+
+## 11. 移植进展（本工程侧的落地记录）
+
+按用户给的批次顺序做，每项都写了单测、结论记在 `docs/memory/` 与 `修复记录.txt`：
+
+| 批次 | 对方模块 | 我们落点 | 与对方的差异 / 备注 |
+| --- | --- | --- | --- |
+| 太阳神殿 / 团队副本（第 70 版，**已上机通过**） | `team-dungeon-service.mjs`（与我们逐字等价，**同样有棋盘消失的 BUG**） | `lib/solar-challenge-*.mjs` + 客户端补丁 `lib/client-escort-board-patch.mjs`（`exitBattle` 里排 `viewData`） | 对方走 `showView`（不压 UISTACK），我们补 `isWin:!0` 走 `showWin`；难度按抓包原样不动 |
+| 永泽塔挑战（第 69 版） | 无（对方那份没有这条桥） | `web/home-features.js`：接管 `sendClimbTowerChallenge` + 包 `World.addMonsterGroup`（收到塔组才 `World.toBattle`） | 触发条件必须用「收到塔组」，不能用「发过请求」 |
+| 城市 / 玛雅小补丁（第 71 版） | `city-template-fixes.mjs`、`city-progress.mjs`、`maya-progress.mjs` | 同名三个模块 + 挂钩 `official-data.ensure()` / `daily-activity` / `game-packets` / `restoration` | 见下 |
+| 问剑 | `MYTHIC_CHEST_ID=9300930`（神话装备箱）等 | **待做** | 我们全库 0 命中，要先补箱子定义 |
+| 挑战副本 | `applyBossRewardChallenges`（group 3314/3315）、1305 棋盘、9100 跨服合作 | **待做** | 现状在 `lib/dungeon-challenge-data.mjs` / `lib/boss-challenges.mjs` / `data/boss-challenges-v1.json` |
+
+城市/玛雅这一项的具体差异（都是我们刻意改的）：
+
+1. **写 `wireBase64` 的姿势**：对方按固定偏移插入新对白、开状态位；我们先解析、用原值
+   **原样重建一次并与原件逐字节比对**（`boss-hub.mjs` 的老规矩），再写回，字段顺序靠
+   「重建一致」证明，而不是靠注释保证。
+2. **缺项处理**：对方遇到地图缺 `spawn` 直接 throw；我们**告警跳过**
+   （这段在 `official-data.ensure()` 里跑，抛错等于服务起不来）。
+3. **注入位置**：对方排在 `ensure()` 较早处；我们排在**所有补地图的补丁之后、建索引之前**
+   （航线目的地要在地图表里存在，NPC wire 又要从建好的表里取）。
+4. **`city-progress` 的三处挂点**：对方有 `questHistory` 这套并行历史，我们直接用
+   `quests.completed`，所以挂到 `missionDone()` / 跨天重置过滤 / `missionBits()` 三处；
+   `city-progress.mjs` 刻意不 import `city-state.mjs`（会经 official-data 绕成循环）。
+5. **文案**：市长扩建后对白与驿站招呼语逐字照搬对方的文案；`mayaRetiredProgress` 的
+   revision 也沿用对方的 `restore-20260926-palace-v1`，便于两边存档对照。

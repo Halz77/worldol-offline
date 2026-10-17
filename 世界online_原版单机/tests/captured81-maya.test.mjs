@@ -9,6 +9,7 @@ import {battleSupported} from '../lib/official-rules.mjs';
 import {applyCaptured81} from '../lib/captured81.mjs';
 import {migrateCaptured81Progress} from '../lib/captured81-progress.mjs';
 import {MAYA_QUEST_IDS} from '../lib/maya-palace-story.mjs';
+import {migrateMayaProgress,mayaRetiredRevision} from '../lib/maya-progress.mjs';
 
 const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const has81=fs.existsSync(path.join(root,'data','captured81-20260926.json'));
@@ -173,4 +174,35 @@ test('玛雅副本：838 蒂卡尔的可见性前置字节真的改了（客户�
  r.take(5);
  assert.equal(status&8,8,'可见性位丢了');
  assert.equal(bytes.readUInt16BE(r.pos),3219,'字节里的前置任务号不是 3219');
+});
+
+test('玛雅副本：旧任务号（3220—3226、1823）已不再注册 —— 从正式服导入的存档要归档清掉',()=>{
+ for(const id of [3220,3221,3222,3223,3224,3225,3226,1823])assert.equal(officialMissions.has(id),false,'旧任务号 '+id+' 又被注册了');
+ const p={quests:{active:{
+  3220:{official:true,counts:{}},
+  1823:{official:true,origin:{mapId:838,npcId:2},acceptedAt:'2026-01-01T00:00:00.000Z'},
+  1421:{official:true,counts:{}},
+ }}};
+ assert.equal(migrateMayaProgress(p),true,'命中了旧任务却没归档');
+ assert.equal(p.quests.active[3220],undefined,'3220 还挂在 active 里');
+ assert.equal(p.quests.active[1823],undefined,'1823 还挂在 active 里');
+ assert.ok(p.quests.active[1421],'把正常任务误删了');
+ const entry=p.mayaRetiredProgress[0];
+ assert.equal(entry.revision,mayaRetiredRevision);
+ assert.ok(entry.active[3220].official,'归档时没留原记录');
+ assert.equal(entry.active[1823].origin.mapId,838);
+ assert.equal(migrateMayaProgress(p),false,'第二次调用应当是 no-op');
+ assert.equal(p.mayaRetiredProgress.length,1,'归档不该重复追加');
+});
+
+test('玛雅副本：没有 official 标记的同号任务、以及干净存档都不动',()=>{
+ // 本地自编任务万一用到这些号：没有 official 标记就不许动它。
+ const local={quests:{active:{1823:{counts:{}}}}};
+ assert.equal(migrateMayaProgress(local),false);
+ assert.ok(local.quests.active[1823],'误删了本地自编任务');
+ assert.equal(local.mayaRetiredProgress,undefined);
+ // 空存档 / 没有 quests 的残缺存档也不该抛错
+ assert.equal(migrateMayaProgress({quests:{active:{}}}),false);
+ assert.equal(migrateMayaProgress({}),false);
+ assert.equal(migrateMayaProgress(undefined),false);
 });

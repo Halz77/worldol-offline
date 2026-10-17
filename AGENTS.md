@@ -112,6 +112,17 @@
   运行时再注册的进不了 Map → 必须注册在索引构建**之前**（push 后重建 Map）。
 - **任务锚点 vs 怪刷新点**：怪组在同图常有多刷新点，任务锚点常是对话 NPC →
   开战判定应为「锚点近则用锚点，否则用当前可见可打的同组最近刷新点」。
+- **城市升级任务（3002—3005）的完成状态从城市等级推导**（`lib/city-progress.mjs`，第 71 版）：
+  `ensureDaily()` 跨天会把非新手任务从 `quests.completed` 里清掉，而 `p.city.level` 是持久字段 →
+  只看完成记录的话，第二天升级任务会被重新摆出来，接了还卡死（`applyCityMission()` 报
+  「城市等级已变化，请重新查看任务。」），所有「前置=升级到 N 级城市」的任务也会一起失效。
+  挂了三处：`daily-activity.missionDone()`、跨天重置的 completed 过滤、`game-packets.missionBits()`。
+  该模块刻意不 import `city-state.mjs`（会经 official-data 绕成循环）。
+- **城市模板（`cityTemplate` 地图 1000/3090）的三处小修**在 `lib/city-template-fixes.mjs`：
+  任务公告板补可见位（`status|1`，见「客户端要点」的状态位表）、市长扩建后对白、
+  飞行驿站补【主城】【地区】【副本】【节日】60 条航线（落点取目标地图 `spawn`、无门槛）。
+  调用点在 `official-data.ensure()` 里**所有补地图的补丁之后、建索引之前**（晚于 `applyOpenPortals`）；
+  目的地缺项只告警跳过，不抛错 —— 这段在 `ensure()` 里跑，抛错等于服务起不来。
 
 ---
 
@@ -146,6 +157,20 @@
   而组一旦进 `monsterGroupList` 就长期不清 → 用「发过请求」会在「同层已缓存 + 这次被拒」时误开战。
   （`sendClimbTowerChallenge` 是 UI 动态查属性、覆盖必命中；`onProto(proto,handler)` 是初始化时
   按引用注册的，改原型对它无效 —— 别拿它当钩子。）
+- **NPC 记录的状态字节是一张位表**（主包 `ModelConst`，偏移约 1147619，逐字核对过）：
+  `STATUS_VISIBLE=1`、`STATUS_ENABLE=2`、`STATUS_PASSABLE=4`、`STATUS_MISSION_DATA_USE=8`、
+  `STATUS_MISSION_LOAD_EVERY_TIME=16`、`STATUS_JUMP_ICON=32`、`STATUS_HIDE_PLAYER=64`、
+  `STATUS_GUIDE_NPC=128`、`STATUS_INIT_VISIBLE=1024`、`STATUS_INIT_ENABLE=2048`。
+  → `status=2` 是「可交互但**看不见**」（个人城市的任务公告板就是这样，见第 71 版）；
+  `status&8` 时记录里多 6 字节 missionData（short/byte/short/byte）；本地 type 0 用 23 就是
+  「可见+可交互+可穿过+每次重读任务」。
+- NPC 记录布局（客户端 `readPowerNPCData`）：14 头 + 名字/招呼/对话 + 状态/朝向/x/y/范围x/范围y
+  + [missionData 6 字节，仅当状态&8] + 按 npcType 分支（type 5 = 传送菜单/战斗菜单/商店菜单/导师菜单
+  四段，每段 byte 计数；传送项 = 菜单名(utf) 地图(short) x(byte) y(byte) 需求任务(short) 需求状态(byte)；
+  战斗/商店/导师项 = 菜单名 + short + short + byte）。
+  改这类记录照 `lib/boss-hub.mjs` / `lib/city-template-fixes.mjs`：先按布局解析、用原值**原样重建
+  一次并与原件逐字节比对**，才敢写入；测试用 `tools/capture-decoders.mjs` 的 `Npc.fromBytes`
+  （就是主包模块 74 的原函数）读回来对。
 - 图标 = bagIcon 十进制字符串作**全局数值子键**解析；item_icon0..7、bb_head（宠物头像）；
   蛋图标 = headIcon。资源表 `305.json` 顶层 `res.resources`。
 - **文本两套命名空间**：`GameText`(模块 10) 与 `GameText2`(模块 23)。`STR_ATTR_IGNORE_*`

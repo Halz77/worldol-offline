@@ -21,6 +21,7 @@ import {applyMayaContinuation} from './maya-continuation.mjs';
 import {applyLostSoulDesert} from './lost-soul-desert.mjs';
 import {fixMidAutumnFinalBoss} from './mid-autumn-final-boss.mjs';
 import {applyDungeonStoryRepairs} from './dungeon-story-repairs.mjs';
+import {applyCityTemplateFixes,applyCityFlightStations} from './city-template-fixes.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -107,6 +108,11 @@ fixMidAutumnFinalBoss(official);
  // 加出口 + 复活/补 NPC + 克隆怪 + 生成【单机续篇】任务链。必须在建索引之前：
  // 新加的地图/NPC/任务/组/怪都要被任务导航与 12501 战斗协议查到。
  applyDungeonStoryRepairs(official);
+ // 城市模板小补丁（见 lib/city-template-fixes.mjs）：任务公告板的可见位、市长「扩建后」对白、
+ // 飞行驿站航线扩展。必须排在所有「补地图」的补丁之后 —— 航线目的地要在地图表里存在；
+ // 又必须在建索引之前 —— 客户端下发的 NPC wire 直接从 official.maps 取。
+ applyCityTemplateFixes(official);
+ applyCityFlightStations(official);
  built={
   official,
   officialMaps:new Map(official.maps.map(m=>[m.id,m])),
