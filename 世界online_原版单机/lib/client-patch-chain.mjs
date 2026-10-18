@@ -20,6 +20,7 @@
 import {patchOfflineLegionBattles} from './client-legion-patch.mjs';
 import {patchImmediateRoleDeletion} from './client-role-deletion-patch.mjs';
 import {patchBattleDamageMath} from './client-damage-patch.mjs';
+import {patchAttackPlan} from './client-attack-plan-patch.mjs';
 import {patchCombatLimits} from './client-combat-limits.mjs';
 import {patchGardenerManaRecovery} from './client-monster-recovery-patch.mjs';
 import {patchNpcRepeatableMissions,patchOfflineStoryBattles,patchDailyCatalogVisibility,patchNpcMissionRefresh} from './client-mission-patch.mjs';
@@ -86,6 +87,7 @@ export function patchClientBoot(source){
 export const CLIENT_MAIN_STEPS=[
  ['worldReq',source=>replaceOnce(source,'t.m=e,t.c=i,',WORLD_REQUEST_MARKER)],
  ['battleDamageMath',patchBattleDamageMath],
+ ['attackPlan',patchAttackPlan],
  ['npcRepeatableMissions',patchNpcRepeatableMissions],
  ['offlineStoryBattles',patchOfflineStoryBattles],
  ['playerLevelRewards',patchPlayerLevelRewards],

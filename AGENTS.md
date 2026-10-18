@@ -199,8 +199,10 @@
 
 ## 客户端要点
 
-- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,565,871 字符**
+- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,567,833 字符**
   （链测试用**字符数**，别用字节数）。`.orig` 必须保持未打补丁的原始版本。
+  （近两次：第 75 版 battleCheckFields 补一行派生属性 +76；第 76 版 attackPlan 补
+  逐手武伤/攻次 +1961。改补丁必须同步 `tests/client-patch-chain.test.mjs` 的长度。）
 - **补丁注入点分「语句 / 表达式」上下文**：webpack 类成员常是
   `return __extends(t,e),t.prototype.a=…,t.prototype.b=…,t` 逗号链。
   往链里插分号 → return 提前结束 → IIFE 返回不是类 → 进战斗报「r.show is not a function」。
@@ -274,6 +276,19 @@
   蛋图标 = headIcon。资源表 `305.json` 顶层 `res.resources`。
 - **文本两套命名空间**：`GameText`(模块 10) 与 `GameText2`(模块 23)。`STR_ATTR_IGNORE_*`
   只在 GameText2 → `window.__worldReq(23).GameText2.…`。全库文本常量可从主包正则抠出按值反查。
+- **伤害按「逐手武伤 + 逐手攻次」算**（第 76 版，`lib/client-attack-plan-patch.mjs`）：
+  原版每次攻击的武伤都取 `ATK_MIN..ATK_MAX`，而 `ModelConst.ATK_MIN = max(左手武伤, 右手武伤)`
+  （模块 0056 的 `get`）→ **双持时永远用较好的那只手**，另一只手白拿；左右手攻次只看
+  `LEFT_ATK_TIME>0 && RIGHT_ATK_TIME>0` 就 50/50 平均交替，不看两只武器各自的攻次（`EQP_HIT_TIME`）。
+  我们第 4x 版解除了「两把武器不能同时装」的限制（`client-weapon-slot-patch.mjs`）→ 双持是常规玩法，
+  这两条立刻可见。修法照搬参考实现：Battle 类补 `buildAttackPlan(actor,skill)` 出「每次攻击用哪只手」
+  的计划（每项 `{left,min,max,type}`，长度仍是 `ATK_TIME+skill.atk_time` 夹 1..99 → **总攻次不变**，
+  变的是分配：左 3 右 1 是 L,R,L,L），`calDamage` 循环逐次挂 `this._currentAttackHand`（try/finally
+  还原），`BATTLE_RAND_ATC` / `BATTLE_AP_MAGIC` 改成按当前手取值（魔法武伤门槛从「玩家」扩到
+  军团 / 离线佣兵，并只认当前手的武器类型）。空手/拳套/耐久 0（`getEquipWeaponType()` = -401）
+  与怪物/宠物都走单项计划 → 与改动前等价。他们同处还有一条**没搬**：`delDamageEffect` 按真实掉血
+  算吸血/仇恨/反击（与武伤攻次无关，要时再单独评估）。
+  ⚠ 改这段要同步 `tests/client-patch-chain.test.mjs` 的长度与桩用例。
 - **战斗查看的「生命百分比伤害减免」是算出来的，不是 wire 字段**（第 75 版，`lib/client-battle-check-patch.mjs`）：
   战斗减伤走 `BattleCalc.calTouch` → `calTouchDmg`（`n=TOUGH`，血/弱减半 → 减 `IGNORE_TOUCH`
   与技能 `POWER_SKILL_TARGET_TOUCH` → 上限 `MAX_RATE_TOUCH=700` → `伤害×(1-n/1000)`），

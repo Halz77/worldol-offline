@@ -26,6 +26,7 @@ const EXPECTED_BOOT_STEPS=['offlineBootSettings','offlineInstall','dropPollingTi
 const EXPECTED_MAIN_STEPS=[
  'worldReq',
  'battleDamageMath',
+ 'attackPlan',
  'npcRepeatableMissions',
  'offlineStoryBattles',
  'playerLevelRewards',
@@ -62,7 +63,8 @@ const PATCH_FUNCTIONS=[
  'patchOfflineStoryBattles','patchDailyCatalogVisibility','patchNpcMissionRefresh',
  'patchPlayerLevelRewards','patchBulkItemUse','patchBattleSkillPanel','patchBattleCheckFields','patchBattleMonsterBars','patchBattleFont',
  'patchLegionSurvivors','patchLegionPetGuard','patchBattleSpeedSteps','patchBattleSpeedPersist',
- 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEscortBoard','patchPromptBriefing','patchEmptyNativeShop'
+ 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEscortBoard','patchPromptBriefing','patchEmptyNativeShop',
+ 'patchAttackPlan'
 ];
 
 function readIfPresent(file){
@@ -99,16 +101,17 @@ test('replaceOnce 要求锚点恰好出现一次',()=>{
 
 test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle,()=>{
  const original=fs.readFileSync(MAIN,'utf8');
- // 4557839 / 4565872 是 v305 主包打补丁前后的长度。
+ // 4557839 / 4567833 是 v305 主包打补丁前后的长度。
 // （第 75 版 battleCheckFields 补一行派生的「生命百分比伤害减免」后 +76：算式照抄参考实现
-//  min(TOUGH/100, 80)%。）
+//  min(TOUGH/100, 80)%。第 76 版加 attackPlan 补丁后 +1961：伤害按逐手武伤与攻次算
+//  —— 见 lib/client-attack-plan-patch.mjs。）
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
   //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
   //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4565872,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4567833,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 
@@ -231,4 +234,72 @@ test('promptBriefing：战斗提示弹窗要滚快、按队列加速、入队带
   'addPromptMsg 入队后要裁到上限（丢最旧的）');
  assert.ok(!patched.includes('e.getInstance().promptMsssage.addElement(t),_.Briefing.show()'),'不能留下没有上限的入队原文');
  assert.equal(patchPromptBriefing(patched),patched,'补丁必须幂等');
+});
+
+test('attackPlan：伤害按逐手武伤与攻次算（对齐参考实现，第 76 版）',skipNoBundle,async()=>{
+ const {patchAttackPlan,ATTACK_PLAN_METHOD,ATTACK_PLAN_MIN_HIT_TIME,ATTACK_PLAN_MAX_HIT_TIME}=await import('../lib/client-attack-plan-patch.mjs');
+ const main=fs.readFileSync(MAIN,'utf8');
+ const patched=patchAttackPlan(main);
+ // 原版三条原文都必须消失：平均交替左右手、武伤恒取 ATK_MIN..ATK_MAX、魔法武伤只认 getEquipWeaponType。
+ assert.ok(!patched.includes('if(1==p&&(this.isLeftHand=!this.isLeftHand)'),'不能留下平均交替左右手的原文');
+ assert.ok(!patched.includes('case y["default"].BATTLE_RAND_ATC:return this.randRange(t.get(f.ModelConst.ATK_MIN)'),
+  '武伤不能再固定取 ATK_MIN..ATK_MAX（那是「较好那只手」的伤害）');
+ assert.ok(patched.includes('this._currentAttackHand=plan[m],this.isLeftHand=this._currentAttackHand.left'),'循环要逐次换手');
+ assert.ok(patched.includes('}finally{this._currentAttackHand=previousHand}'),'循环结束必须还原当前手');
+ assert.ok(patched.includes('case y["default"].BATTLE_RAND_ATC:if(this._currentAttackHand)return this.randRange(this._currentAttackHand.min,this._currentAttackHand.max);'),
+  '武伤要按当前那只手的武器伤害区间');
+ assert.ok(patched.includes('var B=this._currentAttackHand?this._currentAttackHand.type:t.getEquipWeaponType();'),
+  '魔法攻击的武伤门槛要按当前手的武器类型');
+ assert.ok(patched.includes('t.type==l.MODEL_TYPE.TYPE_MERCENARY&&!0===t._offlinePlayerMercenaryActor'),
+  '有资格判武伤的 actor 要扩到军团 / 离线佣兵');
+ assert.equal(patchAttackPlan(patched),patched,'补丁必须幂等');
+
+ // 计划本身：把注入进主包的那段代码单独跑一遍（桩常量 + 桩 actor）。
+ assert.equal(ATTACK_PLAN_MIN_HIT_TIME,1);
+ assert.equal(ATTACK_PLAN_MAX_HIT_TIME,99);
+ const M={MIN_HIT_TIME:1,MAX_HIT_TIME:99,ATK_TIME:1,LEFT_ATK_TIME:2,RIGHT_ATK_TIME:3,LEFT_ATK_MIN:4,LEFT_ATK_MAX:5,
+  RIGHT_ATK_MIN:6,RIGHT_ATK_MAX:7,LEFT_WEAPON_TYPE:8,RIGHT_WEAPON_TYPE:9,ATK_MIN:10,ATK_MAX:11};
+ const buildPlan=(new Function('f','l','c','var e={prototype:{}};'+ATTACK_PLAN_METHOD+';return e.prototype.buildAttackPlan;'))(
+  {ModelConst:M},
+  {MODEL_TYPE:{TYPE_PLAYER:3,TYPE_LEGION:10,TYPE_MERCENARY:4}},
+  {default:{BACK_ERROR_NULL_HAND:-401}}
+ );
+ const actor=(values,{weaponType=8,bag=true,type=3,equipWeaponType=true}={})=>{
+  const a={get:key=>values[key]??0,getType:()=>type};
+  if(bag)a.bag={};
+  if(equipWeaponType)a.getEquipWeaponType=()=>weaponType;
+  return a;
+ };
+ const hands=plan=>plan.map(h=>(h.left?'L':'R')+h.min+'~'+h.max+'/'+h.type).join(' ');
+
+ // 双持：左手武器打 4 次、右手 2 次 → 先各排各的（不是原版的 50/50 平均交替）。
+ const dual=actor({[M.ATK_TIME]:6,[M.LEFT_ATK_TIME]:4,[M.RIGHT_ATK_TIME]:2,[M.LEFT_ATK_MIN]:10,[M.LEFT_ATK_MAX]:20,
+  [M.RIGHT_ATK_MIN]:100,[M.RIGHT_ATK_MAX]:200,[M.LEFT_WEAPON_TYPE]:71,[M.RIGHT_WEAPON_TYPE]:72,[M.ATK_MIN]:100,[M.ATK_MAX]:200});
+ assert.equal(buildPlan(dual,null).map(h=>h.left?'L':'R').join(''),'LRLRLL');
+ // 逐手武伤与武器类型（这就是「法师武伤 / 攻次判定」的来源）。
+ assert.equal(buildPlan(dual,null)[0].min,10);
+ assert.equal(buildPlan(dual,null)[1].min,100);
+ assert.equal(buildPlan(dual,null)[0].type,71);
+ assert.equal(buildPlan(dual,null)[1].type,72);
+ // 技能加的攻次：多出来的部分从左手开始交替。
+ assert.equal(buildPlan(dual,{atk_time:1}).map(h=>h.left?'L':'R').join(''),'LRLRLLL');
+ // 总攻次夹在 MIN_HIT_TIME..MAX_HIT_TIME（原版 sumValue 同款）。
+ assert.equal(buildPlan(dual,null).length,6);
+ assert.equal(buildPlan(actor({[M.ATK_TIME]:0,[M.LEFT_ATK_TIME]:1}),null).length,ATTACK_PLAN_MIN_HIT_TIME);
+ assert.equal(buildPlan(actor({[M.ATK_TIME]:500,[M.LEFT_ATK_TIME]:1}),null).length,ATTACK_PLAN_MAX_HIT_TIME);
+
+ // 左手空（只有右手）：全打在右手，武伤取右手（原版取 max(LEFT,RIGHT) 也是同一只，行为一致）。
+ const rightOnly=actor({[M.ATK_TIME]:3,[M.LEFT_ATK_TIME]:0,[M.RIGHT_ATK_TIME]:3,[M.LEFT_ATK_MIN]:0,[M.LEFT_ATK_MAX]:0,
+  [M.RIGHT_ATK_MIN]:100,[M.RIGHT_ATK_MAX]:200,[M.LEFT_WEAPON_TYPE]:0,[M.RIGHT_WEAPON_TYPE]:72});
+ assert.equal(buildPlan(rightOnly,null).map(h=>(h.left?'L':'R')+':'+h.min).join(' '),'R:100 R:100 R:100');
+
+ // 空手 / 拳套 / 武器耐久 0：getEquipWeaponType() 返回 -401 → 保持原版空手伤害（ATK_MIN..ATK_MAX）。
+ const unarmed=actor({[M.ATK_TIME]:2,[M.LEFT_ATK_TIME]:1,[M.RIGHT_ATK_TIME]:1,[M.LEFT_WEAPON_TYPE]:-1,[M.RIGHT_WEAPON_TYPE]:-1,
+  [M.ATK_MIN]:7,[M.ATK_MAX]:9},{weaponType:-401});
+ assert.equal(hands(buildPlan(unarmed,null)),'L7~9/-401 L7~9/-401');
+
+ // 怪物 / 宠物（type 不在玩家|军团|离线佣兵里、没有 bag）：单项计划，min/max 就是 ATK_MIN/ATK_MAX。
+ const monster=actor({[M.ATK_TIME]:2,[M.LEFT_ATK_TIME]:5,[M.RIGHT_ATK_TIME]:5,[M.ATK_MIN]:30,[M.ATK_MAX]:40},
+  {bag:false,equipWeaponType:false,type:1});
+ assert.equal(hands(buildPlan(monster,null)),'L30~40/-1 L30~40/-1');
 });
