@@ -53,7 +53,7 @@ test('宠物蛋图标：每个 selectable 蛋的 bagIcon 都是那只宠物的�
  }
 });
 
-test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段（锚点在主包中恰好一次）',skipNoBundle,()=>{
+test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段 + 生命百分比伤害减免（锚点在主包中恰好一次）',skipNoBundle,()=>{
  if(!hasBundle)return skip('没有 client/，跳过');
  const source=fs.readFileSync(MAIN,'utf8');
  // 原始锚点必须恰好出现一次（补丁过期时这里先炸，给出明确信号）
@@ -79,6 +79,11 @@ test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段（锚�
   'IGNORE_INSIGHT','IGNORE_BLOCK','IGNORE_WIL','IGNORE_TOUCH']){
   assert.ok(patched.includes('a.ModelConst.'+key),'要读 ModelConst.'+key);
  }
+  // 生命百分比伤害减免：派生字段（不是 wire 字段）。算式**照抄参考实现**「幻想世界OL」：
+  // min(TOUGH/100, 80)% —— 注意引擎自己算减伤时 TOUGH 是千分比（calTouchDmg，700→70%），
+  // 参考实现是 /100（显示小 10 倍）；玩家要求与其面板一致，故照抄。
+  assert.ok(patched.includes('t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n")'),
+   '面板要显示「生命百分比伤害减免」，算式与参考实现一致（TOUGH/100、上限 80%）');
  // 端到端守卫：上面用到的键必须真的在对应模块里声明着（模块缺失时跳过）
  const moduleText=id=>{
   const file=path.join(root,'analysis','modules',String(id).padStart(4,'0')+'.js');

@@ -99,14 +99,16 @@ test('replaceOnce 要求锚点恰好出现一次',()=>{
 
 test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle,()=>{
  const original=fs.readFileSync(MAIN,'utf8');
- // 4557839 / 4565796 是 v305 主包打补丁前后的长度。
+ // 4557839 / 4565872 是 v305 主包打补丁前后的长度。
+// （第 75 版 battleCheckFields 补一行派生的「生命百分比伤害减免」后 +76：算式照抄参考实现
+//  min(TOUGH/100, 80)%。）
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
   //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
   //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4565796,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4565872,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 

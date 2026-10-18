@@ -6010,3 +6010,37 @@ sha256 314a75a6b50b6faff98f5150698702eaf255d23cb307a2d0de5bc894a42cc4ee）。
   · 上一批遗留的可选项（入场券 119 / 券店 2061 / 奖励盒 1480—1482 / 2454 每日赠券）依然没做；
     跨服副本这一版做成单机合作版（9176），入场的凭证与商店不做。
 
+
+════════════════ 第 75 版 · 战斗查看显示「生命百分比伤害减免」（客户端补丁） ════════════════
+
+【一、要什么】
+  参考实现（幻想世界OL）的战斗查看面板里多了一行「生命百分比伤害减免：N%」，
+  人物 / 宠物 / 怪物都能看到。搬过来。
+
+【二、这条属性是什么（先弄清算法，再决定照谁的）】
+  · 它**不是 wire 上的字段**，是把强韧（TOUGH）换算出来的显示值。
+  · 战斗里真正的减伤链路：BattleCalc.calTouch(目标) 取 TOUGH（血 / 弱状态减半）
+    → 减去攻击方 IGNORE_TOUCH 与技能 POWER_SKILL_TARGET_TOUCH
+    → 上限 MAX_RATE_TOUCH=700 → damage -= damage*n/1000。
+    即 **TOUGH 是千分比**：700 就是引擎减伤上限 70%。
+  · 引擎自身的换算 = min(TOUGH/10, 70)%；参考实现面板写的是 min(TOUGH/100, 80)%，
+    两者差 10 倍（他们没改 calTouch / calTouchDmg，只是面板除错了）。
+    **按用户明确要求照抄参考实现的算式：min(TOUGH/100, 80)%**（保持两边面板一致；
+    要改回引擎真值是 /100→/10、80→70 一行）。
+
+【三、改法】
+  · lib/client-battle-check-patch.mjs 的 tailNew 末尾补一行：
+    t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\n")
+    面板只有一条分支（没有怪物专用分支）→ 玩家 / 宠物 / 怪物同一段代码都显示；
+    怪物走 e.get(ModelConst.TOUGH) → 该类的 get 返回 wire 里的 tough。
+  · 该补丁 revision 升到 battle-check-full-fields-v5。
+
+【四、验证】
+  · tests/battle-check-and-eggs.test.mjs 增加断言（算式 + 80% 上限 + 锚点唯一性不变）；
+  · tests/client-patch-chain.test.mjs 主包产物长度 4557839 → 4565872（+76）；
+  · npm test 89 文件 / 639 用例全过、新增失败 0；npm run check 0 错。
+  · 上机复验（进战斗点「查看」看到这一行、数值与目标的 tough 对得上）由用户做。
+
+【五、提示】
+  · 另一条容易混淆的属性是原生 NEW_REFLECTION「抵挡时百分比伤害抵消」（ModelConst 251），
+    它来自怪物 / 装备数据，走 processBattleKeepOutPower，这次**没动**；要显示随时能加。

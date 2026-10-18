@@ -1,4 +1,4 @@
-export const battleCheckRevision='battle-check-full-fields-v4';
+export const battleCheckRevision='battle-check-full-fields-v5';
 
 // 战斗里「查看」弹出的战斗信息面板（BattleCheck）原来只在一处开关后面显示 12 个字段：
 //   e.isCheckAll &&（出手速度/闪避/三项防御/状态抵抗/伤害减免/格挡/洞察）
@@ -12,6 +12,18 @@ export const battleCheckRevision='battle-check-full-fields-v4';
 //        法力护盾、攻击次数、反击、魔法反馈
 //        无视洞察、无视格挡、无视状态抵抗、无视伤害减免
 //      数值一律走 e.get(ModelConst.X)||0，缺属性按 0 显示（怪物大多为 0）。
+//   3. 末尾再补一行派生的「生命百分比伤害减免」——**这条不是 wire 上的字段**，
+//      而是把强韧（TOUGH）换算成战斗引擎真正用的减伤百分比（见下）。
+//
+// 生命百分比伤害减免怎么算（第 75 版）：
+//   战斗里减免走 BattleCalc.calTouch → calTouchDmg：
+//     n = TOUGH（血/弱状态减半）→ 减去攻击方的 IGNORE_TOUCH 与技能 POWER_SKILL_TARGET_TOUCH
+//     → 上限 MAX_RATE_TOUCH=700 → 实际减伤 = n/1000
+//   面板按玩家要求**照抄参考实现「幻想世界OL」的算式**：min(TOUGH/100, 80)%。
+//   ⚠ 注意与引擎自身的换算差 10 倍：引擎里 TOUGH 是千分比（700 → 70% 封顶），
+//     参考实现写成 /100（同一条 TOUGH 只显示 7%）。玩家明确要求与其面板一致，故照抄；
+//     要改成引擎真值就是把 /100→/10、80→70（一行）。
+//   这条对玩家 / 宠物 / 怪物同一段代码生效（面板只有这一条分支）。
 //
 // 文案必须看清**命名空间**（v2/v3 把标签渲染成 `undefined` 的真正原因）：
 //   · GameText （模块 10）：STR_ATTR_INSIGHT / STR_ATTR_DEF_FIELD / STR_ATTR_ATK_TIME /
@@ -51,7 +63,8 @@ export function patchBattleCheckFields(source){
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_INSIGHT+":"+(e.get(a.ModelConst.IGNORE_INSIGHT)||0)+"  "),'
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_BLOCK+":"+(e.get(a.ModelConst.IGNORE_BLOCK)||0)+"\\n"),'
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_WIL+":"+(e.get(a.ModelConst.IGNORE_WIL)||0)+"  "),'
-   +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_TOUCH+":"+(e.get(a.ModelConst.IGNORE_TOUCH)||0)+"\\n")),null!=e.formationSkill&&';
+   +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_TOUCH+":"+(e.get(a.ModelConst.IGNORE_TOUCH)||0)+"\\n"),'
+   +'t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n")),null!=e.formationSkill&&';
   if(source.split(tail).length!==2)throw Error('v305 battle check tail patch mismatch');
   source=source.replace(tail,tailNew);
   return source;
