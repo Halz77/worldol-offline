@@ -1,4 +1,5 @@
-import {equipment,attributes,clampVitals,bagCapacity} from './restoration.mjs';
+import {equipment,attributes,clampVitals,bagCapacity,syncJobIcon} from './restoration.mjs';
+import {expandBagCapacity} from './bag-capacity.mjs';
 import {activePet,petAttributes} from './pet-state.mjs';
 import {itemSlots} from './official-data.mjs';
 
@@ -26,6 +27,37 @@ export function useMedicine(p,slot,quantity){
   if(pet)pet[key]=Math.min(petMax[key],pet[key]+Math.trunc(value*(id%2===0?petMax[key]/100:1)));
  }
  remove(p,item,quantity);return e;
+}
+// ── 第 73 版：两件「买了就能用」的本地道具（原版有、单机以前没接） ─────────
+//   288   背包扩展（客户端 ModelConst.ITEM_ID_ADD_BAG_SIZE，wait=BAG_WAIT=20）
+//   42000 变性卷轴（ITEM_ID_CHANGE_SEX，wait=BAG_ALERT_SEX=21）
+// 以前这两件走到 12001 的兜底分支 →「这种道具的使用规则尚未恢复。」（玩家实测）。
+export const BAG_EXPAND_ITEM_ID=288;
+export const CHANGE_SEX_ITEM_ID=42000;
+// 原版 sex：1=男、0=女。性别位就在 icon1 的低 32 位 bit0（ModelConst OFFSET_SEX=0/LEN_SEX=1），
+// 所以换性别必须连 icon1 一起重置 —— 客户端 BAG_ALERT_SEX 的分支只是把服务端给的
+// icon1/icon2/icon3/sex 原样 setIcon1/2/3 + setSex + refreshPlayerAllSprite，
+// 服务端给错值就会当场显示成别人的样子。这组默认外观与 content.mjs 建角色时用的同一组。
+export const DEFAULT_SEX_ICONS={0:'2236552',1:'2240667'};
+// 背包扩展：每份 +BAG_EXPAND_STEP(10) 格，用几份加几份，到上限整包拒绝（不白吃道具）。
+export function expandBag(p,slot,quantity=1){
+ const {item}=selection(p,slot,quantity);
+ if(item.pet||item.itemId!==BAG_EXPAND_ITEM_ID)throw Error('这个位置没有背包扩展卷。');
+ const {before,after}=expandBagCapacity(p,quantity*10);
+ remove(p,item,quantity);
+ return {before,after,used:quantity};
+}
+// 变性：换 sex 位 + 重置默认外观（同步 icon1 里的职业位，否则选角界面还是旧职业）。
+export function changeSex(p,slot,quantity=1){
+ const {item}=selection(p,slot,quantity);
+ if(item.pet||item.itemId!==CHANGE_SEX_ITEM_ID)throw Error('这个位置没有变性卷轴。');
+ if(quantity!==1)throw Error('变性卷轴请逐个使用。');
+ remove(p,item,1);
+ p.sex=p.sex===1?0:1;
+ p.icon1=DEFAULT_SEX_ICONS[p.sex];
+ p.icon2=p.icon2||'0';p.icon3=p.icon3||'0';
+ syncJobIcon(p);
+ return {sex:p.sex,icons:{icon1:p.icon1,icon2:p.icon2,icon3:p.icon3}};
 }
 export function discardItem(p,slot,id,quantity){
  // Native pet release shares the discard packet; pet instances have ID 24

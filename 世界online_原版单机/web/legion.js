@@ -122,11 +122,13 @@
    return {id:p.id,vip:p.getVipLevel2(),stats:Object.fromEntries(statKeys.map(key=>[key,p.get(MC[key])])),equipmentPowers:powers(id=>p.getBagEquipPowerValue(id)),passivePowers:powers(id=>p.getSkillPowerValue(Rules.SKILL_TYPE_PASSIVE,id)),featurePowers:powers(id=>p.getPower(id)),autoSkills:[...(p.autoSkillID||[])],initiativeSkill:p.autoSkillID_Initiative,skills:p.skillList.map(s=>Object.fromEntries(Object.entries(s).filter(([,v])=>['number','string','boolean'].includes(typeof v)))).sort((a,b)=>a.id-b.id)};
   }
   function audit(){return {current:auditRole(World.myPlayer),members:members().map(vo=>{const model=proxy().playLegionDataMap[vo.id];return {id:vo.id,loaded:auditRole(model),battle:model?.bag?auditRole(model.cloneLegion()):null};})};}
+  // 第 73 版：单机菜单不再提供「军团 / 角色助战」入口（web/index.html 已摘掉按钮）。
+  // 军团数据、客户端原生军团界面与助战战斗逻辑全部保留 —— 这个 open() 也留着，
+  // 以后想从别处（控制台、或新加的入口）打开原生军团界面时还能直接调。
   function open(){
    document.getElementById('offline-panel').classList.remove('open');
    UI.showWin(Names.ModName.Legion,Names.LegionViewType.LegionMain);
   }
-  document.getElementById('legion-open').onclick=open;
   // Keep the native help and add only the local save behavior and missing rule.
   const info=req(10).GameText;
   info.LEGION_DESC1+='\n单机军团：无等级限制，每套可编入同一存档中的4个助战角色，与当前角色组成5人小队。点击角色上阵，点击栏位下阵，点击出战切换军团。手动战斗可逐个选择成员的技能和目标；自动战斗按各自设置出手。装备、天赋、神器和技能按各自角色计算。每场战斗结束后，全队人物和各自出战宠物的生命、法力自动回满，倒下也会恢复，无需VIP。\n只有一个角色时，请返回角色列表，在同一存档内创建其他角色。\n待定：原版助战经验分配比例；当前助战不获得经验、掉落或任务奖励。';

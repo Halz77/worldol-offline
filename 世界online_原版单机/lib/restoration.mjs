@@ -11,7 +11,7 @@ import {careerSkills,migrateCareerSkills,careers} from './career-skills.mjs';
 import {migrateCaptured81Progress} from './captured81-progress.mjs';
 import {migrateMayaProgress} from './maya-progress.mjs';
 import {nativeCharacterStats} from './native-character-stats.mjs';
-import {INITIAL_BAG_CAPACITY} from './bag-capacity.mjs';
+import {MAX_BAG_CAPACITY} from './bag-capacity.mjs';
 import {automaticSkillSlots} from './automatic-skills.mjs';
 import {equipmentSkillLevels,MAX_EQUIPMENT_SKILL_LEVEL} from './equipment-skill-levels.mjs';
 import {LEGENDARY_EGG_ID,LEGENDARY_EGG_PRICE} from './pet-catalog.mjs';
@@ -63,7 +63,7 @@ export const restored=lazyBox(()=>ensure().restored,'restored');
 export const equipment=lazyBox(()=>ensure().equipment,'equipment');
 export const skills=lazyBox(()=>ensure().skills,'skills');
 export const ITEM_SHOP=901,SKILL_SHOP=1100;
-export const bagCapacity=p=>Math.min(INITIAL_BAG_CAPACITY,Math.max(1,p.bagLimit||24));
+export const bagCapacity=p=>Math.min(MAX_BAG_CAPACITY,Math.max(1,p.bagLimit||24));
 export const firstFree=p=>Array.from({length:bagCapacity(p)},(_,i)=>30+i).find(slot=>!p.inventory.some(x=>x.slot===slot));
 export function normalizeRestoration(p){
  p.inventory??=[];p.skills??={};p.restoration??={};p.baseStats??=[10,10,10,10,10];p.initialStats??=[...p.baseStats];p.attributePoints??=0;p.skillPoints??=0;p.autoSkillIds??=p.progression==='xia-v05'?[...official.newbie.archetype.autoSkillIds]:[];p.initiativeSkillId??=p.progression==='xia-v05'&&p.skills[452]?452:-1;

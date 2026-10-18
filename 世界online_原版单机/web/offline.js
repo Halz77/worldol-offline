@@ -255,7 +255,9 @@
     //（商店号 51 / 52 / 55），同样被 go.openPay 挡在门外。一起放进本地白名单，
     // 至少让请求真的发出去：服务端会对这几个商店回一条「造型商品资料未采集」的
     // 明确提示，而不是像以前那样点了毫无反应。
-    const localShops=[51,52,55,901,902,903,904,905,906,907,908,909,910,911,912,916,918,919,920];
+    // 921 是「强化、鉴定、宝石」合并商店（第 73 版，服务端 lib/supply-shops.mjs 的
+    // MERGED_SUPPLY_SHOP）：补给商人菜单里只给这一条，903/904/905 三个原号仍可直连开店。
+    const localShops=[51,52,55,901,902,903,904,905,906,907,908,909,910,911,912,916,918,919,920,921];
     World.doBrowseShop=function(id,...args){if(id===req(1).default.EVENT_ALL_MENU_CSS)return req(1).default.createChiselSealUI();if(id===917)return req(67).ShopItem.openItemShop(918);if(id>=913&&id<=915)return composition.open(id===913?'attribute':id===914?'skill':'vip');return localShops.includes(id)?req(67).ShopItem.openItemShop(id):browseShop.call(this,id,...args);};
     // 长菜单（个人城市的飞行驿站补完 60 条航线后一共 65 项）：
     //   原版 power-NPC 菜单（UI.createMissionUI → MissionDialogMdr）把整份选项一次铺进
@@ -399,7 +401,7 @@
     record('原版消息适配器已就绪');
     setInterval(()=>{
       const player=req(5).default.myPlayer;
-      for(const id of ['features-open','city-open','talents-open','artifact-open','daily-open','recorded-open','pet-shop-open','official-map','official-book','official-shop','career-open','equipment-open','composition-open','vip-open','combat-rating-open'])document.getElementById(id).disabled=!player?.id;
+      for(const id of ['features-open','city-open','daily-open','recorded-open','pet-shop-open','official-map','official-book','official-shop','career-open','equipment-open','composition-open','vip-open','combat-rating-open'])document.getElementById(id).disabled=!player?.id;
       if(player?.id)flushPosition();
       const node=document.getElementById('offline-role');
       if(player?.id)node.textContent=`${player.name} · 等级 ${player.level} · 地图 ${req(5).default.mapId} · 坐标 ${player.getGx()}, ${player.getGy()}`;
@@ -410,7 +412,6 @@
       state.skillShop=careerTeachers.snapshot();
       state.legion=legion.snapshot();
       if(document.querySelector('#offline-panel details')?.open)state.legion.audit=legion.audit();
-      document.getElementById('legion-open').disabled=!player?.id;
       state.combatRating=combatRating.snapshot();
       const boss=World.getMonster(1985);
       state.localBoss=boss?{id:boss.id,name:boss.name,hpMax:boss.hpMax,mpMax:boss.mpMax,speed:boss.speed,attack:[boss.atkMin,boss.atkMax],attackTimes:boss.get(MC.ATK_TIME),armor:[boss.def_str,boss.def_agi,boss.def_magic],hit:boss.hitrate,magicHit:boss.hitMagic,critical:boss.critical}:null;

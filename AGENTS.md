@@ -87,6 +87,12 @@
 - **查询类接口不许改角色**：快照/只读路径必须走纯读函数，否则"打开面板"就把存档写脏。
   永泽塔用 `towerCountsReadonly`，无限试炼用 `readTrialState`（`trialState` 只给写入路径）。
   守卫：`assert.deepEqual(p,before)`（tests/home-features.test.mjs、trial-challenge.test.mjs）。
+- **`INITIAL_*`「初始值」常量不要当上限用**（第 73 版）：`bagCapacity` 原来写
+  `Math.min(INITIAL_BAG_CAPACITY, …)` → 「10格背包扩展」这类**扩容道具**就算服务端把 `bagLimit`
+  加上去了也读不出来（表现是「提示了但格子没多」，一切看起来正常）。
+  现在 `lib/bag-capacity.mjs` 分成 `INITIAL_BAG_CAPACITY(300)`（新角色/老存档补发的初值）、
+  `BAG_EXPAND_STEP(10)`、`MAX_BAG_CAPACITY(600)`（客户端背包槽位是 30..629，
+  再往上会踩 `STORE_START=630` 的仓库槽位）。
 - **`itemPacket` 宁可降级绝不抛错**：`enterWorld→…→bagPacket→itemPacket`，一件抛错整包发不出 → 黑屏。
   「下架」只改名单，定义留着。
 - **JSDoc 注释里别写 `*/` 字样**（如 `power*/powerValue*`）→ 块注释提前关掉 → SyntaxError。
@@ -145,12 +151,26 @@
   进度字段沿用 `p.quests.active[任务].solarBoard` / `solarDone`（改名会毁老存档）；
   数据在 `lib/boss-tournament-data.mjs`（`applyBossTournament` 挂在 `applyDungeonChallengeRepairs` 之后）。
   1305 这一版**不做**入场券 119 / 券店 2061（NPC 菜单里那一项也摘掉）/ 奖励盒 1480–1482 / 2454 每日赠券。
+- **三件「客户端认识、服务端要接」的背包道具**（第 73 版，`lib/bag-actions.mjs` + `restoration-service.mjs`
+  + `pet-state.mjs`/`pet-service.mjs`）：288 背包扩展（wait **20**；回 `byte(20)` **并另推 12058
+  + `int(新容量)`** —— 客户端对 288 根本不读回包容量，只弹一句「背包容量已增加」）；
+  42000 变性卷轴（wait **21**；回 `byte(21) long(icon1) long(icon2) long(icon3) byte(sex) string(提示)`；
+  性别位就是 icon1 低 32 位 bit0，改完要 `syncJobIcon()` 保住职业位）；
+  40005 宠物返老还童石（宠物链 wait **14**；包体在 `quantity` 之后多一个 `short(petSlot)`
+  *仅* `isPetCanUseItem()` 的道具才有 —— 已确认 288/42000 不是这一类；回 `byte(14) long(剩余毫秒)`；
+  寿命重置 100 天且**过期宠物也能用**）。三件都在补给商人「消耗品」免费领。
+- **补给商人菜单第 73 版合并成一条**：`MERGED_SUPPLY_SHOP=921`「强化、鉴定、宝石」，
+  `items` 是 903/904/905 的并集，**只进 `supplyShopById` 与 `supplyNpc.shops`、不进 `supplyShops`**
+  —— 后者是「物品列表不许重复」的那张表（tests/supply-shops.test.mjs 有这条等式）。
+  903/904/905 三个商店定义**保留**：背包/装备工坊直连开店与 +4 宝石入口都按原号发请求。
+  菜单内容由 `game-packets.mjs` 读 `n.shops` 下发，客户端不用改逻辑（`web/offline.js` 的
+  `localShops` 加 921 即可放行开店）。
 
 ---
 
 ## 客户端要点
 
-- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,565,641 字符**
+- 主包 `client/js/ff/fff570bb….js` 4,557,839 → 补丁后 **4,565,796 字符**
   （链测试用**字符数**，别用字节数）。`.orig` 必须保持未打补丁的原始版本。
 - **补丁注入点分「语句 / 表达式」上下文**：webpack 类成员常是
   `return __extends(t,e),t.prototype.a=…,t.prototype.b=…,t` 逗号链。
@@ -170,6 +190,22 @@
   （客户端自带的「战后恢复界面」开关，`if(t)` 块会按它 showWin 回来）；
   与「幻想世界OL 2.0 新版」同一处、同一手法（对方漏了 `isWin:!0`，我们补上——
   原版开棋盘（14508）就是 showWin，棋盘得留在 UISTACK 上）。
+- **让主界面按钮消失：`buttons` 白名单 ≠ 隐藏**（第 73 版）：`web/home-features.js` 的
+  `buttons` 只负责「强制显示」列在里面的按钮，其它按钮的可见性由原版自己的 setLayout/回调决定
+  （打榜 `btnCrossPla`、对战 `btnPetBattle` 就是这样，从来没进过白名单却一直在）。
+  要消失必须进 `removedButtons`（`visible()` 末尾统一 hide）；矿洞 `btnDigHole`、
+  新手 `btnNewTask` 两边都动（白名单摘掉 + 强制隐藏），它们的内容仍在单机菜单里。
+- **摘掉单机菜单的 UI 元素要连定时器一起摘**（第 73 版）：`web/offline.js` 有一个每 1 秒刷新的
+  `for(const id of [...])document.getElementById(id).disabled=…`，删了 `#talents-open` /
+  `#artifact-open` / `#legion-open` 三个按钮就得同步从这份名单（以及 `legion-open` 那一行）里去掉，
+  否则元素没了、定时器还在对它赋值 → 每秒一个 TypeError。
+- **战斗提示弹窗（Briefing）不要慢慢滚**（第 73 版，`lib/client-prompt-patch.mjs`）：
+  `MiscProxy.addPromptMsg`（模块 0062）把文本压进 `promptMsssage` 队列再 `Briefing.show()`，
+  `Briefing`（模块 0370，`Layer.tip` 上 y=200 的单例）一次只显示一条、**每条固定 `TIME=2e3`**，
+  而队列**没有上限** → 战斗里一轮刷好几条，打完了还在慢慢滚。
+  补丁只动显示层三处：`TIME` → 800ms；`delayCall(…, max(250, min(TIME, 2000/队列长度)))`；
+  入队后裁到 6 条（丢最旧的）。节奏常量在模块顶部（`PROMPT_TIME_MS`/`PROMPT_QUEUE_LIMIT`/
+  `PROMPT_MIN_MS`/`PROMPT_REF_MS`），改完必须重新打包。
 - **永泽塔挑战进战斗是客户端补的桥**（第 69 版）：原生 `TowerProxy.onClimbTowerChallenge`
   收到 30004 后只 `sendNt(TowerEvent.TowerChallenge)`，**全客户端没有监听者** → 点了没反应。
   桥全在 `web/home-features.js`：接管 `req(1500).default.prototype.sendClimbTowerChallenge`

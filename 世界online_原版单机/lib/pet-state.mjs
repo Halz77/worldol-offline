@@ -1,5 +1,5 @@
 import {official} from './official-data.mjs';
-import {powers,firstFree,planItemRewards} from './restoration.mjs';
+import {powers,firstFree,planItemRewards,bagCapacity} from './restoration.mjs';
 import {petSources,petFromRecord} from './recorded-content.mjs';
 import {equipmentPowers} from './item-affixes.mjs';
 import {officialItems} from './official-data.mjs';
@@ -149,4 +149,27 @@ export function levelPetTo(owner,pet,targetLevel=90){
   const max=petAttributes(owner,pet);
   pet.hp=Math.min(pet.hp,max.hp);
   pet.mp=Math.min(pet.mp,max.mp);
+}
+
+// 第 73 版：宠物返老还童石（40005）。
+//   · 客户端把它归到 BAG_PET_AGE(14)：请求是 action 3 + wait 14，包体在 quantity 之后多一个
+//     short(petSlot)（createPlayerBagMessage 对 isPetCanUseItem() 的道具会 putShort(o)）；
+//   · 回包是 byte(14) + long(剩余毫秒)，客户端 BAG_PET_AGE 分支把它换算成 ageTime 并提示
+//     STR_PET_RESET_AGE_INFO —— 所以这里必须回**剩余**时间，而不是绝对时间戳。
+// 寿命重置规则按玩家要求与自选传说蛋一致：重置为 100 天，**已过期的宠物也能用**
+// （所以这里不检查 expiresAt 是否已过），等级/品质/成长/技能/装备一律保留。
+export const PET_REJUVENATION_STONE_ID=40005;
+export const PET_REJUVENATION_DAYS=100;
+export const PET_REJUVENATION_MS=PET_REJUVENATION_DAYS*86400000;
+export function rejuvenatePet(p,stoneSlot,petSlot=1,now=Date.now()){
+ const stone=p.inventory.find(i=>i.slot===stoneSlot);
+ if(!Number.isInteger(stoneSlot)||stoneSlot<30||stoneSlot>=30+bagCapacity(p)||stone?.itemId!==PET_REJUVENATION_STONE_ID||!Number.isInteger(stone.quantity)||stone.quantity<1)throw Error('请选择背包中的宠物返老还童石。');
+ const petItem=p.inventory.find(i=>i.slot===petSlot);
+ // petSlot 1 是出战位；30..30+容量-1 是背包位（客户端两个来源都可能传）。
+ if(!Number.isInteger(petSlot)||(petSlot!==1&&(petSlot<30||petSlot>=30+bagCapacity(p)))||!petItem?.pet)throw Error('请选择需要返老还童的宠物。');
+ if(!Number.isSafeInteger(now)||now<0||!Number.isSafeInteger(now+PET_REJUVENATION_MS))throw Error('宠物寿命时间无效。');
+ petItem.pet.expiresAt=now+PET_REJUVENATION_MS;
+ stone.quantity-=1;
+ if(!stone.quantity)p.inventory=p.inventory.filter(i=>i!==stone);
+ return petItem.pet;
 }

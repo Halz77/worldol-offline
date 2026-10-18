@@ -74,9 +74,33 @@ export const supplyShopById=new Map(supplyShops.map(s=>[s.id,s]));
 // 判进 906 的道具（如两张经验卷，type 28）在列表里出现两次。
 for(const shop of supplyShops)shop.items=[...new Set(shop.items)];
 {const pinned=PINNED_SUPPLY_ITEM_IDS,shop=supplyShopById.get(906);shop.items=[...new Set([...pinned,...shop.items.filter(id=>!pinned.includes(id))])];}
+// 第 73 版（玩家要求）：装备与补给商人的「强化卷轴 903 / 鉴定卷轴 904 / 镶嵌宝石 905」
+// 三个分类在菜单里合并成一条「强化、鉴定、宝石」，物品放在一起。
+// 三个原号本身**保留可解析**，因为别处都按它们走：
+//   · 客户端背包/装备工坊直连开店时会直接用 903/904/905 发 12004；
+//   · 12005 的商店号槽、/api/supply-shops 目录、既有测试与 +4 宝石（lib/local-gems）都以这三个号为准。
+// 合并项用新号 921（shop 命名空间空闲：world-travel 里的 921 是地图号，不同命名空间），
+// 只挂在 supplyShopById（12004/12005 校验）与 NPC 菜单上；不进 supplyShops ——
+// 那里的物品列表不允许重复（tests/supply-shops.test.mjs 有这条等式）。
+// 物品顺序按 强化卷轴 → 鉴定卷轴 → 镶嵌宝石 分组、组内仍按原分类的 (reqLv,id) 顺序。
+export const MERGED_SUPPLY_SHOP=921;
+const MERGED_SOURCE_SHOPS=[903,904,905];
+const mergedSupplyItems=[...new Set(MERGED_SOURCE_SHOPS.flatMap(id=>supplyShopById.get(id)?.items||[]))];
+export const mergedSupplyShop={id:MERGED_SUPPLY_SHOP,name:'强化、鉴定、宝石',items:mergedSupplyItems};
+supplyShopById.set(MERGED_SUPPLY_SHOP,mergedSupplyShop);
+// NPC 菜单：合并项顶掉 903 的位置，904/905 从菜单里去掉（商店定义本身还在）。
+const menuShops=[];
+for(const s of supplyShops){
+  if(s.id===903){menuShops.push({id:MERGED_SUPPLY_SHOP,name:`${mergedSupplyShop.name}（${mergedSupplyItems.length}种）`});continue;}
+  if(MERGED_SOURCE_SHOPS.includes(s.id))continue;
+  menuShops.push({id:s.id,name:`${s.name}（${s.items.length}种）`});
+}
 export const supplyNpc={id:126,type:5,name:'装备与补给商人',icon:5133,x:20,y:18,local:true,
   welcome:'装备、材料与自选宠物蛋。',
-  talk:'宠物蛋可免费选择并固定孵化对应宠物。上下滑动选择分类。\n「技能书」分类只卖宠物训练师教不到的那些宠物技能书。\n强化、鉴定、镶嵌可从背包或装备工坊进入。',
-  shops:[...supplyShops.map(s=>({id:s.id,name:`${s.name}（${s.items.length}种）`})),{id:913,name:'免费合成装备属性'},{id:914,name:'免费合成装备技能'},{id:915,name:'VIP等级与装备属性'}]};
+  talk:'宠物蛋可免费选择并固定孵化对应宠物。上下滑动选择分类。\n「技能书」分类只卖宠物训练师教不到的那些宠物技能书。\n强化卷轴、鉴定卷轴与镶嵌宝石合并在「强化、鉴定、宝石」一条里，物品都在一起；也可以从背包或装备工坊直接进入。',
+  shops:[...menuShops,{id:913,name:'免费合成装备属性'},{id:914,name:'免费合成装备技能'},{id:915,name:'VIP等级与装备属性'}]};
 const coverage=type=>{const entries=official.catalog.filter(e=>e.type===type);return {catalog:entries.length,available:entries.filter(e=>officialItems.has(e.itemId)).length,total:[...officialItems.values()].filter(e=>e.type===type&&!APPEARANCE_ITEM_IDS.has(e.id)).length};};
-export const supplyDirectory={npc:{mapId:19,mapName:'新月繁华之都',id:supplyNpc.id,name:supplyNpc.name,x:supplyNpc.x,y:supplyNpc.y},equipmentGrade:PURPLE_GRADE,shops:supplyShops.map(({id,name,items})=>({id,name,count:items.length})),coverage:{mounts:coverage(11),costumes:coverage(12)}};
+export const supplyDirectory={npc:{mapId:19,mapName:'新月繁华之都',id:supplyNpc.id,name:supplyNpc.name,x:supplyNpc.x,y:supplyNpc.y},equipmentGrade:PURPLE_GRADE,
+  // shops 里 903/904/905 仍在（商店定义没删，直连开店还能用），但**菜单里只有合并项 921**
+  // —— 菜单以 NPC 记录的 shopID/menuShop 为准，见上面的 supplyNpc.shops。
+  shops:[...supplyShops.map(({id,name,items})=>({id,name,count:items.length})),{id:MERGED_SUPPLY_SHOP,name:mergedSupplyShop.name,count:mergedSupplyItems.length,mergedFrom:[...MERGED_SOURCE_SHOPS],menuEntry:true}],coverage:{mounts:coverage(11),costumes:coverage(12)}};

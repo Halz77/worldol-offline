@@ -92,8 +92,8 @@
   };
   const closeMenu=()=>document.getElementById('offline-panel').classList.remove('open');
   document.getElementById('city-open').onclick=()=>{closeMenu();UI.createCityInfoUI(World.myPlayer.id);};
-  document.getElementById('talents-open').onclick=()=>{closeMenu();UI.openRole(World.myPlayer,4);};
-  document.getElementById('artifact-open').onclick=()=>{closeMenu();getProxy().doArtifactAll();UI.openRole(World.myPlayer,5);};
+  // 第 73 版：按玩家要求摘掉单机菜单里的「人物天赋 / 人物神器」两个入口
+  //（原生角色面板的第 4/5 页仍在，只是单机菜单不再给按钮；见 web/index.html）。
   document.getElementById('features-open').onclick=()=>{closeMenu();render();dialog.showModal();};
   document.getElementById('features-close').onclick=()=>dialog.close();
   return {snapshot(){const p=profiles.get(World.myPlayer?.id);return p?{revision:p.revision,city:p.city,talents:p.state.talents,artifact:p.state.artifact,powers:p.powers}:null;}};

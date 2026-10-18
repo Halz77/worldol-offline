@@ -5,7 +5,7 @@ import {OFFICIAL_SHOP,officialItems} from './official-data.mjs';
 import {playerDetail} from './world.mjs';
 import {activePet,petAttributes} from './pet-state.mjs';
 import {petMentorSkills,learnPetMentorSkill} from './pet-mentors.mjs';
-import {useMedicine,discardItem,sellItem,sellItems,bindItem,consumeItem} from './bag-actions.mjs';
+import {useMedicine,discardItem,sellItem,sellItems,bindItem,consumeItem,expandBag,changeSex,BAG_EXPAND_ITEM_ID,CHANGE_SEX_ITEM_ID} from './bag-actions.mjs';
 import {automaticSkillSlots} from './automatic-skills.mjs';
 import {healthUpdate} from './game-packets.mjs';
 import {careers} from './career-skills.mjs';
@@ -78,8 +78,29 @@ export function handleRestoration(type,r,context,{store,send,log}){
     r.bool();r.byte();
     // 转职书用原版的 BAG_CHANGE_JOB(18) 等待类型；成功后要回 PlayerDetail + 技能列表，
     // 客户端会据此刷新角色面板（含新职业）并替换整个技能栏。
-    const instance=p.inventory.find(i=>i.slot===slot),job=jobBooks.get(instance?.itemId);
-    if(job===undefined){
+    const instance=p.inventory.find(i=>i.slot===slot),itemId=instance?.itemId,job=jobBooks.get(itemId);
+    if(itemId===BAG_EXPAND_ITEM_ID||itemId===CHANGE_SEX_ITEM_ID){
+     // 第 73 版：288 背包扩展（wait=BAG_WAIT 20）与 42000 变性卷轴（wait=BAG_ALERT_SEX 21）。
+     // 客户端按道具自报等待类型（isAddBagSizeItem / isChangeSexItem），这里按 itemId 认领，
+     // 同时要求等待类型对得上 —— 对不上就不是这两件道具的正常请求。
+     const expected=itemId===BAG_EXPAND_ITEM_ID?20:21;
+     if(waitType!==expected)throw Error('无效的道具使用请求。');
+     const before=structuredClone(p);let reply,bagAfter=null;
+     try{
+      if(itemId===BAG_EXPAND_ITEM_ID){const {after}=expandBag(p,slot,quantity);bagAfter=after;store.save();reply=new Writer().byte(20);}
+      else{const {sex,icons}=changeSex(p,slot,quantity);store.save();
+       // BAG_ALERT_SEX：客户端读 long(icon1) long(icon2) long(icon3) byte(sex) string(提示语)，
+       // 自己 setIcon*/setSex/refreshPlayerAllSprite —— 服务端给的就是最终外观。
+       reply=new Writer().byte(21).long(icons.icon1).long(icons.icon2).long(icons.icon3).byte(sex).string('变性成功，性别与外形已重置。');}
+     }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+     send(type,reply);
+     // 客户端的 BAG_WAIT 分支对 288 只弹一句「背包容量已增加」，**不读回包里的容量**，
+     // 所以必须另推 12058 CG_BAG_SIZE（int=新容量）→ onBagSizeChanged 才会刷新
+     // myPlayer.BagSize 并发 BAG_ITEM_UPDATE 重画背包格子。少这一步就是「提示了但格子没多」。
+     if(bagAfter!==null){send(12058,new Writer().int(bagAfter));log('bag-expanded',{role:p.id,itemId,used:quantity,before:before.bagLimit??24,after:bagAfter});}
+     else log('sex-changed',{role:p.id,itemId,sex:p.sex,icon1:p.icon1,was:before.sex});
+    }
+    else if(job===undefined){
      if(waitType!==0)throw Error('这种道具的使用规则尚未恢复。');
      useMedicine(p,slot,quantity);store.save();send(17601,healthUpdate(p));
     }else{

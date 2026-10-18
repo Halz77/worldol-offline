@@ -4,15 +4,19 @@
   const World=req(5).default,UI=req(1).default,Main=req(604).MainMdr.prototype,Network=req(35).default,Message=req(22).Message;
   // 主界面图标白名单。抽奖/福利/超值/霸业/聚义酒馆与邮件对单机玩家无用且容易误触，
   // 已从本表移除并列入下面的 removedButtons 强制隐藏（见 hideRemoved）。
-  const buttons={btnCharge:'charge',btnFuLi:'special',btnHint:'notice',btnTower:'tower',btnDigHole:'mine',btnFinalBoss:'trial',btnDaily:'daily',btnNewTask:'newbie',btnManor:'country',btnBag:'bag',btnRole:'role',btnPet:'pet',btnMap:'map',btnShop:'shop',btnCity:'city'};
+  // 打榜（btnCrossPla）/ 对战（btnPetBattle）不在本表里：原版自己会把它们摆出来，
+  // 所以只靠「不列进白名单」藏不住，必须一起进 removedButtons（见下）。
+  const buttons={btnCharge:'charge',btnFuLi:'special',btnHint:'notice',btnTower:'tower',btnFinalBoss:'trial',btnDaily:'daily',btnManor:'country',btnBag:'bag',btnRole:'role',btnPet:'pet',btnMap:'map',btnShop:'shop',btnCity:'city'};
   // 需要永久隐藏的主界面元素：
   //   btnLottery 抽奖 / btnReward 福利 / btnBulk 超值 / btnCampWar 霸业 / btnBuddy 聚义酒馆 —— 活动图标；
   //   btnMail 邮件；
+  //   btnCrossPla 打榜 / btnNewTask 新手 / btnPetBattle 对战 / btnDigHole 矿洞 —— 单机版用不到（第 73 版
+  //   按玩家要求整体去掉）。矿洞与新手的内容仍可从单机菜单的「矿洞 / 新手」页查看；
   //   grp_chat 是底部聊天栏（左侧 btnMail + 右侧 scroller_chat「聊天遮罩」，
   //   原版把 scroller_chat 绑定了 tapChat，点它就会进聊天页）。
   // 这些按钮由原版 setLayout(可见性) 或活动回调随时显示，所以不能只从 buttons 摘掉，
   // 还要在这些回调之后强制隐藏。
-  const removedButtons=['btnLottery','btnReward','btnBulk','btnCampWar','btnBuddy','btnMail'];
+  const removedButtons=['btnLottery','btnReward','btnBulk','btnCampWar','btnBuddy','btnMail','btnCrossPla','btnNewTask','btnPetBattle','btnDigHole'];
   const removedGroups=['grp_chat'];
   const names={charge:'充值',welfare:'福利',special:'特惠',lottery:'抽奖',notice:'公告',tower:'永泽塔',mine:'矿洞',trial:'试炼',bulk:'超值',buddy:'聚义酒馆',daily:'日常',newbie:'新手',mail:'邮件',country:'国家',bag:'背包',role:'人物',pet:'宠物',map:'地图',shop:'商店',city:'主城'};
   const native={bag:Main.tapBag,role:Main.tapRole,pet:Main.tapPet,daily:Main.tapDaily,city:Main.onTapCity,map:Main.tapMap};

@@ -1,6 +1,6 @@
 import {Writer} from './codec.mjs';
 import {equipment,attributes} from './restoration.mjs';
-import {openContainer,equipPet,unequipPet,activePet,gainPet,petAttributes,petTemplates,chestTemplates} from './pet-state.mjs';
+import {openContainer,equipPet,unequipPet,activePet,gainPet,petAttributes,petTemplates,chestTemplates,rejuvenatePet} from './pet-state.mjs';
 import {petDetail,petReward} from './pet-packets.mjs';
 import {addedItems,itemPacket} from './restoration-packets.mjs';
 import {levelReward,healthUpdate} from './game-packets.mjs';
@@ -56,7 +56,7 @@ export function handlePetItems(type,r,context,{store,send,log,random}){
    return true;
   }
  }
- if(![1,2,3,4,11,12].includes(wait)){r.pos=start;return false;}
+ if(![1,2,3,4,11,12,14].includes(wait)){r.pos=start;return false;}
  try{
   if(context.battle)throw Error('请先结束战斗。');
   const source=p.inventory.find(i=>i.slot===slot),definition=equipment.get(source?.itemId);
@@ -75,6 +75,19 @@ export function handlePetItems(type,r,context,{store,send,log,random}){
   }
   else if(action===1&&wait===2){const dest=r.byte();const pet=equipPet(p,slot,dest);store.save();send(type,petDetail(new Writer().byte(2),pet));}
   else if(action===2&&wait===3){if(slot!==1)throw Error('宠物未出战。');unequipPet(p);store.save();send(type,new Writer().byte(3).short(0));}
+  else if(action===3&&wait===14){
+   // 第 73 版：宠物返老还童石（40005）—— 客户端把它归到 BAG_PET_AGE(14)。
+   // 包体在 quantity 之后多一个 short(petSlot)（createPlayerBagMessage 对 isPetCanUseItem()
+   // 的道具会 putShort(o)），之后才是通用的 bool + byte(item.type)，一并读掉别留在包里。
+   const petSlot=r.short();r.bool();r.byte();
+   const before=structuredClone(p);let pet;
+   try{pet=rejuvenatePet(p,slot,petSlot);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   // BAG_PET_AGE 分支读 long(剩余毫秒)：客户端自己加 serverTime 换成 ageTime，再提示
+   // 「宠物寿命已重置」，并把 petItem.petAgeTime 一起更新 —— 所以回的是**剩余**时间。
+   send(type,new Writer().byte(14).long(Math.max(0,pet.expiresAt-Date.now())));
+   log('pet-rejuvenated',{role:p.id,stone:slot,petSlot,expiresAt:pet.expiresAt});
+  }
   else if(experienceUse){
    if(slot<30||definition?.type!==28||definition.power1!==(wait===11?119:118))throw Error('无效经验卷。');
    // MOD：宠物经验卷不再要求宠物出战 —— 优先出战宠物，否则取背包里第一只宠物

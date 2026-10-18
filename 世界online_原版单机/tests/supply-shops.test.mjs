@@ -5,7 +5,7 @@ import {decoders,Reader as NativeReader} from '../tools/capture-decoders.mjs';
 import {Writer,Reader} from '../lib/codec.mjs';
 import {maps,walkable,reachable,normalizeRole} from '../lib/content.mjs';
 import {official,officialItems} from '../lib/official-data.mjs';
-import {supplyNpc,supplyShops,supplyDirectory,PURPLE_GRADE,PET_SHOP} from '../lib/supply-shops.mjs';
+import {supplyNpc,supplyShops,supplyShopById,supplyDirectory,MERGED_SUPPLY_SHOP,PURPLE_GRADE,PET_SHOP} from '../lib/supply-shops.mjs';
 import {MAGIC_EXHAUSTION_BOOK_ID,petSkillBookRegistry,petSkillShopBooks,petSkillShopBookIds,KNIGHTS_DEVOTION_BOOK_ID} from '../lib/pet-skill-book-data.mjs';
 import {petSkillLevels,petSkillMaxima} from '../lib/pet-catalog.mjs';
 import {mentorTaughtSkillIds,petMentorSkills} from '../lib/pet-mentors.mjs';
@@ -36,7 +36,14 @@ test('added merchant and all menu destinations survive the actual v305 NPC decod
  const p=role(),r=new NativeReader(npcPacket(new Writer(),p).done());r.raw(3);const count=r.getByte(),npcs=[];
  for(let n=0;n<count;n++)npcs.push(d.Npc.fromBytes(r));r.finish();
  const npc=npcs.find(n=>n.id===supplyNpc.id);assert.equal(npc.name,supplyNpc.name);assert.equal(npc.x,20);assert.equal(npc.y,18);
- assert.deepEqual([...npc.shopID],[...supplyShops.map(s=>s.id),913,914,915]);assert.deepEqual([...npc.menuShop],supplyNpc.shops.map(s=>s.name));assert.ok(supplyDirectory.shops.find(s=>s.id===918).count>0,'宠物蛋分类 918 必须有货');
+ // 菜单与 NPC 记录必须完全一致（编号、名称、顺序）：第 73 版把 903/904/905 合并成 921，
+// 所以不再拿 supplyShops 直接比，而是比 supplyNpc.shops ——「合并项真的进了客户端记录」由这条等式兜住。
+ assert.deepEqual([...npc.shopID],[...supplyNpc.shops.map(s=>s.id)]);assert.deepEqual([...npc.menuShop],supplyNpc.shops.map(s=>s.name));
+ assert.equal(npc.shopID.includes(MERGED_SUPPLY_SHOP),true,'菜单里必须有合并商店 921');
+ for(const id of [903,904,905])assert.equal(npc.shopID.includes(id),false,`合并后菜单里不该再出现 ${id}`);
+ assert.equal(npc.menuShop.some(name=>/^(强化卷轴|鉴定卷轴|镶嵌宝石)（/.test(name)),false,'菜单里只留「强化、鉴定、宝石」一条');
+ assert.equal(npc.menuShop.find(name=>name.startsWith('强化、鉴定、宝石')),supplyNpc.shops.find(s=>s.id===MERGED_SUPPLY_SHOP).name);
+ assert.ok(supplyDirectory.shops.find(s=>s.id===918).count>0,'宠物蛋分类 918 必须有货');
  assert.equal(new Set(npcs.map(n=>n.id)).size,npcs.length);assert.ok(walkable(19,npc.x,npc.y));assert.ok(reachable(19,21,18,npc.x,npc.y));
  for(const original of official.maps.find(m=>m.id===19).npcs)assert.equal(maps[19].npcs.find(n=>n.id===original.id).wireBase64,original.wireBase64);
 });
@@ -82,6 +89,25 @@ const expected=[...officialItems.values()].filter(e=>(unrestrictedTypes.includes
    for(const id of shop.items){const item=parseShop(r,shop.id);assert.equal(item.id,id);assert.equal(item.money3,0);assert.ok(item.stackNum>=1);assert.equal(d.native(32,'isIdentifyItem',{e:d.Item}).call(item),canIdentify(officialItems.get(id)),`identification status for ${id}`);}
    r.finish();
  }
+});
+
+test('「强化、鉴定、宝石」合并成菜单里的一条 921，三个原商店仍可直连开店',()=>{
+ const merged=supplyShopById.get(MERGED_SUPPLY_SHOP);
+ assert.ok(merged,'合并商店 921 必须在查表里：12004（开店）与 12005（购买）都按它校验');
+ // 三个原分类都在 supplyShops 里没动 —— 背包/装备工坊直连开店、+4 宝石入口都按 903/904/905 发请求。
+ for(const id of [903,904,905])assert.ok(supplyShops.some(s=>s.id===id),`原商店 ${id} 不该被删`);
+ assert.deepEqual(merged.items,[...new Set([903,904,905].flatMap(id=>supplyShopById.get(id).items))],'合并项必须是三个分类的并集（顺序按 强化→鉴定→宝石，各自内部顺序不变）');
+ assert.ok(merged.items.length>=3,'合并后的分类不能是空壳');
+ // 物品真的能按 921 这个编号通过 12004 解析（客户端就是拿菜单里的编号来开店的）。
+ const data=call(role(),12004,new Writer().short(MERGED_SUPPLY_SHOP));assert.equal(data.byte(),0);assert.equal(data.short(),merged.items.length);
+ const parseShop=d.native(67,'fromBytesShopItem',{t:d.Item,S:{default:d.Item}});const r=new NativeReader(data.b.subarray(data.pos));
+ for(const id of merged.items){const item=parseShop(r,MERGED_SUPPLY_SHOP);assert.equal(item.id,id);assert.equal(item.money3,0);}
+ r.finish();
+ // 购买也认这个号：从合并商店免费领一颗宝石（type 30）。
+ const p=role();const gem=merged.items.find(id=>officialItems.get(id)?.type===30);
+ assert.ok(gem!==undefined,'合并分类里应当有镶嵌宝石');
+ const bought=call(p,12005,new Writer().short(MERGED_SUPPLY_SHOP).int(gem).byte(1).bool(false));
+ assert.equal(bought.byte(),0);assert.equal(bought.int(),gem);assert.ok(p.inventory.some(i=>i.itemId===gem&&i.slot>=30),'从合并商店买的东西要进背包');
 });
 
 test('技能书分类只卖训练师教不到的那批：上限与导师商店同口径、原版技能书全部下架',()=>{

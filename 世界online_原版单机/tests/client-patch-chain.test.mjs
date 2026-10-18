@@ -51,7 +51,8 @@ const EXPECTED_MAIN_STEPS=[
  'illusion',
  'weaponIcon',
  'escortBattle',
- 'escortBoard'
+ 'escortBoard',
+ 'promptBriefing'
 ];
 
 /** 收敛前散落在调用方里的补丁函数名，调用方不该再出现它们。 */
@@ -61,7 +62,7 @@ const PATCH_FUNCTIONS=[
  'patchOfflineStoryBattles','patchDailyCatalogVisibility','patchNpcMissionRefresh',
  'patchPlayerLevelRewards','patchBulkItemUse','patchBattleSkillPanel','patchBattleCheckFields','patchBattleMonsterBars','patchBattleFont',
  'patchLegionSurvivors','patchLegionPetGuard','patchBattleSpeedSteps','patchBattleSpeedPersist',
- 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEscortBoard','patchEmptyNativeShop'
+ 'patchWeaponSlots','patchPhantomImmunity','patchIllusion','patchWeaponIcon','patchEscortBattle','patchEscortBoard','patchPromptBriefing','patchEmptyNativeShop'
 ];
 
 function readIfPresent(file){
@@ -98,14 +99,14 @@ test('replaceOnce 要求锚点恰好出现一次',()=>{
 
 test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle,()=>{
  const original=fs.readFileSync(MAIN,'utf8');
- // 4557839 / 4565641 是 v305 主包打补丁前后的长度。
+ // 4557839 / 4565796 是 v305 主包打补丁前后的长度。
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
   //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
-  //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。）原版换包或补丁增删都会
+  //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4565641,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4565796,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 
@@ -209,4 +210,23 @@ test('escortBoard：exitBattle 必须把还开着的棋盘排进战后恢复（v
  assert.ok(!patched.includes(',o.isChangeMap=!1}var S=s["default"].myPlayer;'),
   '不能留下没有恢复棋盘的原文');
  assert.equal(patchEscortBoard(patched),patched,'补丁必须幂等');
+});
+
+test('promptBriefing：战斗提示弹窗要滚快、按队列加速、入队带上限',skipNoBundle,async()=>{
+ const {patchPromptBriefing,PROMPT_TIME_MS,PROMPT_QUEUE_LIMIT,PROMPT_MIN_MS,PROMPT_REF_MS}=await import('../lib/client-prompt-patch.mjs');
+ const main=fs.readFileSync(MAIN,'utf8');
+ const patched=patchPromptBriefing(main);
+ // 单条停留时间：原版 Briefing.TIME=2e3（每加一条就固定占屏 2 秒）。
+ assert.equal(PROMPT_TIME_MS,800);
+ assert.ok(patched.includes(',t.TIME=800,t.timeKey=0'),'Briefing.TIME 要从 2e3 改成 800');
+ assert.ok(!patched.includes(',t.TIME=2e3,t.timeKey=0'),'不能留下原来的 2 秒');
+ // 队列越长切得越快（队列里剩下的条数就是 promptMsssage.size()）。
+ assert.ok(patched.includes(`Math.max(${PROMPT_MIN_MS},Math.min(this.TIME,Math.floor(${PROMPT_REF_MS}/Math.max(1,a["default"].getInstance().promptMsssage.size()))))`),
+  'showNext 的下一次延迟要按队列长度收缩');
+ // 入队上限：原版 promptMsssage 无上限，战斗里攒下的旧提示会一直占位。
+ assert.equal(PROMPT_QUEUE_LIMIT,6);
+ assert.ok(patched.includes(`function(q){q.addElement(t);for(;q.size()>${PROMPT_QUEUE_LIMIT};)q.removeElementAt(0)}(e.getInstance().promptMsssage),_.Briefing.show()`),
+  'addPromptMsg 入队后要裁到上限（丢最旧的）');
+ assert.ok(!patched.includes('e.getInstance().promptMsssage.addElement(t),_.Briefing.show()'),'不能留下没有上限的入队原文');
+ assert.equal(patchPromptBriefing(patched),patched,'补丁必须幂等');
 });
