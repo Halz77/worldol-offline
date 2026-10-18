@@ -13,7 +13,7 @@ import {handleOfficial} from '../lib/official-service.mjs';
 import {officialMissions} from '../lib/official-data.mjs';
 import {officialCanAccept,officialComplete,missionBlockers,missionsAt} from '../lib/official-rules.mjs';
 import {officialMissionPacket} from '../lib/official-packets.mjs';
-import {normalizeRole,hpMax} from '../lib/content.mjs';
+import {normalizeRole,hpMax,maps} from '../lib/content.mjs';
 import {nativeCharacterStats} from '../lib/native-character-stats.mjs';
 import {combatRating} from '../lib/combat-rating.mjs';
 import {Writer,Reader} from '../lib/codec.mjs';
@@ -145,6 +145,17 @@ test('city info parses with native layout; treasury extraction is owned, exact, 
  const before=structuredClone(p);h.call(10512,new Writer().int(9999));assert.deepEqual(p,before);
  harness(handleCity,p,()=>{throw Error('disk full');}).call(10512,new Writer().int(p.id));assert.deepEqual(p,before);
  h.call(10512,new Writer().int(p.id));assert.equal(p.coins,before.coins+60000);assert.equal(cityState(p).coins,0);const once=structuredClone(p);h.call(10512,new Writer().int(p.id));assert.deepEqual(p,once);assert.equal(new Reader(h.sent[0].bytes).byte(),-1);
+});
+test('roles that skipped the recorded newbie chain get their own city on demand',()=>{
+ const p=role();delete p.cityUnlocked;delete p.city;const saves=[];const h=harness(handleCity,p,()=>saves.push(1));
+ h.call(10511,new Writer().int(p.id));assert.equal(new Reader(h.sent[0].bytes).byte(),0);
+ assert.equal(p.cityUnlocked,true);assert.equal(p.city.level,1);assert.equal(p.city.prosperity,0);assert.equal(p.city.army,0);assert.equal(p.city.name,'城市养成测试的城市');
+ assert.equal(saves.length,1,'10511 是只读路径，补发的城市必须在这里落盘');
+ const granted=structuredClone(p),done=saves.length;h.call(10511,new Writer().int(p.id));assert.deepEqual(p,granted);assert.equal(saves.length,done,'已有城市的角色不再重复补发');
+ const q=role();delete q.cityUnlocked;delete q.city;const t=harness(handleOfficial,q);
+ t.call(10510,new Writer().int(q.id));assert.equal(new Reader(t.sent[0].bytes).byte(),0);
+ assert.equal(q.cityUnlocked,true);assert.equal(q.mapId,1000);assert.deepEqual([q.x,q.y],maps[1000].spawn);
+ assert.equal(cityState(q).name,'城市养成测试的城市');
 });
 test('reload keeps only the earned city, talent and artifact states',()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-city-features-'));

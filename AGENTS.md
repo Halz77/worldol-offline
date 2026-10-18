@@ -93,6 +93,14 @@
 - **跨 try/catch 用的变量必须在 try 之前声明**（否则 catch 里访问 ReferenceError）。
 - **`planItemRewards` 碰到无定义道具会整包抛错** → 奖励表只引用有定义的道具；
   宝箱 1759/1760/1770 无定义，发放要跳过并记账。
+- **「内存标记」与「存档字段」两份别各记一份**（第 72 版回归）：棋盘完成状态既是
+  `context.solar.completed`（会话内存）又是 `p.quests.active[任务].solarBoard.completed`（存档）。
+  我重写时把 `persist()` 改成读 `board.completed`，而唯一被赋值的是内存那个 → 存档里永远是 false →
+  **重进游戏「赛程完成」丢失**（走到交付点被拦）。规矩：`persist()` 必须把两边一起写，
+  重启后以存档字段为准恢复。
+- **怪物 wire 的名字是「3 字节长度 + UTF-16BE」**，不是 `Reader.utf()`（2 字节 + UTF-8）：
+  克隆怪（`cloneMonster`）只换头 4 字节 id 与名字，属性区逐字节保留；名字要逐字
+  `writeUInt16BE`，写 `utf16le` 会乱码（见 lib/dungeon-challenge-data.mjs）。
 
 ---
 
@@ -123,6 +131,20 @@
   飞行驿站补【主城】【地区】【副本】【节日】60 条航线（落点取目标地图 `spawn`、无门槛）。
   调用点在 `official-data.ensure()` 里**所有补地图的补丁之后、建索引之前**（晚于 `applyOpenPortals`）；
   目的地缺项只告警跳过，不抛错 —— 这段在 `ensure()` 里跑，抛错等于服务起不来。
+- **老存档没有城市 → 按需补发**（第 72 版）：`p.cityUnlocked` 只有跑完任务 42 才置上，
+  GM 改过等级 / 正式服导出的存档没有这一位 → 10510（回城）与 10511—10515（城市面板）
+  永远回「请先完成获得新的城市任务。」。修法 `city-state.unlockCity(p)`（等级 1 / 繁荣 0 / 军力 0，
+  与做完 42 之后一致）：10510 在 `official-service`、10511—10515 在 `city-service`（面板首屏也补，
+  否则玩家点「城市」永远报错）；已有城市不重复补发，只 `log('city-unlocked',…)` 不发公告。
+- **棋盘玩法有两份 host**（第 72 版，`lib/solar-challenge-service.mjs`）：太阳神殿（map 262，13 格，
+  有 powers，`implicitMission`）与 BOSS 挑战赛 1305（map 14，5 格 0-1-2-3-100，无 powers）。
+  协议 14508/14509/14510/14511/14514 共用，按 `p.mapId` 认领；BOSS 那盘开在普通城镇图上，
+  多一条「身上没有 1305 就不认领」（否则玩家一站到广场就弹棋盘）。对外只认
+  `boardMissionOfGroup`（12501 跳过距离校验 + 强制官方怪表）与 `isBoardMission`
+  （`officialComplete` 的交付门；1305 的 submitCondition 是空的，全靠棋盘走完的 `solarDone` 拦）。
+  进度字段沿用 `p.quests.active[任务].solarBoard` / `solarDone`（改名会毁老存档）；
+  数据在 `lib/boss-tournament-data.mjs`（`applyBossTournament` 挂在 `applyDungeonChallengeRepairs` 之后）。
+  1305 这一版**不做**入场券 119 / 券店 2061（NPC 菜单里那一项也摘掉）/ 奖励盒 1480–1482 / 2454 每日赠券。
 
 ---
 
@@ -157,20 +179,32 @@
   而组一旦进 `monsterGroupList` 就长期不清 → 用「发过请求」会在「同层已缓存 + 这次被拒」时误开战。
   （`sendClimbTowerChallenge` 是 UI 动态查属性、覆盖必命中；`onProto(proto,handler)` 是初始化时
   按引用注册的，改原型对它无效 —— 别拿它当钩子。）
+- **长 NPC 菜单要客户端分页**（第 72 版，`web/offline.js`）：飞行驿站补到 65 条航线后，
+  原版 `UI.createMissionUI` → `MissionDialogMdr` 把整份选项一次铺进对话窗 → 溢出、后面的点不到。
+  做法：包 `req(1).default.createMissionUI`，只对 `subType===SUB_MISSION_NPC_MENU` 且选项数
+  ≥25 的菜单切页（每页 8 项），页首/页尾插 `◀ 上一页` / `下一页 ▶（n/N）`，动作是 sentinel
+  `[FLIGHT_PAGE_TAG,页号]`；再包 `req(737).MissionDialogMdr.prototype.executeChoice` 拦 sentinel，
+  **先 `executeHide()` 再重开**同一个对话窗（不关就重开会把 egret 监听器挂两遍）。
+  选项仍是原版数组里那一条 → `jumpMapID` 下标、门槛、落点全不变。兜底仍把 `list_choice`
+  套 `eui.Scroller`（补给商人那套）。测试 `tests/client-menu-paging.test.mjs`。
 - **NPC 记录的状态字节是一张位表**（主包 `ModelConst`，偏移约 1147619，逐字核对过）：
   `STATUS_VISIBLE=1`、`STATUS_ENABLE=2`、`STATUS_PASSABLE=4`、`STATUS_MISSION_DATA_USE=8`、
   `STATUS_MISSION_LOAD_EVERY_TIME=16`、`STATUS_JUMP_ICON=32`、`STATUS_HIDE_PLAYER=64`、
   `STATUS_GUIDE_NPC=128`、`STATUS_INIT_VISIBLE=1024`、`STATUS_INIT_ENABLE=2048`。
-  → `status=2` 是「可交互但**看不见**」（个人城市的任务公告板就是这样，见第 71 版）；
+  → `status=2` 是「可交互但**看不见**」（个人城市的任务公告板就是这样，见第 71 版；
+  BOSS 挑战赛入口 NPC 103 是 66 = 64|2，同样看不见，见第 72 版）；
   `status&8` 时记录里多 6 字节 missionData（short/byte/short/byte）；本地 type 0 用 23 就是
   「可见+可交互+可穿过+每次重读任务」。
 - NPC 记录布局（客户端 `readPowerNPCData`）：14 头 + 名字/招呼/对话 + 状态/朝向/x/y/范围x/范围y
+  （**这五个是各 1 字节，别读成 6 个**）
   + [missionData 6 字节，仅当状态&8] + 按 npcType 分支（type 5 = 传送菜单/战斗菜单/商店菜单/导师菜单
   四段，每段 byte 计数；传送项 = 菜单名(utf) 地图(short) x(byte) y(byte) 需求任务(short) 需求状态(byte)；
-  战斗/商店/导师项 = 菜单名 + short + short + byte）。
+  战斗/商店/导师项 = 菜单名(utf) + short(编号) + short + byte）。
   改这类记录照 `lib/boss-hub.mjs` / `lib/city-template-fixes.mjs`：先按布局解析、用原值**原样重建
   一次并与原件逐字节比对**，才敢写入；测试用 `tools/capture-decoders.mjs` 的 `Npc.fromBytes`
   （就是主包模块 74 的原函数）读回来对。
+  「下架一个菜单项」= 把该段计数位写 0、整段条目删掉（第 72 版摘掉 NPC 103 的券店菜单就是这样；
+  ⚠️ 整段删空后客户端干脆不建 `menuShop`/`shopID` 字段，断言要按「空」判）。
 - 图标 = bagIcon 十进制字符串作**全局数值子键**解析；item_icon0..7、bb_head（宠物头像）；
   蛋图标 = headIcon。资源表 `305.json` 顶层 `res.resources`。
 - **文本两套命名空间**：`GameText`(模块 10) 与 `GameText2`(模块 23)。`STR_ATTR_IGNORE_*`

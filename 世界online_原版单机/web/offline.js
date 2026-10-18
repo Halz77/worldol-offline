@@ -257,23 +257,61 @@
     // 明确提示，而不是像以前那样点了毫无反应。
     const localShops=[51,52,55,901,902,903,904,905,906,907,908,909,910,911,912,916,918,919,920];
     World.doBrowseShop=function(id,...args){if(id===req(1).default.EVENT_ALL_MENU_CSS)return req(1).default.createChiselSealUI();if(id===917)return req(67).ShopItem.openItemShop(918);if(id>=913&&id<=915)return composition.open(id===913?'attribute':id===914?'skill':'vip');return localShops.includes(id)?req(67).ShopItem.openItemShop(id):browseShop.call(this,id,...args);};
+    // 长菜单（个人城市的飞行驿站补完 60 条航线后一共 65 项）：
+    //   原版 power-NPC 菜单（UI.createMissionUI → MissionDialogMdr）把整份选项一次铺进
+    //   对话窗，选项一多就溢出窗口 —— 后面的选项既点不到也滚不动。这里做两件事：
+    //   ① 分页：把选项切页，页首/页尾补「上一页 / 下一页」，点它们走原版 executeChoice
+    //      的钩子：先关掉再重开同一个对话窗（下一页）。选项仍是原版数组里那一条，
+    //      jumpMapID 的下标不变，所以门槛/落点全都照旧。
+    //   ② 兜底：仍把 list_choice 套进一个 eui.Scroller（补给商人那套做法），万一某页
+    //      还是超出屏幕，拖动也能看到这一页剩下的选项。
+    const FlightMenu=req(1).default,FLIGHT_PAGE_SIZE=8,FLIGHT_MENU_MIN=25,FLIGHT_PAGE_TAG='__worldol_menu_page__';
+    let flightPaging=null;
+    const nativeCreateMissionUI=FlightMenu.createMissionUI;
+    if(typeof nativeCreateMissionUI==='function'){
+      FlightMenu.createMissionUI=function(title,text,labels,actions,selectList,subType,uiObj){
+        if(subType!==FlightMenu.SUB_MISSION_NPC_MENU||!Array.isArray(labels)||!Array.isArray(actions)||labels.length<FLIGHT_MENU_MIN)return nativeCreateMissionUI.apply(this,arguments);
+        const pages=Math.ceil(labels.length/FLIGHT_PAGE_SIZE);
+        const show=page=>{
+          const from=page*FLIGHT_PAGE_SIZE,to=from+FLIGHT_PAGE_SIZE;
+          const pageLabels=labels.slice(from,to),pageActions=actions.slice(from,to);
+          if(page>0){pageLabels.unshift(['◀ 上一页']);pageActions.unshift([FLIGHT_PAGE_TAG,page-1]);}
+          if(page<pages-1){pageLabels.push([`下一页 ▶（${page+2}/${pages}）`]);pageActions.push([FLIGHT_PAGE_TAG,page+1]);}
+          flightPaging={show,page};
+          return nativeCreateMissionUI.call(this,title,text,pageLabels,pageActions,selectList,subType,uiObj);
+        };
+        return show(0);
+      };
+    }
     // Keep the longer supply menu inside the screen, using the original choice
     // list and click handlers as a scrollable viewport.
-    const MissionDialog=req(737).MissionDialogMdr.prototype,showMission=MissionDialog.onShow,hideMission=MissionDialog.onHide;
+    const MissionDialog=req(737).MissionDialogMdr.prototype,showMission=MissionDialog.onShow,hideMission=MissionDialog.onHide,nativeExecuteChoice=MissionDialog.executeChoice;
+    // 翻页按钮：choiceObjList[i] 就是我们塞进去的 [FLIGHT_PAGE_TAG,page]。
+    // 先 executeHide 再重开：和点普通选项同一套收尾（不关就重开会把 egret 监听器挂两遍）。
+    if(typeof nativeExecuteChoice==='function')MissionDialog.executeChoice=function(index){
+      const action=this._showArgs?.choiceObjList?.[index];
+      if(Array.isArray(action)&&action[0]===FLIGHT_PAGE_TAG){this.executeHide?.();flightPaging?.show(action[1]);return;}
+      return nativeExecuteChoice.apply(this,arguments);
+    };
     function restoreSupplyMenu(dialog){
       const scroll=dialog._supplyChoiceScroller;if(!scroll)return;
       const parent=scroll.parent,list=scroll.viewport,index=parent?.getChildIndex(scroll);
       scroll.viewport=null;if(parent){parent.removeChild(scroll);parent.addChildAt(list,index);}
       dialog._supplyChoiceScroller=null;
     }
+    function scrollLongChoiceMenu(dialog){
+      const list=dialog._view?.list_choice,parent=list?.parent;if(!list||!parent)return;
+      const index=parent.getChildIndex(list),scroll=new eui.Scroller();
+      scroll.width=list.width;scroll.height=Math.min(650,Math.max(180,(dialog._view.stage?.stageHeight||1280)-500));
+      scroll.horizontalScrollPolicy='off';scroll.verticalScrollPolicy='on';scroll.horizontalCenter=0;
+      parent.addChildAt(scroll,index);scroll.viewport=list;list.scrollV=0;dialog._supplyChoiceScroller=scroll;
+    }
     MissionDialog.onShow=function(...args){
       restoreSupplyMenu(this);
-      if(World.orgMapID===19&&this._showArgs?.uiObj?.npc?.id===126){
-        const list=this._view.list_choice,parent=list.parent,index=parent.getChildIndex(list),scroll=new eui.Scroller();
-        scroll.width=list.width;scroll.height=Math.min(650,Math.max(180,(this._view.stage?.stageHeight||1280)-500));
-        scroll.horizontalScrollPolicy='off';scroll.verticalScrollPolicy='on';scroll.horizontalCenter=0;
-        parent.addChildAt(scroll,index);scroll.viewport=list;list.scrollV=0;this._supplyChoiceScroller=scroll;
-      }
+      const pending=this._showArgs,npc=pending?.uiObj?.npc;
+      const paged=Array.isArray(pending?.choiceObjList)&&pending.choiceObjList.some(action=>Array.isArray(action)&&action[0]===FLIGHT_PAGE_TAG);
+      const longMenu=pending?.subType===FlightMenu.SUB_MISSION_NPC_MENU&&(pending.choiceMenuList?.length||0)>12;
+      if(paged||longMenu||(World.orgMapID===19&&npc?.id===126))scrollLongChoiceMenu(this);
       return showMission.apply(this,args);
     };
     MissionDialog.onHide=function(...args){restoreSupplyMenu(this);return hideMission.apply(this,args);};

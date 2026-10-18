@@ -29,6 +29,12 @@ import {Reader,Writer} from './codec.mjs';
  * 具体能不能走由 tests/city-template-fixes.test.mjs 与 tests/open-portals.test.mjs 端到端验证
  * （10506 真的跳过去、落点可通行）。
  *
+ * 补完一共 65 项，超过原版对话窗一屏能摆下的数量（原版最长也就十来项），客户端那份
+ * 菜单会把后面的选项挤出窗口、点不到也滚不动 —— 所以这一版同时在 `web/offline.js` 里
+ * 给 power-NPC 菜单做了分页（`UI.createMissionUI` 切页 + `MissionDialogMdr.executeChoice`
+ * 钩子翻页，另把 `list_choice` 套进 Scroller 兜底）。两半要一起改：
+ * 服务端只负责把航线摆出来，页是客户端切的。
+ *
  * ## 注入点顺序
  * `official-data.ensure()` 里所有「补地图」的补丁跑完之后、建索引之前调用这两个函数：
  * 航线目的地要在地图表里存在，而客户端下发的 NPC wire 直接从 official.maps 取。
@@ -52,7 +58,7 @@ const EXPANDED_MAYOR_TALK='领主大人，我们的城市已经完成扩建。�
 
 /** 飞行驿站（npcType 5）。 */
 const FLIGHT_NPC='飞行驿站';
-const FLIGHT_TALK='你好，飞行驿站可以免费直达各大主城、冒险地区、副本入口和节日地图。向下滚动查看【主城】【地区】【副本】【节日】航线；到达后与当地人物交谈，继续当地任务。';
+const FLIGHT_TALK='免费直达各大主城、地区、副本与节日地图。航线较多，请用「上一页 / 下一页」翻页。';
 
 /**
  * 航线目的地登记表（移植自对方的 `cityFlightRegions`）。

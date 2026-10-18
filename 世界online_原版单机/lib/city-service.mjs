@@ -1,5 +1,5 @@
 import {Writer} from './codec.mjs';
-import {cityState,isPersonalCity} from './city-state.mjs';
+import {cityState,isPersonalCity,unlockCity} from './city-state.mjs';
 import {worldData} from './world.mjs';
 export function cityInfo(w,p){
  const s=cityState(p);
@@ -12,7 +12,9 @@ export function handleCity(type,r,context,{store,send,log}){
  const before=structuredClone(p);
  try{
   const owner=type===10515?p.id:r.int();
-  if(!p.cityUnlocked)throw Error('请先完成获得新的城市任务。');
+  // 原版没拿到城市（漏做新手链 42 号任务）的角色在这里只会吃一句报错；
+  // 单机版按需补发，并把等级 1 的城市落盘（见 city-state.mjs 的 unlockCity）。
+  if(unlockCity(p)){store.save();log('city-unlocked',{role:p.id,type});}
   if(owner!==p.id&&owner!==1000)throw Error('单机仅开放自己的城市。');
   if(type===10511){send(type,cityInfo(new Writer().byte(0),p));return true;}
   if(context.battle)throw Error('请先结束战斗。');

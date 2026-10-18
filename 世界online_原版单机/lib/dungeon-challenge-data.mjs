@@ -16,9 +16,11 @@
  * `localReconstruction` 与 `sources`（写明参考的是谁）。这样以后官方数据补齐了，
  * 一眼能看出哪些是本地推算的。
  *
- * ## 没做的两个
- * BOSS 挑战赛棋盘（1305）与跨服合作（9100）的参考编队 3315 / 3314 / 2320 在我们这份
- * 数据里同样缺，强行造会偏离原版太多 —— 留着「数据尚未采集」的提示，等有参考再补。
+ * ## 没做的
+ * 跨服合作（9100）的五关连战参考编队 3315 / 2320 在我们这份数据里同样缺，
+ * 强行造会偏离原版太多 —— 留着「数据尚未采集」的提示，等有参考再补。
+ * （BOSS 挑战赛棋盘 1305 已经单独补完了，见 lib/boss-tournament-data.mjs ——
+ * 它是棋盘玩法，不是「补一个编队」能解决的，所以不在这份表里。）
  */
 
 const MONSTER_KINGS=['秦广王','楚江王','宋帝王','五官王','阎罗王','卞城王','泰山王','都市王','平等王','转轮王'];
@@ -38,12 +40,10 @@ export const DUNGEON_CHALLENGE_SPECS=[
 
 /**
  * 这些副本**没有**在这里补编队，原因各不相同（不是"漏了"）：
- *   · 1305 BOSS 挑战赛是客户端棋盘玩法（走棋盘协议，不是单纯一场战斗）；
  *   · 9100 跨服合作在抓包里本来就是单场（acceptBattleID=20369，能打）；
  *     社区版把它扩成了五关连战，但参考编队 3315 / 2320 我们这份数据里没有。
  */
 export const DUNGEON_CHALLENGE_SKIPPED=[
- {mission:1305,name:'BOSS挑战赛（棋盘）',reason:'棋盘玩法需要棋盘协议，不是单场战斗'},
  {mission:9100,name:'跨服副本·单机合作',reason:'扩展五关连战需要参考编队 3315/2320，未采集；抓包自带的 20369 单场仍可打'},
 ];
 
@@ -63,8 +63,9 @@ export function battleGroupWire(groupId,monsters,npcs,flag,coefficient){
 /**
  * 克隆一只怪物：保留参考怪的全部属性，只换 id 与名字，并重写 wireBase64 里的 id/name。
  * AI 记录也一并克隆（塔怪没有 AI，但副本怪有）。
+ * （导出给 lib/boss-tournament-data.mjs 复用 —— 同一套「本地推算 + 留参考 id」的规矩。）
  */
-function cloneMonster(data,referenceId,id,name,sources){
+export function cloneMonster(data,referenceId,id,name,sources){
  if(data.monsters.some(row=>row.id===id))return data.monsters.find(row=>row.id===id);
  const source=data.monsters.find(row=>row.id===referenceId);
  if(!source)throw Error(`副本缺少参考怪物：${referenceId}`);

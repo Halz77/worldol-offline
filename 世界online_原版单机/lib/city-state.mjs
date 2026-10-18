@@ -2,6 +2,16 @@ import {officialMaps,origins} from './official-data.mjs';
 export const isPersonalCity=id=>!!officialMaps.get(id)?.cityTemplate;
 export const isCityMission=q=>q.mapId===2800;
 export function cityState(p){return {...{level:1,prosperity:0,army:0,name:`${p.name}的城市`,sign:'城主很懒，什么都没有留下……',gold:0,silver:0,coins:0},...p.city};}
+// 单机版便利：原版只有跑完新手链最后一环（任务 42「获得新的城市」）
+// 才会由 official-service 置上 p.cityUnlocked。GM 改过等级、导入过来的存档、
+// 或者当年跳过了新手链的角色身上就没这一位，于是「回城」(10510) 与
+// 「城市」(10511) 永远回一句「请先完成获得新的城市任务。」。
+// 单机版按需补发：状态与完成 42 号任务之后一致（等级 1、繁荣 0、军力 0）。
+export function unlockCity(p){
+ if(p.cityUnlocked)return false;
+ p.cityUnlocked=true;p.city=cityState(p);
+ return true;
+}
 export function cityTarget(q,p){
  if(!isCityMission(q))return {mapId:q.mapId,npcId:q.npcId};
  const recorded=origins(q).filter(x=>isPersonalCity(x.mapId));

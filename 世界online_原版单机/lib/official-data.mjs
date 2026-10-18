@@ -7,6 +7,7 @@ import {nativeCommerce} from './native-commerce-data.mjs';
 import {applyOpenPortals} from './open-portals.mjs';
 import {applyBossHub} from './boss-hub.mjs';
 import {applyDungeonChallengeRepairs} from './dungeon-challenge-data.mjs';
+import {applyBossTournament} from './boss-tournament-data.mjs';
 import {applySolarChallenges} from './solar-challenge-data.mjs';
 import {registerTrialChallenge} from './trial-challenge-data.mjs';
 import {localPetSkillBooks,petSkillBookRegistry} from './pet-skill-book-data.mjs';
@@ -87,6 +88,10 @@ for(const fashion of localFashion(official.items))official.items.push(fashion);
  // 日常副本扩展：给「任务齐了但编队没采集到」的 9 个副本补编队（本地推算，带 sources 标记）。
  // 必须在建索引之前：battleSupported() 查的是建好的 officialGroups。
  applyDungeonChallengeRepairs(official);
+ // BOSS 挑战赛（1305）：克隆 3315 巨石神兵 / 3314 古龙-多拉斯，补棋盘三场的编队，
+ // 把 2451 / 2452 的入口指到同一批怪，并给入口 NPC 103 补可见位。见 lib/boss-tournament-data.mjs。
+ // 排在日常副本扩展之后：它复用的 30022（千年魔牛）就是那一步补出来的。
+ applyBossTournament(official);
 // 英雄挑战赛 / 团队副本（太阳神殿棋盘）：81 只怪 + 76 个编队。
 // 同样必须在建索引之前 —— 12501 与棋盘协议都查 officialGroups / officialMonsters。
 applySolarChallenges(official);

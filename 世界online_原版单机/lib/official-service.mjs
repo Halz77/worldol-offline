@@ -2,21 +2,19 @@ import {gainPet,observedPetExperience} from './pet-state.mjs';
 import {Writer} from './codec.mjs';
 import {vipMissionExperience} from './home-feature-data.mjs';
 import {official,officialMaps,officialItems,officialMissions,officialGroups,atNpc} from './official-data.mjs';
-import {officialCanAccept,officialComplete,missionBlockers,originFor,availableChoices,npcEnabled,missionClosed,missionRewards,missionConditions,battleSupported,prerequisiteMessage,missionBattleId} from './official-rules.mjs';
+import {officialCanAccept,officialComplete,missionBlockers,originFor,availableChoices,npcEnabled,missionClosed,missionRewards,missionConditions,battleSupported,prerequisiteMessage,missionBattleId,isBoardMission} from './official-rules.mjs';
 import {maps,npcById,near,walkable,gain,hpMax,mpMax} from './content.mjs';
 import {worldData} from './world.mjs';
 import {signUpdates,questReward,moneyUpdate,healthUpdate} from './game-packets.mjs';
 import {planItemRewards,planItemRemoval} from './restoration.mjs';
 import {pushNewbieMission} from './newbie-service.mjs';
-import {cityTarget,isCityMission,applyCityMission} from './city-state.mjs';
+import {cityTarget,isCityMission,applyCityMission,unlockCity} from './city-state.mjs';
 import {worldTravelMaps} from './world-travel.mjs';
 import {recordMissionCompletion} from './daily-activity.mjs';
 import {notifyDaily} from './daily-service.mjs';
 import {deferYunruoRewards} from './yunruo-temple.mjs';
 import {replayChainAfterSettlement} from './replayable-chains.mjs';
-import {isSolarMission} from './solar-challenge-data.mjs';
 import {startSolarBoard,clearSolarBoard,solarDepositText} from './solar-challenge-service.mjs';
-
 function vi(value){let n=BigInt.asUintN(64,BigInt(value||0)),a=[];do{let b=Number(n&127n);n>>=7n;if(n)b|=128;a.push(b);}while(n);return Buffer.from(a);}
 const integer=(n,v)=>Buffer.concat([vi(n*8),vi(v)]);
 const bytes=(n,v)=>Buffer.concat([vi(n*8+2),vi(v.length),v]);
@@ -53,7 +51,7 @@ export function handleOfficial(type,r,context,{store,send,log}){
  if([32103,32110].includes(type)){notify('单机图鉴可查阅；点亮和幻化养成尚未接入。');return true;}
  if(type===10521){const w=new Writer().byte(official.areas.length);for(const a of official.areas)w.byte(a.id).string(a.name).short(a.x).short(a.y).byte(a.state);send(type,w);return true;}
  if(type===10522){const list=worldTravelMaps(r.int());if(!list.length){send(type,new Writer().byte(-1).string('这个区域的场景尚未采集，暂时无法进入。'));return true;}const w=new Writer().byte(0).byte(list.length);for(const m of list)w.short(m.id).string(m.name).string(m.id===1?'返回本地新手村':'自由传送').byte(0).byte(0);send(type,w);return true;}
- if(type===10510){try{r.int();if(!p.cityUnlocked)throw Error('请先完成获得新的城市任务。');teleport(1000);send(type,new Writer().byte(0).raw(worldData(p,false).done()));}catch(e){send(type,new Writer().byte(-1).string(e.message));}return true;}
+ if(type===10510){try{r.int();if(unlockCity(p))log('city-unlocked',{role:p.id,type});teleport(1000);send(type,new Writer().byte(0).raw(worldData(p,false).done()));}catch(e){send(type,new Writer().byte(-1).string(e.message));}return true;}
  if(type===10523){try{const id=r.int();teleport(id);send(type,new Writer().byte(0).byte(0).raw(worldData(p,false).done()));log('official-map-entered',{role:p.id,map:id});}catch(e){send(type,new Writer().byte(-1).string(e.message));}return true;}
  if(type===10518&&maps[p.mapId]?.official){try{const mode=r.byte();let mapId,id;if(mode===1){mapId=r.short();id=r.byte();}else{const q=officialMissions.get(r.short());if(!q)throw Error('任务尚未恢复');const o=missionDestination(p,q);mapId=o.mapId;id=o.npcId;}const n=maps[mapId]?.npcs.find(n=>n.id===id);if(!n)throw Error('目标场景尚未采集');if(mapId!==p.mapId){const portal=maps[p.mapId].npcs.find(n=>npcEnabled(p,n)&&n.target?.[0]===mapId);if(!portal)throw Error('请先从世界地图前往：'+maps[mapId].name);send(type,new Writer().byte(0).byte(1).byte(portal.x).byte(portal.y).short(mapId).byte(portal.target[1]).byte(portal.target[2]).byte(n.x).byte(n.y));}else send(type,new Writer().byte(0).byte(0).byte(n.x).byte(n.y));}catch(e){send(type,new Writer().byte(-1).string(e.message));}return true;}
  if(![14502,14503,14504].includes(type))return false;
@@ -66,26 +64,28 @@ export function handleOfficial(type,r,context,{store,send,log}){
   if(type===14504){
    if(!p.quests.active[id])throw Error('尚未接取此任务');
    delete p.quests.active[id];
-   // 放弃英雄挑战赛要把棋盘上下文也清掉，否则 context.solar 还挂着旧赛程。
-   if(isSolarMission(id))clearSolarBoard(context);
+   // 放弃棋盘任务（英雄挑战赛 / BOSS 挑战赛）要把棋盘上下文也清掉，
+   // 否则 context.solar 还挂着旧赛程。
+   if(isBoardMission(id))clearSolarBoard(context);
    store.save();send(type,signUpdates(new Writer().byte(0),p));return true;
   }
   if(!near(p,npcById(p,npcId))||!npcEnabled(p,npcById(p,npcId)))throw Error('请走到任务 NPC 身边。');
   if(type===14502){
    const target=cityTarget(q,p);
    if(!(atNpc(q,p.mapId,npcId)||isCityMission(q)&&target.mapId===p.mapId&&target.npcId===npcId))throw Error('请到任务接取 NPC 处接取。');
-   // 英雄挑战赛：任务已经在身上时允许再点一次报名 —— 那是「重新打开棋盘」，
-   // 不是重复接任务（离开棋盘后再回来得靠这个入口，否则 officialCanAccept 会以
-   // 「已接取」挡掉，玩家再也进不去棋盘）。
-   if(!(isSolarMission(id)&&p.quests.active[id])){
+   // 棋盘任务（英雄挑战赛 / BOSS 挑战赛）：任务已经在身上时允许再点一次报名 ——
+   // 那是「重新打开棋盘」，不是重复接任务（离开棋盘后再回来得靠这个入口，否则
+   // officialCanAccept 会以「已接取」挡掉，玩家再也进不去棋盘）。
+   if(!(isBoardMission(id)&&p.quests.active[id])){
     if(!officialCanAccept(p,q))throw Error(prerequisiteMessage(p,q)||'任务条件未满足、已接取或今天已完成；缺少的城市条件待定。');
     if(Object.keys(p.quests.active).length>=127)throw Error('任务栏达到原版协议容量，请先交付或放弃部分任务。');
     p.quests.active[id]={official:true,counts:{},origin:originFor(p,q,npcId),acceptedAt:new Date().toISOString()};
    }
    const active=p.quests.active[id];
-   if(isSolarMission(id)){
-    if(active.solarDone)throw Error('赛程已完成，请交付任务领取奖励。');
+   if(isBoardMission(id)){
+    if(active.solarDone)throw Error('挑战已完成，请交付任务领取奖励。');
     // 报名押金（escortCost = [黄金,白银,铜币]）：只收一次，重开棋盘不重复扣。
+    // 太阳神殿的赛程与 1305 BOSS 挑战赛的 escortCost 都这么收（1305 是 10 银 + 50000 铜）。
     if(!active.solarDepositPaid){
      const [needGold=0,needSilver=0,needCoins=0]=q.escortCost||[];
      const useSilver=Math.min(Number(p.silver||0),Number(needSilver)||0);
@@ -97,11 +97,11 @@ export function handleOfficial(type,r,context,{store,send,log}){
    }
    store.save();send(type,signUpdates(new Writer().byte(0),p).bool(false));
    // 接完立刻把棋盘推给客户端 —— 少了这一步玩家根本看不到挑战界面。
-   if(isSolarMission(id))startSolarBoard(context,send,p,id);
+   if(isBoardMission(id))startSolarBoard(context,send,p,id);
   }
   else{
-   // 棋盘还开着（没走 14509 离开 / 14511 结束）不许交付，否则等于绕过硬挑战。
-   if(isSolarMission(id)&&context.solar)throw Error('请先结束棋盘挑战，再回到报名点交付奖励。');
+   // 这一局的棋盘还开着（没走 14509 离开 / 14511 结束）不许交付，否则等于绕过硬挑战。
+   if(isBoardMission(id)&&context.solar&&Number(context.solar.mission)===Number(id))throw Error('请先结束棋盘挑战，再回到报名点交付奖励。');
    const selected=r.int(),target=cityTarget(q,p);if(target.mapId!==p.mapId||target.npcId!==npcId||!officialComplete(p,q)||missionClosed(p,q))throw Error(prerequisiteMessage(p,q)||'请先完成条件，再到指定 NPC 交付。');
    const choice=availableChoices(q),selectedReward=choice.length?choice.find(i=>i.id===selected):null;
    if(choice.length&&!selectedReward)throw Error('请选择已恢复属性的任务奖励。');

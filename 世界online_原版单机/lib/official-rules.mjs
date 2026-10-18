@@ -2,7 +2,14 @@ import {officialMissions,officialItems,officialMaps,officialGroups,officialMonst
 import {isCityMission,cityTarget,cityConditionMet} from './city-state.mjs';
 import {missionDone} from './daily-activity.mjs';
 import {isSolarMission} from './solar-challenge-data.mjs';
+import {isBossTournamentMission} from './boss-tournament-data.mjs';
 import {Reader,Writer} from './codec.mjs';
+/**
+ * 棋盘玩法任务：太阳神殿的英雄挑战赛（2592—2606）+ 新月古镇广场的 BOSS 挑战赛（1305）。
+ * 它们的提交条件在抓包里都是空的（CONDITION_NONE），不设门就等于「一接任务就能交付」——
+ * 必须走完棋盘（走到 100 号交付格）置上 solarDone 才算完。
+ */
+export const isBoardMission=id=>isSolarMission(id)||isBossTournamentMission(id);
 // Local play does not require unavailable reward definitions or unimplemented
 // country/escort systems. Retain known objectives and all supported rewards.
 export function missionRewards(q){return {...q,rewardItems:(q.rewardItems||[]).filter(i=>officialItems.has(i.id)),selectItems:(q.selectItems||[]).filter(i=>officialItems.has(i.id))};}
@@ -66,10 +73,11 @@ function prerequisiteName(c){
 export function missingPrerequisites(p,q){return missionConditions(q,'acceptCondition').filter(c=>[9,10].includes(c.type)&&!conditionMet(p,c,q.id)).map(c=>({id:c.missionId,name:prerequisiteName(c),type:c.type,not:!!c.not,pending:!officialMissions.has(c.missionId)}));}
 export function prerequisiteMessage(p,q){return missingPrerequisites(p,q).map(c=>`${c.not?'需尚未':c.type===10?'需先接取':'需先完成'}「${c.name}」${c.pending?'（未采集，待定）':''}`).join('；');}
 export function officialComplete(p,q){
- // 英雄挑战赛（太阳神殿棋盘）的提交条件在抓包里是空的（CONDITION_NONE），
- // 拿它判定等于「一接任务就能交付」—— 必须走完棋盘（14510 走到 100 号交付格）
- // 置上 solarDone 才算完。这也是 14502 接完能立刻弹棋盘的原因。
- if(isSolarMission(q.id)&&!p.quests.active[q.id]?.solarDone)return false;
+ // 棋盘玩法（太阳神殿英雄挑战赛 / 1305 BOSS 挑战赛）的提交条件在抓包里是空的
+ // （CONDITION_NONE），拿它判定等于「一接任务就能交付」—— 必须走完棋盘
+ // （14510 走到 100 号交付格）置上 solarDone 才算完。
+ // 这也是 14502 接完能立刻弹棋盘的原因。
+ if(isBoardMission(q.id)&&!p.quests.active[q.id]?.solarDone)return false;
  return (!!p.quests.active[q.id]||!!(q.setting&1)&&officialCanAccept(p,q))&&missionConditions(q,'submitCondition').every(c=>conditionMet(p,c,q.id));
 }
 export function missionStateMatches(p,id,mask){if(id<=0)return true;if(missionDone(p,id))return !!(mask&1);const q=officialMissions.get(id);if(p.quests.active[id])return !!(mask&(q&&officialComplete(p,q)?4:2));return !!(mask&8);}

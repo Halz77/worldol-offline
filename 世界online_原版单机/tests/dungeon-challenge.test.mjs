@@ -29,10 +29,11 @@ test('9 个副本补完后都不再挂「战斗数据尚未采集」',()=>{
  }
 });
 
-test('两个特意跳过的副本：写明原因，且没有被我们塞进新编队',()=>{
- assert.ok(DUNGEON_CHALLENGE_SKIPPED.length>=2);
- // 这两个副本要么是棋盘玩法、要么抓包本来就是单场 —— 不管怎样，我们不该给它们造编队
- const skippedGroups=new Set([3315,3314,2320,30150,30151,30152,30160,30161,30162,30163,30164]);
+test('9100 跨服合作仍写明跳过原因，且没有引用我们没造的编队',()=>{
+ assert.ok(DUNGEON_CHALLENGE_SKIPPED.length>=1);
+ // 1305 BOSS 挑战赛已经单独补出来了（lib/boss-tournament-data.mjs），不该再挂在跳过名单里
+ assert.equal(DUNGEON_CHALLENGE_SKIPPED.some(row=>row.mission===1305),false,'1305 已由 boss-tournament-data 补出来');
+ const skippedGroups=new Set([3315,3314,2320,30160,30161,30162,30163,30164]);
  for(const row of DUNGEON_CHALLENGE_SKIPPED){
   assert.ok(row.reason,`${row.name} 要写明跳过原因`);
   const q=officialMissions.get(row.mission);

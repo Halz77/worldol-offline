@@ -7,7 +7,7 @@ import {Reader,Writer} from '../lib/codec.mjs';
 import {official,officialGroups} from '../lib/official-data.mjs';
 import {battleSupported} from '../lib/official-rules.mjs';
 import {SOLAR_MAP_ID,TEAM_DUNGEON_MISSION,SOLAR_EVENTS,SOLAR_ROUTE_EVENT,solarChallengeEventGroup,solarGroupMission,solarGroupIds,solarReady,SOLAR_PROFILES} from '../lib/solar-challenge-data.mjs';
-import {handleSolarChallenge,settleSolarBattle,pendingSolarGroup,solarMissionOfGroup} from '../lib/solar-challenge-service.mjs';
+import {handleSolarChallenge,settleSolarBattle,pendingSolarGroup,boardMissionOfGroup} from '../lib/solar-challenge-service.mjs';
 
 const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const hasData=fs.existsSync(path.join(root,'data','solar-challenge-monsters.json'));
@@ -99,7 +99,7 @@ test('14514 选对手：回编队号，打过之后不再给；没到那格或�
  const group=lastSent(sent).bytes.readUInt16BE(1);
  assert.equal(group,solarChallengeEventGroup(TEAM_DUNGEON_MISSION,event),'回包里要带上编队号');
  assert.equal(pendingSolarGroup(context),group,'记进 pending，12501 据此跳过距离校验');
- assert.equal(solarMissionOfGroup(group),TEAM_DUNGEON_MISSION);
+ assert.equal(boardMissionOfGroup(group),TEAM_DUNGEON_MISSION);
  // 通过之后这一格不再给战斗
  context.solar.board.passed.add(1);
  assert.throws(()=>handleSolarChallenge(14514,new Reader(new Writer().short(event).done()),context,{send,store}),/这一格的挑战已经通过了/);
@@ -257,7 +257,7 @@ test('端到端：三个组别都能报名进棋盘，走完路线打完事件�
    h.call(14514,new Writer().short(event).done());
    const group=pendingSolarGroup(h.context);
    assert.ok(group>0,`${board.pos} 号格要给出编队号`);
-   assert.equal(solarMissionOfGroup(group),2592,'编队要归属这一场');
+   assert.equal(boardMissionOfGroup(group),2592,'编队要归属这一场');
    const boardReply=settleSolarBattle(h.context,p,group); // 打赢
    assert.equal(boardReply.type,14508,"打赢要回一个待补发的棋盘包");
   }

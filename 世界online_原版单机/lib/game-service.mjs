@@ -17,7 +17,7 @@ import {legionBattleMembers,readLegionResult,pushLegionMembers,legionVitals,enco
 import {legionRoster} from './legion-state.mjs';
 import {nativeVitalsCeiling} from './restoration.mjs';
 import {towerFloorOfGroup,settleTowerBattleAndNotify} from './climb-tower.mjs';
-import {solarMissionOfGroup,clearSolarPending,settleSolarBattle} from './solar-challenge-service.mjs';
+import {boardMissionOfGroup,clearSolarPending,settleSolarBattle} from './solar-challenge-service.mjs';
 import {pendingTrialGroup,clearTrialPending,isTrialGroup,settleTrialBattleAndNotify} from './trial-challenge.mjs';
 import {BATTLE_TRAILER_V2,readBattleResultTail} from './battle-result-wire.mjs';
 export const BATTLE_TRAILER=BATTLE_TRAILER_V2;
@@ -118,9 +118,9 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     // 永泽塔：塔层编队（23000+层号）不在任何地图的 NPC 刷怪点里，走的是
     // 「30003 挑战 → 客户端带着组号发 12501」这条路，所以没有可站的 NPC 要校验。
     const towerFloorId=towerFloorOfGroup(group);
-    // 英雄挑战赛（太阳神殿棋盘）：编队由 14514 下发，地图 262 上没有对应的刷怪点，
-    // 与塔层编队同一套处理 —— 跳过「站到 NPC 旁边」的校验。
-    const solarMission=solarMissionOfGroup(group);
+    // 棋盘玩法（太阳神殿英雄挑战赛 / 新月古镇广场 BOSS 挑战赛）：编队由 14514 下发，
+    // 地图上没有对应的刷怪点，与塔层编队同一套处理 —— 跳过「站到 NPC 旁边」的校验。
+    const solarMission=boardMissionOfGroup(group);
     // 无限试炼：编队由试炼面板下发，同样不在地图上。
     const trialGroup=pendingTrialGroup(context)===group&&isTrialGroup(group);
     const scripted=!!towerFloorId||!!solarMission||trialGroup;
