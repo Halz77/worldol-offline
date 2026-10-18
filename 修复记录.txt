@@ -6080,3 +6080,69 @@ sha256 314a75a6b50b6faff98f5150698702eaf255d23cb307a2d0de5bc894a42cc4ee）。
 【五、提示】
   · 参考实现里还有一条这次**没搬**：他们把 delDamageEffect 重写成「按真实掉血算吸血 / 仇恨 /
     反击 / 1 血复活的顺序」。与武伤、攻次无关，先留着，要的话下一版单独做。
+
+
+════════════════ 第 77 版 · 英雄图鉴真正可用 + 「点亮所有图鉴」道具（服务端实装） ════════════════
+
+【一、要什么】
+  · 英雄图鉴（收集系统）要从「摆设」变成能用的：打开面板看得到收集率、等级、加成说明，
+    「点亮」按钮点得动；
+  · 新增消耗品「点亮所有图鉴」（补给商人 · 消耗品分类免费领），一键把全部图鉴点亮，
+    并**立刻**拿到图鉴加成（服务端战斗也算进去）。
+
+【二、原版客户端要什么（我们以前缺什么）】
+  · 客户端只负责画：32101 问一页 → 32102 回；32103 点亮 → 32104 回；32109 推「图鉴加成合计」。
+  · 本工程以前只回了 32102（一页一条、全部 unlock=false，rate/level 全 0），
+    32103 直接提示「单机图鉴可查阅；点亮和幻化养成尚未接入」，32109 从来没发过
+    → 面板永远是黑的，加成恒为 0。
+
+【三、改法】
+  · 新增 lib/handbook.mjs（规则层，只 import official-data）：
+    – 目录索引：32 页（组:类 → 条目），把 2240 条抓包目录按 sources 分页；
+    – 收集率 → 等级：Math.round(rate/100*70)（100% 拉满 70 级）；
+    – 四张加成表：宠物 [7,8,9,41] / 坐骑 11 / 特殊 [19,24,34,37,39] / 其余（普通武器防具），
+      档位阈值 ≥70·≥60·≥50·≥40·≥30·≥20·≥10·其余，数值照抄参考实现
+      「幻想世界OL 3.0 最终版」（web/offline.js 的 getGroupBonus）；
+    – handbookView / unlockHandbookPage / unlockOwnedItems / refreshHandbook / lightAllHandbook。
+  · 存档字段 p.handbook = {unlocked:{"组:类":[条目编号]}, lit:false, powers:{"能力编号":值}}：
+    unlocked / lit 是「玩家做过什么」的唯一真源；powers 是算出来的加成缓存，
+    任何状态变化 + 每次进世界都重算 → 换加成表老存档下次登录即生效。
+  · lib/official-service.mjs：32101 → 32102（真实 unlock/level/rate/canUnlock，power=1 让面板
+    不再显示「暂未开放」）；32103 → 32104（整页条目编号 + 新等级/收集率）+ 32109。
+    客户端 32103 只发组+类（sendHandBookUnlock(group,type) 里没有 itemIds），点哪些由服务端说了算。
+  · 加成落地在服务端：lib/native-character-stats.mjs 的 nativePlayer 把 p.handbook.powers
+    折进 getSkillPowerValue —— 与原版 getPower(key) 里
+    （RoleGodData.getPower + BookGroupModel.getBookGroupPower）同一层，且同样不按技能类型过滤。
+  · 进世界（server.mjs 的 CG_LOGIN_ACTORENTER）自动点亮背包/装备里已有的条目 + 重算加成，
+    并随 32107 之后补推一次 32109（把存档里的旧加成喂给客户端）。
+  · 道具「点亮所有图鉴」= 800110（lib/handbook-item.mjs）：
+    type 28、无 power → 客户端按 BAG_NO_WAIT(0) 发使用请求；服务端在 12001/action3 里
+    按 itemId 认领（等待类型必须是 0），扣一件 + 全部点亮 + 推 32109 + 公告 10509。
+    编号常量放 lib/local-items.mjs，并进 PINNED_SUPPLY_ITEM_IDS（消耗品分类最前面）。
+  · 客户端只说人话：web/offline.js 覆盖 BookGroupModel.prototype.getGroupTypeDes
+    （原版靠 getPowerDesc(power, powerValue+addValue*档位) 一次只描述得了一条属性，
+    而图鉴每档是好几条一起加），字符串表照抄参考实现、与加成表逐档一致；0 级仍返回「无」。
+
+【四、验证】
+  · 新增 tests/handbook.test.mjs（9 例）：目录索引拼起来 = 抓包全集、档位换算与四张表的精确数值
+    （并且与 web/offline.js 的文案逐档对数字）、32101 只读不改角色、32103 回 32104+32109 并把
+    条目/等级/存档/属性一起改掉、32109 的累加语义 = 服务端 powers、道具定义能被原版解码器
+    完整读掉（r.finish()）、12001 使用与等待类型不符被拒、进世界自动点亮、纯目录视图保持原样。
+  · tests/server-dispatch.test.mjs：32103 变成「认领后解析失败会抛」的号（和 32101 同一格），
+    server.mjs 的允许协议号加 32109。
+  · tests/character-import.test.mjs：进世界自动点亮后导入角色的 HPMAX 55065 → 56944（有注释说明）。
+  · tools/capture-decoders.mjs：补 s2c_HandBookPowerInfo 的 schema（生成代码是单条件 if，不是
+    switch，字段抽不出来 —— 和之前 s2c_HandBookGroupList 同一处理）。
+  · npm test 90 文件 / 649 用例全过、新增失败 0；npm run check 0 错。
+  · 上机复验（打开图鉴看收集率/等级/文案、点「点亮」、用一次道具看属性面板涨没涨、
+    打一仗确认服务端也按新加成算）由用户做。
+
+【五、提示（这一版最容易踩的三个坑）】
+  · 32109 **只发一组**合计值（group=0）：客户端 onHandBookPowerInfo 会把所有 info 里
+    effect 为真的 powerValue 累加到 bookGroupPower[power]，按组重复发同一份
+    等于把加成乘上组数（4 组 = 4 倍），面板会比服务端高好几倍。
+  · 道具定义字节里 power3/powerValue3 **只在 power1==181（附魔卡）时才存在**
+    （原版 Item.fromBytesAtts2 的 type 28 分支是按 power1 条件读的），多写 4 字节
+    解码器会在缓冲区里剩下 4 个字节（测试的 r.finish() 正是钉这个的）。
+  · 查询类接口不许改角色：图鉴的「取状态」是只读的（老存档 / 没打开过图鉴的角色拿到的是
+    一个不进存档的空壳），只有点亮 / 道具 / 进世界三条写路径才动 p.handbook。

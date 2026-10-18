@@ -12,6 +12,7 @@ import {applySolarChallenges} from './solar-challenge-data.mjs';
 import {registerTrialChallenge} from './trial-challenge-data.mjs';
 import {localPetSkillBooks,petSkillBookRegistry} from './pet-skill-book-data.mjs';
 import {localEnchantments} from './enchantment-data.mjs';
+import {handbookItems} from './handbook-item.mjs';
 import {spiritData,applySpiritNpcs,spiritBoxDefinition,spiritBoxes} from './spirit-seal-data.mjs';
 import {LEGENDARY_EGG_ID,legendaryEggDefinition,selectablePetEggs} from './pet-catalog.mjs';
 import {localGems} from './local-gems.mjs';
@@ -64,6 +65,9 @@ function ensure(){
  // 变成「未知道具」，否则 itemPacket 抛错、整个进入世界的包发不出去、角色黑屏。
  for(const item of petSkillBookRegistry()){if(official.items.some(x=>x.id===item.id))throw Error('Pet skill book ID collision: '+item.id);official.items.push(item);}
  for(const item of localEnchantments){if(official.items.some(x=>x.id===item.id))throw Error('Local enchantment ID collision: '+item.id);official.items.push(item);}
+ // 第 77 版：图鉴消耗品「点亮所有图鉴」（定义见 lib/handbook-item.mjs）。
+ // 注册必须发生在下面建 officialItems 索引**之前** —— 晚注册的进不了 Map。
+ for(const item of handbookItems){if(official.items.some(x=>x.id===item.id))throw Error('Local handbook item ID collision: '+item.id);official.items.push(item);}
  for(const item of spiritData.items){const index=official.items.findIndex(e=>e.id===item.id);if(index>=0)official.items[index]=item;else official.items.push(item);}
  for(const spiritBox of [spiritBoxDefinition(),...spiritBoxes.map(spiritBoxDefinition)]){
   if(official.items.some(e=>e.id===spiritBox.id))throw Error('Local spirit box ID collision: '+spiritBox.id);

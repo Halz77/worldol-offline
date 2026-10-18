@@ -8,6 +8,9 @@ import {petMentorSkills,learnPetMentorSkill} from './pet-mentors.mjs';
 import {useMedicine,discardItem,sellItem,sellItems,bindItem,consumeItem,expandBag,changeSex,BAG_EXPAND_ITEM_ID,CHANGE_SEX_ITEM_ID} from './bag-actions.mjs';
 import {automaticSkillSlots} from './automatic-skills.mjs';
 import {healthUpdate} from './game-packets.mjs';
+import {lightAllHandbook} from './handbook.mjs';
+import {handbookPowerPacket} from './official-service.mjs';
+import {HANDBOOK_LIGHT_ALL_ITEM_ID} from './local-items.mjs';
 import {careers} from './career-skills.mjs';
 import {supplyShopById} from './supply-shops.mjs';
 import {applyLootDelivery} from './loot.mjs';
@@ -79,7 +82,23 @@ export function handleRestoration(type,r,context,{store,send,log}){
     // 转职书用原版的 BAG_CHANGE_JOB(18) 等待类型；成功后要回 PlayerDetail + 技能列表，
     // 客户端会据此刷新角色面板（含新职业）并替换整个技能栏。
     const instance=p.inventory.find(i=>i.slot===slot),itemId=instance?.itemId,job=jobBooks.get(itemId);
-    if(itemId===BAG_EXPAND_ITEM_ID||itemId===CHANGE_SEX_ITEM_ID){
+    if(itemId===HANDBOOK_LIGHT_ALL_ITEM_ID){
+     // 第 77 版「点亮所有图鉴」：无 power 的 type 28 消耗品 → 客户端按 BAG_NO_WAIT(0)
+     // 发请求，并且**不等回包**（客户端自己对 BAG_NO_WAIT 分支就是 sendProto + 本地扣一件）。
+     // 所以这里只认 itemId + 等待类型，扣掉一件、把图鉴全部点亮、重算加成并推送 32109。
+     if(waitType!==0)throw Error('无效的道具使用请求。');
+     if(!(quantity>0))throw Error('无效的道具数量。');
+     const before=structuredClone(p);
+     try{
+      consumeItem(p,slot,quantity);      // 扣件失败会抛错，poke 到存档之前就中断
+      lightAllHandbook(p);
+      store.save();
+     }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+     send(32109,handbookPowerPacket(p));
+     send(10509,new Writer().byte(2).string('所有图鉴已点亮，图鉴加成立刻生效。'));
+     log('handbook-lit-all',{role:p.id,itemId,used:quantity});
+    }
+    else if(itemId===BAG_EXPAND_ITEM_ID||itemId===CHANGE_SEX_ITEM_ID){
      // 第 73 版：288 背包扩展（wait=BAG_WAIT 20）与 42000 变性卷轴（wait=BAG_ALERT_SEX 21）。
      // 客户端按道具自报等待类型（isAddBagSizeItem / isChangeSexItem），这里按 itemId 认领，
      // 同时要求等待类型对得上 —— 对不上就不是这两件道具的正常请求。

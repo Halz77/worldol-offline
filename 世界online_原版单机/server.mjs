@@ -18,7 +18,8 @@ import {pushCharacterFeatures} from './lib/character-feature-service.mjs';
 import {pushLegionMembers} from './lib/legion-service.mjs';
 import {pushNewbieMission} from './lib/newbie-service.mjs';
 import {flushHomeSession} from './lib/home-feature-service.mjs';
-import {handbookGroups} from './lib/official-service.mjs';
+import {handbookGroups,handbookPowerPacket} from './lib/official-service.mjs';
+import {unlockOwnedItems,refreshHandbook} from './lib/handbook.mjs';
 import {pushPetEquipmentExperience} from './lib/pet-equipment-service.mjs';
 import {pushSpiritInfo} from './lib/spirit-seal-service.mjs';
 import { enterWorld,worldData } from './lib/world.mjs';
@@ -113,7 +114,7 @@ wss.on('connection',(ws,request)=>{
       }
       if(type===P.CG_GUIDE_STATUE_RANDOM_NAME){const names=['云间行者','青岚','长风','星河','逐月','远山'];return send(type,w.byte(0).string(names[Math.floor(Math.random()*names.length)]+String(Math.floor(Math.random()*100))));}
       if(type===P.CG_LOGIN_CREATEACTOR){const input={sex:r.byte(),race:r.byte(),job:r.byte(),icon1:r.long().toString(),icon2:r.long().toString(),icon3:r.long().toString(),name:r.string()};const role=store.create(context.account,input);return send(type,rolePayload(w.byte(0),role));}
-      if(type===P.CG_LOGIN_ACTORENTER){const id=r.int();const role=store.roles(context.account).find(p=>p.id===id);if(!role)return send(type,w.byte(-1).string('没有找到这个本地角色。'));if(context.role)flushHomeSession(context,store);const previous=structuredClone(role),last=context.account.lastRoleId;try{ensureDaily(role);context.account.lastRoleId=id;store.save();}catch(error){for(const key of Object.keys(role))if(!(key in previous))delete role[key];Object.assign(role,previous);context.account.lastRoleId=last;throw error;}context.role=role;context.homeOnlineStart=Date.now();context.battle=null;context.rejectedBattle=null;context.taskResetPending=null;pushCharacterFeatures(role,send);pushPetEquipmentExperience(send);pushSpiritInfo(send);send(type,enterWorld(role));pushLegionMembers(role,send,{appearance:false});send(32107,handbookGroups());pushNewbieMission(role,send);return;}
+      if(type===P.CG_LOGIN_ACTORENTER){const id=r.int();const role=store.roles(context.account).find(p=>p.id===id);if(!role)return send(type,w.byte(-1).string('没有找到这个本地角色。'));if(context.role)flushHomeSession(context,store);const previous=structuredClone(role),last=context.account.lastRoleId;try{ensureDaily(role);unlockOwnedItems(role);refreshHandbook(role);context.account.lastRoleId=id;store.save();}catch(error){for(const key of Object.keys(role))if(!(key in previous))delete role[key];Object.assign(role,previous);context.account.lastRoleId=last;throw error;}context.role=role;context.homeOnlineStart=Date.now();context.battle=null;context.rejectedBattle=null;context.taskResetPending=null;pushCharacterFeatures(role,send);pushPetEquipmentExperience(send);pushSpiritInfo(send);send(type,enterWorld(role));pushLegionMembers(role,send,{appearance:false});send(32107,handbookGroups());send(32109,handbookPowerPacket(role));pushNewbieMission(role,send);return;}
       if(type===P.CG_SCENE_WORLDDATA && context.role){pushCharacterFeatures(context.role,send);pushPetEquipmentExperience(send);pushSpiritInfo(send);send(type,w.byte(0).raw(worldData(context.role,true).done()));pushLegionMembers(context.role,send,{appearance:false});if(context.taskResetPending){pushNewbieMission(context.role,send);notifyDaily(context.role,send);send(22106,encodeDaily('s2c_TaskInfo',taskSnapshot(context.role)));context.taskResetPending=null;}return;}
       // Native bag opens its appearance catalogue even for ordinary gear.
       // Native sendProtoAsync consumes the repair status before reading copper.

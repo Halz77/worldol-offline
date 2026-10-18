@@ -124,6 +124,9 @@ export function protobufSchemas(source){
   }});
   // This generated decoder has a single conditional instead of a switch.
   schemas.s2c_HandBookGroupList={1:{name:'infos',type:'handBookGroupInfo',message:true,repeated:true}};
+  // 同上：s2c_HandBookPowerInfo 的生成代码也是 `t>>>3==1 ? push(handBookPowerInfo.decode) : skip`，
+  // 没有 switch，字段抽不出来（第 77 版图鉴加成要做端到端断言时补的）。
+  schemas.s2c_HandBookPowerInfo={1:{name:'infos',type:'handBookPowerInfo',message:true,repeated:true}};
   return schemas;
 }
 export function protobuf(bytes,type,schemas){

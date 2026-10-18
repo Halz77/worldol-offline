@@ -184,11 +184,13 @@ test('12001 的三个接手方由包内首个字节决定',()=>{
 
 test('32110 归 illusion；official 里那份同名分支不可达',()=>{
  // illusion-service 对 32110 一律返回 true（成功走 32111，失败也走 32111 并记日志），
- // 所以 official-service 第 50 行 `[32103,32110]` 里的 32110 永远轮不到 —— 是个死分支。
- // 这里把它记下来而不是「修掉」：本轮只做结构收敛，行为要逐字节保持。
+ // 所以 official-service 里那条 `type===32110` 的分支永远轮不到 —— 是个死分支。
+ // 这里把它记下来而不是「修掉」：行为要逐字节保持。
+ // 第 77 版：原来它和 32103 挤在同一行（`[32103,32110].includes(type)`），图鉴点亮真正
+ // 接入之后两件事分开写了 —— 32103 自己一个分支，32110 这条占位保留原返回值 true。
  assert.equal(ownerOf(32110),'illusion');
  const officialSource=fs.readFileSync(path.join(root,'lib/official-service.mjs'),'utf8');
- assert.match(officialSource,/\[32103,32110\]\.includes\(type\)/,'official-service 的 32110 分支不见了？先确认是不是被有意删掉');
+ assert.match(officialSource,/if\(type===32110\)return true/,'official-service 的 32110 死分支不见了？先确认是不是被有意删掉');
  assert.equal(ownerOf(32103),'official','32103 仍应由 official 接手');
 });
 
@@ -227,8 +229,10 @@ test('没有 context.role 时，只有这五段会接走包（都是抛「请先
 
 test('认领之后抛异常的号被钉住',()=>{
  // 这些号会被某段接走、然后因为包内容不合规而抛异常 —— 服务端据此回「状态字节 -1 + 文案」。
- // 集合变了就意味着某个功能的失败路径变了。
- const expected={game:[10506,10518,12501,12502,14502,14503,14504],official:[32101]};
+ // 集合变了就意味着某个功能的失败路径变了。第 77 版 32103（图鉴点亮）真正接管之后
+ // 也要解析 group/type（和 32101 同一个 bookRequest），空包同样抛「Invalid handbook request」，
+ // 于是它和 32101 并排进了 official 这一格。
+ const expected={game:[10506,10518,12501,12502,14502,14503,14504],official:[32101,32103]};
  const actual={};
  for(const type of PROBE_TYPES){
   const owner=throwersOf(type);
@@ -415,6 +419,7 @@ test('server.mjs 里的协议号只剩已登记的本地扩展',()=>{
   90021,   // 本地扩展：跨天任务重置推送
   90022,   // 本地扩展：外观同步到角色列表
   32107,   // 本地扩展：图鉴分组推送
+  32109,   // 本地扩展：图鉴加成推送（第 77 版，进世界时把存档里的加成喂给客户端）
   22106,   // 本地扩展：每日任务信息推送
  ]);
  const unexpected=[...numbers].filter(n=>!allowed.has(n)).sort((a,b)=>a-b);

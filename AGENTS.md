@@ -194,6 +194,22 @@
   127 收到人物上限 97（`minimum` 与 rawHex 同步，type 1 的 rawHex 就是 1 字节等级，0x61=97）、
   3052/3072/3073 直接删掉超限/引擎不认识的条件。城里仍留 3030「国家专用发展证领取」待定
   （submit 条件 type 6 = 消耗 500 国家贡献度，本工程没有国家系统）。
+- **英雄图鉴（第 77 版，`lib/handbook.mjs` + `lib/handbook-item.mjs`）**：32101→32102（真实
+  `unlock/level/rate/canUnlock`，`power=1` 否则客户端 `updatePage` 按「暂未开放」整页灰掉）、
+  32103→32104+32109（客户端只发 group+type，**没有 itemIds** → 「点亮一页」由服务端说了算）、
+  32109 = 图鉴加成合计。存档契约 `p.handbook={unlocked:{\"组:类\":[编号]}, lit, powers}`：
+  `unlocked/lit` 是唯一真源，`powers` 是派生缓存（状态变化 + 每次进世界 `refreshHandbook()` 重算
+  → 换加成表老存档下次登录生效）；`native-character-stats.mjs` **只读 `role.handbook.powers`**、
+  不 import handbook（避开 native-character-stats ↔ restoration ↔ handbook 的循环），折在
+  `getSkillPowerValue` 里与 `featurePowers` 同层、不按技能类型过滤（原版 `getPower` = god+book）。
+  ⚠ **32109 只发一组**（`group=0`）：客户端 `onHandBookPowerInfo` 把所有 info 的 `powerValue`
+  累加进同一个静态 map，`group` 它不读 → 按组重复发同一份 = 加成乘上组数（4 组 = 4 倍）。
+  ⚠ 取状态是**只读**的（`handbookState` 对老存档返回不进存档的空壳；写路径才用
+  `ensureHandbookState`），32101 一行都不许写角色。
+  ⚠ 尊贵 type 28 道具的字节定义：`power3/powerValue3` **只在 `power1===181`（附魔卡）时才存在**
+  （`Item.fromBytesAtts2` 的条件读），无 power 的道具多写 4 字节 → `Reader.finish()` 报
+  `Unconsumed bytes`。道具 800110「点亮所有图鉴」走 12001/action3（`waitType` 必须是
+  `BAG_NO_WAIT(0)`，客户端该分支本地扣件不等回包）→ `lit=true` + 推 32109 + 公告 10509。
 
 ---
 
@@ -289,6 +305,12 @@
   与怪物/宠物都走单项计划 → 与改动前等价。他们同处还有一条**没搬**：`delDamageEffect` 按真实掉血
   算吸血/仇恨/反击（与武伤攻次无关，要时再单独评估）。
   ⚠ 改这段要同步 `tests/client-patch-chain.test.mjs` 的长度与桩用例。
+- **图鉴的加成文案在 `web/offline.js` 覆写 `BookGroupModel.prototype.getGroupTypeDes`**（第 77 版）：
+  原版靠 `getPowerDesc(power, powerValue+addValue*档位)` 一次只描述得出一条属性，而图鉴每档是
+  好几条一起加（宠物全属性+宠物伤害、坐骑致命点+无视伤害减免+攻击次数…）→ 整段换成字符串表，
+  档位阈值与 `lib/handbook.mjs` 的 `BONUS_TABLES` 一一对应（测试逐档对数字），`level<=0` 返回「无」。
+  `web/*.js` 是静态资源：电脑版直接加载、APK 由 `standalone/build.mjs` 平铺 `web/` → **不用两边挂补丁**，
+  也不进 `client-patch-chain`（那条链只给主包 `fff570bb….js` 打字符串补丁）。
 - **战斗查看的「生命百分比伤害减免」是算出来的，不是 wire 字段**（第 75 版，`lib/client-battle-check-patch.mjs`）：
   战斗减伤走 `BattleCalc.calTouch` → `calTouchDmg`（`n=TOUGH`，血/弱减半 → 减 `IGNORE_TOUCH`
   与技能 `POWER_SKILL_TARGET_TOUCH` → 上限 `MAX_RATE_TOUCH=700` → `伤害×(1-n/1000)`），
@@ -309,6 +331,7 @@
 
 - 造型 40101+/40201+、宝石 800401–800405、本地道具 ≥900000、宠物蛋 30000000+、
   封印书 920000000+、技能书 930000000+（后两者 `base+技能号*128+等级`）。
+  800110 = 「点亮所有图鉴」（消耗品，补给商人免费领，定义在 `lib/handbook-item.mjs`）。
 - 919 只卖训练师教不到的满级技能书；遗忘 14003/14006；改名 15511；公告在 `web/offline.js` 的 `applyNotice`。
 - 本地 NPC 由 `content.mjs` push 进 `maps[].npcs`（**地形之后**），编号 0..127。
 
@@ -336,6 +359,11 @@
 
 ## 环境特殊行为（这台机器）
 
+- **命令一律走 WSL（`bash`），尽量不用 PowerShell**（用户 2026-10-19 明确要求）。项目在 WSL 里是
+  `/mnt/f/<项目目录>/.../世界OL_源码/世界online_原版单机`；跨盘调用用
+  `wsl bash -lc 'cd "/mnt/f/…/世界online_原版单机" && npm ...'`。
+  PowerShell 只在 WSL 做不到的事上用（例如 `Get-Content` 级别的 GBK 输出，或 .bat/.ps1 的自检）；
+  ps1/bat 本身仍按下面的规矩写（GBK/CRLF/BOM）。
 - `CODEBUDDY_SAFE_DELETE_ENABLED=0` 常设；**spawn 到 node.exe 恒 EBUSY**；
   `fs.cpSync` 拷大目录会原生崩溃 → 用 `copyTree()` 或系统 node；
   `.ps1` 需同进程 `Set-ExecutionPolicy -Scope Process Bypass`；vm 跨 realm 先 JSON 克隆。

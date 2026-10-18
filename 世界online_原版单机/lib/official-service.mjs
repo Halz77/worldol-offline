@@ -15,18 +15,35 @@ import {notifyDaily} from './daily-service.mjs';
 import {deferYunruoRewards} from './yunruo-temple.mjs';
 import {replayChainAfterSettlement} from './replayable-chains.mjs';
 import {startSolarBoard,clearSolarBoard,solarDepositText} from './solar-challenge-service.mjs';
+import {handbookView,handbookRows,unlockHandbookPage,refreshHandbook,handbookPowers} from './handbook.mjs';
 function vi(value){let n=BigInt.asUintN(64,BigInt(value||0)),a=[];do{let b=Number(n&127n);n>>=7n;if(n)b|=128;a.push(b);}while(n);return Buffer.from(a);}
 const integer=(n,v)=>Buffer.concat([vi(n*8),vi(v)]);
 const bytes=(n,v)=>Buffer.concat([vi(n*8+2),vi(v.length),v]);
 const text=(n,v)=>bytes(n,Buffer.from(String(v??''),'utf8'));
 const msg=(...parts)=>Buffer.concat(parts);
 export function handbookGroups(){return msg(...official.handbookGroups.infos.map(g=>bytes(1,msg(integer(1,g.group),...g.info.map(t=>bytes(2,msg(integer(1,t.type),text(2,t.name),text(3,t.icon))))))));}
-export function handbookPage(group,type){
- const rows=official.catalog.filter(i=>i.sources.some(s=>s.group===group&&s.type===type));
- return msg(integer(1,group),integer(2,type),bytes(3,msg(integer(1,0),integer(2,0),integer(3,0),integer(4,0),integer(5,0))),...rows.map(i=>{
+// 第 77 版：图鉴页/点亮/加成三个包（见 lib/handbook.mjs 的规则层）。
+// role 省略时保持「全未点亮、不能点亮」的纯目录视图 —— tests/official.test.mjs 用它
+// 断言「目录一条不落」，服务端分派则一律带上角色。
+export function handbookPage(group,type,role){
+ const view=role?handbookView(role,group,type):null;
+ const rows=view?view.items:handbookRows(group,type).map(row=>({...row,unlock:false}));
+ const level=view?msg(integer(1,view.level),integer(2,view.rate),integer(3,1),integer(4,view.level),integer(5,1)):msg(integer(1,0),integer(2,0),integer(3,0),integer(4,0),integer(5,0));
+ return msg(integer(1,group),integer(2,type),bytes(3,level),...rows.map(i=>{
   const info=msg(integer(1,i.itemId),integer(2,0),text(3,i.icon),text(4,i.name),text(5,i.bagIcon),text(6,i.info),integer(7,i.type),integer(8,i.grade));
-  return bytes(4,msg(bytes(1,info),integer(2,0),integer(3,i.sources.find(s=>s.group===group&&s.type===type)?.sort||0)));
- }),integer(5,0));
+  return bytes(4,msg(bytes(1,info),integer(2,i.unlock?1:0),integer(3,i.sort||0)));
+ }),integer(5,view&&view.canUnlock?1:0));
+}
+export function handbookUnlock(view){return msg(integer(1,view.group),integer(2,view.type),...view.items.map(i=>integer(3,i.itemId)),integer(4,view.level),integer(5,view.rate));}
+// 32109 的形状：s2c_HandBookPowerInfo{infos:[{group,info:[{type,power,powerValue,effect}]}]}。
+// 客户端 onHandBookPowerInfo 会**清空**静态的 BookGroupModel.bookGroupPower，再把**所有**
+// info 里 effect 为真的 powerValue 累加到 bookGroupPower[power] —— power 是能力编号，
+// `group`/`type` 两位客户端都不读。所以这里只发**一组**（group=0）合计值：按组重复发同一份
+// 会让客户端把加成乘上组数（4 组 = 4 倍），服务端与面板就对不上了。
+export function handbookPowerPacket(p){
+ const entries=Object.entries(handbookPowers(p)).map(([key,value])=>[Number(key),value]);
+ if(!entries.length)return msg();
+ return msg(bytes(1,msg(integer(1,0),...entries.map(([power,value])=>bytes(2,msg(integer(1,0),integer(2,power),integer(3,value),integer(4,1)))))));
 }
 function bookRequest(r){let group=0,type=0;const read=()=>{let n=0,shift=0;for(let i=0;i<5;i++){const b=r.byte()&255;n|=(b&127)<<shift;if(!(b&128))return n>>>0;shift+=7;}throw Error('Invalid protobuf integer');};while(r.pos<r.b.length){const tag=read();if(tag===8)group=read();else if(tag===16)type=read();else throw Error('Invalid handbook request');}return {group,type};}
 export const supportedMissionCount=official.missions.filter(q=>!missionBlockers(q).length).length;
@@ -45,10 +62,25 @@ export function handleOfficial(type,r,context,{store,send,log}){
  const p=context.role;if(!p)return false;
  const teleport=id=>{const map=maps[id];if(context.battle)throw Error('请先结束战斗。');if(!map||!officialMaps.has(id)&&id!==1)throw Error('该地图的场景数据尚未采集。');const before={mapId:p.mapId,mapName:p.mapName,x:p.x,y:p.y};p.mapId=id;p.mapName=map.name;[p.x,p.y]=map.spawn;try{store.save();}catch(error){Object.assign(p,before);throw error;}};
  const notify=s=>send(10509,new Writer().byte(2).string(s));
- if(type===32101){const q=bookRequest(r);send(32102,handbookPage(q.group,q.type));return true;}
+ if(type===32101){const q=bookRequest(r);send(32102,handbookPage(q.group,q.type,p));return true;}
  if(type===16051){const id=r.int(),item=officialItems.get(id);if(item)send(type,Buffer.from(item.definitionBase64,'base64'));else notify('该道具只采集到了目录，详细属性尚未录到。');return true;}
  if(type===12016){const start=r.pos,id=r.int(),item=officialItems.get(id);if(!item){r.pos=start;return false;}send(type,new Writer().raw(Buffer.from(item.definitionBase64,'base64')).byte(0));return true;}
- if([32103,32110].includes(type)){notify('单机图鉴可查阅；点亮和幻化养成尚未接入。');return true;}
+ if(type===32103){
+  // 「点亮」：客户端 sendHandBookUnlock(group,type) 只发组+类，点哪些由服务端决定 ——
+  // 整页点亮（免费）。回 32104（客户端据此把本页条目全部置 unlock、更新等级/收集率），
+  // 再推 32109 把新的能力加成喂给客户端；存档一起落盘。
+  const q=bookRequest(r),view=unlockHandbookPage(p,q.group,q.type);
+  refreshHandbook(p);store.save();
+  send(32104,handbookUnlock(view));
+  send(32109,handbookPowerPacket(p));
+  notify(`「${official.handbookGroups.infos.find(g=>g.group===q.group)?.info.find(t=>t.type===q.type)?.name||'图鉴'}」已全部点亮，收集率 ${view.rate}%（图鉴等级 ${view.level} 级）。`);
+  log?.('handbook-unlocked',{role:p.id,group:q.group,type:q.type,count:view.count,total:view.total,level:view.level});
+  return true;
+ }
+ // 死分支：illusion-service（链条更前）已经接走 32110，这里永远轮不到。
+ // 第 77 版把原来的 `[32103,32110].includes(type)` 拆开 —— 32103 上面已经真正接管，
+ // 只剩这一条为了「行为逐字节保持」留着的占位（见 tests/server-dispatch.test.mjs）。
+ if(type===32110)return true;
  if(type===10521){const w=new Writer().byte(official.areas.length);for(const a of official.areas)w.byte(a.id).string(a.name).short(a.x).short(a.y).byte(a.state);send(type,w);return true;}
  if(type===10522){const list=worldTravelMaps(r.int());if(!list.length){send(type,new Writer().byte(-1).string('这个区域的场景尚未采集，暂时无法进入。'));return true;}const w=new Writer().byte(0).byte(list.length);for(const m of list)w.short(m.id).string(m.name).string(m.id===1?'返回本地新手村':'自由传送').byte(0).byte(0);send(type,w);return true;}
  if(type===10510){try{r.int();if(unlockCity(p))log('city-unlocked',{role:p.id,type});teleport(1000);send(type,new Writer().byte(0).raw(worldData(p,false).done()));}catch(e){send(type,new Writer().byte(-1).string(e.message));}return true;}

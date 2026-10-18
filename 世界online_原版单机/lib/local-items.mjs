@@ -4,5 +4,7 @@
 export const IGNORE_REQUIREMENT_ITEM_ID=800100;      // 「无视装备穿戴要求」单手剑（五维各 +3000）
 export const MAX_LEVEL_PLAYER_SCROLL_ITEM_ID=800200; // 人物经验卷（一键满级）
 export const MAX_LEVEL_PET_SCROLL_ITEM_ID=800201;    // 宠物经验卷（一键满级）
-// 这三个要固定摆在「新月繁华之都 · 装备与补给商人」的消耗品分类最前面
-export const PINNED_SUPPLY_ITEM_IDS=[IGNORE_REQUIREMENT_ITEM_ID,MAX_LEVEL_PLAYER_SCROLL_ITEM_ID,MAX_LEVEL_PET_SCROLL_ITEM_ID];
+// 第 77 版：「点亮所有图鉴」消耗品（定义见 lib/handbook-item.mjs，规则见 lib/handbook.mjs）。
+export const HANDBOOK_LIGHT_ALL_ITEM_ID=800110;
+// 这四个要固定摆在「新月繁华之都 · 装备与补给商人」的消耗品分类最前面
+export const PINNED_SUPPLY_ITEM_IDS=[IGNORE_REQUIREMENT_ITEM_ID,MAX_LEVEL_PLAYER_SCROLL_ITEM_ID,MAX_LEVEL_PET_SCROLL_ITEM_ID,HANDBOOK_LIGHT_ALL_ITEM_ID];
