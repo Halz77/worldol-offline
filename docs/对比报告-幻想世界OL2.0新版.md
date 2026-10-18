@@ -391,6 +391,13 @@ petInnateAttribute(+-older) / talent / vocationalSkills）。
 
 ## 10. 附录：本次分析的产物位置（都在临时目录，可能被清）
 
+> **状态（2026-10-18 更新）**：这份**旧版本**的解包产物已按用户要求删除 ——
+> `%TEMP%\opencode\fxol2\`（172.5 MB / 1902 文件）与 `%TEMP%\opencode\cmp\`
+> （1.9 MB / 261 文件）都已清掉。用户会上传**新版本**，届时把它解包回同一个位置
+> （`%TEMP%\opencode\fxol2\`）就能按本报告第 1—9 节的方法重跑一遍对比。
+> ⚠ 本报告第 1—9 节的结论**只对下面这份旧版本成立**，不要直接套到新版本上（版本号、
+> 模块数、补丁模块个数都可能变）。
+
 对方 APK 解包（我只解了 `assets/www/{client,web,data,analysis}`，没解资源二进制）：
 
 - `<用户目录>\AppData\Local\Temp\opencode\fxol2\`
@@ -407,6 +414,7 @@ petInnateAttribute(+-older) / talent / vocationalSkills）。
 
 > ⚠ 这些是 **131 MB 解包产物 + 中间结论**，我没有写进仓库（`data/*.json` 有一字节不改的规矩，
 > 对方的解包也不该混进来）。要长期留着的话说一声，我把它挪到项目里某个 gitignore 目录。
+> **（2026-10-18 已按用户要求删除 —— 见本节开头的状态说明。）**
 
 ---
 
