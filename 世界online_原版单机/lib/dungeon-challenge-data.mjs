@@ -65,18 +65,23 @@ export function battleGroupWire(groupId,monsters,npcs,flag,coefficient){
  * AI 记录也一并克隆（塔怪没有 AI，但副本怪有）。
  * （导出给 lib/boss-tournament-data.mjs 复用 —— 同一套「本地推算 + 留参考 id」的规矩。）
  */
-export function cloneMonster(data,referenceId,id,name,sources){
+export function cloneMonster(data,referenceId,id,name,sources,extra={}){
  if(data.monsters.some(row=>row.id===id))return data.monsters.find(row=>row.id===id);
  const source=data.monsters.find(row=>row.id===referenceId);
  if(!source)throw Error(`副本缺少参考怪物：${referenceId}`);
- const row={...structuredClone(source),id,name:name||source.name,sources,localReconstruction:true,referenceMonsterId:source.id};
+ const row={...structuredClone(source),id,name:name||source.name,sources,localReconstruction:true,referenceMonsterId:source.id,...extra};
  delete row.questCreditMonsterId;
  // 怪物 wire 的头两个字段就是 id(int32, 大端) 与 name(3 字节长度 + UTF-16**BE**)，
  // 改完接回剩余字节即可。⚠️ 'utf16le' 是小端，必须逐字 writeUInt16BE，否则名字会乱码。
  const raw=Buffer.from(source.wireBase64,'base64');
  let pos=4;
  const nameLength=raw.readUIntBE(pos,3);pos+=3+nameLength*2;
- const tail=raw.subarray(pos);
+ let tail=raw.subarray(pos);
+ // 名字后面紧跟 long(8 字节) 的 icon1。克隆怪要换造型（如葬送队长）就改这里。
+ if(extra.icon1!==undefined){
+  const patched=Buffer.from(tail);patched.writeBigInt64BE(BigInt.asIntN(64,BigInt(extra.icon1)),0);
+  row.icon1=extra.icon1;tail=patched;
+ }
  const head=Buffer.alloc(4);head.writeInt32BE(id);
  const chars=[...String(row.name)];
  const encoded=Buffer.alloc(chars.length*2);

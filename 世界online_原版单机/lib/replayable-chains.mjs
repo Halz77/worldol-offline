@@ -13,13 +13,16 @@
  * 从完成记录里抹掉**，玩家可以立刻从第一环重接（不用等到明天）。
  *
  * ## 节点集合怎么来
- * 不写死任务列表，从链根的 `submitNextMissionID` 加上「其它任务的 acceptCondition type 9
- * 指向它」做后继闭包（BFS）。这样抓包数据补了新任务时不用改代码。
+ * 默认从链根的 `submitNextMissionID` 加上「其它任务的 acceptCondition type 9 指向它」
+ * 做后继闭包（BFS）—— 抓包数据补了新任务时不用改代码。闭包之外还有三个可选登记字段
+ * （`series` / `nodes` / `omit`），日常副本那 8 条链就是靠它们把「系列名」和「可选高难度
+ * 支线」表达清楚的。
  *
  * ⚠️ 本工程的任务表并不完整：玛雅链根 3200 的后继在 3219（巨石神兵）之后指向 3220，
- * 而 3220 / 8700–8709 / 1823 在我们这份 official-v305 里**都没有**，所以实际推导出来
- * 是 3200–3219 共 22 个节点，finale（1846/1863）不在集合内。判定「通关」因此要能
- * 同时接受「全部节点完成」和「finale 命中」两种口径。
+ * 而 3220 / 1823 在我们这份 official-v305 里**都没有**。实际推导出来是 71 个节点
+ * （3200—3219 地下宫殿入口 22 环 + 1824—1863 祭祀宫殿 + 8700—8709 地下宫殿 +
+ * 3233/3234），且 1846/1863 都在集合内。判定「通关」因此仍要能同时接受
+ * 「全部节点完成」和「finale 命中」两种口径。
  */
 import fs from 'node:fs';
 import {officialMissions} from './official-data.mjs';
@@ -55,10 +58,33 @@ export function chainNodes(root){
 }
 
 let cache=null;
-/** 全部链（数据里的 + 副本扩展补充的），带推导出的 nodes，按节点集合去重。 */
+/**
+ * 全部链（数据里的 + 副本扩展补充的），带推导出的 nodes，按节点集合去重。
+ *
+ * 节点集合 = `chainNodes(root)`（后继闭包）∪ `series` 同名任务 ∪ 显式 `nodes`，再减掉
+ * `omit`，最后补上已存在的 `finale`。五个可选字段各有用途：
+ * - `series`：日常副本对外就是「任务系列名」（如 `刺杀行动` 20 环），系列里比闭包多出的
+ *   前置几环（2700—2707）只有靠它才能并进来；
+ * - `nodes`：录制里连系列名都没有的链（跨服副本那种）可以直接登记节点；
+ * - `omit`：从节点集合里**彻底删掉**的任务（既不参与通关判定，也不参与复位）；
+ * - `optional`：**留在节点集合里**的可选高难度支线（晴菜 1822 / 晴菜后续 1395）——
+ *   通关判定与复位范围都包含它（打完主线回头还能打高难；高难打完才整条复位、同一天重玩），
+ *   但「每日活动看板的进度条」不等它（`lib/dungeon-repairs.mjs` 按这个字段把它从位表里滤掉，
+ *   与录制的 `progressSum` 一致）。这不是可有可无的细节：复位会清掉 `completed`，
+ *   如果把 1820 当成收尾环，交付 1820 的瞬间就会把 1822 的入口（依赖 1820 完成）一起抹掉。
+ * - `finale`：判定通关的收尾环（任一完成即算通关），必须留在节点集合里。
+ */
 export function replayableChains(){
  if(cache)return cache;
- const rows=(chainData.chains||[]).map(chain=>({...chain,root:Number(chain.root),nodes:chainNodes(chain.root),finale:(chain.finale||[]).map(Number)}));
+ const rows=(chainData.chains||[]).map(chain=>{
+  const root=Number(chain.root),nodes=new Set(chainNodes(root));
+  for(const name of [chain.series].flat().filter(Boolean))for(const q of officialMissions.values())if(q.series===name)nodes.add(q.id);
+  for(const id of chain.nodes||[])nodes.add(Number(id));
+  for(const id of chain.omit||[])nodes.delete(Number(id));
+  const finale=(chain.finale||[]).map(Number);
+  for(const id of finale)if(officialMissions.has(id))nodes.add(id);
+  return {...chain,root,nodes:[...nodes].sort((a,b)=>a-b),finale};
+ });
  const seen=new Set();
  cache=rows.filter(chain=>{
   const key=[...chain.nodes].sort((a,b)=>a-b).join(',');
@@ -67,6 +93,12 @@ export function replayableChains(){
  });
  return cache;
 }
+
+/** 按 id 取一条链（日常副本整合用：日常行 id → 链 id）。 */
+export function chainById(id){return replayableChains().find(chain=>chain.id===id)||null;}
+
+/** 供测试与文档核对：把原始链定义（含 series/omit/nodes 等登记字段）按 id 取出来。 */
+export function rawChainById(id){return rawReplayableChains().find(chain=>chain.id===id)||null;}
 
 /** 某个任务属于哪些链。 */
 export function chainsContaining(missionId){

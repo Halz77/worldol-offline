@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import {lazyBox} from './lazy-data.mjs';
-import {applyBossChallenges} from './boss-challenges.mjs';
+import {applyBossChallenges,applyBossChallengeRepairs} from './boss-challenges.mjs';
 import {applyYunruoTemple} from './yunruo-temple.mjs';
 import {applyRecordedExpansion} from './recorded-expansion.mjs';
 import {nativeCommerce} from './native-commerce-data.mjs';
@@ -22,6 +22,8 @@ import {applyMayaContinuation} from './maya-continuation.mjs';
 import {applyLostSoulDesert} from './lost-soul-desert.mjs';
 import {fixMidAutumnFinalBoss} from './mid-autumn-final-boss.mjs';
 import {applyDungeonStoryRepairs} from './dungeon-story-repairs.mjs';
+import {applyDungeonRepairs} from './dungeon-repairs.mjs';
+import {applyCustomAdventures} from './custom-adventures.mjs';
 import {applyCityTemplateFixes,applyCityFlightStations} from './city-template-fixes.mjs';
 
 /**
@@ -113,6 +115,19 @@ fixMidAutumnFinalBoss(official);
  // 加出口 + 复活/补 NPC + 克隆怪 + 生成【单机续篇】任务链。必须在建索引之前：
  // 新加的地图/NPC/任务/组/怪都要被任务导航与 12501 战斗协议查到。
  applyDungeonStoryRepairs(official);
+ // 挑战型副本本地补完（见 lib/boss-challenges.mjs）：葬送佣兵团队长三战、堕狼魔再战入口、
+ // 十殿阎罗逐殿菜单、剧情「接受即开战」重试、跨服副本五关连战。必须排在
+ // applyDungeonChallengeRepairs / applyBossTournament 之后（要复用它们补出的编队 30150/30152
+ // 与十王编队），且在建索引之前（新任务/新组/新怪都要被任务导航与 12501 查到）。
+ applyBossChallengeRepairs(official);
+ // 挑战/剧情副本里两处「客户端点了没反应」的收尾（见 lib/dungeon-repairs.mjs）：补上
+ // 紫禁城·平民（263:99）菜单指向却缺失的编队 1838（克隆 1833 姬无丹）。与上面同理，
+ // 必须建索引之前 —— 12501 与 NPC 菜单都要查得到这个组。
+ applyDungeonRepairs(official);
+ // 单机自定义冒险（移植自社区 custom-adventures 的城市部分，见 lib/custom-adventures.mjs）：
+ // 补 1002/1011/1022/1032 四条加工材料定义 + 城市日常 8801—8808，并把 127 级门槛收到
+ // 人物上限 97（3052/3072/3073 则删掉超限条件）。新道具与任务必须在建索引之前 push。
+ applyCustomAdventures(official);
  // 城市模板小补丁（见 lib/city-template-fixes.mjs）：任务公告板的可见位、市长「扩建后」对白、
  // 飞行驿站航线扩展。必须排在所有「补地图」的补丁之后 —— 航线目的地要在地图表里存在；
  // 又必须在建索引之前 —— 客户端下发的 NPC wire 直接从 official.maps 取。

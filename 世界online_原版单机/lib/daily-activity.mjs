@@ -5,6 +5,7 @@ import {isNewbieMission} from './newbie-missions.mjs';
 import {applyYunruoDaily,yunruoTempleRevision} from './yunruo-temple.mjs';
 import {applyRecordedExpansionDaily,recordedExpansionRevision} from './recorded-expansion.mjs';
 import {applyLostSoulDesertDaily} from './lost-soul-desert.mjs';
+import {applyRepairedDaily,dailyNavigation,dungeonRepairRevision} from './dungeon-repairs.mjs';
 import {vipBenefits} from './home-feature-data.mjs';
 import {cityUpgradeDone} from './city-progress.mjs';
 
@@ -22,7 +23,11 @@ function ensure(){
  // 迷失之魂沙漠 10/11 两环（见 lib/lost-soul-desert.mjs）要出现在每日看板里，
  // 否则玩家在「疯狂元素」之后看不到任何线索。
  applyLostSoulDesertDaily(dailyData);
- dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision();
+ // 8 个挑战 / 剧情副本的位表（见 lib/dungeon-repairs.mjs）：节点集合直接取
+ // data/replayable-chains.json 里的 daily-* 链，进度与「同一天重玩」共用同一份名单；
+ // 顺带补上葬送佣兵团、失魂沙漠续篇与单机合作副本三行。
+ applyRepairedDaily(dailyData);
+ dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision()+'+'+dungeonRepairRevision;
  built={
   data:dailyData,
   revision:dailyData.revision,
@@ -94,7 +99,11 @@ export function taskSnapshot(p,now=Date.now()){
   const {canonicalId,linkage,pending,...row}=t,finishTImes=s.taskTimes[canonicalId]||0;
   const progress=linkage?Math.min(t.progressSum,linkage.missionIds.filter(id=>s.completed[id]).length):0;
   const active=linkage?.missionIds.some(id=>p.quests?.active[id]);
-  return {...row,name:t.name+(pending?'（待定）':''),finishTImes,progress,status:finishTImes>=Math.max(1,t.frequency)?2:(active||progress?1:0),missionIdFinish:t.missionId<=0||(p.quests?.completed||[]).includes(t.missionId)};
+  const status=finishTImes>=Math.max(1,t.frequency)?2:(active||progress?1:0);
+  // 进行中的副本行：「前往」要指向**当前那一环**的任务 NPC（客户端只在 status=1 时读
+  // findMis*/findMap*，未开始时读 mapId/npcID）。见 lib/dungeon-repairs.mjs dailyNavigation。
+  const navigation=status===1&&linkage?dailyNavigation(p,t):null;
+  return {...row,name:t.name+(pending?'（待定）':''),finishTImes,progress,status,missionIdFinish:t.missionId<=0||(p.quests?.completed||[]).includes(t.missionId),...(navigation||{})};
  });
  return {info,activeInfo:{activeValue,info:dailyData.activeRewards.map(r=>({...r,hasReward:s.claimedActive.includes(r.id)}))}};
 }

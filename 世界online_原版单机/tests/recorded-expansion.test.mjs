@@ -242,5 +242,8 @@ test('unrecorded destination maps and missing kill definitions stay explicitly p
  assert.deepEqual(officialMissions.get(3219).submitNextMissionID,8700);
  assert.deepEqual(missionBlockers(officialMissions.get(2621)),[],'new recording restores the forest continuation');
  assert.ok(!missionBlockers(officialMissions.get(3422)).some(s=>s.includes('地图尚未采集')),'new recording restores mechanical ring');
- assert.ok(missionBlockers(officialMissions.get(2803)).includes('任务目标怪物资料尚未采集'));
+ // MOD(boss-challenges)：2803「迎击葬送佣兵团」要杀的三个队长（2312—2314）本批已按
+ // 「魔物-刑天」克隆出成对的编队，「击杀目标所在编队未采集」这个缺口就此关掉 ——
+ // 断言改成检查补好之后的状态。
+ assert.deepEqual(missionBlockers(officialMissions.get(2803)),[]);
 });
