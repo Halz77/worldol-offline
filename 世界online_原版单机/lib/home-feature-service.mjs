@@ -107,7 +107,12 @@ export function handleHomeFeatures(type,r,context,{store,send,log,now=Date.now()
   notifyDaily(p,send);
   // Acknowledge after native inventory and money packets so the UI refreshes
   // the saved values, including its event-driven currency labels.
-  send(type,new Writer().byte(0).string(JSON.stringify(homeSnapshot(p,context,now))));
+  const payload=homeSnapshot(p,context,now);
+  // 无限试炼结算：把「本次伤害 / 档位 / 这一路真发了几件」一并回给客户端弹提示
+  //（打赢那份是 12502 发的，客户端上报这一路 trialGrantedCount 就是 0）。
+  if(plan.action==='trial-settle')payload.trialReport={damage:plan.trialDamage||0,tier:plan.trialTier||'',
+   granted:plan.trialGrantedCount||0,bestDamage:plan.bestDamage||0};
+  send(type,new Writer().byte(0).string(JSON.stringify(payload)));
   log('home-feature-action',{role:p.id,action:plan.action,items:plan.items,currencies:plan.currencies});
  }catch(error){
   if(type===90019||type===90020)send(type,new Writer().byte(-1).string(error.message));

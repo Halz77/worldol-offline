@@ -6146,3 +6146,70 @@ sha256 314a75a6b50b6faff98f5150698702eaf255d23cb307a2d0de5bc894a42cc4ee）。
     解码器会在缓冲区里剩下 4 个字节（测试的 r.finish() 正是钉这个的）。
   · 查询类接口不许改角色：图鉴的「取状态」是只读的（老存档 / 没打开过图鉴的角色拿到的是
     一个不进存档的空壳），只有点亮 / 道具 / 进世界三条写路径才动 p.handbook。
+
+════════════════ 第 78 版 · 无限试炼用原版界面（服务端规则 + 客户端桥） ════════════════
+
+【一、要什么】
+  · 无限试炼要「像原版那样」：点主界面「试炼」直接开原版那个无限试炼界面
+    （BOSS 立绘、我的最高伤害、前三名、奖励格、剩余次数 x/y、挑战/购买次数/
+    编队/排行榜/挑战记录五个按钮），不再是本工程自画的下拉面板。
+  · 打完一场能按**实际打出的伤害**拿档位奖励，并把「我的最高伤害」记下来
+    （原版战斗是本地算的，伤害数字只有客户端知道）。
+
+【二、原版客户端要什么（我们以前缺什么）】
+  · 原版这套界面全靠一串 FINAL_BOSS 协议驱动：S2C_FINAL_BOSS_INFO（面板数据）、
+    C2S_FINAL_BOSS_CHALLENGE（挑战）、BUY_TIMES（购买次数）、PET_SET（编队）、
+    RANK_INFO（排行榜）、RECORD（挑战记录）—— 本工程一条都没接，
+    所以以前只能自画面板（lib/trial-challenge.mjs 的 90019/90020 + web 下拉面板）。
+  · 原版 onShow 的动作顺序：applyMyAllPetsDetail() → applyFinalBossInfo() → updateView()。
+    面板的按钮在 addListeners 里就绑好了，全部走 this._proxy.applyXxx()。
+
+【三、改法】
+  · 客户端 web/home-features.js（第 78 版主战场，web/ 是静态资源、不用两边挂补丁）：
+    – 打开「试炼」时把本地 90019 的 trial 数据按原版字段塞进
+      FinalBossProxy._data.finalBossInfo（name/icon/maxHurt/fightTimes/sumTimes/
+      petIds/rankInfo/reward），再 UI.showWin(ModName.FinalBoss, FinalBossViewType.Main)。
+    – 门面那六个「要发协议」的方法整体换成本地 90020 动作：
+      applyFinalBossInfo（**必须一起换掉**，否则 onShow 里那次请求会把塞进去的数据冲掉）、
+      applyChallenge / applyBuyTimes / applySetPets / applyRank / applyRecord。
+    – 伤害统计：hook 战斗单位的 delDamageEffect，逐次累加「我方单位打到敌方单位」的正伤害
+      （我方 = 玩家/宠物/伙伴/军团，判定与参考实现一致）；战斗结束 ON_BATTLE_END
+      发 trial-settle 上报，服务端据此定档 + 刷新最高伤害，客户端弹一条结果提示。
+      战斗单位类是按需加载的，进战斗前会再补装一次 hook。
+    – 挑战进战斗仍然是「收到试炼组才开战」：挑战受理后服务端随 10503 下发含试炼组的世界数据，
+      客户端 World.addMonsterGroup 收到 24000 这一组才 World.toBattle（与永泽塔塔组同一套桥）。
+    – 「+」购买按钮**不重绑**：原版 onTapBuyTimes 自己会调 _proxy.applyBuyTimes()，
+      而那个方法已经被我们换成本地动作；重绑反而会让一次点击买两次。
+    – 兜底：原版界面打不开（取不到 FinalBossProxy / 当前时段 BOSS 未就绪）时
+      自动退回原来的自画面板，不影响开战。
+    – 编队槽位必须塞**宠物模型上的真 Long**（原版 addPet/delPet 会对它调 .eq()，
+      塞字符串进去当场 TypeError）；奖励格物品用原版物品类实例 + 短名表（长名会空白）。
+  · 服务端 lib/trial-challenge.mjs（规则层）：
+    – 新增 trialTierFor(damage,hpMax)：按「伤害/满血」比例取档（列表已按比例降序）。
+    – 发奖闸门 state.awarded：同一场挑战只发一次奖，谁先到谁发。
+    – trial-settle（客户端上报）：赢/输都按上报的真实比例定档，写「最高伤害」+ 一条挑战记录。
+    – 12502 的战斗结算 settleTrialBattleAndNotify：**只在打赢时**按满伤害吃最高档
+      （老客户端 / 上报丢失也不会漏奖）。
+    – 新增挑战记录 history（最近 20 条 TRIAL_HISTORY_LIMIT，跨天不清），快照里带 history。
+    – 顺手修掉一个真实 bug：原来结算依赖 p.trialPendingGroup，而 12501 在受理时就把它
+      delete 了 → 实战里那次「自动结算」永远不会发奖（单测因为直接调函数才看不出来）。
+      现在只按胜负 + 上报伤害走，不再看这个标记。
+  · 服务端 lib/home-feature-service.mjs：90020 处理 trial-settle 时在回包里附
+    trialReport = {damage, tier, granted, bestDamage}，客户端用它弹结果提示
+    （打赢的那份是 12502 发的，这条上报的 granted 自然是 0）。
+
+【四、验证】
+  · tests/trial-challenge.test.mjs 扩到 11 例：打赢走 12502 吃满档、打输等服务端上报按
+    真实伤害定档、同一场两条路都不重复发奖、挑战记录只留最近 20 条且跨天不清、
+    90020 整条链路（挑战 → 重推含试炼组世界数据 → 打赢结算 → 上报 → 奖励进存档 + 回 trialReport）。
+  · npm test 90 文件 / 651 用例全过、新增失败 0；npm run check 0 错。
+  · 上机复验（点主界面「试炼」看是不是原版界面、挑战能不能进战斗、打完两个跑法各看一次
+    奖励与最高伤害、编队/排行榜/记录三页能不能打开）由用户做。
+
+【五、提示（这一版最容易踩的三个坑）】
+  · 原版 onShow 一定会 await applyFinalBossInfo()：**它必须一起换掉**，不然本地塞进去的
+    finalBossInfo 会被那次（我们没实现的）协议回包冲掉，表现是「界面打开了但全是空的」。
+  · 编队里的宠物 id 只能是宠物模型上的真 Long（原版 addPet/delPet 对它调 .eq()），
+    字符串会当场 TypeError；所以存的是字符串、显示前用宠物代理换回真 Long。
+  · 「+」购买按钮不要重绑监听：原版 onTapBuyTimes → _proxy.applyBuyTimes() 已经指向本地动作，
+    再绑一次就是「点一下买两次」。

@@ -210,6 +210,16 @@
   （`Item.fromBytesAtts2` 的条件读），无 power 的道具多写 4 字节 → `Reader.finish()` 报
   `Unconsumed bytes`。道具 800110「点亮所有图鉴」走 12001/action3（`waitType` 必须是
   `BAG_NO_WAIT(0)`，客户端该分支本地扣件不等回包）→ `lit=true` + 推 32109 + 公告 10509。
+- **无限试炼的奖励规则（第 78 版，`lib/trial-challenge.mjs`）**：原版战斗本地算伤害，服务端
+  只拿得到胜负 → 两条路都可能先到，闸门是 `state.awarded`（**同一场只发一次奖**）：
+  ① 打赢 → 12502 的 `settleTrialBattleAndNotify` 按**满伤害**吃最高档（老客户端也不漏奖）；
+  ② 没打赢 → 服务端没有伤害数字，**不发奖**，等客户端战斗结束上报 `trial-settle` 按真实比例定档。
+  后到的那条只 `recordTrialDamage()` 刷「我的最高伤害」+ 写一条 `history`（最近 20 条、
+  **跨天不清**，`trialSnapshot` 里带）。`trial-challenge` 受理时 `state.awarded=false` 重新开闸。
+  ⚠ 别再拿 `p.trialPendingGroup` 当「这一场是不是我们下发的」判据：12501 受理时**已经**
+  `delete` 它（`lib/game-service.mjs`），旧版本因此实战里永远不发奖（单测直接调函数才看不出来）。
+  ⚠ 90020 处理 `trial-settle` 时在回包里附 `trialReport={damage,tier,granted,bestDamage}`
+  （`homeSnapshot` 本身保持纯读）：打赢那份是 12502 发的，这条上报的 `granted` 自然是 0。
 
 ---
 
@@ -311,6 +321,24 @@
   档位阈值与 `lib/handbook.mjs` 的 `BONUS_TABLES` 一一对应（测试逐档对数字），`level<=0` 返回「无」。
   `web/*.js` 是静态资源：电脑版直接加载、APK 由 `standalone/build.mjs` 平铺 `web/` → **不用两边挂补丁**，
   也不进 `client-patch-chain`（那条链只给主包 `fff570bb….js` 打字符串补丁）。
+- **无限试炼用原版 FinalBoss 界面（第 78 版，`web/home-features.js`）**：原版那套窗口
+  （模块 1472 Proxy / 1473 主界面 / 1475 编队 / 1477 玩家信息 / 1479 排行榜 / 1481 记录 /
+  0146 FinalBossData）全靠 `C2S_FINAL_BOSS_*` 协议驱动，本工程一条没接 → 做法是
+  **本地 90019 数据塞进 `FinalBossProxy._data.finalBossInfo` + 把门面六个方法换成本地 90020 动作**
+  （`applyFinalBossInfo/Challenge/BuyTimes/SetPets/Rank/Record`），界面本身一行不改。
+  伤害由客户端统计（hook 战斗单位 `delDamageEffect`，累加「我方→敌方」正伤害），
+  `ON_BATTLE_END` 用 `trial-settle` 上报；进战斗仍是「收到试炼组才开战」
+  （`World.addMonsterGroup` 认领 24000 → `World.toBattle`，与永泽塔塔组同一套桥）。
+  ⚠ **`onShow` 必 await `applyFinalBossInfo()`** → 它必须一起换掉，否则塞进去的数据被协议回包冲掉
+  （表现「界面开了但全空」）。
+  ⚠ 编队槽位只能是**宠物模型上的真 Long**（`addPet/delPet/isPetSelected` 都对它调 `.eq()`，
+  字符串当场 TypeError）；存档存字符串，`buildTrialInfo` 用 `trialPetRefs()` 经宠物代理换回来。
+  ⚠ 排行榜条目 `rank` 是 **0 基**（模块 0339 里 `n=rank+1`）；1479 在列表里找不到自己会
+  `new pb.FinalBossRankInfo`（本工程**没有 `pb` 全局**）→ 一律把玩家那行补进列表走 early-return。
+  ⚠ 假 Long 够用：`Tool.getHeadIcon2/getJobByIcon1` 只调 `.toNumber()`；奖励格（模块 0086）
+  要 `getNameInfo/getIconString/getIsItemPetEquip/grade(0..6)` + `doViewItem()`（发 12016，已实现）。
+  ⚠ 「+」购买按钮**不要重绑**：原版 `onTapBuyTimes` → `_proxy.applyBuyTimes()` 已经指向本地动作，
+  再 `listen` 一次就是「点一下买两次」（`Mdr.listen` 不查重）；原版「还有剩余次数先 Tips」照抄。
 - **战斗查看的「生命百分比伤害减免」是算出来的，不是 wire 字段**（第 75 版，`lib/client-battle-check-patch.mjs`）：
   战斗减伤走 `BattleCalc.calTouch` → `calTouchDmg`（`n=TOUGH`，血/弱减半 → 减 `IGNORE_TOUCH`
   与技能 `POWER_SKILL_TARGET_TOUCH` → 上限 `MAX_RATE_TOUCH=700` → `伤害×(1-n/1000)`），

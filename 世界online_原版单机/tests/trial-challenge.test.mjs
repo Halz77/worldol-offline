@@ -1,10 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {official,officialMonsters,officialGroups} from '../lib/official-data.mjs';
 import {battleSupported} from '../lib/official-rules.mjs';
 import {TRIAL_GROUP_ID,TRIAL_BOSSES,TRIAL_BOSS_HP,TRIAL_BUY_GOLD,TRIAL_DAILY_CHALLENGE,trialBossAt} from '../lib/trial-challenge-data.mjs';
 import {trialSnapshot,trialCounts,planTrialAction,settleTrialBattleAndNotify,trialExtraGroups,TRIAL_ACTIONS,TRIAL_REWARD_TIERS,isTrialGroup} from '../lib/trial-challenge.mjs';
 import {planHomeAction} from '../lib/home-features.mjs';
+import {handleHomeFeatures} from '../lib/home-feature-service.mjs';
+import {SaveStore} from '../lib/store.mjs';
+import {Reader,Writer} from '../lib/codec.mjs';
 
 const role=()=>({id:1,name:'测试',gold:1000,silver:0,coins:0,inventory:[],level:90,quests:{active:{},completed:{}},skills:{}});
 const sent=[];const send=(type,body)=>sent.push({type,bytes:body?.done?body.done():body});
@@ -84,25 +90,61 @@ test('trial-challenge：扣次数 + 记待下发组，次数用完拒绝且不�
  assert.equal(p.trialPendingGroup,TRIAL_GROUP_ID,'用掉的那次留下的标记仍在（那一战还没打）');
 });
 
-test('打完自动结算：赢吃满档、输吃参与档，且不会重复发奖',()=>{
+test('打完结算：打赢吃满档、打输等客户端上报真实伤害，两边都不会重复发奖',()=>{
  const p=role(),now=Date.now(),context={};
  planTrialAction(p,{action:'trial-challenge'},context,now);
  sent.length=0;
+ // ① 打赢：12502 的兜底结算直接吃最高档（服务端看不到伤害数字，但赢了 = BOSS 掉光血）
  const win=settleTrialBattleAndNotify(p,2,send,now);
  assert.ok(win,'胜利要结算');
  assert.match(win.tier,/第三阶段/,'打赢 = 打满 = 最高档');
  assert.ok(win.added.length,'要有奖励进包');
  assert.equal(p.trialPendingGroup,undefined,'结算完清掉待下发标记');
  assert.equal(p.trial.bestDamage,TRIAL_BOSS_HP);
- // 再结算一次：没有 pending → 不发奖
+ assert.equal(p.trial.history.length,1,'要记一条挑战记录');
+ // 客户端随后（ON_BATTLE_END）上报这一场的伤害：闸门已关 → 只认记录，不再发奖
+ const later=planTrialAction(p,{action:'trial-settle',damage:TRIAL_BOSS_HP},context,now);
+ assert.equal(later.trialGrantedCount,0,'12502 已经发过，上报这一路不能再发');
+ assert.equal(later.items.length,0);
+ assert.equal(later.trialTier,TRIAL_REWARD_TIERS[0].label);
  sent.length=0;
- assert.equal(settleTrialBattleAndNotify(p,2,send,now),null,'不能重复发奖');
+ assert.equal(settleTrialBattleAndNotify(p,2,send,now),null,'同一场不允许二次结算');
  assert.equal(sent.length,0);
- // 失败：参与档
+ // ② 打输：服务端拿不到伤害数字 → 不发奖，等客户端上报的真实比例定档
  const p2=role();planTrialAction(p2,{action:'trial-challenge'},context,now);
- const lose=settleTrialBattleAndNotify(p2,1,send,now);
- assert.match(lose.tier,/第一阶段/);
+ assert.equal(settleTrialBattleAndNotify(p2,1,send,now),null,'输了不在 12502 里发奖');
  assert.equal(p2.trial.bestDamage,0);
+ assert.equal(p2.trial.awarded,false,'闸门还开着，等客户端上报');
+ const hurt=Math.floor(TRIAL_BOSS_HP*0.3);
+ const report=planTrialAction(p2,{action:'trial-settle',damage:hurt},context,now);
+ assert.match(report.trialTier,/第二阶段/,'按上报的真实伤害定档');
+ assert.equal(report.trialGrantedCount,2,'第二阶段两件（宠物经验卷 + 人物经验卷）');
+ assert.equal(report.bestDamage,hurt,'最高伤害要按上报值刷新');
+ assert.equal(p2.trial.history.length,1);
+ assert.equal(p2.trial.history[0].hurt,hurt);
+ // 同一场再上报（哪怕伤害更高）：闸门已关，一件都不发
+ const again=planTrialAction(p2,{action:'trial-settle',damage:TRIAL_BOSS_HP},context,now);
+ assert.equal(again.trialGrantedCount,0,'同一场不重复发奖');
+ assert.equal(again.items.length,0);
+ assert.equal(p2.trial.bestDamage,TRIAL_BOSS_HP,'记录还是可以刷新的');
+});
+test('挑战记录只留最近 20 条，且跨天不清（快照里带 history）',()=>{
+ const p=role(),base=Date.now(),context={};
+ let count=0;
+ // 每天 3 次挑战，跨几天攒够 25 场（顺带验证记录不会因为跨天被清掉）。
+ for(let day=0;day<10&&count<25;day++){
+  const now=base+day*86400000;
+  for(let i=0;i<3&&count<25;i++,count++){
+   planTrialAction(p,{action:'trial-challenge'},context,now);
+   planTrialAction(p,{action:'trial-settle',damage:100+count},context,now);
+  }
+ }
+ assert.equal(p.trial.history.length,20,'只留最近 20 条');
+ assert.equal(p.trial.history[0].hurt,124,'最新的排在最前');
+ assert.equal(p.trial.bestDamage,124,'最高伤害按上报值刷新');
+ const snapshot=trialSnapshot(p,base+9*86400000);
+ assert.equal(snapshot.history.length,20);
+ assert.deepEqual(Object.keys(snapshot.history[0]).sort(),['fightPower','hurt','time']);
 });
 
 test('trial-config 存三只出战宠物；未知动作报错',()=>{
@@ -125,4 +167,45 @@ test('90020 能接住四个试炼动作（快照里 trial 不再是待补）',()
  // trial 已从 pending 列表里摘掉
  const snapshot=trialSnapshot(role());
  assert.equal(snapshot.available,true);
+});
+
+test('90020 整条链路：挑战 → 打赢结算 → 客户端上报，试炼界面要的数据都回得去',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'worldol-trial-'));
+ try{
+  const now=Date.now(),db=new SaveStore(dir),p=role();
+  // 走服务端就绕不过 homeSnapshot → dailySnapshot：completed 必须是数组（真存档就是数组）。
+  p.quests={active:{},completed:[]};p.bagLimit=300;p.inventory=[];db.data.characters=[p];db.save();
+  const context={role:p,homeOnlineStart:now},sent=[];
+  const call=value=>{
+   sent.length=0;
+   handleHomeFeatures(90020,new Reader(new Writer().string(JSON.stringify({...value,role:p.id})).done()),context,
+    {now,store:db,send(type,body){sent.push({type,bytes:body instanceof Writer?body.done():body});},log(){}});
+   const reply=sent.find(x=>x.type===90020);
+   assert.ok(reply,'每个动作都要有回包');
+   const reader=new Reader(reply.bytes),status=reader.byte();
+   assert.equal(status,0,'动作要被受理');
+   return JSON.parse(reader.string());
+  };
+  // ① 发起挑战：世界数据里要带试炼组（客户端 World.addMonsterGroup 收到它才开战）
+  const challenge=call({action:'trial-challenge'});
+  assert.equal(challenge.trial.challenge.left,TRIAL_DAILY_CHALLENGE-1);
+  assert.ok(sent.some(x=>x.type===10503),'要顺手重推一次含试炼组的世界数据');
+  // ② 打赢：12502 的兜底结算先发奖（这里直接调 lib 函数，模拟 game-service 的调用点）
+  const win=settleTrialBattleAndNotify(p,2,(type,body)=>sent.push({type,bytes:body?.done?body.done():body}),now);
+  assert.match(win.tier,/第三阶段/);
+  // ③ 客户端战斗结束时上报这一场的伤害（试炼界面就靠这条刷新记录 + 弹提示）
+  const report=call({action:'trial-settle',damage:Math.floor(TRIAL_BOSS_HP*0.3)});
+  assert.match(report.trialReport.tier,/第二阶段/,'档位按上报的伤害算');
+  assert.equal(report.trialReport.granted,0,'奖励已经由 12502 发过了，这条不能再发');
+  assert.equal(report.trialReport.bestDamage,TRIAL_BOSS_HP,'最高伤害以满血记录为准');
+  assert.equal(report.trial.history.length,1,'快照里要带挑战记录（原版记录页要用）');
+  // 奖励真的进存档了（第三阶段 100897 × 2）
+  const restored=new SaveStore(dir).data.characters[0];
+  assert.equal(restored.inventory.find(i=>i.itemId===100897)?.quantity,2);
+  assert.equal(restored.inventory.find(i=>i.itemId===40006),undefined,'第二阶段的奖励一件都不能多给');
+ }finally{
+  const exact=fs.realpathSync(dir);
+  assert.ok(exact.startsWith(fs.realpathSync(os.tmpdir())+path.sep+'worldol-trial-'));
+  fs.rmSync(exact,{recursive:true});
+ }
 });

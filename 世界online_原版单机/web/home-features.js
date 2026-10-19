@@ -28,6 +28,208 @@
   function button(text,fn,parent=body,disabled=false){const b=element('button',text);b.disabled=disabled;b.onclick=()=>Promise.resolve().then(fn).catch(e=>status.textContent=e.message);parent.append(b);return b;}
   const text=(s,parent=body)=>parent.append(element('p',s));
   async function wire(type,value){const p=World.myPlayer;if(!p?.id)throw Error('请先进入角色。');const m=new Message(type);if(value)m.putString(JSON.stringify({...value,role:p.id}));const r=await Network.sendProtoAsync(m);if(!r)throw Error('本地服务未响应，请刷新后重试。');if(r.getByte()<0)throw Error(r.getString());const data=JSON.parse(r.getString());if(World.myPlayer?.id!==p.id||data.role!==p.id)throw Error('角色已切换，请重新打开。');return data;}
+  /* ===== 无限试炼：直接打开原版「无限试炼」界面（第 78 版） =====
+     移植参考实现「幻想世界OL 3.0 最终版」的 home-features.js。原版这个界面本来要靠一串
+     C2S_FINAL_BOSS_* 协议驱动，本工程没接（见 lib/trial-challenge.mjs），所以做法是：
+       · 把本地 90019 的 trial 数据直接塞进原版 FinalBossProxy._data.finalBossInfo；
+       · 把门面里那几个「发协议」的方法（applyFinalBossInfo / Challenge / BuyTimes /
+         SetPets / Rank / Record）整个换成本地 90020 的动作；
+       · 伤害由客户端统计（原版战斗是本地算的），战斗结束（ON_BATTLE_END）用
+         trial-settle 上报，服务端据此定档并刷新「我的最高伤害」。
+     ⚠️ 原版 onShow 会 await applyFinalBossInfo()，必须连它一起换掉，否则塞进去的
+        finalBossInfo 会被那次协议回包冲掉（我们也没有这个协议）。
+     ⚠️ 原版 addPet/delPet 会对编队里的宠物 id 调 .eq()，只能塞宠物模型上的真 Long
+        （见 trialPetRefs），塞字符串进去当场 TypeError。
+     原版界面打不开时（拿不到门面）退回下面那套自画面板，不影响开战。 */
+  const Facade=req(3).default,Mod=req(0),FBEvent=req(2).FinalBossEvent,BattleEvent=req(2).BattleEvent;
+  let trialGroupId=0,trialPendingGroup=0,trialInBattle=false,trialDamageTotal=0,trialProxy=null,trialSnapshot=null;
+  const trialIdText=v=>{try{return v&&typeof v.toNumber==='function'?String(v.toNumber()):String(v??'');}catch(e){return '';}};
+  const trialAlert=message=>{try{if(UI.alertMessage)UI.alertMessage(message);else alert(message);}catch(e){try{alert(message);}catch(x){}}};
+  /** 编队槽位给原版用：把存下来的字符串 id 换回宠物模型上的真 Long。 */
+  function trialPetRefs(ids){
+   const out=[];
+   try{
+    const pets=Facade.getProxy(Mod.ModName.Pet,Mod.ProxyType.Pet);
+    for(const id of Array.isArray(ids)?ids:[]){
+     const pet=pets&&pets.getMyPetById(id);
+     if(pet&&pet.petItem&&pet.petItem.petId)out.push(pet.petItem.petId);
+    }
+   }catch(e){}
+   return out;
+  }
+  const trialItemClass=(function findItemClass(){
+   for(let id=0;id<900;id++){
+    let mod;try{mod=req(id);}catch(e){continue;}
+    if(!mod||typeof mod!=='object')continue;
+    for(const key of Object.keys(mod)){
+     const C=mod[key];
+     if(C&&C.prototype&&typeof C.prototype.getNameInfo==='function'
+        &&typeof C.prototype.getIsItemPetEquip==='function'
+        &&typeof C.prototype.getIconString==='function')return C;
+    }
+   }
+   return null;
+  })();
+  // 奖励格对长名/特殊字符不稳（实机长名会空白），所以留一张短名表兜底。
+  const trialRewardNames={100897:'周年礼盒',40006:'宠物经验',40007:'人物经验',40002:'指令书'};
+  function makeTrialRewardItem(x){
+   const name=trialRewardNames[x.id]||x.name||('物品'+x.id);
+   if(trialItemClass)try{
+    const it=new trialItemClass();
+    it.id=x.id;it.name=name;it.bagIcon=x.bagIcon;it.type=x.type;it.quantity=x.quantity;
+    // grade 是「品质底图」的下标（原版 p[grade]，0..6），越界会让底图 source 变 undefined。
+    it.grade=Math.max(0,Math.min(6,Number(x.grade)||0));it.star=0;it.attachDone=0;it.petLevel=0;
+    it.enchantPower1=0;it.enchantPower2=0;
+    it.info=x.name||'';
+    // 原版物品类的 getNameInfo 从配置表取名（奖励格会空白/乱码），这里按服务端下发的名字答。
+    it.getNameInfo=function(){return String(this.name||('物品'+this.id));};
+    it.getIconString=it.getIconString||function(){return '';};
+    return it;
+   }catch(e){console.warn('[无限试炼] 物品类实例化失败，退回普通对象',e);}
+   return {id:x.id,name,bagIcon:x.bagIcon,type:x.type,quantity:x.quantity,
+    grade:Math.max(0,Math.min(6,Number(x.grade)||0)),star:0,
+    attachDone:0,petLevel:0,enchantPower1:0,enchantPower2:0,isUpgradeItem:false,
+    isVipItem(){return false;},getIsItemPetEquip(){return false;},doViewItem(){},
+    getIconString(){return '';},getNameInfo(){return this.name;}};
+  }
+  // icon1 在原版里是 Long（Tool.getHeadIcon2 调 .toNumber()）；rank 是 0 基（条目自己 +1 显示）。
+  const trialLongLike=v=>({toNumber:()=>Number(v)||0});
+  /** 本地 trial 数据 → 原版 finalBossInfo（字段名对齐客户端 FinalBossMdr.updateView）。 */
+  function buildTrialInfo(t){
+   const rankInfo=(t.rankInfo||[]).map((r,i)=>({rank:i,actorId:r.actorId,name:r.name||'我',
+    power:Number(r.power)||0,hurt:Number(r.hurt)||0,icon1:trialLongLike(r.icon1)}));
+   const reward=[],seen=new Set();
+   for(const tier of (t.rewards||[]))for(const x of (tier&&tier.items)||[]){
+    const key=x.id+'_'+x.quantity;
+    if(seen.has(key))continue;seen.add(key);reward.push(makeTrialRewardItem(x));
+   }
+   return {name:(t.boss&&t.boss.name)||t.name||'无限试炼',icon:Number((t.boss&&t.boss.icon1)||0)||0,
+    maxHurt:Number(t.bestDamage)||0,fightTimes:Number(t.challenge&&t.challenge.left)||0,
+    sumTimes:Number(t.challenge&&t.challenge.total)||1,petIds:trialPetRefs(t.pets),rankInfo,reward};
+  }
+  async function trialRefreshInfo(){
+   const d=await wire(90019);
+   if(d&&d.trial){trialSnapshot=d.trial;if(trialProxy&&trialProxy._data)trialProxy._data.finalBossInfo=buildTrialInfo(d.trial);}
+   return d;
+  }
+  /** 原版排行榜/记录两页：数据也由我们本地供（原版协议同样没接）。 */
+  function trialRankRows(){
+   const info=(trialProxy&&trialProxy._data&&trialProxy._data.finalBossInfo)||{};
+   const rows=(info.rankInfo||[]).slice();
+   const me=World.myPlayer,myId=me&&(typeof me.getId==='function'?me.getId():me.id);
+   // 原版 onShow 要在列表里找到自己，找不到就去 new pb.FinalBossRankInfo（本工程没有 pb 全局），
+   // 所以一律把自己那行补进去（rank=-1 时条目会按「未上榜」渲染）。
+   if(me&&!rows.some(r=>Number(r.actorId)===Number(myId)))rows.push({rank:-1,actorId:myId,
+    name:me.name||'我',power:Number(me.combatPoint)||0,hurt:Number(info.maxHurt)||0,icon1:trialLongLike(me.icon1)});
+   return rows;
+  }
+  function trialRecordRows(){
+   const list=trialSnapshot&&Array.isArray(trialSnapshot.history)?trialSnapshot.history:[];
+   return list.map(r=>({hurt:Number(r.hurt)||0,fightPower:Number(r.fightPower)||0,
+    time:{toNumber:()=>Number(r.time)||0},info:[]}));
+  }
+  /** 门面那几个「发协议」的方法整体换成本地 90020。 */
+  function trialInstallProxy(FB){
+   trialProxy=FB;
+   FB.applyFinalBossInfo=async()=>({});   // onShow 里那次协议请求：拦掉，不然塞进去的数据被冲掉
+   FB.applyChallenge=async()=>{
+    try{
+     // 每次挑战都从干净起点统计（上一场的残留不能算进这一场）。
+     trialDamageTotal=0;trialInBattle=false;trialPendingGroup=trialGroupId;
+     // ⚠️ 服务端在 90020 回包**之前**就推了 10503（带试炼组），所以挂起标记必须先设好：
+     //    下面 addMonsterGroup 的桥就靠它认领「收到试炼组 → 开战」。
+     const d=await wire(90020,{action:'trial-challenge'});
+     if(!(Number(d&&d.trialEnterBattle)||trialGroupId))throw Error('未取得战斗组。');
+    }catch(e){trialPendingGroup=0;trialAlert('挑战失败：'+e.message);}
+   };
+   FB.applyBuyTimes=async()=>{
+    try{
+     await wire(90020,{action:'trial-buy'});
+     await trialRefreshInfo();
+     if(FBEvent&&Facade.sendNt){Facade.sendNt(FBEvent.OnGotBuyTimes);Facade.sendNt(FBEvent.OnGotInfo);}
+    }catch(e){trialAlert('购买次数失败：'+e.message);}
+   };
+   FB.applySetPets=async()=>{
+    try{
+     const pets=(FB._data.petsConfig||[]).map(trialIdText).filter(Boolean);
+     const d=await wire(90020,{action:'trial-config',pets});
+     if(d&&d.trial)FB._data.finalBossInfo=buildTrialInfo(d.trial);
+     if(FBEvent&&Facade.sendNt)Facade.sendNt(FBEvent.OnGotPetIds);
+    }catch(e){trialAlert('编队保存失败：'+e.message);}
+   };
+   FB.applyRank=async()=>({rankInfo:trialRankRows()});
+   FB.applyRecord=async()=>({info:trialRecordRows()});
+  }
+  /* 伤害统计：原版战斗本地算，只有这里能拿到数字。
+     dmg[0] 是对目标造成的（正）伤害；我方 = 玩家/宠物/伙伴/军团，敌方 = 非我方。
+     战斗单位类是按需加载的，所以进战斗前要再补装一次（ensureTrialDamageHook）。 */
+  function ensureTrialDamageHook(){
+   for(let id=0;id<900;id++){
+    let mod;try{mod=req(id);}catch(e){continue;}
+    if(!mod||typeof mod!=='object')continue;
+    for(const key of Object.keys(mod)){
+     const C=mod[key];
+     if(!C||!C.prototype||typeof C.prototype.delDamageEffect!=='function')continue;
+     if(C.prototype.__trialDamageHooked)continue;
+     const original=C.prototype.delDamageEffect;
+     C.prototype.delDamageEffect=function(dmg,attacker,target){
+      try{
+       if(trialInBattle&&dmg&&attacker&&target){
+        const value=Number(dmg[0]||0);
+        const mine=t=>t&&(t.getType&&(t.getType()===3||t.getType()===4||t.getType()===5||t.getType()===10||t.getType()===11)||t.isMyPlayer);
+        if(value>0&&mine(attacker)&&!mine(target))trialDamageTotal+=value;
+       }
+      }catch(e){/* 统计失败不影响战斗 */}
+      return original.apply(this,arguments);
+     };
+     C.prototype.__trialDamageHooked=true;
+    }
+   }
+  }
+  ensureTrialDamageHook();
+  if(BattleEvent&&typeof Facade.onNt==='function')Facade.onNt(BattleEvent.ON_BATTLE_END,()=>{
+   const damage=trialDamageTotal;trialDamageTotal=0;
+   if(!trialInBattle)return;
+   trialInBattle=false;
+   // 这里只报「打出了多少伤害」：打赢的那份奖励 12502 已经在服务端发过了，
+   // 服务端用 state.awarded 做闸门，两条路先到的发、后到的只更新记录。
+   wire(90020,{action:'trial-settle',damage,victory:false}).then(d=>{
+    const report=(d&&d.trialReport)||{},granted=Number(report.granted)||0;
+    trialAlert('本次对 BOSS 造成 '+damage+' 伤害'+(report.tier?('（'+report.tier+'）'):'')+(granted?('，获得 '+granted+' 件奖励。'):'。'));
+   }).catch(e=>trialAlert('试炼结算失败：'+e.message));
+  });
+  /* 「+」按钮**不用重绑**：原版 onTapBuyTimes 自己会调 this._proxy.applyBuyTimes()，
+     而那个方法已经被我们换成本地动作了（重绑反而会一次点击买两次）。
+     原版逻辑是「还有剩余次数就先提示、买不了」，这里照抄保留；只保证按钮本身可见可点。
+     买完由 OnGotBuyTimes 通知原版 updateLeftTimes 刷新 x/y。 */
+  function ensureTrialBuyButton(){
+   try{
+    const mod=Facade.getMod(Mod.ModName.FinalBoss),mdr=mod&&mod.__mdrIns&&mod.__mdrIns[Mod.FinalBossViewType.Main];
+    const btn=mdr&&mdr._view&&mdr._view.btn_buyTimes;
+    if(!btn)return;
+    btn.visible=true;btn.enabled=true;btn.touchEnabled=true;btn.alpha=1;
+   }catch(e){console.warn('[无限试炼] 取购买按钮失败',e);}
+  }
+  /** 打开原版「无限试炼」界面；false = 打不开，调用方退回自画面板。 */
+  async function openTrialNative(){
+   const data=await wire(90019),t=data&&data.trial;
+   if(!t){status.textContent='试炼数据不可用。';return false;}
+   trialSnapshot=t;trialGroupId=Number(t.groupId)||0;
+   if(!t.boss){
+    trialAlert('当前时段的试炼 BOSS 还没就绪（'+(t.bosses||[]).filter(b=>!b.exists).map(b=>b.id+' '+b.name).join('、')+'）。');
+    return false;
+   }
+   let FB=null;
+   try{FB=Facade.getProxy(Mod.ModName.FinalBoss,Mod.ProxyType.FinalBoss);}catch(e){FB=null;}
+   if(!FB||!FB._data){trialAlert('打不开原版「无限试炼」界面（取不到 FinalBossProxy），改用单机面板。');return false;}
+   FB._data.finalBossInfo=buildTrialInfo(t);
+   trialInstallProxy(FB);
+   ensureTrialDamageHook();
+   if(dialog.open)dialog.close();
+   UI.showWin(Mod.ModName.FinalBoss,Mod.FinalBossViewType.Main);
+   ensureTrialBuyButton();
+   return true;
+  }
   async function action(value){
    if(busy||activeRole!==World.myPlayer?.id)return;busy=true;status.textContent='正在保存…';for(const b of body.querySelectorAll('button'))b.disabled=true;
    try{state=await wire(90020,value);const p=World.myPlayer;p.setVipLevel(state.vip.level);p.setVipLevel2(state.vip.level);for(const key of [11,12,13])req(3).default.sendNt(req(2).MainEvent.ON_PLAYER_ATTR_UPDATE,key);render();status.textContent='已保存。';}
@@ -81,7 +283,11 @@
     for(const b of t.bosses)text(`${b.fromHour} 点 – ${b.toHour} 点：${b.name||('怪物'+b.id)}${b.exists?'':'（未就绪）'}`);
     text(`今日剩余 ${t.challenge.left} / ${t.challenge.total} 次（已购 ${t.challenge.bought} 次） · 我的最高伤害 ${t.bestDamage}`);
     button('挑战（打完自动结算发奖）',async()=>{
-     state=await wire(90020,{action:'trial-challenge'});render();dialog.close();World.toBattle(t.groupId);
+     // 备用入口：直接 World.toBattle（不走 addMonsterGroup 桥，所以不设 trialPendingGroup），
+     // 但要把「这一场在统计」的标记打开，战斗结束好把真实伤害上报定档。
+     state=await wire(90020,{action:'trial-challenge'});
+     trialDamageTotal=0;trialInBattle=true;trialPendingGroup=0;ensureTrialDamageHook();
+     render();dialog.close();World.toBattle(t.groupId);
     },body,!t.available||t.challenge.left<=0);
     button(`购买 1 次（${t.challenge.buyPrice} 黄金，今日还可买 ${t.challenge.buyLeft} 次）`,()=>action({action:'trial-buy'}),body,t.challenge.buyLeft<=0);
     body.append(element('h3','奖励档位'));
@@ -100,6 +306,11 @@
    status.textContent='';
   }
   async function open(key='notice'){
+   // 试炼：优先打开**原版**「无限试炼」界面（第 78 版）；打不开时退回下面这套自画面板。
+   if(key==='trial'){
+    try{if(await openTrialNative())return;}
+    catch(e){status.textContent='打开无限试炼界面失败：'+e.message;}
+   }
    const token=++generation,p=World.myPlayer;if(!p?.id)return;activeRole=p.id;current=key;body.replaceChildren();status.textContent='正在读取角色状态…';document.getElementById('offline-panel').classList.remove('open');if(!dialog.open)dialog.showModal();
    try{const next=await wire(90019);if(token!==generation)return;state=next;render();status.textContent='';}catch(e){if(token===generation)status.textContent=e.message;}
   }
@@ -145,6 +356,14 @@
   if(typeof addMonsterGroup==='function')World.addMonsterGroup=function(group){
    const result=addMonsterGroup.call(this,group);
    const groupId=Number(group?.groupId)||0;
+   // 无限试炼（第 78 版）：挑战时服务端把试炼组随 10503 下发，收到这一组才开战。
+   if(trialPendingGroup&&groupId===trialPendingGroup){
+    const gid=trialPendingGroup;trialPendingGroup=0;
+    trialInBattle=true;trialDamageTotal=0;
+    ensureTrialDamageHook();   // 战斗单位类此刻必然已加载，补装一次更稳
+    let fighting=false;try{fighting=!!req(54).default.ins.isFight;}catch(e){}
+    if(!fighting)setTimeout(()=>{try{World.toBattle(gid);}catch(e){trialAlert('进入战斗失败：'+e.message);}},0);
+   }
    if(pendingTowerFloor&&groupId===TOWER_GROUP_BASE+pendingTowerFloor){
     const floor=pendingTowerFloor;pendingTowerFloor=0;
     // 下一帧再开战：现在还在解析 10503 的编队列表，就地开战会和读包打架。
