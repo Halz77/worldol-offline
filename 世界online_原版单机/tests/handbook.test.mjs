@@ -187,6 +187,53 @@ test('重新登录会把「背包里已有的条目」自动点亮（server.mjs 
  assert.equal(unlockOwnedItems(p),false,'第二次没有变化（不重复写存档）');
 });
 
+test('图鉴点条目 → 道具详情：16051 给定义、12016 回包必须带开头状态字节',()=>{
+ // 图鉴里点一条目的真实链路（客户端模块 1150 → 1147 → 0032）：
+ //   createBookItemInfo(id)      发 16051 → Item.fromBytesAtts2(回包)          // 16051 不在 resultMsg，回包=纯定义
+ //   Tool.alertItemInfo(id) → Item.getItemUseId(id) 发 12016
+ //     → sendProtoAsync 先读掉 1 个状态字节（<0 就 getString() 弹提示）
+ //     → Item.fromBytesAtts2(定义) → Tool.processGetSuitInfoMsg(1 字节套装组数) → checkItem(item)
+ // 第 77 版把 12016 回包写成「定义 + 末位 0」，客户端从第二个字节开始解析定义 → 抛 Truncated
+ // 被 getItemUseId 里的 catch 吞掉 → 详情面板打不开（用户看到的「图鉴点进去什么都没有」）。
+ const rows=[];
+ for(const page of handbookPages())for(const row of handbookRows(page.group,page.type))rows.push({group:page.group,type:page.type,id:row.itemId});
+ // 宠物页（组 3 的 7/8/9）客户端走 CG_PET_INFO_BYID(15514) 另一条路 —— tests/recordings.test.mjs
+ // 已经把 petSources 里每一只都按原版解析器读通了，这里只管走道具定义的条目。
+ const itemRows=rows.filter(row=>!(row.group===3&&row.type!==41));
+ assert.ok(itemRows.length>2000,`走道具定义的条目应有 2000+ 条，实际 ${itemRows.length}`);
+ // 每一条可点开的条目都必须有定义，否则点开是空的（目录里 132 条宠物页条目本来就没有、
+ // 也不需要定义，已经排除）。新采目录时如果这里红了，要么补道具定义、要么按宠物页归类。
+ const missing=itemRows.filter(row=>!officialItems.has(row.id));
+ assert.deepEqual(missing.slice(0,10).map(row=>row.group+':'+row.type+':'+row.id),[],'图鉴条目缺道具定义');
+ for(const row of [itemRows[0],itemRows[Math.floor(itemRows.length/2)],itemRows[itemRows.length-1]]){
+  const p=role(),body=new Writer().int(row.id).done();
+  // ① 16051：回包就是这件道具的定义字节本身，原版解码器要能整段读掉。
+  const sent16051=officialCall(p,16051,body);
+  assert.equal(sent16051.length,1);assert.equal(sent16051[0].type,16051);
+  const defReader=new Reader(sent16051[0].b),defined=new d.Item();
+  d.Item.fromBytesAtts2(defined,defReader);defReader.finish();
+  assert.equal(defined.id,row.id,'16051 回包必须就是这件道具的定义');
+  // ② 12016：byte(0) + 定义 + byte(0)，按客户端的方式读一遍。
+  const sent12016=officialCall(p,12016,body);
+  assert.equal(sent12016.length,1);assert.equal(sent12016[0].type,12016);
+  assert.equal(sent12016[0].b[0],0,'回包第一个字节必须是状态字节 0');
+  const reply=new Reader(sent12016[0].b);
+  assert.equal(reply.getByte(),0,'状态字节（≥0 表示成功）');
+  const item=new d.Item();
+  d.Item.fromBytesAtts2(item,reply);
+  assert.equal(item.id,row.id);assert.equal(item.name,defined.name);
+  assert.equal(reply.getByte(),0,'定义之后那个字节是套装组数（0 = 没有套装数据）');
+  reply.finish();
+ }
+ // 目录里没有定义的道具：回负状态字节 + 文案（客户端会弹提示），不能装作不认识 ——
+ // 那时客户端会白等 10 秒 sendProtoAsync 超时，抛出没人接的 rejection。
+ const unknown=officialCall(role(),12016,new Writer().int(999999999).done());
+ assert.equal(unknown.length,1);assert.equal(unknown[0].type,12016);
+ const failure=new Reader(unknown[0].b);
+ assert.ok(failure.getByte()<0,'失败的 12016 回包状态字节必须为负');
+ assert.ok(failure.getString().includes('尚未录到'));
+});
+
 test('不带角色的纯目录视图保持原样：全未点亮、不能点亮',()=>{
  const page=protobuf(handbookPage(1,13),'s2c_HandBookInfo',schemas);
  assert.equal(page.canUnlock,false);

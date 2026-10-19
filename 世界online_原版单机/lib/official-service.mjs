@@ -67,7 +67,23 @@ export function handleOfficial(type,r,context,{store,send,log}){
  const notify=s=>send(10509,new Writer().byte(2).string(s));
  if(type===32101){const q=bookRequest(r);send(32102,handbookPage(q.group,q.type,p));return true;}
  if(type===16051){const id=r.int(),item=officialItems.get(id);if(item)send(type,Buffer.from(item.definitionBase64,'base64'));else notify('该道具只采集到了目录，详细属性尚未录到。');return true;}
- if(type===12016){const start=r.pos,id=r.int(),item=officialItems.get(id);if(!item){r.pos=start;return false;}send(type,new Writer().raw(Buffer.from(item.definitionBase64,'base64')).byte(0));return true;}
+ // 12016 CG_ITEMTYPE_GETINFO —— 「查看一件我不认识的道具」的通用接口
+ // （图鉴点条目 → Tool.alertItemInfo、首充预览、奖励格 doViewItem 都走它）。
+ // 客户端把它列在模块 0035 的 Tool.resultMsg 里 → sendProtoAsync 收到回包先
+ // processMessage() **读掉开头那 1 个状态字节**（<0 时 getString() 弹提示），
+ // 之后才是 Item.fromBytesAtts2(定义) → processGetSuitInfoMsg(1 字节套装组数)。
+ // 所以正确的回包是 byte(0) + 定义字节 + byte(0)。
+ // 第 77 版少写了开头那个状态字节（把唯一的 0 放在末尾当套装组数），客户端于是从
+ // 第二个字节开始解析定义 → Throw Truncated → getItemUseId 里 catch 掉 → 详情面板
+ // 打不开（表现就是「图鉴点进去什么都没有」）。
+ if(type===12016){
+  const start=r.pos,id=r.int(),item=officialItems.get(id);
+  // 目录里没有定义时不再「不认账」（客户端会白等 10 秒超时、unhandled rejection）：
+  // 状态字节给负数，客户端会把它后面的字符串弹成提示。
+  if(!item){send(type,new Writer().byte(-1).string('这件道具的详细属性尚未录到，图鉴里只能看到它的目录信息。'));return true;}
+  send(type,new Writer().byte(0).raw(Buffer.from(item.definitionBase64,'base64')).byte(0));
+  return true;
+ }
  if(type===32103){
   // 「点亮」：客户端 sendHandBookUnlock(group,type) 只发组+类，点哪些由服务端决定 ——
   // 整页点亮（免费）。回 32104（客户端据此把本页条目全部置 unlock、更新等级/收集率），
