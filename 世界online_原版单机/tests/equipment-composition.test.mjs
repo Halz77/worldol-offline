@@ -6,7 +6,7 @@ import os from 'node:os';
 import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 import {equipment,activeSkills,powers,unequip} from '../lib/restoration.mjs';
-import {compositionRanges,compositionSkills,itemWithAffixes} from '../lib/item-affixes.mjs';
+import {compositionRanges,compositionSkills,itemWithAffixes,identifyRanges,upgradeIdentifyRanges} from '../lib/item-affixes.mjs';
 import {planComposition,planVip,workshopState,COMPOSITION_APPLY,VIP_APPLY,COMPOSITION_LIST} from '../lib/equipment-composition.mjs';
 import {fingerprint} from '../lib/equipment-upgrades.mjs';
 import {handleEquipmentComposition} from '../lib/equipment-composition-service.mjs';
@@ -98,4 +98,48 @@ test('composition protocols reject combat/stale/malformed requests and roll back
  assert.equal(call(COMPOSITION_APPLY,w()).getByte(),-1);assert.equal(saves,1);assert.equal(p.coins,before.coins);assert.deepEqual(p.inventory[1],before.inventory[1]);
  r=call(VIP_APPLY,new Writer().byte(9));assert.equal(r.getByte(),0);assert.equal(JSON.parse(r.getString()).vipLevel,9);assert.equal(r.getBoolean(),false);r.finish();assert.equal(saves,2);
  assert.equal(call(VIP_APPLY,new Writer().byte(8).byte(0)).getByte(),-1);assert.equal(p.vipLevel2,9);
+});
+
+test('free self-select identification writes every captured slot and rejects out-of-range or incomplete picks',()=>{
+ const p=role(),template=equipment.get(28011),slots=identifyRanges(template);
+ assert.equal(slots.length,4);assert.deepEqual(slots.map(s=>s.field),['power1','power2','bindPower1','bindPower2']);
+ const picks=slots.map(row=>({field:row.field,power:row.options[0].power,value:row.options[0].max})),before=structuredClone(p);
+ const {next,item}=planComposition(p,request(p,{mode:'identify',picks}));
+ assert.deepEqual(p,before);
+ for(const row of slots){const pick=picks.find(x=>x.field===row.field);assert.deepEqual(item.affixes[row.field],{power:pick.power,value:pick.value});}
+ assert.equal(item.affixes.power3,undefined,'合成格不受自选鉴定影响');
+ assert.deepEqual(item.combinedSkill,{id:4007,level:22});
+ const expected=structuredClone(before);for(const pick of picks)expected.inventory[0].affixes[pick.field]={power:pick.power,value:pick.value};assert.deepEqual(next,expected);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify'})),/每个鉴定格/);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify',picks:picks.slice(1)})),/每个鉴定格/);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify',picks:picks.map((x,i)=>i?x:{...x,power:9999})})),/范围/);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify',picks:picks.map((x,i)=>i?x:{...x,value:x.value+9999})})),/范围/);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify',picks:picks.map((x,i)=>i?x:{...x,value:x.value+0.5})})),/范围/);
+ assert.equal(workshopState(role()).items.find(i=>i.itemId===28011).identify.length,4);
+});
+
+test('self-select identification also fills the advanced slots and switches the item into the advanced state',()=>{
+ const template=equipment.get(9081),slots=identifyRanges(template),advanced=upgradeIdentifyRanges(template);
+ assert.equal(slots.length,4);assert.equal(advanced.length,4);assert.deepEqual(advanced.map(s=>s.field),['power4','power5','power6','power7']);
+ const p={...role(),inventory:[{itemId:9081,slot:8,quantity:1,bound:true}]},pick=rows=>rows.map(row=>({field:row.field,power:row.options[0].power,value:row.options[0].max}));
+ const {item}=planComposition(p,request(p,{mode:'identify',picks:pick(slots),upgradePicks:pick(advanced)}));
+ for(const row of advanced)assert.deepEqual(item.upgradeAffixes[row.field],{power:row.options[0].power,value:row.options[0].max});
+ const r=new Reader(itemPacket(itemPacket(new Writer(),{...item,slot:30}),{itemId:9081,slot:31,quantity:1}).done()),result=readItem(r),ordinary=readItem(r);r.finish();
+ assert.equal(result.isUpgradeItem,true);assert.equal(result.power4,advanced[0].options[0].power);assert.equal(result.powerValue4,advanced[0].options[0].max);assert.equal(result.power1,slots[0].options[0].power);
+ assert.equal(ordinary.isUpgradeItem,false);
+ const plain=planComposition(p,request(p,{mode:'identify',picks:pick(slots)}));assert.equal(plain.item.upgradeAffixes,undefined);
+ assert.throws(()=>planComposition(p,request(p,{mode:'identify',picks:pick(slots),upgradePicks:pick(advanced).slice(1)})),/进阶鉴定格/);
+ const basic=role();
+ assert.throws(()=>planComposition(basic,request(basic,{mode:'identify',picks:pick(identifyRanges(equipment.get(28011))),upgradePicks:[]})),/进阶鉴定格/);
+ assert.equal(workshopState(p).items.find(i=>i.itemId===9081).upgradeIdentify.length,4);
+});
+
+test('self-select identification protocol round-trip rewrites the item and spends nothing',()=>{
+ const p=role(),context={role:p},sent=[];
+ const call=w=>{sent.length=0;assert.equal(handleEquipmentComposition(COMPOSITION_APPLY,new ProtocolReader(w.done()),context,{store:{save(){}},send:(type,bytes)=>sent.push({type,bytes:bytes.done()}),log(){}}),true);return new Reader(sent[0].bytes);};
+ const picks=identifyRanges(equipment.get(28011)).map(row=>({field:row.field,power:row.options[0].power,value:row.options[0].max}));
+ const r=call(new Writer().string(JSON.stringify(request(p,{mode:'identify',picks}))));
+ assert.equal(r.getByte(),0);const state=JSON.parse(r.getString());assert.equal(state.items[0].identify.length,4);assert.equal(state.items[0].affixes.power2.value,picks[1].value);
+ assert.equal(r.getBoolean(),true);const parsed=readItem(r);assert.equal(parsed.power2,picks[1].power);assert.equal(parsed.powerValue2,picks[1].value);r.finish();
+ assert.equal(p.coins,1234);assert.deepEqual(p.inventory[1],{itemId:40021,slot:30,quantity:7});
 });

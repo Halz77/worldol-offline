@@ -291,6 +291,15 @@
   —— 客户端**没有**永泽塔购买入口（无 `C2S_CLIMB_TOWER_BUY`，1496 界面只有帮助/模式两按钮），
   两边都是死代码。⚠ 傲雪凌霜礼盒 100781 是 type 28，本工程**还没有开箱机制**，只能当收藏。
   奖励结算抽成了 `planTowerRewardRows(p,rows)`（缺定义道具跳过并记账，单测直接喂行）。
+- **免费装备合成（90001/90002/90003，`lib/equipment-composition.mjs`）三种模式**：`attribute` 改
+  131 合成格、`skill` 改合成技能、`identify`（第 85 版）自选鉴定属性。`identify` 一次提交整组：
+  `picks` 必须覆盖**全部**普通鉴定格（`identifyRanges(template)`，与界面同源）、可选 `upgradePicks`
+  覆盖**全部**进阶格（`upgradeIdentifyRanges`，power4—7；`applyUpgradeFields` 按数量校验整组，
+  少一格就抛「无效进阶鉴定属性」）。范围都取自已录原版（`usableOptions` 滤掉写不进 short 的项；
+  进阶任一格没有可用范围 → 整组不给）。⚠ 装备没有普通鉴定格时 `picks` 要传 `[]` 且**不写
+  `affixes`**：空对象 `{}` 是 truthy，会让 `itemWithAffixes` 走进字节补丁分支（无 layout 的装备
+  当场抛「此物品尚未核验独立鉴定属性」）。界面在 `web/equipment-composition.js` 的
+  `renderIdentify()`（每格一个下拉 + 数值框 + 实时「合成效果」），web/* 是静态资源、不进补丁链。
 
 ---
 
