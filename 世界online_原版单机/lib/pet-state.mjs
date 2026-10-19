@@ -34,6 +34,22 @@ export function petAttributes(owner,pet){
  const snapshot=petSnapshotVitals(pet);
  return {base,hp:snapshot?.hpMax??calc(Math.trunc(6.5*base[1])+3*base[0]+100+20*(pet.level-1),11,90),mp:snapshot?.mpMax??calc(5*base[3]+2*base[4]+40+5*(pet.level-1),13,91)};
 }
+// ★ 第 82 版（用户 2026-10-19：「结算校验放宽点，+50% 吧，我希望限额上限高一些」）：
+// 宠物上限的**结算宽容度**。
+// 客户端跑的是原生引擎、服务端跑的是自研复刻公式，两边偶尔会差一点点 —— 第 80 版那次
+// 图鉴加成让客户端算出的上限比我们高 7.5%，12502 的「宠物血量不能超过上限」就每场都判
+// 失败，奖励一律不发（一场都玩不下去）。差几个百分点就整场作废，代价太大。
+// 所以 12502 的校验上限 = 自研上限 ×(1 + PET_VITALS_TOLERANCE_PERCENT%)：
+// · 只在超出**这个放宽后的上限**时才拒单（`reject` → 这一场不发奖励）；
+// · 超出自研上限、但还在宽容范围内时**照常结算**，只落一条日志
+//   `battle-pet-vitals-over-self`，便于以后区分「公式口径差一点」和「真的脏数据」。
+// 注意：这里放宽的只是**校验**，不改宠物自己的血蓝上限（宠物面板看到的数字、
+// 宠物包发出去的上限，都还是 petAttributes() 算出来的值）。
+export const PET_VITALS_TOLERANCE_PERCENT=50;
+export function petVitalsCeiling(owner,pet){
+ const computed=petAttributes(owner,pet),factor=1+PET_VITALS_TOLERANCE_PERCENT/100;
+ return {hp:Math.ceil(computed.hp*factor),mp:Math.ceil(computed.mp*factor),computed,tolerance:PET_VITALS_TOLERANCE_PERCENT};
+}
 export function openContainer(p,slot,quantity,random){
  const source=p.inventory.find(i=>i.slot===slot),chest=chestTemplates.get(source?.itemId),template=petTemplates.get(source?.itemId);
  const selectableEgg=selectablePetEggsById.get(source?.itemId),legendary=source?.itemId===LEGENDARY_EGG_ID,spirit=isSpiritBox(source?.itemId);

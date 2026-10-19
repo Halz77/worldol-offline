@@ -74,3 +74,29 @@ test('pet participates in native two-plan battle, receives XP, and invalid HP or
  const beforeLevel=item.pet.level,cap=Math.min(90,p.level);
  const gain=gainPet(p,1000000);assert.equal(item.pet.level,cap);assert.equal(gain.levels,cap-beforeLevel);assert.ok(item.pet.exp>item.pet.expMax);
 });
+// 第 82 版：用户 2026-10-19「结算校验放宽点，+50% 吧，我希望限额上限高一些」。
+// 客户端原生引擎与服务端自研公式算出的宠物上限偶尔差几个百分点（第 80 版的图鉴加成
+// 就是差 7.5%），那时 12502 会判「宠物战斗状态不完整」把整场奖励扣掉。
+// 现在校验上限 = 自研上限 ×1.5：范围内照常结算（只记日志），超出才拒单。
+test('宠物血蓝的结算上限有 50% 宽容（范围内照常发奖、只记日志；超出才拒单）',()=>{
+ const enter=()=>{
+  const {p,context,call}=harness();call(12001,use(1,32));const item=p.inventory.find(i=>i.pet);
+  call(12001,new Writer().byte(2).byte(1).short(item.slot).int(1).byte(-1).bool(false).byte(32));
+  p.quests.active[1114]={official:true,counts:{}};const target=maps[303].npcs.find(n=>n.battleID?.includes(260));[p.x,p.y]=[target.x,target.y];
+  assert.equal(call(12501,new Writer().short(260)).byte(),0);
+  const max=petAttributes(p,item.pet),ratio=r=>({hp:Math.ceil(max.hp*r),mp:Math.ceil(max.mp*r)});
+  const body=({hp,mp})=>new Writer().int(p.hp).int(p.mp).int(p.hp).int(p.mp).short(0).short(260).bool(true).byte(0).byte(1).bytes([0]).bytes([0]).int(BATTLE_TRAILER).int(context.battle.token).byte(2).int(hp).int(mp);
+  return {p,call,item,max,ratio,body};
+ };
+ // ① 客户端只比我们高 25%（宽容范围内）：这一场照常结算、奖励照发。
+ const lenient=enter(),over=lenient.ratio(1.25);
+ assert.equal(lenient.call(12502,lenient.body(over)).byte(),2,'宽容范围内的宠物血蓝不再拒单');
+ assert.equal(lenient.item.pet.hp,petAttributes(lenient.p,lenient.item.pet).hp,'战后出战宠回满（按自研上限，宠物的「上限」本身没有被放宽）');
+ assert.ok(lenient.p.coins>0||lenient.item.pet.exp>0,'奖励照发');
+ // ② 超出放宽上限（1.6 倍）：仍然拒单，且这一场不发奖励（避免真脏数据被放进来）。
+ const strict=enter(),way=strict.ratio(1.6);
+ const coins=strict.p.coins;
+ assert.throws(()=>strict.call(12502,strict.body(way)),/宠物战斗状态不完整/);
+ assert.equal(strict.p.coins,coins);
+ assert.equal(strict.item.pet.hp,strict.max.hp,'被拒的这一场不写回宠物血量（仍是满血的自研上限）');
+});

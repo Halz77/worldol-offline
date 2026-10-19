@@ -127,6 +127,10 @@
 - 战斗 12501/12502：`context.battle` 被拒要搬 `rejectedBattle` **并清空**（否则 20+ 守卫锁死玩家）；
   报错点名哪一项；包尾 `locateTrailer()`；血蓝上限 `nativeVitalsCeiling()` 分级放宽
   （坑：nativeCharacterStats 对残缺角色静默返回 0）。
+  宠物血蓝的校验上限走 `petVitalsCeiling()`（第 82 版）= 自研上限 ×(1+`PET_VITALS_TOLERANCE_PERCENT`(50)%)
+  —— 第 80 版图鉴加成让客户端上限比服务端高 7.5%，那时每场都判「宠物战斗状态不完整」不发奖励；
+  现在只有超出 1.5 倍才拒单，超出自研上限但在宽容内照常结算 + 记 `battle-pet-vitals-over-self`。
+  ⚠ 放宽的只是**校验**，`petAttributes()`（宠物面板/宠物包/战后回满用的那个值）没变。
 - **不在地图上的战斗组**（塔层、太阳棋盘、试炼）必须跳过 12501「请靠近战斗目标」距离校验，
   并强制走官方怪物表；下发世界数据前要确认组真存在（`worldData()` 收 towerExtraGroups +
   trialExtraGroups），残留标记会让整包写歪 → 客户端 `Error #1025`。

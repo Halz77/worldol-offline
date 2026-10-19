@@ -1,7 +1,7 @@
 import {recorded} from './recorded-content.mjs';
 import {vipMissionExperience} from './home-feature-data.mjs';
 import {applyBattleRecovery} from './vip-recovery.mjs';
-import {activePet,gainPet,petAttributes,observedPetExperience} from './pet-state.mjs';
+import {activePet,gainPet,petAttributes,observedPetExperience,petVitalsCeiling} from './pet-state.mjs';
 import {randomBytes} from 'node:crypto';
 import {Writer} from './codec.mjs';
 import {worldData} from './world.mjs';
@@ -190,7 +190,13 @@ export function handleGame(type,r,context,{store,send,log,random=Math.random}){
     // 没上场）。照旧结算，但落一条日志：以后再有玩家报「结算失败」，这条能直接说明
     // 是不是这个原因。
     if(legionResult.length!==(battle.legion||[]).length)log('battle-legion-mismatch',{role:p.id,expected:(battle.legion||[]).length,received:legionResult.length});
-    if(pet){const max=petAttributes(p,companion);if(companion.uid!==battle.petUid||petHP<0||petHP>max.hp||petMP<0||petMP>max.mp)reject(`宠物战斗状态不完整（血 ${petHP}/${max.hp}、蓝 ${petMP}/${max.mp}）`);}
+    // 第 82 版：宠物血蓝的校验上限 = 自研上限 ×(1+50%)（PET_VITALS_TOLERANCE_PERCENT）。
+    // 超出自研上限但仍在宽容范围内：照常结算，只记一条日志；超出放宽上限才拒单。
+    if(pet){
+      const ceiling=petVitalsCeiling(p,companion);
+      if(companion.uid!==battle.petUid||petHP<0||petHP>ceiling.hp||petMP<0||petMP>ceiling.mp)reject(`宠物战斗状态不完整（血 ${petHP}/${ceiling.computed.hp}、蓝 ${petMP}/${ceiling.computed.mp}）`);
+      else if(petHP>ceiling.computed.hp||petMP>ceiling.computed.mp)log('battle-pet-vitals-over-self',{role:p.id,hp:petHP,mp:petMP,computed:ceiling.computed,ceiling:{hp:ceiling.hp,mp:ceiling.mp},tolerance:ceiling.tolerance});
+    }
     // Native victory belongs to the surviving side, not just the main actor.
     const survivingAlly=hp>0||(pet&&petHP>0)||legionResult.some(row=>row.hp>0||row.petHP>0);
     // 原来这十项挤在一个 if 里共用一句「战斗结果数据不完整，未发放奖励。」，线上出问题时
