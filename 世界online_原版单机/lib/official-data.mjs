@@ -27,6 +27,8 @@ import {applyDungeonStoryRepairs} from './dungeon-story-repairs.mjs';
 import {applyDungeonRepairs} from './dungeon-repairs.mjs';
 import {applyCustomAdventures} from './custom-adventures.mjs';
 import {applyCityTemplateFixes,applyCityFlightStations} from './city-template-fixes.mjs';
+import {applyDailyDungeonEntrances} from './daily-dungeon-directory.mjs';
+import {applyGuardChallenges} from './guard-challenges-data.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -145,6 +147,18 @@ fixMidAutumnFinalBoss(official);
  // 结果就是这一峰的编队静默缺失 —— 第 83 版第一次接线就踩了这个）。
  // 同时仍要在建索引之前 —— 12501 与棋盘协议都查建好的 officialGroups。
  applyAskSword(official);
+ // 守卫挑战（33 条，8901—8933，第 84 版）：征战广场（945）2/3 号「守卫」NPC 各挂一套
+ // 单体 BOSS 挑战（接取即开战、可重复）。必须排在**所有补怪/补编队的补丁之后**：
+ // 33 条里 27 条复用录制扩展里的编队（11811 暗精灵王-夕、11781 库库尔坎、20368 狂暴巨象…），
+ // 那些怪与编队来自 applyRecordedExpansion —— 排在 applyBossChallenges（ensure 第一步）
+ // 里会当场报「缺少击杀目标怪物 2524」，整个服务起不来（第 84 版第一次接线就踩了）。
+ // 同时仍要在建索引之前 —— 12501、任务导航、怪物模型包都查建好的索引。
+ applyGuardChallenges(official);
+ // 季节入口 NPC 的可见位（第 84 版，见 lib/daily-dungeon-directory.mjs）：91「驱赶年兽」的
+ // 财神爷（14:10，status 66 = 可交互但看不见）与 92「元宵福队」的祈福小子（19:13，status 2）
+ // 在看板上点「前往」会站到看不见的人面前。补上「可见 + 可交互」两位并同步 wire。
+ // 排在所有补地图的补丁之后（否则会被 city-template-fixes 那类重写覆盖），在建索引之前。
+ applyDailyDungeonEntrances(official);
  built={
   official,
   officialMaps:new Map(official.maps.map(m=>[m.id,m])),

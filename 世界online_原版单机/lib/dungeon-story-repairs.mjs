@@ -21,6 +21,7 @@
 
 import fs from 'node:fs';
 import {Writer, Reader} from './codec.mjs';
+import {directoryEntry} from './daily-dungeon-directory.mjs';
 
 export const STORY_REPAIRS_REVISION = 'complete-local-stories-20261013-v1-ported';
 export const repairedStoryDungeons = [];
@@ -134,7 +135,10 @@ export function applyDungeonStoryRepairs(official) {
     addNpc(q.acceptMapId,free,"再次挑战·"+name,guide.x+2,guide.y,{sign:0,npcType:1,icon1:o.monsters.find(m=>m.id===targets[0][0]).icon1,status:10,missionData:[qid,2,qid,5],battleID:[group],comeOutTime:1,talkDetail:"接取任务后可在这里重试，战胜后交付。"});return q;
   }
   function register(id,name,root,terminal,extras=[],finale) {
-    const queue=[root,terminal,...extras];
+    // 目录行（`lib/daily-dungeon-directory.mjs`）给的 navigationMissionIds 也要进队列
+    // —— 4.0 同款写法。录制里有些环既不在 submitNextMissionID 上、也没有别的任务
+    // 用 type 9/10 前指向它，只有靠目录才捞得回来（圣诞 3300、周年 2852/2859/2860 等）。
+    const queue=[root,terminal,...extras,...(directoryEntry(id)?.navigationMissionIds||[])];
     const nodes=new Set();
     while(queue.length){const id=queue.shift();if(nodes.has(id)||!quest(id))continue;nodes.add(id);const q=quest(id);if(q.submitNextMissionID)queue.push(q.submitNextMissionID);for(const other of o.missions)if(other.acceptCondition?.some(c=>[9,10].includes(c.type)&&!c.not&&c.missionId===id))queue.push(other.id);}
     repairedStoryDungeons.push({id,name,root,terminal,missionIds:[...nodes].sort((a,b)=>a-b),...(finale?{finale}:{}),localStoryRepair:true});

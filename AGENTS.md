@@ -175,6 +175,28 @@
   「冰风鹰身人」是 `applyDungeonStoryRepairs` 克隆的，排早了静默缺失那一峰）、建索引之前。
   ⚠ 任务包 `officialMissionPacket` 里 `money2/money3` 是 **short**（官方最大 30000 / 500，
   超了客户端读成负数）；押金不在任务包里，可以到 20 万。
+- **挑战副本目录（第 84 版，`lib/daily-dungeon-directory.mjs`）**：看板从录制的 58 行扩到
+  **99 行** = 58 录制 + 38 条目录（59—96）+ 97/98/99（`STORY_ROW_CREATE_IDS`，按故事链根的
+  `origins()[0]` 现场建行）。38 行里 **16 行绑了进度/导航**（12 个故事副本 + `TERMINAL_BY_DIRECTORY`
+  = 70→1052 / 79→1942 / 80→3972 / 94→1305 四个收尾任务型，94 每天 2 次），其余 22 行是**纯目录导航**
+  （`linkage:null` → 永远停在「未开始」，靠行自带的 `mapId/npcID/px/py` 导航）。
+  调用顺序：`daily-activity.ensure()` 里 `applyDailyDungeonDirectory` **先于** `applyRepairedDaily`
+  （绑定要能找到行）；`applyDailyDungeonEntrances(official)` 在 `official-data.ensure()` 的
+  **所有补地图补丁之后、建索引之前**（只告警跳过、不抛错 —— 这段在 ensure 里跑）。
+  ⚠ **不要**照 4.0 把这批登记成「通关即复位」的重玩链（`repairedReplayChains`）：交付收尾任务的
+  **当下**就会把它从 `quests.completed` 抹掉，而 1052/1942/3972/1305 是**录制任务**，
+  `missionIdFinish` 与 NPC 可见位都依赖它们留在完成记录里（tests/boss-tournament.test.mjs 当场红）。
+  跨天 `ensureDaily` 本来就清 `completed`，「第二天能重玩」不受影响 —— 只是不做「同一天重玩」。
+- **守卫挑战（第 84 版，`lib/guard-challenges-data.mjs`）**：征战广场 945 的 2/3 号守卫各挂一套
+  「接取即开战」的 33 条单体 BOSS 挑战（8901—8933，17/16 分；`setting:1034`、exp/money3 各 10000、
+  `submitBattleID:0`、可重复）。6 个新编队 12100—12103 / 20501 / 20502 + 9 只本地怪 4200—4208 +
+  怪物侧技能 9999:1「不死不灭」+ AI 4204；其余 27 条复用录制编队（11811 暗精灵王-夕、11781 库库尔坎…）。
+  ⚠ `applyGuardChallenges(official)` 必须排在 `official-data.ensure()` 的 **所有补怪补编队之后**
+  （`applyAskSword` 之后）、建索引之前 —— 放进 `applyBossChallenges`（ensure 第一步）会当场
+  「缺少击杀目标怪物 2524」整个服务起不来。
+  ⚠ 90 级条件**只作说明不设卡**：`missionConditions(q,'acceptCondition')` 对非城市任务只保留
+  type 9/10（与 4.0 同款），等级条件写进定义但不进任务包。
+  ⚠ 奖励箱 9300931 两边都无定义 → `missionRewards()` 静默滤掉（任务照常可接可打可交，箱子不发）。
 - **三件「客户端认识、服务端要接」的背包道具**（第 73 版，`lib/bag-actions.mjs` + `restoration-service.mjs`
   + `pet-state.mjs`/`pet-service.mjs`）：288 背包扩展（wait **20**；回 `byte(20)` **并另推 12058
   + `int(新容量)`** —— 客户端对 288 根本不读回包容量，只弹一句「背包容量已增加」）；
@@ -417,6 +439,9 @@
 - 本地 NPC 由 `content.mjs` push 进 `maps[].npcs`（**地形之后**），编号 0..127。
 - **怪物本地号 21000–32767**（第 79 版）：永泽塔困难塔复用普通塔 id 但属性不同的那一份换到这里
   （官方怪物 id ≤4071，这段无占用；上界由编队槽位的 short 决定）。见 `lib/climb-tower.mjs`。
+- **守卫挑战的本地号**（第 84 版，照 4.0 原样）：怪 **4200–4208**、编队
+  **12100–12103 / 20501 / 20502**、任务 **8901–8933**、怪物侧技能 **9999:1**、AI 4204；
+  奖励箱 9300931 无定义（只记账）。见 `lib/guard-challenges-data.mjs`。
 
 ---
 

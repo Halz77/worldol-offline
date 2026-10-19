@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import {Reader,Writer} from './codec.mjs';
 import {cloneMonster,addGroup} from './dungeon-challenge-data.mjs';
-
+import {GUARD_CHALLENGE_REVISION} from './guard-challenges-data.mjs';
 export const bossChallenges=JSON.parse(fs.readFileSync(new URL('../data/boss-challenges-v1.json',import.meta.url),'utf8'));
 export const bossChallengeRevision=bossChallenges.revision;
 
@@ -52,6 +52,9 @@ export function applyBossChallenges(official){
  }
  return official;
 }
+
+/** 守卫挑战的来源版本号（`/api/status` 里一并报出来）。 */
+export const guardChallengeRevision=GUARD_CHALLENGE_REVISION;
 
 // ════════════════════════════════════════════════════════════════════════════
 // 挑战型副本本地补完（对齐社区版 boss-challenges.mjs / dungeon-challenge-repairs.mjs）

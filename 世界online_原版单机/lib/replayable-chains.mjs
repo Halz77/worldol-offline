@@ -76,6 +76,14 @@ let cache=null;
  */
 export function replayableChains(){
  if(cache)return cache;
+ // ⚠ 第 84 版**有意不**把挑战副本目录 / 故事副本登记成重玩链（4.0 的
+ // `repairedReplayChains()` 做了这一步）：链一旦「通关即复位」，交付收尾任务的**当下**
+ // 就会把它从 `quests.completed` 里抹掉 —— 而目录里 70/79/80/94 的收尾任务是**录制任务**
+ // （1052 暗之赠礼 / 1942 继续前进 / 3972 挑战十殿阎罗 / 1305 挑战BOSS），后续内容、
+ // `missionIdFinish`、NPC 可见位都依赖它们留在完成记录里
+ // （tests/boss-tournament.test.mjs「交付后进完成表」当场就会红）。
+ // 跨天复位（`ensureDaily`）本来就清 `completed`，所以「第二天能重玩」不受影响，
+ // 只是不做「同一天重玩」。
  const rows=(chainData.chains||[]).map(chain=>{
   const root=Number(chain.root),nodes=new Set(chainNodes(root));
   for(const name of [chain.series].flat().filter(Boolean))for(const q of officialMissions.values())if(q.series===name)nodes.add(q.id);

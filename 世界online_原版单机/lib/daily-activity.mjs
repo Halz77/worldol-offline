@@ -6,6 +6,7 @@ import {applyYunruoDaily,yunruoTempleRevision} from './yunruo-temple.mjs';
 import {applyRecordedExpansionDaily,recordedExpansionRevision} from './recorded-expansion.mjs';
 import {applyLostSoulDesertDaily} from './lost-soul-desert.mjs';
 import {applyRepairedDaily,dailyNavigation,dungeonRepairRevision} from './dungeon-repairs.mjs';
+import {applyDailyDungeonDirectory,DIRECTORY_REVISION} from './daily-dungeon-directory.mjs';
 import {vipBenefits} from './home-feature-data.mjs';
 import {cityUpgradeDone} from './city-progress.mjs';
 
@@ -23,11 +24,15 @@ function ensure(){
  // 迷失之魂沙漠 10/11 两环（见 lib/lost-soul-desert.mjs）要出现在每日看板里，
  // 否则玩家在「疯狂元素」之后看不到任何线索。
  applyLostSoulDesertDaily(dailyData);
+ // 挑战副本目录（38 行，第 84 版）：问剑十一峰、黄金十二宫、英灵迷宫、月宫、十殿阎罗…
+ // 先把行推进看板，再让 applyRepairedDaily 给其中 16 行绑进度与导航（另建 97/98/99 三行）。
+ // 顺序不能反 —— 绑定是按行号找行的。
+ applyDailyDungeonDirectory(dailyData);
  // 8 个挑战 / 剧情副本的位表（见 lib/dungeon-repairs.mjs）：节点集合直接取
  // data/replayable-chains.json 里的 daily-* 链，进度与「同一天重玩」共用同一份名单；
- // 顺带补上葬送佣兵团、失魂沙漠续篇与单机合作副本三行。
+ // 顺带补上葬送佣兵团、失魂沙漠续篇与单机合作副本三行，以及挑战副本目录的 16 行。
  applyRepairedDaily(dailyData);
- dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision()+'+'+dungeonRepairRevision;
+ dailyData.revision+='+'+yunruoTempleRevision+'+'+recordedExpansionRevision()+'+'+dungeonRepairRevision+'+'+DIRECTORY_REVISION;
  built={
   data:dailyData,
   revision:dailyData.revision,

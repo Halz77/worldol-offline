@@ -66,7 +66,7 @@ test('full recorded beauty-festival chain credits completion once and grants the
   const target=cityTarget(q,p);position(p,target.mapId,target.npcId);
   const r=h.call(14503,new Writer().short(target.npcId).short(id).int(0));assert.equal(r.byte(),0,`${id}: ${r.b.toString('hex')}`);
  }
- const info=decodeDaily('s2c_TaskInfo',h.call(22105,new Writer(),22106).b);assert.equal(info.info.length,58);assert.equal(info.activeInfo.activeValue,100);assert.equal(info.info.find(t=>t.id===5).status,2);
+ const info=decodeDaily('s2c_TaskInfo',h.call(22105,new Writer(),22106).b);assert.equal(info.info.length,99,'58 条录制行 + 38 条挑战副本目录 + 97/98/99 三行');assert.equal(info.activeInfo.activeValue,100);assert.equal(info.info.find(t=>t.id===5).status,2);
  const before=p.coins,claim=()=>decodeDaily('s2c_TaskActiveReward',h.call(22107,encodeDaily('c2s_TaskActiveReward',{id:1}),22108).b);
  assert.equal(claim().rs,0);assert.equal(p.coins,before+50000);assert.equal(claim().rs,-1);assert.equal(p.coins,before+50000);
  assert.equal(dailySnapshot(p).vitality.rewards[0].status,0,'new activity points do not leak into legacy vitality');

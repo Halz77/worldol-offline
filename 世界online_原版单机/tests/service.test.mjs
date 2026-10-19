@@ -65,9 +65,9 @@ test('loopback service creates, enters and persists a role through v305 messages
     assert.equal(create.byte(),0);const roleId=create.int();assert.equal(create.string(),'验收角色');
     assert.equal((await call(2,new Writer().int(roleId))).byte(),0);
     const activity=await call(14551);assert.equal(activity.bool(),true);assert.equal(activity.short(),20);assert.equal(activity.short(),0);assert.equal(activity.short(),4);
-    const daily=decodeDaily('s2c_TaskInfo',(await call(22105,new Writer(),22106)).b);assert.equal(daily.info.length,58);assert.equal(daily.activeInfo.activeValue,0);
+    const daily=decodeDaily('s2c_TaskInfo',(await call(22105,new Writer(),22106)).b);assert.equal(daily.info.length,99,'58 条录制行 + 38 条挑战副本目录 + 97/98/99 三行');assert.equal(daily.activeInfo.activeValue,0);
     const denied=decodeDaily('s2c_TaskActiveReward',(await call(22107,encodeDaily('c2s_TaskActiveReward',{id:1}),22108)).b);assert.equal(denied.rs,-1);assert.match(denied.rsDesc,/尚未达到/);
-    const diskBefore=fs.readFileSync(path.join(dir,'world.json'),'utf8');const dailyApi=await(await fetch(`http://127.0.0.1:${port}/api/daily-activity?role=${roleId}`)).json();assert.equal(dailyApi.vitality.value,20);assert.equal(dailyApi.tasks.info.length,58);assert.equal(fs.readFileSync(path.join(dir,'world.json'),'utf8'),diskBefore);
+    const diskBefore=fs.readFileSync(path.join(dir,'world.json'),'utf8');const dailyApi=await(await fetch(`http://127.0.0.1:${port}/api/daily-activity?role=${roleId}`)).json();assert.equal(dailyApi.vitality.value,20);assert.equal(dailyApi.tasks.info.length,99);assert.equal(fs.readFileSync(path.join(dir,'world.json'),'utf8'),diskBefore);
     await call(16001);assert.ok(ratings.at(-1)>0);const initialRating=ratings.at(-1);
     const composition=await call(90001);assert.equal(composition.byte(),0);assert.equal(JSON.parse(composition.string()).role,roleId);
     const vip=await call(90003,new Writer().byte(9));assert.equal(vip.byte(),0);const vipState=JSON.parse(vip.string());assert.equal(vipState.vipLevel,9);assert.equal(vip.bool(),false);

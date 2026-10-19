@@ -8,6 +8,7 @@ import {SaveStore} from '../lib/store.mjs';
 import {Writer,Reader} from '../lib/codec.mjs';
 import {decoders,Reader as NativeReader} from '../tools/capture-decoders.mjs';
 import {bossChallenges} from '../lib/boss-challenges.mjs';
+import {GUARD_CHALLENGES} from '../lib/guard-challenges-data.mjs';
 import {official,officialMissions,officialItems} from '../lib/official-data.mjs';
 import {mapBattleData,officialMonsterGroups,officialMonsterModels} from '../lib/official-packets.mjs';
 import {applyOverrideToDefinition} from '../lib/local-skill-overrides.mjs';
@@ -39,8 +40,13 @@ test('plaza packets retain every captured monster stat, AI, skill and all eleven
  // MOD(plaza-kukulkan)：征战广场现在是 3 个挑战（霸天虎 / 东哥 / 库库尔坎，见 data/boss-challenges-v1.json），
  // 库库尔坎的护卫把编队和怪物定义都撑大了，原先写死的「6 个怪物 / 2 个编队」不再成立。
  // 改成从本地挑战数据推导数量；下面逐条定义的原样解码校验保持不变。
- const references=()=>{const ids=new Set(bossChallenges.groups.flatMap(g=>g.monsters).filter(id=>id>0));return [...ids].filter(id=>official.monsters.some(m=>m.id===id));};
- assert.equal(actual.groups.length,bossChallenges.groups.length);
+ // MOD(guard-challenges, 第 84 版)：守卫挑战（33 条）挂在同一张地图的两个守卫 NPC 上，
+ // 客户端要按任务包里的 acceptBattleID 找到编队，所以这一批的 33 个编队（27 个复用录制、
+ // 6 个新建）也会一起下发 —— 预期数量按「两批数据的并集」算，逐条原样解码校验保持不变。
+ const guardGroupIds=new Set(GUARD_CHALLENGES.map(q=>q.group));
+ const groupIds=new Set([...bossChallenges.groups.map(g=>g.groupId),...guardGroupIds]);
+ const references=()=>{const ids=new Set([...bossChallenges.groups,...official.groups.filter(g=>guardGroupIds.has(g.groupId))].flatMap(g=>[...g.monsters,...g.npcs]).filter(id=>id>0));return [...ids].filter(id=>official.monsters.some(m=>m.id===id));};
+ assert.equal(actual.groups.length,groupIds.size);
  assert.equal(actual.monsters.length,references().length);
  // 库库尔坎的护卫还引入了自己的技能与 AI 记录（原版 13 条技能 / 5 条 AI → 17 / 9），
  // 所以只要求「录到的技能与 AI 一条不少」；逐条比对仍然照旧。
