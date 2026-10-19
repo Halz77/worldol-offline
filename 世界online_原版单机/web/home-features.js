@@ -258,6 +258,7 @@
     button('刷新在线进度',()=>open('welfare'));
    }else if(current==='tower'){
     button('原版塔层目录',()=>{dialog.close();UI.showWin(req(0).ModName.Tower,req(0).TowerViewType.TowerMain);});
+    text('【单机修改】132 层全部开放，不用先通关前面的楼层；每层奖励统一为 50 黄金 + 傲雪凌霜礼盒 ×1 + 30 勇气勋章（首通与扫荡同一份）。');
     for(const mode of state.tower){const group=element('details');group.open=mode.mode===1;group.append(element('summary',`${mode.mode===1?'普通':'困难'} · ${mode.levels.length}关`));for(const f of mode.levels){const row=element('article');row.className='home-row';text(`第${f.rank}层 · 建议${f.level}级`,row);text(f.info,row);button('怪物属性',()=>preview(f.id),row,!f.previewAvailable);group.append(row);}body.append(group);}
    }else if(current==='dungeons'){
     title.textContent='已采集副本与地图';text(`共 ${state.dungeons.length} 张地图。已恢复入口不限制等级；未采集的后续场景会提示待补。`);

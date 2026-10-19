@@ -220,6 +220,22 @@
   `delete` 它（`lib/game-service.mjs`），旧版本因此实战里永远不发奖（单测直接调函数才看不出来）。
   ⚠ 90020 处理 `trial-settle` 时在回包里附 `trialReport={damage,tier,granted,bestDamage}`
   （`homeSnapshot` 本身保持纯读）：打赢那份是 12502 发的，这条上报的 `granted` 自然是 0。
+- **永泽塔（第 79 版，`lib/climb-tower.mjs`）**：塔层数据（`data/home-features-v1.json`，两边**字节一致**）
+  从不缺，缺的是接线；塔怪 2700–3000 **不在官方怪物表**、两边都没技能/AI（`skillsPending/aiPending`），
+  「搬他们的塔怪数据」不存在。真缺口是**困难塔 121—132 复用普通塔 1—120 的怪物 id 却属性 ×7**
+  —— 一个 id 只能带一份属性（客户端按 id 认怪），所以第二份现场换成 `LOCAL_TOWER_VARIANT_BASE=21000`
+  起的本地号（官方 id ≤4071、20000–32767 本工程无占用；上限 32767 因为**编队槽位是 short**）：
+  `towerMonsterSignature()` 按「除 wire/sources 外的全字段」判同 id 是否两份属性（同签名复用、不同换号），
+  `reidMonsterWire()` **只改 wire 头 4 字节 int id**（塔怪 wire 是「3 字节长度 + UTF-16BE 名字」那套，
+  重写属性区必乱码），编队槽位与模型包都取自 `towerFloorMonsterIds(floorId)`（两处必须同源）。
+  三处「单机修改」照参考实现（用户 2026-10-19「照做吧」）：① 全层开放（`floorsWithOpenFloor()` 全 `openFloor=0`，
+  0 是「无前置」别用 `x||1` 兜）；② 每层奖励统一 `TOWER_FLOOR_REWARD=[[-1,50],[100781,1],[-6,30]]`
+  —— **30002 下发的 `first`/`normal` 也要一起换**（否则客户端奖励栏显示抓包旧表、与实际发放不符），
+  行→itemInfo 按 `towerRewardRow`（正数查定义补 name/bagIcon/grade，负数按 `TOWER_MONEY_GRADE`）；
+  抓包原表留在数据文件里不再使用（1759/1760/1770 宝箱本来就没有道具定义）；③ `TOWER_BUY_COUNT` 10→1
+  —— 客户端**没有**永泽塔购买入口（无 `C2S_CLIMB_TOWER_BUY`，1496 界面只有帮助/模式两按钮），
+  两边都是死代码。⚠ 傲雪凌霜礼盒 100781 是 type 28，本工程**还没有开箱机制**，只能当收藏。
+  奖励结算抽成了 `planTowerRewardRows(p,rows)`（缺定义道具跳过并记账，单测直接喂行）。
 
 ---
 
@@ -362,6 +378,8 @@
   800110 = 「点亮所有图鉴」（消耗品，补给商人免费领，定义在 `lib/handbook-item.mjs`）。
 - 919 只卖训练师教不到的满级技能书；遗忘 14003/14006；改名 15511；公告在 `web/offline.js` 的 `applyNotice`。
 - 本地 NPC 由 `content.mjs` push 进 `maps[].npcs`（**地形之后**），编号 0..127。
+- **怪物本地号 21000–32767**（第 79 版）：永泽塔困难塔复用普通塔 id 但属性不同的那一份换到这里
+  （官方怪物 id ≤4071，这段无占用；上界由编队槽位的 short 决定）。见 `lib/climb-tower.mjs`。
 
 ---
 

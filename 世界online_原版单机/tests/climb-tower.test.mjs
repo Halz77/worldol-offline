@@ -7,12 +7,14 @@ import {handleHomeFeatures} from '../lib/home-feature-service.mjs';
 import {handleGame,BATTLE_TRAILER} from '../lib/game-service.mjs';
 import {encodeWithSchema} from '../lib/feature-protobuf.mjs';
 import {homeFeatureData,towerPreviews} from '../lib/home-feature-data.mjs';
-import {officialGroups,officialMonsters} from '../lib/official-data.mjs';
+import {official,officialGroups,officialMonsters} from '../lib/official-data.mjs';
+import {mapBattleData} from '../lib/official-packets.mjs';
 import {protobuf} from '../tools/capture-decoders.mjs';
 import {dailyKey} from '../lib/daily-activity.mjs';
 import {
  registerClimbTower,towerGroupOf,towerFloorOfGroup,towerFloor,towerLevels,towerInfo,towerCounts,
  towerFloorState,towerProgress,grantTowerFloorReward,TOWER_GROUP_BASE,TOWER_DAILY_CHALLENGE,
+ towerFloorMonsterIds,LOCAL_TOWER_VARIANT_BASE,planTowerRewardRows,
 } from '../lib/climb-tower.mjs';
 
 /**
@@ -73,7 +75,50 @@ test('注册：132 层全部有编队，塔怪进官方怪物表，怪物居中�
  assert.deepEqual(group.monsters.slice(0,7),[0,0,0,filled[0],filled[1],filled[2],0]);
 });
 
-test('塔信息：真实剩余次数、层列表降序、state 反映逐层解锁',()=>{
+test('困难塔复用普通塔 id 的怪：属性 ×7 那一份要换本地号（否则打的是普通塔的弱属性）',()=>{
+ registerClimbTower();
+ const weakIds=towerFloorMonsterIds(10),hardIds=towerFloorMonsterIds(121);
+ assert.deepEqual(weakIds,towerPreviews.get(10).monsters.map(m=>m.id),'普通塔保持原 id（老引用/预览不变）');
+ assert.equal(hardIds.length,towerPreviews.get(121).monsters.length);
+ // 困难塔那份（121—132 层）属性 ×7，一个 id 装不下两份 → 全部是 21000+ 的本地号
+ for(const [i,id] of hardIds.entries()){
+  const preview=towerPreviews.get(121).monsters[i],record=officialMonsters.get(id);
+  assert.ok(id>=LOCAL_TOWER_VARIANT_BASE,`第 ${i} 只怪要换成本地号，实际 ${id}`);
+  assert.equal(record.localTowerVariantOf,preview.id,'要记住自己是谁的变体');
+  assert.equal(record.name,preview.name);
+  assert.equal(record.hpMax,preview.hpMax);
+  assert.equal(record.atkMin,preview.atkMin);
+  assert.equal(record.id,id);
+  // wire 头 4 字节是 int id：客户端按 wire 里的 id 认怪，必须换成新号
+  assert.equal(Buffer.from(record.wireBase64,'base64').readInt32BE(0),id);
+ }
+ const weak=officialMonsters.get(weakIds[0]),strong=officialMonsters.get(hardIds[0]);
+ assert.equal(weak.name,strong.name,'同一只怪（同名同模型）的两种属性');
+ assert.equal(strong.hpMax,weak.hpMax*7,'困难塔那份是 ×7');
+ // 编队槽位用的是换号后的 id（12501/模型包都按这个 id 查属性）
+ assert.deepEqual(officialGroups.get(TOWER_GROUP_BASE+121).monsters.filter(Boolean),hardIds);
+ // 10503 的模型包（客户端认怪的地方）也要带上换号后的那一份
+ const battle=mapBattleData(945,[TOWER_GROUP_BASE+121]);
+ const model=battle.monsters.find(m=>m.id===hardIds[0]);
+ assert.ok(model,'模型包要带变体怪');
+ assert.equal(model.hpMax,towerPreviews.get(121).monsters[0].hpMax);
+ // 同一张图进普通塔第 10 层时，模型包给的还是普通塔那份（两份互不影响）
+ const weakModel=mapBattleData(945,[TOWER_GROUP_BASE+10]).monsters.find(m=>m.id===weakIds[0]);
+ assert.ok(weakModel,'普通塔那份也要能查到');
+ assert.equal(weakModel.hpMax,weak.hpMax,'普通塔那份不能被困难塔覆盖');
+ // 幂等：重复注册不产生新号
+ const before=official.monsters.length;
+ registerClimbTower();
+ assert.equal(official.monsters.length,before);
+ // 12501 开战：服务端也按新号查怪（战力/掉落都走 officialMonsters.get(id)）
+ const h=harness();
+ h.call(12501,new Writer().short(TOWER_GROUP_BASE+121));
+ assert.equal(h.context.battle.towerFloorId,121);
+ assert.deepEqual(h.context.battle.monsters,hardIds);
+ assert.equal(officialMonsters.get(h.context.battle.monsters[0]).hpMax,strong.hpMax);
+});
+
+test('塔信息：真实剩余次数、层列表降序、全层开放、奖励栏是统一那条',()=>{
  const h=harness(),p=h.p;
  h.call(30001,towerInfoRequest(1));
  const info=protobuf(h.last(30002).bytes,'s2c_ClimbTowerInfo',homeFeatureData.schemas);
@@ -85,15 +130,20 @@ test('塔信息：真实剩余次数、层列表降序、state 反映逐层解�
  // 降序下发（客户端 onClimbTowerInfo 会再 reverse 一次 → 界面上第 1 层在最上面）
  assert.equal(info.infos[0].id,120);
  assert.equal(info.infos.at(-1).id,1);
- // 只有第 1 层可挑战
- assert.equal(info.infos.find(f=>f.id===1).state,1);
- assert.equal(info.infos.find(f=>f.id===2).state,0);
- assert.equal(info.infos.find(f=>f.id===1).openFloor,0,'第 1 层必须直接开放（0 不能被兜成 1）');
- // 困难塔独立计数
+ // 【单机修改】全层开放：120 层全部 state=1、openFloor=0（不再「上一层通关才开下一层」）
+ assert.equal(info.infos.filter(f=>f.state!==1).length,0,'全层可挑战');
+ for(const f of info.infos)assert.equal(f.openFloor,0,`第 ${f.id} 层 openFloor 必须是 0（不能兜成 1）`);
+ // 奖励栏下发的就是统一那条（与实际发放一致）：50 黄金 + 傲雪凌霜礼盒 + 30 勇气勋章
+ const row=f=>f.map(i=>[i.itemId,i.itemCount]).sort((a,b)=>a[0]-b[0]);
+ assert.deepEqual(row(info.infos[0].first),[[-6,30],[-1,50],[100781,1]]);
+ assert.deepEqual(row(info.infos[0].normal),row(info.infos[0].first));
+ assert.equal(info.infos[0].first.find(i=>i.itemId===100781).name,'傲雪凌霜礼盒','名字要补齐，否则奖励栏是空名');
+ // 困难塔独立计数（也是全层开放）
  h.call(30001,towerInfoRequest(2));
  const hard=protobuf(h.last(30002).bytes,'s2c_ClimbTowerInfo',homeFeatureData.schemas);
  assert.equal(hard.infos.length,12);
  assert.equal(hard.infos.at(-1).id,121);
+ assert.equal(hard.infos.filter(f=>f.state!==1).length,0);
 });
 
 test('挑战：扣 1 次、回 30004、把塔组随 10503 下发，开战后清掉待下发标记',()=>{
@@ -119,22 +169,21 @@ test('模拟战不扣次数',()=>{
  assert.equal(protobuf(h.last(30004).bytes,'s2c_ClimbTowerChallenge',homeFeatureData.schemas).type,1);
 });
 
-test('胜利：记通关、发首通奖励（勇气勋章/银币）、立刻推送新塔信息点亮下一层',()=>{
- const h=harness(),p=h.p;
+test('胜利：记通关、发首通奖励（统一那条：50 黄金 + 礼盒 + 30 勋章）、推一次新塔信息',()=>{
+ const h=harness(),p=h.p,gold=p.gold;
  h.call(30003,challenge(1,2));
  h.call(12501,new Writer().short(TOWER_GROUP_BASE+1));
  h.sent.length=0;
  fight(h,2);
  assert.equal(towerProgress(p)['1'],1,'1 = 首通已领、扫荡待领');
- assert.equal(p.towerPoint,10,'第 1 层首通给 10 枚勇气勋章');
- assert.equal(p.silver,30,'首通还给 30 银');
- assert.equal(officialMonsters.size>0,true);
- // 首通奖励里的 1759（初级宝箱）在抓包里没有道具定义，必须跳过而不是让结算失败
+ assert.equal(p.towerPoint,30,'首通给 30 枚勇气勋章');
+ assert.equal(p.gold,gold+50,'首通给 50 黄金');
+ assert.equal(p.inventory.find(i=>i.itemId===100781)?.quantity,1,'首通给 1 个傲雪凌霜礼盒');
+ assert.ok(h.last(12100),'物品/货币要回 12100');
  assert.ok(h.last(30002),'要推一次新的塔信息');
  const info=protobuf(h.last(30002).bytes,'s2c_ClimbTowerInfo',homeFeatureData.schemas);
  assert.equal(info.infos.find(f=>f.id===1).receivedFirst,true);
  assert.equal(info.infos.find(f=>f.id===1).receivedNormal,false,'扫荡奖励还没领');
- assert.equal(info.infos.find(f=>f.id===2).state,1,'第 2 层要开放');
  assert.ok(h.last(30007),'积分变化要单独发 30007');
  // 同一层首通奖励只发一次：再打一次不会再给
  const before=structuredClone(p);
@@ -143,20 +192,21 @@ test('胜利：记通关、发首通奖励（勇气勋章/银币）、立刻推�
  h.call(12501,new Writer().short(TOWER_GROUP_BASE+1));
  fight(h,2);
  assert.equal(p.towerPoint,before.towerPoint,'重复通关不该重复发首通奖励');
- assert.equal(p.silver,before.silver);
+ assert.equal(p.gold,before.gold);
+ assert.equal(p.inventory.find(i=>i.itemId===100781).quantity,1,'礼盒也不该再发一个');
 });
 
-test('失败不算通关',()=>{
+test('失败不算通关（但层本来就是开的）',()=>{
  const h=harness(),p=h.p;
  h.call(30003,challenge(1,2));
  h.call(12501,new Writer().short(TOWER_GROUP_BASE+1));
  fight(h,3);
  assert.equal(towerProgress(p)['1'],undefined);
- assert.equal(towerFloorState(p,2),0,'没通关就不该开放下一层');
+ assert.equal(towerFloorState(p,2),1,'全层开放 ⇒ 第 2 层本来就能打（不是「通关才开」）');
 });
 
-test('扫荡：扣扫荡卷 + 扣 1 次 + 发 normal 奖励 + 记 2；之后不能再扫',()=>{
- const h=harness(),p=h.p;
+test('扫荡：扣扫荡卷 + 扣 1 次 + 发统一奖励 + 记 2；之后不能再扫',()=>{
+ const h=harness(),p=h.p,gold=p.gold;
  towerProgress(p)['1']=1;   // 模拟已通关（首通已领）
  h.sent.length=0;
  h.call(30005,new Writer().int(1));
@@ -164,8 +214,9 @@ test('扫荡：扣扫荡卷 + 扣 1 次 + 发 normal 奖励 + 记 2；之后不�
  assert.equal(towerProgress(p)['1'],2);
  assert.equal(p.inventory.find(i=>i.itemId===5300).quantity,2,'扣 1 张扫荡卷');
  assert.equal(towerCounts(p).left,TOWER_DAILY_CHALLENGE-1);
- assert.equal(p.towerPoint,10,'扫荡 normal 给 10 枚');
- assert.equal(p.coins,50000,'normal 还给 5 万铜币');
+ assert.equal(p.towerPoint,30,'扫荡给 30 枚勇气勋章');
+ assert.equal(p.gold,gold+50,'扫荡给 50 黄金');
+ assert.equal(p.inventory.find(i=>i.itemId===100781)?.quantity,1);
  assert.ok(h.last(30006),'要回 s2c_ClimbTowerSweep');
  assert.ok(h.last(12100),'物品/货币走 12100');
 
@@ -192,14 +243,21 @@ test('扫荡的三道门：未通关 / 没扫荡卷 / 次数用完',()=>{
  assert.match(h.notice().errMsg,/次数已用完/);
 });
 
-test('越级挑战被服务端拦住（客户端不能绕过解锁）',()=>{
- const h=harness();
+test('全层开放：任意层都能直接挑战（不用先通关前面的楼层）',()=>{
+ const h=harness(),p=h.p;
  h.call(30003,challenge(5,2));
- assert.match(h.notice().errMsg,/尚未开放/);
- // 困难塔也要先打普通塔？不需要 —— 两座塔独立，但困难塔第 2 层要先进度
+ assert.equal(h.notice(),null,'第 5 层不该再被「尚未开放」拦住');
+ assert.equal(towerCounts(p).left,TOWER_DAILY_CHALLENGE-1);
+ // 困难塔也一样（两个塔的进度互不影响，也不需要先打普通塔）
  h.sent.length=0;
  h.call(30003,challenge(122,2));
- assert.match(h.notice().errMsg,/尚未开放/);
+ assert.equal(h.notice(),null,'困难塔第 2 关直接可打');
+ // 不存在的层仍然要拒，并且不能动上一次留下的待下发标记
+ const pending=p.towerPendingGroup;
+ h.sent.length=0;
+ h.call(30003,challenge(9999,2));
+ assert.match(h.notice().errMsg,/没有这一层/);
+ assert.equal(p.towerPendingGroup,pending,'被拒时不能留下待下发标记');
 });
 
 test('次数用完时拒绝实战挑战，模拟战仍然可以',()=>{
@@ -220,13 +278,30 @@ test('跨天重置次数，通关记录保留',()=>{
  assert.equal(towerProgress(p)['1'],2,'通关记录不清');
 });
 
+test('奖励发放：每层统一那条（50 黄金 + 礼盒 ×1 + 30 勋章），抓包原表不再使用',()=>{
+ const p=role(),gold=p.gold;
+ const plan=grantTowerFloorReward(p,1,true);
+ assert.deepEqual(plan.skipped,[]);
+ assert.equal(plan.currencies.gold,50);
+ assert.equal(plan.towerScore,30);
+ assert.equal(p.gold,gold+50);
+ assert.equal(p.towerPoint,30);
+ assert.deepEqual(plan.added.map(i=>i.instance.itemId),[100781]);
+ // 首通与扫荡同一条
+ const q=role();
+ assert.deepEqual(grantTowerFloorReward(q,60,false).currencies,grantTowerFloorReward(q,1,true).currencies);
+ // 抓包那份每层奖励（1759/1760/1770 宝箱）**仍然原样躺在数据文件里**，只是服务端不再发它
+ assert.ok(homeFeatureData.tower[0].levels[0].first.some(r=>r.itemId===1759),'记录表不改（一字节不改）');
+ assert.ok(towerFloor(1).first.some(r=>r.itemId===1759),'towerFloor 仍然带记录行');
+});
+
 test('奖励发放：缺定义的道具跳过并记账，货币按 -1/-2/-3/-6 分流',()=>{
  const p=role();
- const plan=grantTowerFloorReward(p,1,true);   // 第 1 层首通 [-2,30],[1759,1],[-6,10]
+ const plan=planTowerRewardRows(p,[{itemId:1759,itemCount:1},{itemId:-2,itemCount:30},{itemId:-6,itemCount:10},{itemId:-3,itemCount:50000},{itemId:-1,itemCount:5}]);
  assert.deepEqual(plan.skipped,[1759],'1759 没有道具定义，跳过');
- assert.equal(plan.currencies.silver,30);
+ assert.deepEqual(plan.currencies,{gold:5,silver:30,coins:50000});
  assert.equal(plan.towerScore,10);
- assert.equal(p.silver,30);assert.equal(p.towerPoint,10);
+ assert.equal(p.gold,1005);assert.equal(p.silver,30);assert.equal(p.coins,50000);assert.equal(p.towerPoint,10);
  assert.equal(plan.added.length,0);
 });
 

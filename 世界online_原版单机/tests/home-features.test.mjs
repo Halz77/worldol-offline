@@ -25,10 +25,10 @@ test('all 132 tower previews use the exact captured body; tower info reflects pe
  assert.equal(towerPreviews.size,132);
  assert.equal(towerInfo(1,p).infos.length,120);
  assert.equal(towerInfo(2,p).infos.length,12);
- // 进度是**按角色**算的：新角色只有第 1 层可挑战，其它层未开放、奖励都没领。
+ // 【单机修改】全层开放：新角色 120 层全是「可挑战」（不再只有第 1 层），奖励都没领。
  const normal=towerInfo(1,p).infos;
  assert.equal(normal.find(f=>f.id===1).state,1);
- assert.equal(normal.filter(f=>f.state!==0).length,1);
+ assert.equal(normal.filter(f=>f.state!==1).length,0,'全层开放 ⇒ 不该有未开放的层');
  for(const f of normal){assert.equal(f.receivedFirst,false);assert.equal(f.receivedNormal,false);}
  for(const [id,preview]of towerPreviews){const r=h.call(13101,new Writer().int(id));assert.deepEqual(r.b,Buffer.from(preview.bodyBase64,'base64'));}
  assert.deepEqual(p,before,'查预览不能让角色多出任何字段');
