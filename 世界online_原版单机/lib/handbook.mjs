@@ -1,94 +1,39 @@
 // 英雄图鉴（收集系统）—— 服务端实装（第 77 版）。
 //
 // 原版客户端的图鉴（模块 0179 BookGroupModel / 1150 图鉴主页 / 1154 图鉴等级 /
-// 1157 图鉴点亮）本来就是「服务端说哪些条目光了、每页收集率多少、加什么属性」，
+// 1157 图鉴点亮）本来就是「服务端说哪些条目光了、每页收集率多少」，
 // 客户端只负责画。本工程以前只回了 32102（一页一条，全部未点亮）、32103 直接提示
-// 「尚未接入」—— 于是图鉴是死的，等级/收集率/加成都读不到。
+// 「尚未接入」—— 于是图鉴是死的，等级/收集率都读不到。
 //
-// 这一版把整条链接上，并且加成**落在服务端**（客户端显示只是镜像）：
+// 这一版把整条链接上：
 //   32101 C2S_HAND_BOOK_INFO   → 32102（真实 unlock/level/rate/canUnlock）
 //   32103 C2S_HAND_BOOK_UNLOCK → 32104（本页全部点亮）+ 32109
-//   32107 进世界时随组列表推 → 另外补推一次 32109（把存档里的旧加成喂给客户端）
-//   道具「点亮所有图鉴」→ lit=true（全部分类 100%，等级拉满）
+//   32107 进世界时随组列表推 → 另外补推一次 32109
+//   道具「点亮所有图鉴」→ lit=true（全部分类 100%）
 //
-// 加成表与档位换算照抄参考实现「幻想世界OL 3.0 最终版」（web/offline.js 的
-// getGroupBonus / rateToLevel）：收集率 100% → 70 级，宠物 7·8·9·41、坐骑 11、
-// 特殊 19·24·34·37·39 各有一张表，其余（普通武器/防具）走「物攻/魔攻/武器伤害」那张。
+// ★ 第 80 版：**图鉴不再提供任何属性加成**（用户决定，加成整块删除）。
+//   第 77 版曾照参考实现「幻想世界OL 3.0 最终版」做四张加成表（宠物 7·8·9·41、
+//   坐骑 11、特殊 19·24·34·37·39、其余走「物攻/魔攻/武器伤害」那张），落点是
+//   `native-character-stats` 的 getSkillPowerValue，并把同一份合计用 32109 发给客户端
+//   （客户端 `onHandBookPowerInfo` 塞进静态的 `BookGroupModel.bookGroupPower`，
+//   战斗单位 `getPower(key)` 再把它加进去 —— 原版落点是 getPower，不是 getSkillPowerValue）。
+//   实测这份表**过于变态**：一个 97 级角色点亮几页就有「攻击次数+50」「魔攻+600」，
+//   客户端算出的宠物血蓝上限比服务端高 7.5%，12502 的「宠物战斗状态不完整」把每一场
+//   结算都拒掉（奖励全不发）。所以整块删掉：powers 恒为 {}、32109 恒发空包，
+//   属性完全不受图鉴影响。收集率/图鉴等级（handbookLevel）只用于界面显示。
 //
-// 加成是「全局能力值增量」：客户端把它加在 `getSkillPowerValue` 的前半段
-// （原版 `getPower(key)` 里 RoleGodData + BookGroupModel.getBookGroupPower），
-// 所以服务端落在 native-character-stats.nativePlayer 的 getSkillPowerValue 上，
-// 与特征加成（featurePowers）同一层。
-//
-// 状态字段：p.handbook = {unlocked:{"组:类":[条目编号…]}, lit:false, powers:{"能力编号":值}}。
-//   · unlocked / lit 是**唯一真源**（玩家做过什么）；
-//   · powers 是派生缓存，每次状态变化 + 每次进世界都会 refreshHandbook() 重算 ——
-//     换一张加成表老存档也能在下次登录后生效，而 nativePlayer 读它时不必 import 本模块
-//     （native-character-stats ↔ restoration 已经是循环，再挂一手容易出事）。
+// 状态字段：p.handbook = {unlocked:{"组:类":[条目编号…]}, lit:false, powers:{}}。
+//   · unlocked / lit 是**唯一真源**（玩家收集到哪些条目、有没有一键点亮过）；
+//   · powers 是历史字段，第 80 版起恒为空对象 —— 留着只为吃下老存档里那份旧加成，
+//     进世界时由 refreshHandbook() 覆盖成 {}（服务端与客户端一起回到无加成）。
 import {official} from './official-data.mjs';
 
-export const HANDBOOK_PET_TYPES = [7, 8, 9, 41];
-export const HANDBOOK_MOUNT_TYPE = 11;
-export const HANDBOOK_SPECIAL_TYPES = [19, 24, 34, 37, 39];
 export const HANDBOOK_MAX_LEVEL = 70;
 
-// 收集率 → 图鉴等级（0% 无加成；100% → 70 级；1%–1% 之间取最近整数，最低 1 级）
+// 收集率 → 图鉴等级（只用于显示：0% 没有等级；100% → 70 级；其余取最近整数，最低 1 级）
 export function handbookLevel(rate) {
   if (!(rate > 0)) return 0;
   return Math.max(1, Math.round((rate / 100) * HANDBOOK_MAX_LEVEL));
-}
-
-// 八档：≥70 / ≥60 / ≥50 / ≥40 / ≥30 / ≥20 / ≥10 / 其余
-function tierIndex(level) {
-  return level >= 70 ? 0 : level >= 60 ? 1 : level >= 50 ? 2 : level >= 40 ? 3 : level >= 30 ? 4 : level >= 20 ? 5 : level >= 10 ? 6 : 7;
-}
-
-// 与客户端 bookList（入门1-9 … 终极70-100）一一对应，档位名只为可读性保留。
-export const HANDBOOK_TIERS = [
-  {lvlName: '入门', minLv: 1, maxLv: 9},
-  {lvlName: '新手', minLv: 10, maxLv: 19},
-  {lvlName: '熟练', minLv: 20, maxLv: 29},
-  {lvlName: '达人', minLv: 30, maxLv: 39},
-  {lvlName: '宗师', minLv: 40, maxLv: 49},
-  {lvlName: '传奇', minLv: 50, maxLv: 59},
-  {lvlName: '神话', minLv: 60, maxLv: 69},
-  {lvlName: '终极', minLv: 70, maxLv: 100},
-];
-
-// 每个分类一张表：pet 是「同一个值铺满一批能力」，其余是「一项能力一个值」。
-const BONUS_TABLES = {
-  pet: {
-    keys: [2, 4, 6, 8, 10, 89, 90, 91, 92, 93, 94, 95, 96, 232],
-    values: [100, 80, 60, 50, 40, 30, 20, 10],
-  },
-  mount: {
-    keys: [57, 173, 130],
-    values: [[700, 700, 7], [600, 600, 6], [500, 500, 5], [400, 400, 4], [300, 300, 3], [200, 200, 2], [100, 100, 2], [50, 50, 1]],
-  },
-  special: {
-    keys: [171, 169, 56],
-    values: [[1000, 1000, 500], [700, 700, 350], [500, 500, 250], [400, 400, 180], [300, 300, 120], [200, 200, 80], [100, 100, 50], [50, 50, 20]],
-  },
-  plain: {
-    keys: [58, 59, 60, 141],
-    values: [[500, 500, 500, 20], [450, 450, 450, 16], [350, 350, 350, 13], [250, 250, 250, 10], [200, 200, 200, 8], [150, 150, 150, 5], [100, 100, 100, 3], [50, 50, 50, 1]],
-  },
-};
-
-export function handbookTable(type) {
-  if (HANDBOOK_PET_TYPES.includes(type)) return 'pet';
-  if (type === HANDBOOK_MOUNT_TYPE) return 'mount';
-  if (HANDBOOK_SPECIAL_TYPES.includes(type)) return 'special';
-  return 'plain';
-}
-
-/** 该分类在该等级贡献的能力值；等级 0（一条都没亮）返回 null。 */
-export function handbookBonus(type, level) {
-  if (!(level > 0)) return null;
-  const table = BONUS_TABLES[handbookTable(type)];
-  const raw = table.values[tierIndex(level)];
-  const values = Array.isArray(raw) ? raw : table.keys.map(() => raw);
-  return Object.fromEntries(table.keys.map((key, index) => [key, values[index]]));
 }
 
 // 目录 → 页索引：组:类 → 条目数组。只建一次（原版目录 2240 条，32 个页）。
@@ -201,20 +146,19 @@ export function unlockOwnedItems(p) {
   return changed;
 }
 
-/** 重算「图鉴加成合计」并写回存档（返回 能力编号 → 数值）。 */
+/**
+ * 重算并写回图鉴状态。
+ * 【第 80 版】加成已整块删除，这里只剩**清理**作用：把 powers 写成 {}（老存档里那份
+ * 旧加成就是靠这一步在进世界时消失的）。保留这个函数是因为状态变化（点亮/一键点亮）
+ * 与进世界都需要一个统一收口，将来真要恢复加成也从这里进。
+ */
 export function refreshHandbook(p) {
-  const state = ensureHandbookState(p), powers = {};
-  for (const page of catalogIndex().order) {
-    const {level} = progress(state, page.group, page.type, page.rows);
-    const bonus = handbookBonus(page.type, level);
-    if (!bonus) continue;
-    for (const [key, value] of Object.entries(bonus)) powers[key] = (powers[key] || 0) + value;
-  }
-  state.powers = powers;
-  return powers;
+  const state = ensureHandbookState(p);
+  state.powers = {};
+  return state.powers;
 }
 
-/** 「点亮所有图鉴」：全部条目点亮（等级拉满），并立刻重算加成。 */
+/** 「点亮所有图鉴」：全部条目点亮（等级拉满），并立刻清一次加成缓存。 */
 export function lightAllHandbook(p) {
   const state = ensureHandbookState(p);
   state.lit = true;
@@ -222,8 +166,13 @@ export function lightAllHandbook(p) {
   return refreshHandbook(p);
 }
 
-/** 存档里的加成合计（native-character-stats 只读这里，不 import 本模块）。 */
+/**
+ * 图鉴加成合计 —— **第 80 版起恒为空**（见文件头）。
+ * 客户端 `onHandBookPowerInfo` 收到空包会把静态的 `bookGroupPower` 清空（回到无加成），
+ * 所以这里直接返回空对象就等于「图鉴不加任何属性」，客户端一行都不用改。
+ * ⚠️ 别再让它去读 p.handbook.powers：老存档里还留着第 77 版算出来的旧值。
+ */
 export function handbookPowers(p) {
-  const state = p?.handbook;
-  return state && typeof state === 'object' && state.powers && typeof state.powers === 'object' ? state.powers : {};
+  void p;
+  return {};
 }

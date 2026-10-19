@@ -63,11 +63,9 @@ test('isolated service lists the imported role, enters it, exposes it to legion,
   const legion=await(await fetch(`http://127.0.0.1:${port}/api/legion?role=1001`)).json();assert.ok(legion.actorInfos.some(r=>r.actorId===result.role.id));
   assert.equal((await call(2,new Writer().int(result.role.id))).byte(),0);assert.deepEqual(features.at(-1).powers, Object.entries(result.role.importedRolePowers).map(([id,n])=>[Number(id),n]));
   const rating=await(await fetch(`http://127.0.0.1:${port}/api/combat-rating?role=${result.role.id}`)).json();
- // 第 77 版起，进世界会按背包/装备里的条目自动点亮图鉴（lib/handbook.mjs 的
- // unlockOwnedItems）并把加成折进属性 —— 导入存档里有 2146 条目录里的东西，于是
- // HPMAX 比旧版高（55065 → 56944）。这里钉的是「导入角色能被服务端算出来」，
- // 数值变化本身是这次功能的预期结果。
- assert.equal(rating.stats.HPMAX,56944);
+ // 第 80 版起图鉴**不再提供任何属性加成**（第 77 版曾按背包自动点亮并把加成折进属性，
+ // HPMAX 55065 → 56944；加成整块删除后回到 55065）。这里钉的是「导入角色能被服务端算出来」。
+ assert.equal(rating.stats.HPMAX,55065);
   const logout=await call(3,new Writer().byte(1));assert.equal(logout.byte(),1);assert.equal(logout.byte(),0);assert.equal(logout.pos,logout.b.length);assert.equal((await call(2,new Writer().int(result.role.id))).byte(),0);assert.equal((await call(10503)).byte(),0);
   const reloaded=new SaveStore(dir).data.characters.find(p=>p.id===result.role.id);for(const key of ['inventory','skills','importedSkillDefinitions','importedRolePowers','autoSkillIds','initiativeSkillId'])assert.deepEqual(reloaded[key],result.role[key]);
   const final=await(await fetch(`http://127.0.0.1:${port}/api/status`)).json();assert.equal(final.unknown.length,0);assert.equal(stderr,'');

@@ -41,12 +41,11 @@ function nativePlayer(role){
  const skills=activeSkills(role),powers=new Map();
  for(const skill of skills){if((skill.type??1)!==1)continue;for(const [key,value] of skill.powers||[])powers.set(key,(powers.get(key)||0)+value);}
  const featurePowers=new Map(characterFeaturePowers(role));
- // 图鉴加成（第 77 版）：原版把 BookGroupModel.getBookGroupPower 加在 getPower(key) 里，
- // 而 getSkillPowerValue(e,t) 的第一段正是 this.getPower(t) —— 所以与特征加成同一层、
- // 同样不按技能类型过滤。数值是 lib/handbook.mjs 在状态变化/进世界时算好写进
- // 存档的（p.handbook.powers），这里只读，不 import handbook（避免循环依赖与新开销）。
- const bookPowers=new Map(Object.entries(role.handbook?.powers||{}).map(([key,value])=>[Number(key),value]));
- const player={...Object.fromEntries(zeroFields.map(k=>[k,0])),...playerMethods,type:3,level:role.level||1,bag,itemSetData:setAttributeData(role),getSkillPowerValue:(type,key)=>key>0?((type===1?(powers.get(key)||0):0)+(featurePowers.get(key)||0)+(bookPowers.get(key)||0)):0,getCountryBuffer:()=>0};
+ // 第 80 版：图鉴加成整块删除（第 77 版曾把 p.handbook.powers 折在这里 —— 原版落点是
+ // 战斗单位的 getPower，我们折在 getSkillPowerValue 上，实测数值过强）。现在图鉴只是
+ // 收集系统：属性计算不读 p.handbook，老存档里残留的 powers 由 handbook.refreshHandbook()
+ // 在进世界时清空，客户端也会收到空的 32109（bookGroupPower 被清空）。
+ const player={...Object.fromEntries(zeroFields.map(k=>[k,0])),...playerMethods,type:3,level:role.level||1,bag,itemSetData:setAttributeData(role),getSkillPowerValue:(type,key)=>key>0?((type===1?(powers.get(key)||0):0)+(featurePowers.get(key)||0)):0,getCountryBuffer:()=>0};
  player.level2=role.level2||0;for(const key of importedCombatFields)player[key]=role.importedCombatModifiers?.[key]||0;
  ['str','con','agi','ilt','wis'].forEach((key,i)=>player[key]=role.baseStats?.[i]??10);
  const title=selectedTitle(role);Object.assign(player,{titlePower1:title?.power1||0,titlePowerValue1:title?.value1||0,titlePower2:title?.power2||0,titlePowerValue2:title?.value2||0});

@@ -72,7 +72,7 @@
 
     var oSPV = proto.getSkillPowerValue, oPG = proto.getPower, oBEP = proto.getBagEquipPowerValue;
 
-    // 技能被动 + 神格/图鉴加成：只依赖单位自身静态数据，窗口内恒定
+    // 技能被动 + 神格加成（图鉴加成第 80 版起已整块删除）：只依赖单位自身静态数据，窗口内恒定
     proto.getSkillPowerValue = function (type, power) {
       if (!ENABLED || DEPTH <= 0 || !(power > 0)) return oSPV.call(this, type, power);
       var m = cacheOf(this), k = DOM_SPV + type * 4096 + power;
@@ -88,7 +88,7 @@
       return v;
     };
 
-    // 神格 + 图鉴加成
+    // 神格加成（图鉴加成第 80 版起已删除）
     proto.getPower = function (power) {
       if (!ENABLED || DEPTH <= 0 || !(power > 0)) return oPG.call(this, power);
       var m = cacheOf(this), k = DOM_POWER + power;

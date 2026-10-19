@@ -237,57 +237,17 @@
     }
     const Country=req(1001).default,preLevel=Country.prototype.getPreLevel;
     Country.prototype.getPreLevel=function(){return this.gameConfig?.length?preLevel.call(this):0;};
-    // 图鉴（英雄图鉴）文案：单机版把「收集率 → 等级 → 加成」整套换算放在服务端
-    // （lib/handbook.mjs），客户端只说人话。原版 getGroupTypeDes 走
-    // getPowerDesc(info.power, powerValue + addValue*档位) —— 一次只描述得出**一条**
-    // 属性，而图鉴每一档都是好几条一起加（宠物全属性 + 宠物伤害、坐骑致命点 + 无视
-    // 伤害减免 + 攻击次数…），所以整段覆盖成参考实现「幻想世界OL 3.0 最终版」
-    // （web/offline.js 的 getGroupTypeDes）那张字符串表，档位阈值与加成表一一对应。
+    // 图鉴（英雄图鉴）文案：原版 getGroupTypeDes 走
+    // getPowerDesc(info.power, powerValue + addValue*档位)，也就是「这个分类这个等级加什么」。
+    // 【第 80 版】单机版的图鉴**不再提供任何属性加成**（加成整块删除，见 lib/handbook.mjs
+    // 文件头：参考实现那张表实测过强 —— 攻击次数+50、魔攻+600，还会让客户端的宠物血蓝上限
+    // 比服务端高 7.5%，导致每场战斗结算都被判「宠物战斗状态不完整」而扣发奖励）。
+    // 这里整段接成一句固定文案：不再显示任何数字，免得面板写着加成、实际却一点不加。
     try{
       const BookGroupModel=req(179).BookGroupModel;
-      const PET_TYPES=[7,8,9,41],MOUNT_TYPE=11,SPECIAL_TYPES=[19,24,34,37,39];
       if(BookGroupModel){
         BookGroupModel.prototype.getGroupTypeDes=function(group,type,level){
-          // 原版对 0 级返回「无」，这里照旧（不然「一条都没亮」会显示成最低档的加成）。
-          if(!(level>0))return '无';
-          if(PET_TYPES.includes(type)){
-            if(level>=70)return '宠物全属性+100% 宠物伤害+100%';
-            if(level>=60)return '宠物全属性+80% 宠物伤害+80%';
-            if(level>=50)return '宠物全属性+60% 宠物伤害+60%';
-            if(level>=40)return '宠物全属性+50% 宠物伤害+50%';
-            if(level>=30)return '宠物全属性+40% 宠物伤害+40%';
-            if(level>=20)return '宠物全属性+30% 宠物伤害+30%';
-            if(level>=10)return '宠物全属性+20% 宠物伤害+20%';
-            return '宠物全属性+10% 宠物伤害+10%';
-          }
-          if(type===MOUNT_TYPE){
-            if(level>=70)return '致命点+700 无视伤害减免+700 攻击次数+7';
-            if(level>=60)return '致命点+600 无视伤害减免+600 攻击次数+6';
-            if(level>=50)return '致命点+500 无视伤害减免+500 攻击次数+5';
-            if(level>=40)return '致命点+400 无视伤害减免+400 攻击次数+4';
-            if(level>=30)return '致命点+300 无视伤害减免+300 攻击次数+3';
-            if(level>=20)return '致命点+200 无视伤害减免+200 攻击次数+3';
-            if(level>=10)return '致命点+100 无视伤害减免+100 攻击次数+2';
-            return '致命点+50 无视伤害减免+50 攻击次数+1';
-          }
-          if(SPECIAL_TYPES.includes(type)){
-            if(level>=70)return '无视洞察+1000 无视魔法反馈+1000 魔法命中+500';
-            if(level>=60)return '无视洞察+700 无视魔法反馈+700 魔法命中+350';
-            if(level>=50)return '无视洞察+500 无视魔法反馈+500 魔法命中+250';
-            if(level>=40)return '无视洞察+400 无视魔法反馈+400 魔法命中+180';
-            if(level>=30)return '无视洞察+300 无视魔法反馈+300 魔法命中+120';
-            if(level>=20)return '无视洞察+200 无视魔法反馈+200 魔法命中+80';
-            if(level>=10)return '无视洞察+100 无视魔法反馈+100 魔法命中+50';
-            return '无视洞察+50 无视魔法反馈+50 魔法命中+20';
-          }
-          if(level>=70)return '物攻+500 魔攻+500 全武器伤害、耐久+20%';
-          if(level>=60)return '物攻+450 魔攻+450 全武器伤害、耐久+16%';
-          if(level>=50)return '物攻+350 魔攻+350 全武器伤害、耐久+13%';
-          if(level>=40)return '物攻+250 魔攻+250 全武器伤害、耐久+10%';
-          if(level>=30)return '物攻+200 魔攻+200 全武器伤害、耐久+8%';
-          if(level>=20)return '物攻+150 魔攻+150 全武器伤害、耐久+5%';
-          if(level>=10)return '物攻+100 魔攻+100 全武器伤害、耐久+3%';
-          return '物攻+50 魔攻+50 全武器伤害、耐久+1%';
+          return (level>0)?'单机版图鉴仅作收集，不提供属性加成':'无';
         };
       }else record('图鉴文案未载入：主包模块 179 缺失。');
     }catch(error){record('图鉴文案覆盖失败：'+error.message);}

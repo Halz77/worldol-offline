@@ -37,9 +37,12 @@ export function handbookPage(group,type,role){
 export function handbookUnlock(view){return msg(integer(1,view.group),integer(2,view.type),...view.items.map(i=>integer(3,i.itemId)),integer(4,view.level),integer(5,view.rate));}
 // 32109 的形状：s2c_HandBookPowerInfo{infos:[{group,info:[{type,power,powerValue,effect}]}]}。
 // 客户端 onHandBookPowerInfo 会**清空**静态的 BookGroupModel.bookGroupPower，再把**所有**
-// info 里 effect 为真的 powerValue 累加到 bookGroupPower[power] —— power 是能力编号，
-// `group`/`type` 两位客户端都不读。所以这里只发**一组**（group=0）合计值：按组重复发同一份
-// 会让客户端把加成乘上组数（4 组 = 4 倍），服务端与面板就对不上了。
+// effect 为真的 powerValue 累加到 bookGroupPower[power] —— power 是能力编号，
+// `group`/`type` 两位客户端都不读。
+// 【第 80 版】图鉴不再提供属性加成（用户决定，见 lib/handbook.mjs 文件头），所以这个包
+// **恒为空包**（handbookPowers 恒返回 {}）：空包一样会清空 bookGroupPower，
+// 正好把老存档里已经喂给客户端的旧加成一起抹掉。形状与累加语义保留在这里，
+// 将来若要恢复加成不必再摸协议。
 export function handbookPowerPacket(p){
  const entries=Object.entries(handbookPowers(p)).map(([key,value])=>[Number(key),value]);
  if(!entries.length)return msg();

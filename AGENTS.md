@@ -196,14 +196,23 @@
   （submit 条件 type 6 = 消耗 500 国家贡献度，本工程没有国家系统）。
 - **英雄图鉴（第 77 版，`lib/handbook.mjs` + `lib/handbook-item.mjs`）**：32101→32102（真实
   `unlock/level/rate/canUnlock`，`power=1` 否则客户端 `updatePage` 按「暂未开放」整页灰掉）、
-  32103→32104+32109（客户端只发 group+type，**没有 itemIds** → 「点亮一页」由服务端说了算）、
-  32109 = 图鉴加成合计。存档契约 `p.handbook={unlocked:{\"组:类\":[编号]}, lit, powers}`：
-  `unlocked/lit` 是唯一真源，`powers` 是派生缓存（状态变化 + 每次进世界 `refreshHandbook()` 重算
-  → 换加成表老存档下次登录生效）；`native-character-stats.mjs` **只读 `role.handbook.powers`**、
-  不 import handbook（避开 native-character-stats ↔ restoration ↔ handbook 的循环），折在
-  `getSkillPowerValue` 里与 `featurePowers` 同层、不按技能类型过滤（原版 `getPower` = god+book）。
-  ⚠ **32109 只发一组**（`group=0`）：客户端 `onHandBookPowerInfo` 把所有 info 的 `powerValue`
-  累加进同一个静态 map，`group` 它不读 → 按组重复发同一份 = 加成乘上组数（4 组 = 4 倍）。
+  32103→32104+32109（客户端只发 group+type，**没有 itemIds** → 「点亮一页」由服务端说了算）。
+  存档契约 `p.handbook={unlocked:{"组:类":[编号]}, lit, powers}`：`unlocked/lit` 是唯一真源，
+  `powers` 是历史字段、**第 80 版起恒为 `{}`**。
+  ⚠ **第 80 版把图鉴加成整块删除了**（用户：加成过于变态）：第 77 版照参考实现做过四张加成表
+  （宠物 7·8·9·41 / 坐骑 11 / 特殊 19·24·34·37·39 / 其余走「物攻·魔攻·武器伤害」），
+  折进 `native-character-stats` 的 `getSkillPowerValue`（原版落点是战斗单位的 `getPower`
+  = `RoleGodData + BookGroupModel.getBookGroupPower`，我们的落点更靠前、会更狠），
+  并用 32109 把同一份合计发给客户端。实测后果：97 级角色点亮几页就有「攻击次数+50」
+  「魔攻+600」；更糟的是宠物表给的能力号 89–96 正是**主人侧宠物百分比能力**，客户端算出的
+  宠物血蓝上限比服务端 `petAttributes` 高 7.5%（756516/703394）→ 12502 的
+  「宠物战斗状态不完整」把**每一场**结算都拒掉 → 奖励全不发（用户报的就是这个）。
+  现在：`refreshHandbook()` 只把 `powers` 清成 `{}`（进世界时清老存档的旧加成）、
+  `handbookPowers()` 恒返回 `{}` → 32109 恒为空包，客户端 `onHandBookPowerInfo` 收到空包会
+  **清空**静态的 `bookGroupPower`（这就是「客户端不用改一行」的原因），
+  `native-character-stats` 不再读 `p.handbook`。收集率/图鉴等级（`handbookLevel`）只用于显示；
+  客户端文案（`web/offline.js` 的 `getGroupTypeDes`）改成一句「仅作收集，不提供属性加成」，
+  测试里有一条守卫：那段返回文案里**不许出现数字**（要恢复加成时它会先红）。
   ⚠ 取状态是**只读**的（`handbookState` 对老存档返回不进存档的空壳；写路径才用
   `ensureHandbookState`），32101 一行都不许写角色。
   ⚠ 尊贵 type 28 道具的字节定义：`power3/powerValue3` **只在 `power1===181`（附魔卡）时才存在**
