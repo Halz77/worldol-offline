@@ -12,11 +12,13 @@
  * 进度存在 `p.quests.active[任务].solarBoard`（字段名沿用了太阳神殿那一版，存的是同一套
  * 「棋盘进度」；改名会毁老存档），重进游戏接着走。
  *
- * ## 两份棋盘（host）
- * 形状、连线、对手表都收在下面的两份 `*_BOARD_HOST` 里：太阳神殿 13 格 + 有 powers
- * （团队赛制进度），BOSS 挑战赛 5 格（0-1-2-3-100）+ 无 powers。两份棋盘**地图不同**，
- * 所以进包时按 `p.mapId` 认领；BOSS 挑战赛开在普通城镇图（新月古镇广场）上，
- * 还多一条「身上没有 1305 任务就不认领」的守卫 —— 否则玩家一站到那张图就会弹棋盘。
+ * ## 三份棋盘（host）
+ * 形状、连线、对手表都收在下面的三份 `*_BOARD_HOST` 里：太阳神殿 13 格 + 有 powers
+ * （团队赛制进度）、BOSS 挑战赛 5 格（0-1-2-3-100）+ 无 powers、问剑十一峰 13 格
+ * （0 → 1..11 → 100 的线性山道，三档只差编队系数，见 lib/ask-sword-data.mjs）。
+ * 三份棋盘**地图不同**，所以进包时按 `p.mapId` 认领；BOSS 挑战赛开在普通城镇图
+ * （新月古镇广场）、问剑十一峰开在风雪之城上，都多一条「身上没有对应任务就不认领」
+ * 的守卫（`implicitMission:false`）—— 否则玩家一站到那张图就会弹棋盘。
  *
  * ## 两个坑
  * ① 战斗入口：这些编队不在任何地图的刷怪点上，12501 会按「站到 NPC 旁边」校验并报
@@ -30,6 +32,7 @@ import {officialGroups,officialMonsters} from './official-data.mjs';
 import {battleSupported} from './official-rules.mjs';
 import {SOLAR_MAP_ID,TEAM_DUNGEON_MISSION,SOLAR_ROUTE_EVENT,solarChallengeEventGroup,solarGroupMission,solarRoute,solarReady,isSolarMission} from './solar-challenge-data.mjs';
 import {BOSS_TOURNAMENT_MISSION,BOSS_TOURNAMENT_MAP_ID,BOSS_BOARD_POINTS,BOSS_BOARD_XY,bossBoardConnections,bossTournamentEventOfCell,bossTournamentEventGroup,bossTournamentMissionOfGroup,bossTournamentBossName,isBossTournamentMission} from './boss-tournament-data.mjs';
+import {ASK_SWORD_MAP_ID,ASK_SWORD_POINTS,ASK_SWORD_XY,ASK_SWORD_TIERS,ASK_SWORD_FINAL_CELL,ASK_SWORD_DELIVERY_CELL,askSwordConnections,askSwordEventOfCell,askSwordEventGroup,askSwordMissionOfGroup,isAskSwordMission} from './ask-sword-data.mjs';
 
 // 棋盘 13 个格子的像素坐标（客户端按这个摆位，照抄社区版）。
 const POINT_XY={0:[283,404],1:[244,322],2:[167,300],3:[175,389],4:[183,220],5:[270,180],6:[276,77],7:[172,77],8:[82,71],9:[58,172],10:[67,272],11:[119,182],100:[51,395]};
@@ -94,7 +97,32 @@ const BOSS_BOARD_HOST={
  deliveryCell:100,
  endText:'BOSS赛程完成，请返回原BOSS挑战赛交付任务。',
 };
-const BOARD_HOSTS=[SOLAR_BOARD_HOST,BOSS_BOARD_HOST];
+/**
+ * 问剑十一峰棋盘（风雪之城 map 37 / NPC 11，13 格线性山道，任务 2604/2650/2651）。
+ * 三档共用同一张山道，只是每峰的编队系数不同（见 lib/ask-sword-data.mjs）。
+ * 开在普通城镇图上，所以 `implicitMission:false` —— 与 BOSS 挑战赛同一条守卫：
+ * 身上没有这三档任务时绝不认领（否则玩家一站到风雪之城就弹棋盘）。
+ */
+const ASK_SWORD_BOARD_HOST={
+ key:'ask-sword',
+ mapId:ASK_SWORD_MAP_ID,
+ isMission:isAskSwordMission,
+ implicitMission:false,
+ defaultMission:ASK_SWORD_TIERS[0].mission,
+ ready:()=>true,
+ points:ASK_SWORD_POINTS,
+ pointXY:id=>ASK_SWORD_XY[id],
+ cellFlag:(id,passed)=>id===0?0:passed?4:0,
+ connections:askSwordConnections,
+ eventOf:askSwordEventOfCell,
+ eventGroup:(mission,event)=>askSwordEventGroup(mission,event),
+ eventText:(mission,event,target,names)=>[`你遇到了${names.join('、')}。`,`挑战第 ${event} 峰！`],
+ powers:false,
+ finalCell:ASK_SWORD_FINAL_CELL,
+ deliveryCell:ASK_SWORD_DELIVERY_CELL,
+ endText:'十一峰已经尽数闯过！请回风雪之城的封印守卫者处交付任务、领取奖励。',
+};
+const BOARD_HOSTS=[SOLAR_BOARD_HOST,BOSS_BOARD_HOST,ASK_SWORD_BOARD_HOST];
 
 const hostForMission=mission=>BOARD_HOSTS.find(host=>host.isMission(mission))||SOLAR_BOARD_HOST;
 const hostForMap=mapId=>BOARD_HOSTS.find(host=>host.mapId===Number(mapId))||null;
@@ -309,5 +337,5 @@ export function settleSolarBattle(context,p,group){
  persist(p,state.board,state.completed);
  return {type:14508,body:boardPacket(p,state.board,host)};
 }
-/** 这个编队是不是棋盘赛程里的（12501 距离校验用）：太阳神殿 + BOSS 挑战赛。 */
-export const boardMissionOfGroup=groupId=>solarGroupMission(groupId)||bossTournamentMissionOfGroup(groupId);
+/** 这个编队是不是棋盘赛程里的（12501 距离校验用）：太阳神殿 + BOSS 挑战赛 + 问剑十一峰。 */
+export const boardMissionOfGroup=groupId=>solarGroupMission(groupId)||bossTournamentMissionOfGroup(groupId)||askSwordMissionOfGroup(groupId);

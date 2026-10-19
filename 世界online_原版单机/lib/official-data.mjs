@@ -8,6 +8,7 @@ import {applyOpenPortals} from './open-portals.mjs';
 import {applyBossHub} from './boss-hub.mjs';
 import {applyDungeonChallengeRepairs} from './dungeon-challenge-data.mjs';
 import {applyBossTournament} from './boss-tournament-data.mjs';
+import {applyAskSword} from './ask-sword-data.mjs';
 import {applySolarChallenges} from './solar-challenge-data.mjs';
 import {registerTrialChallenge} from './trial-challenge-data.mjs';
 import {localPetSkillBooks,petSkillBookRegistry} from './pet-skill-book-data.mjs';
@@ -137,6 +138,13 @@ fixMidAutumnFinalBoss(official);
  // 又必须在建索引之前 —— 客户端下发的 NPC wire 直接从 official.maps 取。
  applyCityTemplateFixes(official);
  applyCityFlightStations(official);
+ // 问剑十一峰（风雪之城 map 37 / NPC 11）：三档任务 2604/2650/2651 + 33 个单挑编队
+ // （十一峰 × 三档系数 100/170/260）。棋盘界面复用 14508 那套（第三份 host）。
+ // ⚠ 必须排在**所有补怪/补地图的补丁之后**：第 2 峰的 3244「冰风鹰身人」是
+ // applyDungeonStoryRepairs 克隆出来的本地怪，排早了这里会查不到它（只记账、不抛错，
+ // 结果就是这一峰的编队静默缺失 —— 第 83 版第一次接线就踩了这个）。
+ // 同时仍要在建索引之前 —— 12501 与棋盘协议都查建好的 officialGroups。
+ applyAskSword(official);
  built={
   official,
   officialMaps:new Map(official.maps.map(m=>[m.id,m])),

@@ -3,13 +3,15 @@ import {isCityMission,cityTarget,cityConditionMet} from './city-state.mjs';
 import {missionDone} from './daily-activity.mjs';
 import {isSolarMission} from './solar-challenge-data.mjs';
 import {isBossTournamentMission} from './boss-tournament-data.mjs';
+import {isAskSwordMission} from './ask-sword-data.mjs';
 import {Reader,Writer} from './codec.mjs';
 /**
- * 棋盘玩法任务：太阳神殿的英雄挑战赛（2592—2606）+ 新月古镇广场的 BOSS 挑战赛（1305）。
+ * 棋盘玩法任务：太阳神殿的英雄挑战赛（2592—2606）、新月古镇广场的 BOSS 挑战赛（1305）、
+ * 风雪之城的问剑十一峰（2604 / 2650 / 2651，本地重建，见 lib/ask-sword-data.mjs）。
  * 它们的提交条件在抓包里都是空的（CONDITION_NONE），不设门就等于「一接任务就能交付」——
  * 必须走完棋盘（走到 100 号交付格）置上 solarDone 才算完。
  */
-export const isBoardMission=id=>isSolarMission(id)||isBossTournamentMission(id);
+export const isBoardMission=id=>isSolarMission(id)||isBossTournamentMission(id)||isAskSwordMission(id);
 // Local play does not require unavailable reward definitions or unimplemented
 // country/escort systems. Retain known objectives and all supported rewards.
 export function missionRewards(q){return {...q,rewardItems:(q.rewardItems||[]).filter(i=>officialItems.has(i.id)),selectItems:(q.selectItems||[]).filter(i=>officialItems.has(i.id))};}

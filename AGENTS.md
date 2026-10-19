@@ -154,7 +154,8 @@
   永远回「请先完成获得新的城市任务。」。修法 `city-state.unlockCity(p)`（等级 1 / 繁荣 0 / 军力 0，
   与做完 42 之后一致）：10510 在 `official-service`、10511—10515 在 `city-service`（面板首屏也补，
   否则玩家点「城市」永远报错）；已有城市不重复补发，只 `log('city-unlocked',…)` 不发公告。
-- **棋盘玩法有两份 host**（第 72 版，`lib/solar-challenge-service.mjs`）：太阳神殿（map 262，13 格，
+- **棋盘玩法有三份 host**（第 72 版两份 + 第 83 版问剑十一峰，`lib/solar-challenge-service.mjs`）：
+  太阳神殿（map 262，13 格，
   有 powers，`implicitMission`）与 BOSS 挑战赛 1305（map 14，5 格 0-1-2-3-100，无 powers）。
   协议 14508/14509/14510/14511/14514 共用，按 `p.mapId` 认领；BOSS 那盘开在普通城镇图上，
   多一条「身上没有 1305 就不认领」（否则玩家一站到广场就弹棋盘）。对外只认
@@ -163,6 +164,17 @@
   进度字段沿用 `p.quests.active[任务].solarBoard` / `solarDone`（改名会毁老存档）；
   数据在 `lib/boss-tournament-data.mjs`（`applyBossTournament` 挂在 `applyDungeonChallengeRepairs` 之后）。
   1305 这一版**不做**入场券 119 / 券店 2061（NPC 菜单里那一项也摘掉）/ 奖励盒 1480–1482 / 2454 每日赠券。
+- **问剑十一峰是同框架的第三份 host**（第 83 版，`lib/ask-sword-data.mjs`）：风雪之城 map 37 /
+  NPC 11「封印守卫者」、13 格线性山道（0 → 1..11 峰 → 100）、三档任务 2604/2650/2651
+  （`setting:8` 可重复挑战、押金 `escortCost` 接取时收一次、奖励 732/716/733 + 40001/40023）。
+  客户端主包里**没有「问剑」字样**（这是对方自研玩法），所以整块复用棋盘界面、**不改客户端**。
+  「怪缩放 1/1.7/2.6」= **编队系数** 100/170/260（客户端 0228 `getClone(coefficient)` → 0091
+  `setMonsterData` 把 speed/atk/def/hpMax/mpMax 全乘 `coefficient/100`，奖励不动）→
+  33 个单挑编队（11 峰 × 3 档）30301..30311 / 30321..30331 / 30341..30351。
+  ⚠ `applyAskSword(official)` 必须排在**所有补怪补地图的补丁之后**（第 2 峰的 3244
+  「冰风鹰身人」是 `applyDungeonStoryRepairs` 克隆的，排早了静默缺失那一峰）、建索引之前。
+  ⚠ 任务包 `officialMissionPacket` 里 `money2/money3` 是 **short**（官方最大 30000 / 500，
+  超了客户端读成负数）；押金不在任务包里，可以到 20 万。
 - **三件「客户端认识、服务端要接」的背包道具**（第 73 版，`lib/bag-actions.mjs` + `restoration-service.mjs`
   + `pet-state.mjs`/`pet-service.mjs`）：288 背包扩展（wait **20**；回 `byte(20)` **并另推 12058
   + `int(新容量)`** —— 客户端对 288 根本不读回包容量，只弹一句「背包容量已增加」）；
