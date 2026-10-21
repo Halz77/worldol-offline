@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>世界OL · 伤害计算器</title>
+<style>
+:root{
+  --bg:#0d1117;--panel:#151b24;--panel2:#1b2430;--line:#2b3746;--text:#e6edf3;--muted:#93a1b1;
+  --gold:#e6b95c;--gold2:#f3d38b;--green:#5dd39e;--red:#ff7b72;--blue:#79c0ff;--violet:#c297ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(1200px 600px at 10% -10%,#1c2635 0,transparent 60%),var(--bg);color:var(--text);font:14px/1.55 "Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif}
+body{padding:18px 20px 60px}
+h1,h2,h3{margin:0;font-weight:700}
+h1{font-size:22px;letter-spacing:.04em}
+h2{font-size:16px;color:var(--gold2);margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:4px;height:16px;border-radius:2px;background:linear-gradient(var(--gold),#8a6425)}
+h3{font-size:14px;color:var(--gold2);margin:14px 0 6px}
+a{color:var(--blue)}
+button,input,select{font:inherit;color:var(--text)}
+button{cursor:pointer;border:1px solid var(--line);background:linear-gradient(#243040,#1a232e);padding:8px 13px;border-radius:8px;transition:.15s}
+button:hover{border-color:var(--gold);color:var(--gold2)}
+button.primary{background:linear-gradient(#6d5120,#3f2e10);border-color:#a47b2d;color:#ffe7ac;font-weight:700}
+button.primary:hover{filter:brightness(1.12)}
+button.ghost{background:transparent}
+input,select{background:#0f151d;border:1px solid var(--line);border-radius:7px;padding:7px 9px;outline:none;min-width:0}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 2px #e6b95c22}
+select{max-width:100%}
+label{color:var(--muted);font-size:12px}
+.wrap{max-width:1500px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 20px;padding:4px 0 16px;border-bottom:1px solid var(--line)}
+header.top .sub{color:var(--muted);font-size:12px;max-width:900px}
+header.top .sub b{color:var(--gold2)}
+.badge{display:inline-block;border:1px solid #5b4722;background:#2a2111;color:var(--gold2);border-radius:999px;padding:2px 9px;font-size:11px}
+.panel{background:linear-gradient(180deg,#18212c,#141b24);border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:0 8px 28px #00000022}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.row.tight{gap:6px 8px}
+.grow{flex:1 1 240px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.mono{font-family:ui-monospace,Consolas,"Courier New",monospace}
+.banner{margin:12px 0;padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#141b24;color:var(--muted);display:none}
+.banner.show{display:block}
+.banner.ok{border-color:#1f6f4a;background:#10231b;color:#9fe6c2}
+.banner.err{border-color:#7a2a2a;background:#251315;color:#ffb4ae}
+.banner.warn{border-color:#6f5a1f;background:#241f10;color:#ffe2a0}
+.import-grid{display:grid;grid-template-columns:minmax(260px,1.3fr) minmax(220px,1fr) auto;gap:12px;align-items:end}
+@media(max-width:800px){.import-grid{grid-template-columns:1fr}}
+.filebox{border:1px dashed #435166;border-radius:10px;padding:12px;background:#101720;position:relative}
+.filebox input[type=file]{width:100%;border:none;background:transparent;padding:0}
+.hint{color:var(--muted);font-size:12px;margin-top:5px}
+.columns{display:grid;grid-template-columns:minmax(420px,1.18fr) minmax(330px,.82fr);gap:14px;align-items:start}
+@media(max-width:1000px){.columns{grid-template-columns:1fr}}
+.character-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;justify-content:space-between;margin:14px 0}
+.character-bar select{min-width:280px;max-width:100%}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:7px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(120px,1fr))}}
+.stat{background:#101720;border:1px solid #243140;border-radius:8px;padding:7px 9px;min-width:0}
+.stat .k{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .v{font-size:15px;font-weight:700;color:#dcecff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat .v.gold{color:var(--gold2)}
+.stat .v.green{color:var(--green)}
+.stat .v.red{color:var(--red)}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.field.rowf{flex-direction:row;align-items:center;gap:6px}
+.field.rowf label{white-space:nowrap}
+.field input,.field select{width:100%}
+.field.rowf input{width:90px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(120px,1fr));gap:8px 10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(100px,1fr));gap:8px 10px}
+@media(max-width:700px){.grid3{grid-template-columns:repeat(2,minmax(100px,1fr))}}
+.auto-slots{display:grid;grid-template-columns:1fr;gap:6px}
+.auto-slot{display:grid;grid-template-columns:34px 1fr;gap:6px;align-items:center}
+.auto-slot .n{color:var(--gold);font-size:12px;text-align:center}
+.skill-info{display:grid;gap:8px;margin-top:8px}
+.skill-card{border:1px solid #263445;background:#101720;border-radius:9px;padding:9px 10px}
+.skill-card .head{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.skill-card .name{font-weight:700;color:#f0d79c}
+.skill-card .meta{color:var(--muted);font-size:11px}
+.skill-card .desc{color:#cfd9e3;font-size:12px;white-space:pre-wrap;margin-top:4px}
+.powers{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.power{border:1px solid #34485f;background:#182433;color:#bcd3ea;border-radius:999px;padding:1px 7px;font-size:11px}
+.power.neg{border-color:#5d3030;background:#241619;color:#ffb4ae}
+.power.pos{border-color:#2b5844;background:#13241c;color:#a9e8c4}
+.note{font-size:12px;color:var(--muted);background:#101720;border-left:3px solid #4b6280;padding:7px 10px;border-radius:0 7px 7px 0;margin:8px 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:8px;margin:8px 0 12px}
+@media(max-width:900px){.summary{grid-template-columns:repeat(2,minmax(130px,1fr))}}
+.card{background:linear-gradient(180deg,#182433,#121a23);border:1px solid #2b3b4d;border-radius:10px;padding:10px 12px}
+.card .k{color:var(--muted);font-size:11px}
+.card .v{font-size:20px;font-weight:800;color:var(--gold2);letter-spacing:.02em}
+.card .v.small{font-size:15px;color:#dcecff}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:480px}
+table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
+th,td{padding:7px 8px;border-bottom:1px solid #202c3a;text-align:right}
+th{position:sticky;top:0;background:#1b2633;color:#c9d8e8;font-weight:700;z-index:2;text-align:right}
+td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:inherit;z-index:1}
+th:first-child{z-index:3;background:#1b2633}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#1a2634}
+tbody tr.selected td{background:#243243}
+td .tag{display:inline-block;border:1px solid #3b4b5f;border-radius:999px;padding:0 6px;color:#a9bdd3;font-size:10px}
+td.num{font-family:ui-monospace,Consolas,monospace}
+td.dmg{color:#ffe0a0;font-weight:700}
+td.zero{color:#8b98a8}
+.per-skill{display:flex;flex-direction:column;gap:5px}
+.per-skill .line{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.bar{height:7px;background:#202c3a;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#7d5a1e,#e6b95c)}
+.detail{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(320px,1.2fr);gap:12px;align-items:start;margin-top:12px}
+@media(max-width:950px){.detail{grid-template-columns:1fr}}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:12px}
+.kv .k{color:var(--muted)}
+.kv .v{font-family:ui-monospace,Consolas,monospace;color:#dcecff}
+.foot{margin-top:22px;color:#748396;font-size:11px;line-height:1.7}
+code{background:#0b1118;border:1px solid #263445;padding:1px 5px;border-radius:4px;color:#d7c08a}
+.hidden{display:none!important}
+details summary{cursor:pointer;color:var(--gold2);font-size:13px;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>世界OL · 伤害计算器 <span class="badge">木桩模拟</span></h1>
+      <div class="sub">导入存档 → 选择角色 → 配自动/主动技能 → 打木桩。<b>面板属性与技能定义都走服务端真实数据</b>（装备/附魔/宝石/套装/被动/技能编辑器覆盖），伤害公式照抄客户端 v305。</div>
+    </div>
+    <div class="row tight" style="margin-left:auto">
+      <button id="useCurrent" class="primary">读取当前服务端存档</button>
+      <button id="reconnect" class="ghost">重连</button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner"></div>
+
+  <section class="panel" style="margin-top:14px">
+    <div class="import-grid">
+      <div class="filebox">
+        <label>导入角色存档（world.json / 角色导出 JSON）</label>
+        <input id="saveFile" type="file" accept=".json,application/json">
+        <div class="hint">只读解析，不会写回存档。也可以直接打开 <code>saves/world.json</code> 或角色导出文件。</div>
+      </div>
+      <div class="row tight" style="align-items:flex-end">
+        <div class="field" style="flex:1 1 110px">
+          <label>服务端口（双击 HTML 时用）</label>
+          <input id="port" inputmode="numeric" placeholder="8775">
+        </div>
+        <button id="usePort">连接</button>
+      </div>
+      <div class="small muted">
+        需要先启动单机服务端（双击 <code>启动单机-新存档.cmd</code>）。<br>
+        电脑版也可直接访问 <code>http://127.0.0.1:8775/damage-calculator.html</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="loaded" class="hidden">
+    <div class="character-bar">
+      <div class="row tight grow" style="align-items:flex-end">
+        <div class="field" style="flex:1 1 320px">
+          <label>角色</label>
+          <select id="characterSelect"></select>
+        </div>
+        <div class="badge" id="sessionBadge">未加载</div>
+      </div>
+      <div class="row tight">
+        <button id="reloadCurrent" class="ghost">重读当前存档</button>
+      </div>
+    </div>
+
+    <div id="warnings" class="banner warn"></div>
+    <div class="stats" id="stats"></div>
+
+    <div class="columns" style="margin-top:14px">
+      <div>
+        <section class="panel">
+          <h2>技能配置</h2>
+          <h3>自动技能（回合前轮换，最多 5 个）</h3>
+          <div id="autoSlots" class="auto-slots"></div>
+          <h3>主动技能（每回合行动）</h3>
+          <div class="row">
+            <select id="activeSkill" class="grow"></select>
+          </div>
+          <div id="skillInfo" class="skill-info"></div>
+          <div class="row" style="margin-top:8px">
+            <label class="rowf"><input id="autoBuff" type="checkbox" checked> 自动技能的正向攻击增益计入面板</label>
+          </div>
+          <div class="note">自动技能只参与循环出手；勾选上面这项后，会把自动技能里<b>正向</b>的攻击/攻次/命中/致命/破甲/法穿效果加进本次模拟（例如魔化武器：攻次 +6、劈砍/穿刺攻击 +24%）。目标减益、回复、护盾和没有目标标记的效果不自动折算，仍可在下面「临时修正」手动补。</div>
+
+          <details>
+            <summary>临时修正（手动模拟自动技能增益 / 目标减益）</summary>
+            <div class="grid3" style="margin-top:8px">
+              <div class="field"><label>劈砍攻击 %</label><input id="modAtkStrPct" type="number" step="1" value="0"></div>
+              <div class="field"><label>穿刺攻击 %</label><input id="modAtkAgiPct" type="number" step="1" value="0"></div>
+              <div class="field"><label>魔法攻击 %</label><input id="modAtkMagicPct" type="number" step="1" value="0"></div>
+              <div class="field"><label>攻击次数 +</label><input id="modAtkTime" type="number" step="1" value="0"></div>
+              <div class="field"><label>命中 +</label><input id="modHit" type="number" step="1" value="0"></div>
+              <div class="field"><label>致命点 +</label><input id="modCrit" type="number" step="1" value="0"></div>
+              <div class="field"><label>破甲 +</label><input id="modBrk" type="number" step="1" value="0"></div>
+              <div class="field"><label>魔法穿透 +</label><input id="modPen" type="number" step="1" value="0"></div>
+              <div class="field"><label>魔法命中 +</label><input id="modHitMagic" type="number" step="1" value="0"></div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel" style="margin-top:14px">
+          <h2>木桩目标</h2>
+          <div class="row tight" style="margin-bottom:10px">
+            <button id="zeroDummy" class="ghost">零防御木桩</button>
+            <span class="small muted">默认等级 = 角色等级；所有防御/闪避/格挡/减伤都从 0 开始，方便看裸伤害。</span>
+          </div>
+          <div class="grid3">
+            <div class="field"><label>等级</label><input id="tLevel" type="number" min="1" step="1"></div>
+            <div class="field"><label>劈砍防御（近身）</label><input id="tDefStrNearby" type="number" min="0" step="1"></div>
+            <div class="field"><label>劈砍防御（远程）</label><input id="tDefStrRange" type="number" min="0" step="1"></div>
+            <div class="field"><label>穿刺防御（近身）</label><input id="tDefAgiNearby" type="number" min="0" step="1"></div>
+            <div class="field"><label>穿刺防御（远程）</label><input id="tDefAgiRange" type="number" min="0" step="1"></div>
+            <div class="field"><label>魔法防御</label><input id="tDefMagic" type="number" min="0" step="1"></div>
+            <div class="field"><label>闪避</label><input id="tDodge" type="number" min="0" step="1"></div>
+            <div class="field"><label>格挡</label><input id="tBlock" type="number" min="0" step="1"></div>
+            <div class="field"><label>伤害减免（TOUGH）</label><input id="tTough" type="number" min="0" step="1"></div>
+            <div class="field"><label>法力护盾</label><input id="tDefField" type="number" min="0" step="1"></div>
+            <div class="field"><label>当前法力</label><input id="tMp" type="number" min="0" step="1"></div>
+            <div class="field"><label>抗致命</label><input id="tIgnoreCrit" type="number" min="0" step="1"></div>
+          </div>
+          <div class="row" style="margin-top:9px">
+            <label class="rowf"><input id="tWeak" type="checkbox"> 衰弱（受伤 +20%）</label>
+            <label class="rowf"><input id="tBlood" type="checkbox"> 流血（受伤 +10%）</label>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2>模拟设置</h2>
+        <div class="grid2">
+          <div class="field"><label>每个技能模拟次数</label><input id="trials" type="number" min="50" max="20000" step="50" value="1000"></div>
+          <div class="field"><label>循环回合数</label><input id="rounds" type="number" min="1" max="50" step="1" value="10"></div>
+          <div class="field"><label>随机种子（同种子可复现）</label><input id="seed" type="number" step="1" value="1"></div>
+          <div class="field"><label>&nbsp;</label><button id="run" class="primary" style="width:100%">开始打木桩</button></div>
+        </div>
+        <div class="note">点「开始」后：每个选中的技能单独模拟 N 次；再按「自动技能轮换 + 主动技能」跑 M 回合循环。木桩默认无限生命，只计算伤害，不判死亡。</div>
+        <div class="actions">
+          <button id="exportJson" class="ghost" disabled>导出结果 JSON</button>
+          <button id="copyJson" class="ghost" disabled>复制结果</button>
+        </div>
+        <div id="runStatus" class="small muted" style="margin-top:8px"></div>
+      </section>
+    </div>
+
+    <section id="results" class="panel hidden" style="margin-top:14px">
+      <h2>测试结果</h2>
+      <div class="summary" id="summary"></div>
+      <div class="columns" style="grid-template-columns:minmax(360px,1.25fr) minmax(300px,.75fr)">
+        <div>
+          <h3>单技能成绩</h3>
+          <div class="table-wrap">
+            <table id="resultTable">
+              <thead><tr>
+                <th>技能</th><th>类型</th><th>攻次</th><th>命中</th><th>致命</th><th>格挡</th>
+                <th>平均总伤害</th><th>最低</th><th>最高</th><th>平均单次</th><th>攻击点数</th><th>防御减伤</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="hint">「平均总伤害」= 一次施放/一次普通攻击的总伤害；最低/最高是单次施放的总伤害。点一行看公式明细与样例命中。</div>
+        </div>
+        <div>
+          <h3>循环成绩</h3>
+          <div id="rotation"></div>
+        </div>
+      </div>
+      <div id="detail" class="detail"></div>
+      <details style="margin-top:12px">
+        <summary>样例命中记录（主动技能一次施放，最多 80 行）</summary>
+        <div class="table-wrap" style="max-height:360px">
+          <table id="sampleTable">
+            <thead><tr><th>#</th><th>技能</th><th>第几击</th><th>手</th><th>命中</th><th>暴击</th><th>格挡</th><th>伤害</th><th>攻击点数</th><th>防御减伤</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+  </section>
+
+  <div class="foot">
+    计算器只读取存档并调用本机服务端，不会修改角色。伤害为木桩模拟值；原版战斗还有状态、反击、免伤护盾、宠物/队友等未纳入。若数字异常，先确认「查看」面板里的面板属性与这里一致，再看临时修正是否填了值。
+  </div>
+</div>
+
+<script src="damage-calculator.js"></script>
+</body>
+</html>

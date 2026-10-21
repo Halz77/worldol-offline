@@ -104,14 +104,15 @@ test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle
  // 4557839 / 4567833 是 v305 主包打补丁前后的长度。
 // （第 75 版 battleCheckFields 补一行派生的「生命百分比伤害减免」后 +76：算式照抄参考实现
 //  min(TOUGH/100, 80)%。第 76 版加 attackPlan 补丁后 +1961：伤害按逐手武伤与攻次算
-//  —— 见 lib/client-attack-plan-patch.mjs。）
+//  —— 见 lib/client-attack-plan-patch.mjs。第 89 版「查看」面板再补 10 个攻击侧字段
+//  （攻击力/破甲/劈砍·穿刺·魔法攻击/魔法穿透/致命/命中/魔法命中/强制命中）后 +892。）
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
   //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
   //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4567833,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4568725,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 

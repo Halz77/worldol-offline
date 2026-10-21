@@ -259,7 +259,10 @@ const BUILD_FINGERPRINT_FILES = [
   'standalone-boot.js',
   'standalone-files.json',
   MAIN_PATH,
-  'v/gd/305.json'
+  'v/gd/305.json',
+  // 第 90 版：伤害计算器的静态文件也进指纹（电脑版用，APK 里只多一个说明页）。
+  'damage-calculator.html',
+  'damage-calculator.js'
 ];
 
 const NUL = String.fromCharCode(0);

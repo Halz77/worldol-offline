@@ -2,22 +2,26 @@
 #  世界OL 单机版 —— 安卓构建环境安装（一次性，约 600 MB–1 GB 下载）
 #
 #  **不需要管理员权限**：
-#    JDK 用免安装 zip 解压到用户目录，Android SDK 也装在用户目录，
+#    JDK 用免安装 zip 解压到工具目录，Android SDK 也装在工具目录，
 #    环境变量只写到「用户」作用域，全程不碰系统目录。
 #
-#  会安装：
-#    1. Eclipse Temurin JDK 21  → %LOCALAPPDATA%\世界OL打包\jdk-21
-#    2. Android commandline-tools → %LOCALAPPDATA%\Android\Sdk\cmdline-tools\latest
+#  会安装（2026-10-20 起默认落在 E:\apk_pack_tool，不再占 C 盘）：
+#    1. Eclipse Temurin JDK 21  → E:\apk_pack_tool\jdk-21
+#    2. Android commandline-tools → E:\apk_pack_tool\android-sdk\cmdline-tools\latest
 #    3. Android SDK：platform-tools / platforms;android-36 / build-tools;36.0.0
+#    4. Gradle 用户目录（发行包 + 依赖缓存）→ E:\apk_pack_tool\gradle-home
 #
 #  standalone 版没有原生代码（服务端已被 esbuild 打成纯 JS 跑在 WebView 里），
 #  所以不需要 NDK 和 CMake，比第一代方案少下约 2 GB。
 #
 #  用法：powershell -ExecutionPolicy Bypass -File .\安装环境.ps1
+#        换盘/换目录：-SdkRoot <路径> -JdkRoot <路径> -GradleUserHome <路径>
 # =============================================================================
 [CmdletBinding()]
 param(
-    [string]$SdkRoot = (Join-Path $env:LOCALAPPDATA 'Android\Sdk')
+    [string]$SdkRoot = 'E:\apk_pack_tool\android-sdk',
+    [string]$JdkRoot = 'E:\apk_pack_tool\jdk-21',
+    [string]$GradleUserHome = 'E:\apk_pack_tool\gradle-home'
 )
 
 # 注意：PowerShell 5.1 在 ErrorActionPreference='Stop' 时，原生程序（javac / sdkmanager）
@@ -70,7 +74,7 @@ if ($isAdmin) { Write-Ok '当前是管理员（本脚本不需要）' } else { W
 # ---------------------------------------------------------------------------
 Write-Step '1/4 安装 JDK 21'
 
-$jdkTarget = Join-Path $env:LOCALAPPDATA '世界OL打包\jdk-21'
+$jdkTarget = $JdkRoot
 
 function Test-Jdk21([string]$JdkPath) {
     if (-not $JdkPath) { return $false }
@@ -139,6 +143,13 @@ $env:ANDROID_SDK_ROOT = $SdkRoot
 [Environment]::SetEnvironmentVariable('ANDROID_SDK_ROOT', $SdkRoot, 'User')
 Write-Ok ("ANDROID_HOME = " + $SdkRoot)
 
+# Gradle 用户目录（wrapper 发行包 + 依赖缓存，默认在 C:\Users\<用户>\.gradle，
+# 几百 MB 到 1 GB）。统一放到工具目录，和 JDK / SDK 一起管理。
+$null = New-Item -ItemType Directory -Path $GradleUserHome -Force
+$env:GRADLE_USER_HOME = $GradleUserHome
+[Environment]::SetEnvironmentVariable('GRADLE_USER_HOME', $GradleUserHome, 'User')
+Write-Ok ("GRADLE_USER_HOME = " + $GradleUserHome)
+
 # ---------------------------------------------------------------------------
 Write-Step '3/4 接受 SDK 许可'
 # sdkmanager --licenses 是交互式的，用一串 y 喂给它
@@ -165,17 +176,20 @@ Write-Ok 'SDK 组件安装结束'
 $envFile = Join-Path $PSScriptRoot '环境.ps1'
 @(
     "# 由 安装环境.ps1 自动生成，请勿手改；重新装环境会覆盖。",
+    "# 打包工具链在 E:\apk_pack_tool（JDK / Android SDK / Gradle 用户目录）。",
     "`$env:JAVA_HOME = '$jdkHome'",
     "`$env:ANDROID_HOME = '$SdkRoot'",
-    "`$env:ANDROID_SDK_ROOT = '$SdkRoot'"
+    "`$env:ANDROID_SDK_ROOT = '$SdkRoot'",
+    "`$env:GRADLE_USER_HOME = '$GradleUserHome'"
 ) | Set-Content -LiteralPath $envFile -Encoding UTF8
 
 Write-Host ''
 Write-Host '================ 环境就绪 ================' -ForegroundColor Green
-Write-Host ("JAVA_HOME    : " + $jdkHome)
-Write-Host ("ANDROID_HOME : " + $SdkRoot)
-Write-Host ("NDK          : 不需要（standalone 无原生代码）")
-Write-Host ("环境文件     : " + $envFile)
+Write-Host ("JAVA_HOME        : " + $jdkHome)
+Write-Host ("ANDROID_HOME     : " + $SdkRoot)
+Write-Host ("GRADLE_USER_HOME : " + $GradleUserHome)
+Write-Host ("NDK              : 不需要（standalone 无原生代码）")
+Write-Host ("环境文件         : " + $envFile)
 Write-Host ''
 Write-Host '接下来直接跑：' -ForegroundColor Yellow
 Write-Host '  powershell -ExecutionPolicy Bypass -File .\构建APK.ps1'

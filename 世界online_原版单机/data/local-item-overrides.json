@@ -1,0 +1,84 @@
+{
+ "_readme": [
+  "本地装备属性覆盖层。data/official-v305.json 是抓包产物（一字节不改），要改某件装备的",
+  "属性就写在这里，由 lib/official-data.mjs 的 ensure() 在所有补丁合完之后、建索引之前套用。",
+  "套用时会重算派生字段（powers / level / requirements / durability / attackTimes …）并用",
+  "lib/character-import-codec.mjs 的 equipmentBytes 重写 definitionBase64 ——",
+  "只改 JSON 不重写字节的话，客户端收到（以及服务端算属性时解码）的还是旧定义。",
+  "",
+  "items[道具id] = { _note: \"备注（可选）\", 字段: 值 }",
+  "只写要改的字段，没写的保持原值；字段表见 lib/item-overrides.mjs 的 ITEM_FIELDS。",
+  "",
+  "identify[道具id] = { 槽位名: [ { power: 属性编号, min: 最小值, max: 最大值 }, … ] }",
+  "槽位名只有 power1 / power2 / power3 / bindPower1 / bindPower2 / power4 … power7；",
+  "空数组 = 去掉这个槽位。这一段改的是「鉴定时随机出哪些词条」：客户端点「查看鉴定范围」",
+  "（12060 回包）与服务端随机（lib/item-affixes.mjs）读的是同一行，覆盖会同时重写",
+  "slots 与 wireBase64。原版没采到范围的装备（如 13590 经验加成披风）也能新建一行，",
+  "前提是定义里该槽位真的标成鉴定格 121 / 合成格 131，宠物装备不行。",
+  "",
+  "推荐直接用 装备编辑器.html 生成这份文件，不要手写。",
+  "",
+  "⚠ 改的是「定义」：同一件装备的所有副本一起变。存档里已鉴定的词条数值属于实例数据，",
+  "   由游戏内的鉴定/合成改写（见 lib/item-affixes.mjs）。",
+  "⚠ 存盘后要重启服务端（启动单机-新存档.cmd）才生效；APK 需重新打包。"
+ ],
+ "revision": "local-item-overrides-20261020-v1",
+ "items": {
+  "747": {
+   "grade": 4,
+   "def_str": 600,
+   "def_agi": 600,
+   "def_mag": 1800,
+   "attachCount": 30,
+   "ascensionStar": 40,
+   "isUpgradeItem": true,
+   "power4": 38,
+   "powerValue4": 10,
+   "power5": 172,
+   "powerValue5": 50,
+   "power6": 9,
+   "powerValue6": 30,
+   "power7": 65,
+   "powerValue7": 150,
+   "upgradeAscensionStar": 30,
+   "upgradeStar": 20
+  }
+ },
+ "identify": {
+  "747": {
+   "power1": [
+    {
+     "power": 51,
+     "min": 350,
+     "max": 2300
+    },
+    {
+     "power": 49,
+     "min": 350,
+     "max": 2300
+    }
+   ],
+   "power2": [
+    {
+     "power": 26,
+     "min": 10,
+     "max": 15
+    }
+   ],
+   "bindPower1": [
+    {
+     "power": 10,
+     "min": 15,
+     "max": 30
+    }
+   ],
+   "bindPower2": [
+    {
+     "power": 78,
+     "min": 70,
+     "max": 350
+    }
+   ]
+  }
+ }
+}

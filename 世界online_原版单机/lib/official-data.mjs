@@ -29,6 +29,7 @@ import {applyCustomAdventures} from './custom-adventures.mjs';
 import {applyCityTemplateFixes,applyCityFlightStations} from './city-template-fixes.mjs';
 import {applyDailyDungeonEntrances} from './daily-dungeon-directory.mjs';
 import {applyGuardChallenges} from './guard-challenges-data.mjs';
+import {applyItemOverrides,applyIdentifyOverrides,identifyOverrides} from './item-overrides.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -84,17 +85,7 @@ function ensure(){
  // 从来没有采集到，这里按「世界OL_源码」下的发型/脸型贴图还原一套：一件道具对应一张
  // 贴图，道具编号即图标子键（见 lib/local-fashion.mjs 与 tools/build-fashion-icons.mjs）。
 for(const fashion of localFashion(official.items))official.items.push(fashion);
-// MOD(local-skill-overrides)：怪物自带技能也吃技能覆盖。
- // 怪物 AI 放的技能定义就在 official.skills 里（sources 带 monsterAI），战斗包发的是
- // monsterWireBase64||wireBase64（见 official-packets.mapBattleData）；怪物技能与
- // 人物技能共用 id，所以在所有补丁合完之后、建索引之前对整张表套一次覆盖。
- // 覆盖只改命中规则的记录，未命中的保持原对象引用。
- for(let i=0;i<official.skills.length;i++){
-  const skill=official.skills[i];
-  const next=applyOverrideToDefinition(skill.id,skill);
-  if(next!==skill)official.skills[i]=next;
- }
- // 日常副本扩展：给「任务齐了但编队没采集到」的 9 个副本补编队（本地推算，带 sources 标记）。
+// 日常副本扩展：给「任务齐了但编队没采集到」的 9 个副本补编队（本地推算，带 sources 标记）。
  // 必须在建索引之前：battleSupported() 查的是建好的 officialGroups。
  applyDungeonChallengeRepairs(official);
  // BOSS 挑战赛（1305）：克隆 3315 巨石神兵 / 3314 古龙-多拉斯，补棋盘三场的编队，
@@ -159,6 +150,31 @@ fixMidAutumnFinalBoss(official);
  // 在看板上点「前往」会站到看不见的人面前。补上「可见 + 可交互」两位并同步 wire。
  // 排在所有补地图的补丁之后（否则会被 city-template-fixes 那类重写覆盖），在建索引之前。
  applyDailyDungeonEntrances(official);
+ // 技能效果覆盖（MOD local-skill-overrides）：怪物自带技能也吃覆盖 —— 怪物 AI 放的技能定义
+ // 就在 official.skills 里（sources 带 monsterAI），战斗包发的是 monsterWireBase64||wireBase64
+ // （见 official-packets.mapBattleData）；怪物技能与人物技能共用 id，所以对整张表套一次覆盖。
+ // ⚠ 必须排在**所有补技能表的补丁之后**（含 applyCaptured81）：applyCaptured81 会拿抓包字节
+ // 与已有记录逐字节比对，不一致就抛「Conflicting captured81 skill」—— 覆盖改过 wireBase64
+ // 之后它必然对不上，排在它前面会让「覆盖了某个被抓包收录的技能等级」直接起不来
+ // （第 86 版实测：技能 548「解除魔法」22 级，服务端起不来、整片测试红）。
+ // 覆盖只改命中规则的记录，未命中的保持原对象引用。
+ for(let i=0;i<official.skills.length;i++){
+  const skill=official.skills[i];
+  const next=applyOverrideToDefinition(skill.id,skill);
+  if(next!==skill)official.skills[i]=next;
+ }
+ // 本地装备属性覆盖（第 86 版，见 lib/item-overrides.mjs + 装备编辑器.html）。
+ // 必须排在**所有补道具的补丁之后**：① 覆盖表里可能有本地补出来的道具；
+ // ② 前面的补丁（如 applyCustomAdventures 重建 1002/1011/1022/1032 定义字节时会逐字节
+ //    比对原定义）要读原始定义，先覆盖会让它们对不上。也必须建索引之前 ——
+ // 覆盖是原地替换 official.items 里的条目，officialItems 索引随后才建。
+ applyItemOverrides(official.items);
+ // 鉴定范围覆盖（第 87 版，见 lib/item-overrides.mjs 的 identify 段）：
+ // 改的是 official.identification 的 slots 与 wireBase64 —— 客户端「查看鉴定范围」
+ // （12060 回包，lib/catalog-packets.mjs）与服务端随机（lib/item-affixes.mjs 的 ranges）
+ // 读的是同一行，必须一起重写。排在装备覆盖之后（新建范围要读覆盖后的定义标记位），
+ // 建索引之前 —— catalog-packets 的 Map 与 item-affixes 的惰性索引都在 ensure() 之后才读。
+ applyIdentifyOverrides(official.identification,identifyOverrides(),official.items);
  built={
   official,
   officialMaps:new Map(official.maps.map(m=>[m.id,m])),

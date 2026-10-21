@@ -17,10 +17,65 @@ import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('..',import.meta.url));
 export const EDITOR_HTML=path.join(root,'技能编辑器.html');
 
-/** 少数 getPowerDesc 分支不是纯字符串（百分比伤害等），或引用了运行时对象导致文案残缺。 */
+/** 少数 getPowerDesc 分支拿不到完整文案（引用运行时对象 / 依赖状态编号），
+ *  以及游戏内本来就不显示文字的「内部标记」编号 —— 这里补成中文短名。
+ *  note 会随标签表发给编辑器，选中该效果时显示在数值框下方。 */
 const MANUAL_FIX={
+ 0:{n:'无'},
+ 36:{n:'伤害反射',p:true,note:'原版没有使用这个编号'},
  50:{n:'按生命上限百分比扣血',p:true},
- 87:{n:'无视物理防御（破甲）',p:false}
+ 66:{n:'伤害反射',note:'原版没有使用这个编号'},
+ 79:{n:'清除目标状态',note:'数值填状态编号：0 无 / 1 中毒 / 25 增益 / 26 减益…'},
+ 80:{n:'战斗中复活并回复生命和法力'},
+ 82:{n:'技能附带命中'},
+ 85:{n:'附加强制命中率',p:true},
+ 86:{n:'无视目标法术防御点数'},
+ 87:{n:'无视物理防御（破甲）',p:false},
+ 88:{n:'清除自身状态',note:'数值填状态编号：0 无 / 1 中毒 / 25 增益 / 26 减益…'},
+ 97:{n:'复活并回复体力及法力',p:true},
+ 98:{n:'战斗后自动恢复生命和法力',p:true},
+ 99:{n:'开通仓库存放格数'},
+ 103:{n:'需求槽位（内部标记）'},
+ 105:{n:'传送到指定坐标（ToXY）'},
+ 106:{n:'有效期（内部标记）'},
+ 108:{n:'宝箱钥匙等级（内部标记）'},
+ 109:{n:'宠物蛋（内部标记）'},
+ 110:{n:'时装（内部标记）'},
+ 111:{n:'传送（内部标记）'},
+ 112:{n:'称号'},
+ 113:{n:'替目标抵挡劈砍攻击',p:true},
+ 114:{n:'替目标抵挡穿刺攻击',p:true},
+ 115:{n:'替目标抵挡魔法攻击',p:true},
+ 116:{n:'替目标抵挡诅咒攻击',p:true},
+ 117:{n:'替目标抵挡所有攻击',p:true},
+ 120:{n:'战斗经验倍数',note:'数值÷10 才是倍率（10 = 1.0 倍）'},
+ 121:{n:'未鉴定属性'},
+ 131:{n:'合成（内部标记）'},
+ 157:{n:'主人受劈砍时替其承伤',p:true},
+ 158:{n:'主人受穿刺时替其承伤',p:true},
+ 159:{n:'主人受魔法时替其承伤',p:true},
+ 160:{n:'主人受诅咒时替其承伤',p:true},
+ 161:{n:'主人受攻击时替其承伤',p:true},
+ 162:{n:'宠物替其承受劈砍伤害',p:true},
+ 163:{n:'宠物替其承受穿刺伤害',p:true},
+ 164:{n:'宠物替其承受魔法伤害',p:true},
+ 165:{n:'宠物替其承受诅咒伤害',p:true},
+ 166:{n:'宠物替其承受所有伤害',p:true},
+ 167:{n:'任务经验倍数',note:'数值÷10 才是倍率（10 = 1.0 倍）'},
+ 176:{n:'技能卷轴（内部标记）'},
+ 177:{n:'宠物技能卷轴（内部标记）'},
+ 179:{n:'获得新宠物（内部标记）'},
+ 180:{n:'获得新道具（内部标记）'},
+ 181:{n:'附魔卡（内部标记）'},
+ 182:{n:'阵型书（内部标记）'},
+ 185:{n:'变身怪物卡（内部标记）'},
+ 186:{n:'宠物技能书（内部标记）'},
+ 196:{n:'法术百分比',p:true,note:'原版没有使用这个编号'},
+ 197:{n:'能量',note:'197 同时是物理百分比标记，原版文案显示为「能量」'},
+ 301:{n:'增加铜币'},
+ 302:{n:'增加银币'},
+ 303:{n:'增加金币'},
+ 304:{n:'获得道具（内部标记）'}
 };
 
 /** 兜底对象：任何属性访问/调用都返回一个可字符串化的空值。 */
@@ -102,8 +157,11 @@ export function buildLabels(){
  const main=mainBundle();
 
  // --- 效果文案：执行 getPowerDesc 的 case 分支 ---
+ // 压缩包里两种写法都有：`return "..."` 与 `return"..."`（无空格），
+ // 而且 return 后面可能没有分号（紧接 `}`）→ 这里两种都要吃。
+ // 早先只写 `return `（带空格），结果 53 个直接返回字符串字面量的效果名全部退回英文常量。
  const scope=vm.createContext({c:'#',p:100,d:'',u:fallback(),a:fallback(),s:fallback(),r:fallback(),e:Tool,n:0,i:100,o:null,l:true});
- const re=/case e\.(POWER_[A-Z_0-9]+):\s*return ([^;]{1,500}?);/g;
+ const re=/case e\.(POWER_[A-Z_0-9]+):\s*return\s*([^;{}]{1,500}?)\s*[;}]/g;
  let m;
  const rawText=new Map();
  while((m=re.exec(main))){
@@ -120,7 +178,9 @@ export function buildLabels(){
   const hit=fix||rawText.get(key)||{n:'',p:false};
   // 同一编号有多个别名时，优先保留有文案的那个
   if(powers[id]&&powers[id].n&&!hit.n)continue;
-  powers[id]={k:key,n:hit.n||key.replace(/^POWER_/,''),p:!!hit.p};
+  const entry={k:key,n:hit.n||key.replace(/^POWER_/,''),p:!!hit.p};
+  if(hit.note)entry.note=hit.note;
+  powers[id]=entry;
  }
 
  // --- 状态名：主包的 e.bufferText 数组，索引即状态编号 ---
@@ -139,7 +199,7 @@ export function buildLabels(){
  // --- 怪物自带技能 ---
  const monsters=buildMonsterSkills();
 
- const missing=Object.values(powers).filter(x=>x.k&&!x.n).length;
+ const missing=Object.values(powers).filter(x=>x.k&&x.n===x.k.replace(/^POWER_/,'')).length;
  const monsterLevels=Object.values(monsters).reduce((a,r)=>a+r.levels.length,0);
  return {
   powers:Object.fromEntries(Object.entries(powers).sort((a,b)=>Number(a[0])-Number(b[0]))),

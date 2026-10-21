@@ -30,6 +30,7 @@ import {supplyDirectory} from './supply-shops.mjs';
 import {dropDirectory} from './loot.mjs';
 import {playerExperience} from './player-experience.mjs';
 import {clientProgressionRevision} from './client-progression-patch.mjs';
+import {itemOverrideRevision} from './item-overrides.mjs';
 import {petSnapshotDirectory} from './pet-snapshot-vitals.mjs';
 import {homeFeatureRevision,towerPreviews} from './home-feature-data.mjs';
 import {homeSnapshot} from './home-features.mjs';
@@ -74,10 +75,22 @@ import {promptBriefingRevision} from './client-prompt-patch.mjs';
 import {weaponIconRevision} from './client-weapon-icon-patch.mjs';
 import {taskResetRevision,nextTaskResetAt} from './task-reset.mjs';
 import {patchClientBoot,patchClientMain,CLIENT_MAIN_PATH} from './client-patch-chain.mjs';
+import {calculatorProfile,createCalculatorSession,getCalculatorSession,profilesFromSave,simulateCalculator,damageCalculatorRevision} from './damage-calculator.mjs';
 
 export const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.mp3':'audio/mpeg','.bin':'application/octet-stream'};
 
-export function answer(res,code,type,body){res.writeHead(code,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);}
+export function answer(res,code,type,body,extraHeaders={}){res.writeHead(code,{'Content-Type':type,'Cache-Control':'no-store',...extraHeaders});res.end(body);}
+
+// 伤害计算器允许从 file:// 打开（Origin: null）直接请求本机 8775/8776。
+// 只给这组接口加 CORS，不改其它路由的跨域行为。
+const CALC_CORS={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Private-Network':'true'};
+const calcJson=(res,code,payload)=>answer(res,code,mime['.json'],JSON.stringify(payload),CALC_CORS);
+async function readJsonBody(req,limit=32*1024*1024){
+ let size=0;const chunks=[];
+ for await(const chunk of req){size+=chunk.length;if(size>limit)throw Error('请求体太大');chunks.push(chunk);}
+ if(!size)return {};
+ try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw Error('JSON 格式错误');}
+}
 
 /**
  * 静态资源白名单：站点上的 `/xxx.js` 实际取自 web/ 目录。
@@ -85,7 +98,8 @@ export function answer(res,code,type,body){res.writeHead(code,{'Content-Type':ty
  * 单机版把 web/*.js 平铺在站点根上，不能靠目录列表兜底，所以是显式白名单。
  */
 const WEB_PATHS={'/':'index.html','/index.html':'index.html','/offline.js':'offline.js','/native-pet-shop.js':'native-pet-shop.js','/role-slots.js':'role-slots.js','/recorded-content.js':'recorded-content.js','/combat-rating.js':'combat-rating.js','/career-skills.js':'career-skills.js','/equipment-workshop.js':'equipment-workshop.js','/equipment-composition.js':'equipment-composition.js','/offline.css':'offline.css','/catalog':'catalog.html','/catalog.js':'catalog.js','/catalog.css':'catalog.css',
- '/entry-pledge.js':'entry-pledge.js','/system-settings.js':'system-settings.js','/daily-reset.js':'daily-reset.js','/pet-snapshot-vitals.js':'pet-snapshot-vitals.js','/character-features.js':'character-features.js','/native-vip.js':'native-vip.js','/legion.js':'legion.js','/home-features.js':'home-features.js','/home-features.css':'home-features.css','/native-features.js':'native-features.js'};
+ '/entry-pledge.js':'entry-pledge.js','/system-settings.js':'system-settings.js','/daily-reset.js':'daily-reset.js','/pet-snapshot-vitals.js':'pet-snapshot-vitals.js','/character-features.js':'character-features.js','/native-vip.js':'native-vip.js','/legion.js':'legion.js','/home-features.js':'home-features.js','/home-features.css':'home-features.css','/native-features.js':'native-features.js',
+ '/damage-calculator.html':'damage-calculator.html','/damage-calculator':'damage-calculator.html','/damage-calculator.js':'damage-calculator.js'};
 
 /**
  * 造路由表。
@@ -144,8 +158,39 @@ export function createHttpRouter(env){
   {kind:'path',path:'/api/official-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({version:'0.6.4',maps:official.maps.map(m=>({id:m.id,name:m.name})),itemIds:[...officialItems.keys()],catalog:official.catalog.length,missions:official.missions.length,supportedMissions:supportedMissionCount}))},
   // /api/status 必须排在 /status 前面：否则 /status 会被前者吃掉前 11 个字符？不会 —— 精确匹配，
   // 只是若两者顺序颠倒，任何重构都更容易把 /api/status 写成前缀匹配。保持原顺序，便于逐行比对。
-  {kind:'path',path:'/api/status',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({combatLimitsRevision,characterAttackLimits,battleStatusLimit:null,project:'worldonline-original-offline',projectRoot:root,version:'0.6.4',client:305,petCatalog:petCatalogSummary,systemSettingsRevision,homeFeatureRevision:homeFeatureRevision(),yunruoTempleRevision,recordedExpansionRevision:recordedExpansionRevision(),bossChallengeRevision,bossChallengeRepairsRevision,guardChallengeRevision,dungeonRepairRevision,customAdventureRevision,legionRevision,damageMathRevision,attackPlanRevision,bossManaRecoveryRevision,clientMissionRevision,clientBagRevision,combatRatingRevision,battleSkillPanelRevision,battleFontRevision,legionSurvivorsRevision,legionPetGuardRevision,battleSpeedRevision,weaponSlotRevision,phantomImmunityRevision,illusionRevision,weaponIconRevision,escortBattleRevision,escortBoardRevision,promptBriefingRevision,cityTemplateRevision,taskResetRevision,taskResetDay:dailyKey(),nextTaskResetAt:nextTaskResetAt(),port,pid:process.pid,equipmentUpgrades:{version:upgradeRules.version,mode:upgradeRules.mode,starMax:upgradeRules.star.max,star:upgradeRules.star,gem:upgradeRules.gem},careerSkills:{version:careers.version,effectRevision:careers.effectRevision,teachers:careers.teachers.length,skills:careers.skills.length,maxLevel:22,learningMode:careers.learningMode},accounts:store.data.accounts.map(a=>({id:a.id,name:a.name})),characters:store.data.characters,...stats()},null,2))},
-  {kind:'path',path:'/status',reply:({res})=>answer(res,200,mime['.html'],`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>世界OL单机状态</title><h1>原版单机 v0.6.4</h1><p>${official.maps.length}张原版地图，${official.missions.length}条任务定义，其中${supportedMissionCount}条通过当前条件与奖励检查。</p><p>已整合全部保存录制中可解析的公开配置：${recorded.pets.length}个宠物模板、${recorded.petSnapshots.length}份实际宠物样本、${recorded.petSkills.length}条宠物技能等级、${recordedFinishedPets.size}套97级成品宠物、20个称号、192组套装、16种宠物蛋和4份VIP页面记录。</p><p>左上单机菜单 → 录制内容 / 宠物与称号。宠物可按已录模板免费领取并出战，称号可选择并保存；套装效果按穿戴件数和VIP等级生效。</p><p>保留97级存档及原有强化、镶嵌、免费合成、技能和战力规则。未录到的随机概率、各品质完整成长曲线、16级之后经验表和部分国家/护送功能仍为缺项。</p><a href="/">进入游戏</a></html>`)},
+  {kind:'path',path:'/api/status',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({combatLimitsRevision,characterAttackLimits,battleStatusLimit:null,project:'worldonline-original-offline',projectRoot:root,version:'0.6.4',client:305,petCatalog:petCatalogSummary,systemSettingsRevision,homeFeatureRevision:homeFeatureRevision(),yunruoTempleRevision,recordedExpansionRevision:recordedExpansionRevision(),bossChallengeRevision,bossChallengeRepairsRevision,guardChallengeRevision,dungeonRepairRevision,customAdventureRevision,legionRevision,damageMathRevision,attackPlanRevision,damageCalculatorRevision,bossManaRecoveryRevision,clientMissionRevision,clientBagRevision,combatRatingRevision,battleSkillPanelRevision,battleFontRevision,legionSurvivorsRevision,legionPetGuardRevision,battleSpeedRevision,weaponSlotRevision,phantomImmunityRevision,illusionRevision,weaponIconRevision,escortBattleRevision,escortBoardRevision,promptBriefingRevision,cityTemplateRevision,taskResetRevision,taskResetDay:dailyKey(),nextTaskResetAt:nextTaskResetAt(),port,pid:process.pid,equipmentUpgrades:{version:upgradeRules.version,mode:upgradeRules.mode,starMax:upgradeRules.star.max,star:upgradeRules.star,gem:upgradeRules.gem},itemOverrideRevision:itemOverrideRevision(),careerSkills:{version:careers.version,effectRevision:careers.effectRevision,teachers:careers.teachers.length,skills:careers.skills.length,maxLevel:22,learningMode:careers.learningMode},accounts:store.data.accounts.map(a=>({id:a.id,name:a.name})),characters:store.data.characters,...stats()},null,2))},
+  {kind:'path',path:'/status',reply:({res})=>answer(res,200,mime['.html'],`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>世界OL单机状态</title><h1>原版单机 v0.6.4</h1><p>${official.maps.length}张原版地图，${official.missions.length}条任务定义，其中${supportedMissionCount}条通过当前条件与奖励检查。</p><p>已整合全部保存录制中可解析的公开配置：${recorded.pets.length}个宠物模板、${recorded.petSnapshots.length}份实际宠物样本、${recorded.petSkills.length}条宠物技能等级、${recordedFinishedPets.size}套97级成品宠物、20个称号、192组套装、16种宠物蛋和4份VIP页面记录。</p><p>左上单机菜单 → 录制内容 / 宠物与称号。宠物可按已录模板免费领取并出战，称号可选择并保存；套装效果按穿戴件数和VIP等级生效。</p><p>保留97级存档及原有强化、镶嵌、免费合成、技能和战力规则。未录到的随机概率、各品质完整成长曲线、16级之后经验表和部分国家/护送功能仍为缺项。</p><p><a href="/damage-calculator.html">伤害计算器</a> · <a href="/">进入游戏</a></p></html>`)},
+  // 伤害计算器：GET 当前存档里的角色；POST 导入存档 / 模拟。全部只读，不写 store。
+  {kind:'path',path:'/api/damage-calculator/current',when:({req})=>req.method==='GET',reply:({res})=>{
+   try{
+    const profiles=[],warnings=[];
+    for(const role of store.data.characters){
+     try{profiles.push(calculatorProfile(role));}
+     catch(error){warnings.push(`角色 ${role?.name||role?.id||'?'} 无法计算：${error?.message||error}`);}
+    }
+    if(!profiles.length)throw Error('当前存档里没有可计算的角色');
+    const session=createCalculatorSession(profiles,'current');
+    return calcJson(res,200,{revision:damageCalculatorRevision,warnings,...session});
+   }catch(error){return calcJson(res,400,{error:String(error?.message||error)});}
+  }},
+  {kind:'path',path:'/api/damage-calculator/load',when:({req})=>req.method==='POST',reply:async({req,res})=>{
+   try{
+    const body=await readJsonBody(req);
+    const {profiles,warnings}=profilesFromSave(body.save??body);
+    const session=createCalculatorSession(profiles,'import');
+    return calcJson(res,200,{revision:damageCalculatorRevision,warnings,...session});
+   }catch(error){return calcJson(res,400,{error:String(error?.message||error)});}
+  }},
+  {kind:'path',path:'/api/damage-calculator/simulate',when:({req})=>req.method==='POST',reply:async({req,res})=>{
+   try{
+    const body=await readJsonBody(req);
+    const session=getCalculatorSession(body.token);
+    const characterId=String(body.characterId??'');
+    const profile=session.profiles.get(characterId);
+    if(!profile)throw Error('角色不存在或还未导入：'+characterId);
+    return calcJson(res,200,{revision:damageCalculatorRevision,...simulateCalculator(profile,body.config||{})});
+   }catch(error){return calcJson(res,400,{error:String(error?.message||error)});}
+  }},
   {kind:'path',path:'/api/shutdown',when:({req})=>req.method==='POST',reply:async({req,res})=>{
    if(req.headers['x-worldol-control']!==controlToken)return answer(res,403,'text/plain','Invalid local control token');
    answer(res,200,mime['.json'],'{"stopped":true}');
@@ -186,6 +231,8 @@ export function createHttpRouter(env){
   try{
    const url=new URL(req.url,'http://localhost');const pathname=decodeURIComponent(url.pathname);
    const ctx={req,res,url,pathname};
+   // file:// 打开计算器时浏览器会先发 CORS 预检；只对这组接口放行，不新增路由条目。
+   if(req.method==='OPTIONS'&&pathname.startsWith('/api/damage-calculator/')){answer(res,204,'text/plain','',CALC_CORS);return true;}
    for(const step of routes){
     if(step.kind==='path'){
      if(pathname!==step.path)continue;
@@ -193,7 +240,7 @@ export function createHttpRouter(env){
      await step.reply(ctx);return true;
     }
     if(step.kind==='gate'){
-     if(step.when(ctx)){answer(res,step.status,'text/plain',step.body);return true;}
+     if(step.when(ctx)){answer(res,step.status,step.type||'text/plain',step.body,step.headers);return true;}
      continue;
     }
     if(step.kind==='static'){await serveStatic(ctx);return true;}

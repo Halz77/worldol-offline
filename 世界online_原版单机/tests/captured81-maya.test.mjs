@@ -74,6 +74,11 @@ test('八一副本：注入是幂等的，两次跑不会撞号',skip,()=>{
   groups:official.groups,ai:official.ai,skills:official.skills,items:official.items});
  // 把注入过的 1430 挪走，让captured81 重新写入它
  copy.missions=copy.missions.filter(m=>m.id!==1430);
+ // 技能效果覆盖（data/local-skill-overrides.json）会改写 wire，与抓包不再一致 ——
+ // 注入过的技能同样先挪走，让 captured81 按抓包重新灌一遍（否则守卫会按设计抛 Conflicting）。
+ const captured=JSON.parse(fs.readFileSync(path.join(root,'data','captured81-20260926.json'),'utf8'));
+ const injected=new Set(captured.skills.map(s=>s.id+':'+s.level));
+ copy.skills=copy.skills.filter(s=>!injected.has(s.id+':'+s.level));
  assert.doesNotThrow(()=>applyCaptured81(copy));
  assert.ok(copy.missions.find(m=>m.id===1430),'1430 没有被重新写入');
 });
@@ -205,4 +210,42 @@ test('玛雅副本：没有 official 标记的同号任务、以及干净存档�
  assert.equal(migrateMayaProgress({quests:{active:{}}}),false);
  assert.equal(migrateMayaProgress({}),false);
  assert.equal(migrateMayaProgress(undefined),false);
+});
+
+test('技能效果覆盖必须排在 captured81 之后（否则覆盖改过字节 = 服务端起不来）',skip,()=>{
+ // 回归点：第 86 版实测「技能 548（解除魔法）22 级」在技能编辑器里改过数值后，服务端
+ // 直接抛 `Conflicting captured81 skill 548:22` 起不来 —— 因为 applyCaptured81 会拿抓包
+ // 字节与已有记录逐字节比对，而技能覆盖早一步把 wireBase64 改掉了。
+ // ① 源码顺序（真正的守卫：谁把循环挪回去，这条立刻红）
+ const source=fs.readFileSync(path.join(root,'lib','official-data.mjs'),'utf8');
+ const capturedAt=source.indexOf('applyCaptured81(official)');
+ const loopAt=source.indexOf('applyOverrideToDefinition(skill.id,skill)');
+ assert.ok(capturedAt>0,'official-data.mjs 里找不到 applyCaptured81(official)');
+ assert.ok(loopAt>0,'official-data.mjs 里找不到技能覆盖循环');
+ assert.ok(capturedAt<loopAt,'applyCaptured81 必须排在技能效果覆盖之前，否则覆盖过的技能会让它抛 Conflicting');
+
+ // ② 行为：没被覆盖的抓包技能，wire 必须与抓包字节一字不差（说明 captured81 先灌、覆盖没误伤）；
+ //    被覆盖的技能仍要在表里（覆盖是改写，不是删除）。
+ const captured=JSON.parse(fs.readFileSync(path.join(root,'data','captured81-20260926.json'),'utf8'));
+ const raw=JSON.parse(fs.readFileSync(path.join(root,'data','local-skill-overrides.json'),'utf8'));
+ const overridden=id=>!!raw.skills?.[String(id)];
+ for(const row of captured.skills){
+  const current=official.skills.find(s=>s.id===row.id&&s.level===row.level);
+  assert.ok(current,`captured81 技能 ${row.id}:${row.level} 没有进 official.skills`);
+  if(!overridden(row.id))
+   assert.equal(current.monsterWireBase64||current.wireBase64,row.wireBase64,
+    `技能 ${row.id}:${row.level} 的抓包字节被改动（技能覆盖跑早了或写坏了）`);
+ }
+ // ③ 覆盖真的生效：命中规则的等级，wire 必须换掉（否则「改了没反应」）。
+ //    规则也可能指向 official.skills 之外的技能表（人物技能 / 装备技能），那种情况这里不判。
+ for(const idRaw of Object.keys(raw.skills||{})){
+  const id=Number(idRaw),rule=raw.skills[idRaw];
+  const levels=rule.levels==='all'?null:rule.levels;
+  const rows=official.skills.filter(s=>s.id===id&&(!levels||levels.includes(s.level)));
+  for(const row of rows){
+   const source=captured.skills.find(s=>s.id===id&&s.level===row.level);
+   if(source)assert.notEqual(row.monsterWireBase64||row.wireBase64,source.wireBase64,
+    `技能 ${id}:${row.level} 有覆盖规则，但 wire 还是抓包原样`);
+  }
+ }
 });

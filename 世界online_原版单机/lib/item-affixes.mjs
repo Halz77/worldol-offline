@@ -3,6 +3,7 @@ import {lazyBox,lazyJson} from './lazy-data.mjs';
 import {petEquipmentDefinition} from './pet-equipment-data.mjs';
 import crypto from 'node:crypto';
 import {official} from './official-data.mjs';
+import {hasItemOverride} from './item-overrides.mjs';
 import {Writer} from './codec.mjs';
 import {starRules,gemRules,starLimit,advancedRules,advancedStarLimit} from './equipment-policy.mjs';
 import {finishEquipment} from './character-import-codec.mjs';
@@ -98,6 +99,57 @@ function applyUpgradeFields(template,result,instance){
     result.upgradeStar=instance.upgradeStar;
   }
 }
+/*
+ * 覆盖过的装备（data/local-item-overrides.json）不能走下面的「按原始偏移改字节」路径：
+ * 覆盖会重写 definitionBase64，与 item-affix-layouts.json 里记录的原始 SHA-256 不再相等；
+ * 如果覆盖改了名称/说明等变长字段，偏移也会跟着移动。
+ *
+ * 这里改为先把实例上的鉴定/强化/附魔/赋灵字段合并到定义对象，再用 equipmentBytes
+ * 重新编码整份定义。字段来源仍是覆盖后的 template，所以「编辑器改过的属性 + 这次操作」
+ * 会一起保留；非覆盖装备继续走原来的字节补丁路径（保持抓包定义的逐字节原样）。
+ */
+function overriddenItemWithAffixes(template,instance,layout){
+ const result={...template};
+ if(instance.socketCapacity!==undefined){
+  if(!Number.isInteger(layout.offsets.attachCount))throw Error('宝石孔数字段位置不匹配。');
+  result.attachCount=gemCapacity(template,instance);
+ }
+ if(instance.enchantment){
+  const fields=enchantmentFields(instance.enchantment.itemId);
+  for(const [key,value] of Object.entries(fields)){
+   if(!Number.isInteger(layout.offsets[key])||!Number.isInteger(value)||value<0||value>32767)throw Error('装备附魔字段位置不匹配。');
+   result[key]=value;
+  }
+ }
+ if(instance.affixes&&(typeof instance.affixes!=='object'||Array.isArray(instance.affixes)))throw Error('无效鉴定属性。');
+ for(const [field,affix] of Object.entries(instance.affixes||{})){
+  if(!allowed.has(field)||![121,131].includes(template[field]))throw Error('这项属性不能鉴定。');
+  const option=ranges.get(template.id)?.find(slot=>slot.field===field)?.options.find(p=>p.power===affix?.power);
+  if(!option||!Number.isInteger(affix.value)||affix.value<option.min||affix.value>option.max)throw Error('鉴定属性超出已录原版范围。');
+  if(!Number.isInteger(layout.offsets[field])||!Number.isInteger(layout.offsets[valueField(field)]))throw Error('鉴定字段位置不匹配。');
+  result[field]=affix.power;result[valueField(field)]=affix.value;
+ }
+ if(instance.star!==undefined){
+  if(!Number.isInteger(instance.star)||instance.star<0||instance.star>starLimit(template)||!template.ascensionStar)throw Error('无效的装备星级。');
+  if(!Number.isInteger(layout.offsets.star))throw Error('装备星级字段位置不匹配。');
+  result.star=instance.star;
+  for(const key of ['def_str','def_agi','def_mag','atkMin','atkMax'])if(Number.isInteger(layout.offsets[key]))
+   result[key]=starValue(template[key],template.ascensionStar,instance.star,!!(template.autoBinding||instance.bound));
+ }
+ if(instance.combinedSkill){
+  const {id,level}=instance.combinedSkill,section=layout.combinationSkill;
+  const option=section?.options.find(s=>s.id===id&&s.level===level);
+  const skill=template.combinUpSkillList?.find(s=>s.id===id&&s.level===level);
+  if(!option||!skill)throw Error('该合成技能等级没有已录原版定义。');
+  const wire=Buffer.from(option.wireBase64,'base64');
+  result.skill={...skill,wireBase64:Buffer.concat([wire,Buffer.from([0])]).toString('base64')};
+  result.skillDesc=`${skill.name}+${skill.level}级`;
+ }
+ if(instance.upgradeAffixes!==undefined||instance.upgradeStar!==undefined)applyUpgradeFields(template,result,instance);
+ if(instance.spiritSeals)return finishEquipment(applySpiritSeals(result,instance));
+ return finishEquipment(result);
+}
+
 export function itemWithAffixes(template,instance){
   if(template?.type===43)return spiritRuneDefinition(template,instance);
   if(template?.type===41||instance?.recordedDefinition?.type===41)return petEquipmentDefinition(template,instance);
@@ -129,8 +181,9 @@ export function itemWithAffixes(template,instance){
     return finishEquipment(result);
   }
   if(!instance?.affixes&&!instance?.combinedSkill&&!instance?.star&&!instance?.enchantment&&instance?.socketCapacity===undefined&&!instance?.upgradeAffixes&&instance?.upgradeStar===undefined&&!instance?.spiritSeals)return template;
-  const layout=layouts.items[String(instance.itemId)];
-  if(!template?.native||template.id!==instance.itemId||!layout)throw Error('此物品尚未核验独立鉴定属性。');
+  const layout=layouts.items[String(instance.itemId)],overridden=hasItemOverride(template?.id);
+  if(!template||template.id!==instance.itemId||!layout||(!template.native&&!overridden))throw Error('此物品尚未核验独立鉴定属性。');
+  if(overridden)return overriddenItemWithAffixes(template,instance,layout);
   let bytes=Buffer.from(template.definitionBase64,'base64');
   if(crypto.createHash('sha256').update(bytes).digest('hex')!==layout.definitionSHA256)throw Error('物品定义已变化，请重新核验鉴定字段。');
   if(instance.affixes&&(typeof instance.affixes!=='object'||Array.isArray(instance.affixes)))throw Error('无效鉴定属性。');

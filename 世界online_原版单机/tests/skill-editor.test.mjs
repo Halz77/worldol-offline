@@ -95,6 +95,28 @@ test('内嵌的效果/参数文案表与当前游戏数据一致',skip,()=>{
  }
 });
 
+test('内嵌的效果名全部是中文：压缩包里 return"..."（无空格）的分支也要取到官方文案',skip,()=>{
+ const labels=JSON.parse(editorHtml().match(/<script id="game-labels"[^>]*>([\s\S]*?)<\/script>/)[1]);
+ const english=Object.entries(labels.powers).filter(([,v])=>!/[\u4e00-\u9fa5]/.test(String(v.n||'')));
+ assert.deepEqual(english,[],'这些效果名还是英文常量，请在 tools/build-skill-editor-data.mjs 的 MANUAL_FIX 里补中文：'
+  +english.map(([id,v])=>id+'='+v.n).join(', '));
+ // 曾经因为只匹配 `return `（带空格）而退回英文的几条
+ assert.equal(labels.powers['79'].n,'清除目标状态');
+ assert.equal(labels.powers['82'].n,'技能附带命中');
+ assert.equal(labels.powers['97'].n,'复活并回复体力及法力');
+ assert.equal(labels.powers['97'].p,true,'97 号是百分比');
+ assert.ok(String(labels.powers['79'].note||'').includes('状态编号'),'79 号数值填的是状态编号，编辑器要提示');
+});
+
+test('技能列表按类型与职业筛选',skip,()=>{
+ const html=editorHtml();
+ assert.ok(html.includes('id="filter-type"'),'要有「类型」筛选下拉');
+ assert.ok(html.includes('id="filter-profession"'),'要有「职业」筛选下拉');
+ const main=html.match(/<script>([\s\S]*?)<\/script>/)[1];
+ assert.ok(main.includes('function skillTypeIds'),'类型筛选要按逐级 type 判定（同一技能可能逐级不同）');
+ assert.ok(main.includes('state.filterProfession==="__none"'),'职业筛选要能单独看「未标职业」的装备/怪物技能');
+});
+
 test('怪物技能：覆盖会重算 monsterWireBase64（战斗包发的是它）',()=>{
  // 怪物技能的战斗包用的是 monsterWireBase64（official-packets.mapBattleData），
  // 它本是 wireBase64 的副本；只重算 wireBase64 的话怪物放的还是旧效果。

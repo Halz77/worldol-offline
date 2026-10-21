@@ -1,4 +1,4 @@
-export const battleCheckRevision='battle-check-full-fields-v5';
+export const battleCheckRevision='battle-check-full-fields-v6';
 
 // 战斗里「查看」弹出的战斗信息面板（BattleCheck）原来只在一处开关后面显示 12 个字段：
 //   e.isCheckAll &&（出手速度/闪避/三项防御/状态抵抗/伤害减免/格挡/洞察）
@@ -14,6 +14,16 @@ export const battleCheckRevision='battle-check-full-fields-v5';
 //      数值一律走 e.get(ModelConst.X)||0，缺属性按 0 显示（怪物大多为 0）。
 //   3. 末尾再补一行派生的「生命百分比伤害减免」——**这条不是 wire 上的字段**，
 //      而是把强韧（TOUGH）换算成战斗引擎真正用的减伤百分比（见下）。
+//
+// 第 89 版：攻击侧字段（原面板只有防御侧）。玩家自制技能要测「打出去多少」，
+//   「查看」面板却只显示防御/抗性。这里补 10 个读 ModelConst 的字段：
+//     攻击力（ATK_MIN~ATK_MAX）、破甲（BRK_ARMOR）、
+//     劈砍攻击力（ATK_STR）、穿刺攻击力（ATK_AGI）、魔法攻击力（ATK_MAGIC）、
+//     魔法穿透（MAGIC_PENETRATION）、致命点（CRITICAL）、
+//     物理命中（HIT_RATE）、魔法命中（HIT_MAGIC）、强制命中率（FORCE_HIT）。
+//   全是 wire 上的真字段；文案全部取自 GameText（模块 10），不新增字面量。
+//   逐手武伤/攻次（LEFT_/RIGHT_ATK_*）不塞进「查看」面板，避免把面板撑得过长；
+//   需要看逐手数据时用网页版伤害计算器（web/damage-calculator.html）。
 //
 // 生命百分比伤害减免怎么算（第 75 版）：
 //   战斗里减免走 BattleCalc.calTouch → calTouchDmg：
@@ -64,6 +74,17 @@ export function patchBattleCheckFields(source){
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_BLOCK+":"+(e.get(a.ModelConst.IGNORE_BLOCK)||0)+"\\n"),'
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_WIL+":"+(e.get(a.ModelConst.IGNORE_WIL)||0)+"  "),'
    +'t.append(window.__worldReq(23).GameText2.STR_ATTR_IGNORE_TOUCH+":"+(e.get(a.ModelConst.IGNORE_TOUCH)||0)+"\\n"),'
+   // —— 第 89 版：攻击侧字段（上面是防御侧）——
+   +'t.append(n.GameText.STR_ATTR_ATK+":"+(e.get(a.ModelConst.ATK_MIN)||0)+"~"+(e.get(a.ModelConst.ATK_MAX)||0)+"  "),'
+   +'t.append(n.GameText.STR_ATTR_BRK+":"+(e.get(a.ModelConst.BRK_ARMOR)||0)+"\\n"),'
+   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_ATK_STR+":"+(e.get(a.ModelConst.ATK_STR)||0)+"  "),'
+   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_ATK_AGI+":"+(e.get(a.ModelConst.ATK_AGI)||0)+"\\n"),'
+   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_ATK_MAGIC+":"+(e.get(a.ModelConst.ATK_MAGIC)||0)+"  "),'
+   +'t.append(n.GameText.STR_ATTR_MAGIC_PEN+":"+(e.get(a.ModelConst.MAGIC_PENETRATION)||0)+"\\n"),'
+   +'t.append(n.GameText.STR_ATTR_CRITICAL+":"+(e.get(a.ModelConst.CRITICAL)||0)+"  "),'
+   +'t.append(n.GameText.STR_ATTR_HIT_RATE+":"+(e.get(a.ModelConst.HIT_RATE)||0)+"\\n"),'
+   +'t.append(n.GameText.STR_ATTR_HIT_MAGIC+":"+(e.get(a.ModelConst.HIT_MAGIC)||0)+"  "),'
+   +'t.append(n.GameText.STR_ATTR_FORCE_HIT+":"+(e.get(a.ModelConst.FORCE_HIT)||0)+"\\n"),'
    +'t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n")),null!=e.formationSkill&&';
   if(source.split(tail).length!==2)throw Error('v305 battle check tail patch mismatch');
   source=source.replace(tail,tailNew);

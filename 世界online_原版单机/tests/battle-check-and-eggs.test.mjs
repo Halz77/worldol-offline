@@ -53,7 +53,7 @@ test('宠物蛋图标：每个 selectable 蛋的 bagIcon 都是那只宠物的�
  }
 });
 
-test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段 + 生命百分比伤害减免（锚点在主包中恰好一次）',skipNoBundle,()=>{
+test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个防御字段 + 10 个攻击字段 + 生命百分比伤害减免（锚点在主包中恰好一次）',skipNoBundle,()=>{
  if(!hasBundle)return skip('没有 client/，跳过');
  const source=fs.readFileSync(MAIN,'utf8');
  // 原始锚点必须恰好出现一次（补丁过期时这里先炸，给出明确信号）
@@ -79,6 +79,16 @@ test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段 + 生�
   'IGNORE_INSIGHT','IGNORE_BLOCK','IGNORE_WIL','IGNORE_TOUCH']){
   assert.ok(patched.includes('a.ModelConst.'+key),'要读 ModelConst.'+key);
  }
+ // 第 89 版：攻击侧字段（玩家自制技能要测打出去的数值）。面板原来只有防御侧。
+ for(const key of ['ATK_MIN','ATK_MAX','BRK_ARMOR','ATK_STR','ATK_AGI','ATK_MAGIC',
+  'MAGIC_PENETRATION','CRITICAL','HIT_RATE','HIT_MAGIC','FORCE_HIT']){
+  assert.ok(patched.includes('a.ModelConst.'+key),'攻击侧字段要读 ModelConst.'+key);
+ }
+ for(const key of ['STR_ATTR_ATK','STR_ATTR_BRK','STR_CHANGE_ATT_DESC_ATK_STR',
+  'STR_CHANGE_ATT_DESC_ATK_AGI','STR_CHANGE_ATT_DESC_ATK_MAGIC','STR_ATTR_MAGIC_PEN',
+  'STR_ATTR_CRITICAL','STR_ATTR_HIT_RATE','STR_ATTR_HIT_MAGIC','STR_ATTR_FORCE_HIT']){
+  assert.ok(patched.includes('n.GameText.'+key),'攻击侧文案要用 GameText.'+key);
+ }
   // 生命百分比伤害减免：派生字段（不是 wire 字段）。算式**照抄参考实现**「幻想世界OL」：
   // min(TOUGH/100, 80)% —— 注意引擎自己算减伤时 TOUGH 是千分比（calTouchDmg，700→70%），
   // 参考实现是 /100（显示小 10 倍）；玩家要求与其面板一致，故照抄。
@@ -92,7 +102,11 @@ test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个字段 + 生�
  const declares=(text,key,label)=>text!==null&&new RegExp('e\\.'+key+'\\s*=\\s*"'+label+'"').test(text);
  const gameText=moduleText(10),gameText2=moduleText(23);
  for(const [key,label] of [['STR_ATTR_INSIGHT','洞察'],['STR_ATTR_BLOCK','格挡'],['STR_ATTR_TOUGH','伤害减免'],
-  ['STR_ATTR_DEF_FIELD','法力护盾'],['STR_ATTR_ATK_TIME','攻击次数'],['STR_ATTR_BACK','反击'],['STR_ATTR_MAGIC_BACK','魔法反馈']]){
+  ['STR_ATTR_DEF_FIELD','法力护盾'],['STR_ATTR_ATK_TIME','攻击次数'],['STR_ATTR_BACK','反击'],['STR_ATTR_MAGIC_BACK','魔法反馈'],
+  ['STR_ATTR_ATK','攻击力'],['STR_ATTR_BRK','破甲'],['STR_CHANGE_ATT_DESC_ATK_STR','劈砍攻击力'],
+  ['STR_CHANGE_ATT_DESC_ATK_AGI','穿刺攻击力'],['STR_CHANGE_ATT_DESC_ATK_MAGIC','魔法攻击力'],
+  ['STR_ATTR_MAGIC_PEN','魔法穿透'],['STR_ATTR_CRITICAL','致命点'],['STR_ATTR_HIT_RATE','物理命中'],
+  ['STR_ATTR_HIT_MAGIC','魔法命中'],['STR_ATTR_FORCE_HIT','强制命中率']]){
   if(gameText!==null)assert.ok(declares(gameText,key,label),'GameText(模块 10) 里 '+key+' 应当是「'+label+'」');
  }
  for(const [key,label] of [['STR_ATTR_IGNORE_INSIGHT','无视洞察'],['STR_ATTR_IGNORE_BLOCK','无视格挡'],

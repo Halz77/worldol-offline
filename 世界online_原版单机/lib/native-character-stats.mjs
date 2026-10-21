@@ -31,6 +31,22 @@ playerMethods.get=new vm.Script('('+patchCharacterAttackMethod(d.module(56).meth
 const zeroFields='speed atkMin atkMax atk_time atk_str atk_agi atk_magic def_str def_agi def_magic dodge hitrate hitMagic critical forceHit wil tough block brkArmor magic_penetration insight def_field back magic_back life_absorption mana_absorption heal_recovery mana_recovery recovery keepout_atk_time ignore_back ignore_magic_back ignore_block ignore_insight ignore_wil ignore_touch ignoreCritical criticalDmg atk_str_range atk_str_nearby atk_agi_range atk_agi_nearby def_str_range def_str_nearby def_agi_range def_agi_nearby _hpMax _mpMax'.split(' ');
 export const ratingStatKeys=['HPMAX','MPMAX','ATK_STR_NEARBY','ATK_STR_RANGE','ATK_AGI_NEARBY','ATK_AGI_RANGE','ATK_MAGIC','ATK_MIN','ATK_MAX','ATK_TIME','DEF_STR_NEARBY','DEF_STR_RANGE','DEF_AGI_NEARBY','DEF_AGI_RANGE','DEF_MAGIC','DEF_FIELD','HIT_RATE','HIT_MAGIC','DODGE','CRITICAL','BLOCK','INSIGHT','WIL','SPEED','BRK_ARMOR','MAGIC_PENETRATION','TOUGH','IGNORE_BACK','IGNORE_MAGIC_BACK','IGNORE_BLOCK','IGNORE_INSIGHT','IGNORE_WIL','IGNORE_TOUCH','FORCE_HIT','LIFE_ABSORPTION','MANA_ABSORPTION','HEAL_RECOVERY','MANA_RECOVERY'];
 
+// 伤害计算器用到的完整面板（不只是战力评分那 38 项）。这里的键都会走真实的
+// 客户端 0056 `get()`，所以装备、附魔、宝石、套装、被动、称号、城市特征等加成
+// 与服务端实际战斗时看到的是同一份数值。新增键之前先在 tests/damage-calculator.test.mjs
+// 里确认 `get()` 有对应 case（否则会抛 Unmapped/Invalid）。
+export const battleStatKeys=[
+ 'HPMAX','MPMAX','SPEED',
+ 'ATK_TYPE','ATK_MIN','ATK_MAX','ATK_TIME','ATK_STR','ATK_AGI','ATK_MAGIC',
+ 'LEFT_WEAPON_TYPE','RIGHT_WEAPON_TYPE','LEFT_ATK_MIN','LEFT_ATK_MAX','RIGHT_ATK_MIN','RIGHT_ATK_MAX','LEFT_ATK_TIME','RIGHT_ATK_TIME',
+ 'ATK_STR_NEARBY','ATK_STR_RANGE','ATK_AGI_NEARBY','ATK_AGI_RANGE',
+ 'DEF_STR','DEF_AGI','DEF_MAGIC','DEF_STR_NEARBY','DEF_STR_RANGE','DEF_AGI_NEARBY','DEF_AGI_RANGE',
+ 'DODGE','HIT_RATE','HIT_MAGIC','CRITICAL','CRITICAL_DAMAGE','FORCE_HIT','WIL','TOUGH','BLOCK','BRK_ARMOR','INSIGHT','DEF_FIELD',
+ 'BACK','MAGIC_BACK','LIFE_ABSORPTION','MANA_ABSORPTION','MAGIC_PENETRATION','HEAL_RECOVERY','MANA_RECOVERY','RECOVERY',
+ 'IGNORE_BACK','IGNORE_MAGIC_BACK','IGNORE_BLOCK','IGNORE_INSIGHT','IGNORE_WIL','IGNORE_TOUCH','IGNORE_CRITICAL',
+ 'KEEPOUT_ATK_TIME'
+];
+
 function nativePlayer(role){
  const bag=Object.assign({store:new Array(160).fill(null)},bagMethods);
  for(const instance of role.inventory||[]){
@@ -59,4 +75,22 @@ export function nativeCharacterStats(role){
  const player=nativePlayer(role),skills=activeSkills(role);
  const stats=Object.fromEntries(ratingStatKeys.map(key=>{if(!Number.isInteger(M[key]))throw Error('Missing native score attribute '+key);const value=player.get(M[key]);if(!Number.isFinite(value))throw Error('Invalid native score attribute '+key);return [key,Math.max(0,value)];}));
  return {stats,base:['STR','CON','AGI','ILT','WIS'].map(key=>player.get(M[key])),skillLevels:skills.filter(s=>s.type===2||s.type===3).reduce((n,s)=>n+s.level,0)};
+}
+
+/**
+ * 伤害计算器用的完整属性。与 `nativeCharacterStats` 共用同一个 nativePlayer，
+ * 只是额外把攻击类型、左右手、命中/致命/减伤等也读出来。
+ */
+export function nativeCharacterBattleStats(role){
+ const player=nativePlayer(role),stats={};
+ for(const key of battleStatKeys){
+  if(!Number.isInteger(M[key]))throw Error('Missing native battle attribute '+key);
+  const value=player.get(M[key]);
+  if(!Number.isFinite(value))throw Error('Invalid native battle attribute '+key);
+  stats[key]=value;
+ }
+ stats.EQUIP_WEAPON_TYPE=player.getEquipWeaponType();
+ stats.LEVEL=Number(role.level||1);
+ stats.LEVEL2=Number(role.level2||0);
+ return {stats,base:['STR','CON','AGI','ILT','WIS'].map(key=>player.get(M[key]))};
 }

@@ -107,8 +107,21 @@ Write-Ok ("JAVA_HOME = " + $env:JAVA_HOME)
 $sdkRoot = $env:ANDROID_HOME
 if (-not $sdkRoot) { $sdkRoot = $env:ANDROID_SDK_ROOT }
 if (-not $sdkRoot) { $sdkRoot = Join-Path $env:LOCALAPPDATA 'Android\Sdk' }
+# 打包工具链默认在 E:\apk_pack_tool（2026-10-20 从 C 盘用户目录整体迁出）。
+# 环境.ps1 正常存在时上面已取到；这里只是兜底，防止手删环境文件后报错。
+if (-not (Test-Path -LiteralPath $sdkRoot)) {
+    $toolSdk = 'E:\apk_pack_tool\android-sdk'
+    if (Test-Path -LiteralPath $toolSdk) { $sdkRoot = $toolSdk }
+}
 if (-not (Test-Path -LiteralPath $sdkRoot)) { throw "找不到 Android SDK：$sdkRoot。请先运行 安装环境.ps1。" }
 Write-Ok ("ANDROID_HOME = " + $sdkRoot)
+
+# Gradle 用户目录同理（wrapper 发行包与依赖缓存在这里）
+if (-not $env:GRADLE_USER_HOME) {
+    $toolGradle = 'E:\apk_pack_tool\gradle-home'
+    if (Test-Path -LiteralPath $toolGradle) { $env:GRADLE_USER_HOME = $toolGradle }
+}
+if ($env:GRADLE_USER_HOME) { Write-Ok ("GRADLE_USER_HOME = " + $env:GRADLE_USER_HOME) }
 
 $wwwMB = [math]::Round(((Get-ChildItem -LiteralPath $wwwDir -Recurse -File | Measure-Object Length -Sum).Sum / 1MB), 1)
 Write-Ok ("站点资源 = $wwwMB MB（直接随 APK 发布，无需首次解压）")

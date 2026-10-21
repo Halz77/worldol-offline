@@ -21,7 +21,13 @@ function Write-Warn2([string]$Text) { Write-Host "  [!]  $Text" -ForegroundColor
 
 $outDir = $PSScriptRoot
 $sdkRoot = $env:ANDROID_HOME
+if (-not $sdkRoot) { $sdkRoot = $env:ANDROID_SDK_ROOT }
 if (-not $sdkRoot) { $sdkRoot = Join-Path $env:LOCALAPPDATA 'Android\Sdk' }
+# 打包工具链默认在 E:\apk_pack_tool（2026-10-20 从 C 盘迁出），旧路径找不到时兜底
+if (-not (Test-Path -LiteralPath $sdkRoot)) {
+    $toolSdk = 'E:\apk_pack_tool\android-sdk'
+    if (Test-Path -LiteralPath $toolSdk) { $sdkRoot = $toolSdk }
+}
 $adb = Join-Path $sdkRoot 'platform-tools\adb.exe'
 if (-not (Test-Path -LiteralPath $adb)) {
     $adbCmd = Get-Command adb -ErrorAction SilentlyContinue

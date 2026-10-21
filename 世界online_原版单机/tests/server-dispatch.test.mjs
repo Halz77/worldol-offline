@@ -304,7 +304,11 @@ test('路由表顺序与原 if 链逐条对应',()=>{
   '/api/pet-snapshot-vitals','/pet-snapshot-data.js','/api/character-features','/api/legion','/api/daily-activity',
   '/api/career-skills','/api/recorded-content','/api/drops','/api/player-experience','/api/supply-shops','/api/combat-rating',
   '/equipment-composition-data.js','/equipment-rules.js','/api/content-library','/api/official-content',
-  '/api/status','/status','/api/shutdown','/api/client-log',
+  '/api/status','/status',
+  // 第 90 版：伤害计算器（只读；GET 当前存档 / POST 导入 / POST 模拟），
+  // 必须排在方法门之前，否则 POST 会被 405 挡掉。
+  '/api/damage-calculator/current','/api/damage-calculator/load','/api/damage-calculator/simulate',
+  '/api/shutdown','/api/client-log',
  ];
  const missing=[];
  const {routes}=routerForTest(missing);

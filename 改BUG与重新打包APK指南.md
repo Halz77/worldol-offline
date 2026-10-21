@@ -9,7 +9,7 @@
 
 ```mermaid
 flowchart LR
-  A["改 世界online_原版单机/ 下的源码"] --> B["双击 启动单机.cmd 验证"]
+  A["改 世界online_原版单机/ 下的源码"] --> B["双击 启动单机-新存档.cmd 验证"]
   B --> C["cd 安卓打包\\standalone<br/>node build.mjs"]
   C --> D["cd ..<br/>构建APK.ps1"]
   D --> E["app-debug.apk"]
@@ -100,15 +100,21 @@ source = source.replace(from, to);
 
 | 双击 | 端口 | 存档目录 | 默认存档名 | 用途 |
 | --- | --- | --- | --- | --- |
-| `启动单机.cmd` | 8775 | `saves/` | `offline` | 日常玩 |
+| `启动单机-新存档.cmd` | 8775 | `saves/` | `xia-v05-qa` | 日常玩 |
 | `继续测试角色.cmd` | 8776 | `test-saves/` | `acceptance` | 测试用 |
 | `体验原版内容.cmd` | 8776 | `test-saves/` | `original-v04` | 体验原版 |
 | `停止单机.cmd` | | | | 关掉服务 |
 
-想直接开 `qa-v05-saves`（那 5 个 97 级角色）在 `世界online_原版单机\` 下跑：
+想直接开 `qa-v05-saves`（旧 QA 快照，物攻等 3 个角色）在 `世界online_原版单机\` 下跑：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\start.ps1 -Port 8779
+```
+
+停止这个入口用：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\stop.ps1 -Port 8779
 ```
 
 （端口和存档目录的对应关系写在 `launcher-common.ps1` 第 3–4 行）
@@ -117,7 +123,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\start.ps1 -Port 8779
 
 | 改的是 | 生效方式 |
 | --- | --- |
-| `lib/` 里的服务端模块 | 双击 `停止单机.cmd`，再重新 `启动单机.cmd` |
+| `lib/` 里的服务端模块 | 双击 `停止单机.cmd`，再重新 `启动单机-新存档.cmd` |
 | `server.mjs` | 同上 |
 | `web/` 下的界面 | 浏览器直接 `F5` 刷新 |
 | `data/` 下的 JSON | 浏览器刷新 |
@@ -293,7 +299,7 @@ adb install -r "安卓打包\app\android\app\build\outputs\apk\debug\app-debug.a
 
 ```powershell
 # ── 电脑版 ─────────────────────────────────────
-双击 启动单机.cmd               # 端口 8775，存档 saves/
+双击 启动单机-新存档.cmd        # 端口 8775，存档 saves/，账号 xia-v05-qa
 双击 继续测试角色.cmd            # 端口 8776，存档 test-saves/
 双击 停止单机.cmd               # 停止服务
 # 看日志
