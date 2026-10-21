@@ -4,7 +4,7 @@
 #  用法：
 #    1. 手机开启「开发者选项 → USB 调试」，用数据线连上电脑
 #    2. powershell -ExecutionPolicy Bypass -File .\诊断\抓取启动日志.ps1
-#    3. 按提示在手机上点开「世界OL单机」，等它闪退
+#    3. 按提示在手机上点开「世界ol共存基座版」，等它闪退
 #    4. 回到电脑按回车，日志会存到 诊断\ 目录下
 # =============================================================================
 [CmdletBinding()]
@@ -55,7 +55,7 @@ Write-Step '清空旧日志'
 Write-Ok '已清空 logcat（App 内的启动日志会在下次启动时自动重建）'
 
 Write-Step '请在手机上操作'
-Write-Host '  1. 打开「世界OL单机」' -ForegroundColor Yellow
+Write-Host '  1. 打开「世界ol共存基座版」' -ForegroundColor Yellow
 Write-Host '  2. 等它出现闪退 / 卡住' -ForegroundColor Yellow
 Write-Host '  3. 完成后回到这里按回车' -ForegroundColor Yellow
 Read-Host '  完成后按回车继续' | Out-Null

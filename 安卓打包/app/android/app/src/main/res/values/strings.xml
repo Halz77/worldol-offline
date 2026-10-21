@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">世界OL单机</string>
-    <string name="title_activity_main">世界OL单机</string>
+    <string name="app_name">世界ol共存基座版</string>
+    <string name="title_activity_main">世界ol共存基座版</string>
     <string name="package_name">net.worldol.offline</string>
     <string name="custom_url_scheme">net.worldol.offline</string>
 </resources>

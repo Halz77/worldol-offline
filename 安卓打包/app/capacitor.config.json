@@ -1,6 +1,6 @@
 {
   "appId": "net.worldol.offline",
-  "appName": "世界OL单机",
+  "appName": "世界ol共存基座版",
   "webDir": "www",
   "android": {
     "allowMixedContent": true,
