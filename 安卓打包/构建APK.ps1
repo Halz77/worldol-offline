@@ -207,7 +207,7 @@ try {
     }
 
     if (-not $NoImmersive) {
-        $appId = (Get-Content -LiteralPath (Join-Path $appDir 'capacitor.config.json') -Raw | ConvertFrom-Json).appId
+        $appId = (Get-Content -LiteralPath (Join-Path $appDir 'capacitor.config.json') -Raw -Encoding UTF8 | ConvertFrom-Json).appId
         $pkgPath = Join-Path $androidDir ('app\src\main\java\' + ($appId -replace '\.', '\'))
         $javaMain = Join-Path $pkgPath 'MainActivity.java'
         $ktMain = Join-Path $pkgPath 'MainActivity.kt'
