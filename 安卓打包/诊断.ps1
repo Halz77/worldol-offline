@@ -1,7 +1,7 @@
 ﻿# Diagnostic helper (ASCII only on purpose: PowerShell 5.1 misreads non-BOM UTF-8 scripts).
 # Writes a UTF-8 report so the editor can read it without mojibake.
 param(
-    [string]$Root = '<项目根>\FileRecv\源码\世界OL_单机源码_独立包_20260923\世界OL_源码\安卓打包'
+    [string]$Root = $PSScriptRoot
 )
 
 $ErrorActionPreference = 'Continue'

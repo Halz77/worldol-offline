@@ -217,8 +217,11 @@
 ## 九、环境与协作
 
 - 命令优先走 WSL/bash；项目在
-  `/mnt/f/<项目目录>/.../世界OL_源码/世界online_原版单机`。
+  `/mnt/f/<项目目录>/世界OL_源码/世界online_原版单机`。
   PowerShell 只在 WSL 不适用时用（GBK 输出、bat/ps1 自检）。
+- 跨机器：`.gitattributes` 已把 `data/**` 标成 `-text`，仓库内用 `core.autocrlf=false`；
+  不要跑 `git add --renormalize`。公开仓库前先清理本机绝对路径、账号/邮箱等个人信息
+  （当前文件与提交历史都要查）。
 - `CODEBUDDY_SAFE_DELETE_ENABLED=0` 常设；spawn `node.exe` 常 EBUSY；
   `fs.cpSync` 拷大目录会崩，用 `copyTree()` 或系统 node。
 - 打包工具链在 `E:\apk_pack_tool`（`jdk-21` / `android-sdk` / `gradle-home`），

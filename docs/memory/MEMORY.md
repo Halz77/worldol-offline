@@ -1,7 +1,7 @@
 # 世界OL 单机版 — 项目笔记
 
 ## 仓库与命令
-- 根 `<项目根>/FileRecv/源码/世界OL_单机源码_独立包_20260923/世界OL_源码/`，
+- 根 `<项目根>/`，
   服务端/工具在 `世界online_原版单机/`；改动记录 `修复记录.txt`（CRLF 无 BOM）。
 - 不入库：client/ analysis/ node_modules/ saves|logs|backups|runtime/ 安卓打包/app/www/
 - `npm test`（pretest 先跑语法基线），判定**新增失败必须为 0**；`npm run check` 语法检查；
@@ -11,7 +11,7 @@
   （见 tests/game.test.mjs 的 nativeParser / tests/battle-power-rules.test.mjs）。
 - 环境：`CODEBUDDY_SAFE_DELETE_ENABLED=0` 常设；**spawn 到 node.exe 恒 EBUSY**；
   `fs.cpSync` 大目录崩溃 → `copyTree()`；.ps1 需同进程 `Set-ExecutionPolicy -Scope Process Bypass`；
-  vm 跨 realm 先 JSON 克隆；Git Bash /tmp = `<用户目录>\AppData\Local\Temp`。
+  vm 跨 realm 先 JSON 克隆；Git Bash /tmp = `%LOCALAPPDATA%\Temp`。
 - **项目目录内的删除会进 F 盘回收站**（`%TEMP%` 里直接消失）。沙箱里跑打包会把 Gradle 中间产物
   塞进回收站（一次 1.5–2 万条，攒到 4.2 万条后清空极慢）→ 工具 `安卓打包/清理回收站.bat`；
   用户自己双击打包不进回收站。
