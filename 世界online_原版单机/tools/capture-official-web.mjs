@@ -12,7 +12,11 @@
  *        --user-data-dir="%TEMP%\worldol-capture-profile" about:blank
  *   2) 在 `世界online_原版单机` 下运行：
  *      node tools/capture-official-web.mjs --port 9222 --url "官服网页地址"
- *   3) 正常玩；在终端输入 `m 说明` 写标记，输入 `q` 回车结束。
+ *   3) 正常玩；进入地图、开战/结算、接/交任务会自动写标记，
+ *      也可以输入 `m 说明` 补一条手写标记；输入 `q` 回车结束。
+ *
+ * 同一只 Chrome 只要还开着远程调试端口，就可以反复运行本脚本继续抓，
+ * 不需要每次重新打开浏览器；第二次起建议用 `--match` 选中游戏页面。
  *
  * 注意：原始抓包可能包含账号、Cookie、聊天和其他玩家信息，只能留在本机，
  * 不要提交到仓库，也不要公开上传。
@@ -21,6 +25,7 @@ import path from 'node:path';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 import WebSocket from 'ws';
+import {createAutoMarkerState, inspectFrame} from './capture-auto-marks.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
@@ -37,6 +42,7 @@ const url = arg('url', '');
 const match = arg('match', '');
 const label = arg('label', 'official-web');
 const seconds = Number(arg('seconds', '0'));
+const autoMarks = !process.argv.includes('--no-auto-marks');
 const outRoot = path.resolve(arg('out', path.join(root, '../正式服录制数据')));
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('--port 不合法');
 if (!Number.isFinite(seconds) || seconds < 0) throw new Error('--seconds 不合法');
@@ -58,7 +64,10 @@ async function pickTarget() {
     if (!matched) throw new Error(`没有页面 URL 包含：${match}`);
     return matched;
   }
-  return pages.find(target => target.url === 'about:blank') || pages[0];
+  // 第一次采集通常传 --url，从 about:blank 接管并导航；
+  // 后续继续采集时游戏页已经开着，优先接管游戏页，别又选中空白页。
+  if (url) return pages.find(target => target.url === 'about:blank') || pages[0];
+  return pages.find(target => target.url && target.url !== 'about:blank') || pages[0];
 }
 
 let target;
@@ -82,12 +91,14 @@ archive.record('recorder.marker', {text: 'capture-start', category: 'control'});
 console.log('');
 console.log('抓包目录：' + archive.dir);
 console.log('目标页面：' + target.url);
-console.log('采集开始。正常玩官服网页版，终端输入 `m 说明` 写标记，输入 `q` 回车结束。');
+console.log('采集开始。正常玩官服网页版；地图/战斗/任务会自动标记，终端可输入 `m 说明` 补标记，输入 `q` 回车结束。');
+if (!autoMarks) console.log('已关闭自动标记（--no-auto-marks）。');
 
 const socket = new WebSocket(target.webSocketDebuggerUrl, {maxPayload: 256 * 1024 * 1024});
 const pendingCommands = new Map();
 const pendingTasks = new Set();
 const requests = new Map();
+const autoState = createAutoMarkerState();
 let nextId = 1;
 let finished = false;
 let stopResolve;
@@ -163,6 +174,21 @@ function handleNetwork(method, params, sessionId) {
 
   if (method === 'Network.webSocketFrameSent' || method === 'Network.webSocketFrameReceived') {
     archive.websocket(method, params, label);
+    if (autoMarks && params.response && params.response.opcode === 2) {
+      try {
+        const mark = inspectFrame(autoState, {
+          method,
+          bytes: Buffer.from(params.response.payloadData, 'base64'),
+          connection: requestKey(sessionId, params.requestId)
+        });
+        if (mark) {
+          archive.record('recorder.marker', {text: mark.text, category: 'auto', ...mark}, label);
+          console.log('[自动标记] ' + mark.text);
+        }
+      } catch (error) {
+        archive.gap('auto-marker-failed', {message: error.message, protocol: params.response.opcode}, label);
+      }
+    }
     return;
   }
 
