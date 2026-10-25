@@ -14,12 +14,16 @@ import { equipmentRulesGlobals, compositionGlobals } from '../../世界online_�
 import { starLimit } from '../../世界online_原版单机/lib/equipment-policy.mjs';
 import { petSnapshotDirectory } from '../../世界online_原版单机/lib/pet-snapshot-vitals.mjs';
 import { autoSkillChanceGlobals } from '../../世界online_原版单机/lib/local-auto-skill-chance.mjs';
+import { formationSlotGlobals } from '../../世界online_原版单机/lib/local-formation-slots.mjs';
 
 // 对应 server.mjs 里的 /equipment-rules.js
 export const equipmentRules = equipmentRulesGlobals();
 
 // 对应 /skill-auto-chance.js（第 93 版：自动技能触发概率）
 export const autoSkillChance = autoSkillChanceGlobals();
+
+// 对应 /formation-slots.js（第 94 版：阵法阵位差异化加成）
+export const formationSlots = formationSlotGlobals();
 
 // 对应 /equipment-rules.js 里的 window.worldolStarLimit
 export { starLimit };

@@ -47,11 +47,12 @@ function installProcess() {
  * 必须在 server.mjs 之后——它们依赖 data/*.json 已经读完。
  */
 async function installGeneratedGlobals() {
-  const { equipmentRules, starLimit, compositionData, petSnapshotDirectory, autoSkillChance } = await import('./globals.mjs');
+  const { equipmentRules, starLimit, compositionData, petSnapshotDirectory, autoSkillChance, formationSlots } = await import('./globals.mjs');
   globalThis.worldolEquipmentRules = equipmentRules;
   globalThis.worldolStarLimit = starLimit;
   globalThis.worldolCompositionData = compositionData;
   globalThis.worldolAutoSkillChance = autoSkillChance;
+  globalThis.worldolFormationSlots = formationSlots;
   const raw = readText('/saves/world.json');
   const characters = raw ? (JSON.parse(raw).characters || []) : [];
   globalThis.offlinePetSnapshotProfiles = petSnapshotDirectory(characters);

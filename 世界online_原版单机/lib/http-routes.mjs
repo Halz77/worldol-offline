@@ -43,6 +43,7 @@ import {combatRating,combatRatingRevision} from './combat-rating.mjs';
 // 客户端拿到的 identifyItemIds 是个函数，整个菜单加载不出来。
 import {equipmentRulesGlobals,compositionGlobals} from './generated-globals.mjs';
 import {autoSkillChanceGlobals,autoSkillChanceSummary} from './local-auto-skill-chance.mjs';
+import {formationSlotGlobals,formationSlotSummary} from './local-formation-slots.mjs';
 import {upgradeRules} from './item-affixes.mjs';
 import {starLimit} from './equipment-policy.mjs';
 import {nativeUiRevision,nativeResourceManifest} from './native-ui-restoration.mjs';
@@ -159,6 +160,8 @@ export function createHttpRouter(env){
   {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify(equipmentRulesGlobals())},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
   // 第 93 版自动技能触发概率：配置在 data/local-auto-skill-chance.json，客户端补丁读这个全局
   {kind:'path',path:'/skill-auto-chance.js',reply:({res})=>answer(res,200,mime['.js'],'window.worldolAutoSkillChance='+JSON.stringify(autoSkillChanceGlobals())+';')},
+  // 第 94 版阵法阵位差异化加成：配置在 data/local-formation-slots.json
+  {kind:'path',path:'/formation-slots.js',reply:({res})=>answer(res,200,mime['.js'],'window.worldolFormationSlots='+JSON.stringify(formationSlotGlobals())+';')},
   {kind:'path',path:'/api/content-library',reply:({res})=>answer(res,200,mime['.json'],fs.readFileSync(path.join(root,'data/content-library.json')))},
   {kind:'path',path:'/api/official-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({version:'0.6.4',maps:official.maps.map(m=>({id:m.id,name:m.name})),itemIds:[...officialItems.keys()],catalog:official.catalog.length,missions:official.missions.length,supportedMissions:supportedMissionCount}))},
   // /api/status 必须排在 /status 前面：否则 /status 会被前者吃掉前 11 个字符？不会 —— 精确匹配，

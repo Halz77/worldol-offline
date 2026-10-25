@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>阵法编辑器 · 世界OL 单机版</title>
+<style>
+  :root{
+    --bg:#10162a; --panel:#1b2340; --panel2:#151c33; --line:#36477a; --line2:#4a6db8;
+    --text:#dfe7f7; --dim:#8fa3c8; --gold:#ffe9a8; --gold2:#c8a34d;
+    --ok:#7fd18a; --err:#ff8f8f; --btn:#2e4270; --btn2:#3b5aa6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 "Microsoft YaHei",system-ui,sans-serif}
+  header{position:sticky;top:0;z-index:9;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:10px 16px;background:linear-gradient(#1d2748,#161e36);border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:18px;color:var(--gold);font-weight:700}
+  header .ver{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:10px;padding:1px 8px}
+  header .grow{flex:1}
+  button{background:var(--btn);color:var(--text);border:1px solid var(--line2);border-radius:6px;
+    padding:6px 12px;cursor:pointer;font-size:13px}
+  button:hover{background:var(--btn2)}
+  button.primary{background:#2f5ea8;border-color:#6f9fe8}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  main{display:grid;grid-template-columns:210px 1fr;gap:0;height:calc(100vh - 58px)}
+  aside{border-right:1px solid var(--line);background:var(--panel2);overflow:auto;padding:8px}
+  aside .item{display:flex;justify-content:space-between;align-items:center;gap:6px;
+    padding:7px 9px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-size:13px}
+  aside .item:hover{background:#222c4d}
+  aside .item.active{background:#35467a;border-color:var(--gold2)}
+  aside .item.active .nm{color:var(--gold)}
+  aside .dot{width:7px;height:7px;border-radius:50%;background:#56688f;flex:none}
+  aside .item.done .dot{background:var(--gold)}
+  section{padding:14px 18px;overflow:auto}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+  .card h2{margin:0 0 8px;font-size:15px;color:var(--gold)}
+  .card h2 .sub{font-size:12px;color:var(--dim);font-weight:400;margin-left:8px}
+  .base{font-size:12px;color:var(--dim);margin:4px 0 10px;padding:6px 8px;background:#0e1526;border-radius:6px;border:1px solid #223052}
+  .row{display:flex;align-items:center;gap:8px;margin:6px 0}
+  .row select{min-width:260px}
+  input,select{background:#0e1526;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px 7px;font-size:13px}
+  input[type=number]{width:88px}
+  .row .del{color:var(--err);border-color:#5a2f3f;padding:3px 8px}
+  .add{font-size:12px;padding:4px 10px}
+  .modebar{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--dim);margin-bottom:10px}
+  .modebar label{cursor:pointer}
+  .empty{color:var(--dim);padding:26px;text-align:center;border:1px dashed var(--line);border-radius:10px}
+  .hint{font-size:12px;color:var(--dim);margin-top:6px}
+  #status{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);max-width:80vw;
+    padding:8px 14px;border-radius:8px;font-size:13px;display:none;z-index:20;background:#222c4d;border:1px solid var(--line2)}
+  #status.ok{border-color:#3f7d4d;background:#1b3326;color:var(--ok)}
+  #status.err{border-color:#7d3f3f;background:#331b1b;color:var(--err)}
+  #toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#2f5ea8;color:#fff;
+    padding:8px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+  #toast.show{opacity:1}
+  .slothead{display:flex;align-items:center;justify-content:space-between}
+  .tag{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:8px;padding:0 6px;margin-left:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>阵法编辑器</h1><span class="ver">第 94 版 · 阵位差异化加成</span>
+  <span class="grow"></span>
+  <button id="btn-load">载入 data 目录</button>
+  <button id="btn-save" class="primary" disabled>保存到 data/</button>
+  <button id="btn-download" disabled>下载配置</button>
+</header>
+<main>
+  <aside id="form-list"></aside>
+  <section id="editor"><div class="empty">点右上角「载入 data 目录」选择游戏目录里的 <code>data</code> 文件夹开始。<br>没有配置文件也行（全新配置从空开始）。</div></section>
+</main>
+<div id="status"></div>
+<div id="toast"></div>
+
+<script id="slot-labels" type="application/json">{"powers":[{"id":0,"name":"无","percent":false},{"id":1,"name":"力量","percent":false},{"id":2,"name":"力量%","percent":true},{"id":3,"name":"体质","percent":false},{"id":4,"name":"体质%","percent":true},{"id":5,"name":"敏捷","percent":false},{"id":6,"name":"敏捷%","percent":true},{"id":7,"name":"智力","percent":false},{"id":8,"name":"智力%","percent":true},{"id":9,"name":"感知","percent":false},{"id":10,"name":"感知%","percent":true},{"id":11,"name":"生命上限","percent":false},{"id":12,"name":"生命上限%","percent":true},{"id":13,"name":"法力上限","percent":false},{"id":14,"name":"法力上限%","percent":true},{"id":23,"name":"出手速度%","percent":true},{"id":24,"name":"命中率%","percent":true},{"id":25,"name":"躲闪%","percent":true},{"id":26,"name":"魔法命中%","percent":true},{"id":27,"name":"致命率%","percent":true},{"id":28,"name":"劈砍攻击力%","percent":true},{"id":29,"name":"穿刺攻击力%","percent":true},{"id":30,"name":"魔法攻击力%","percent":true},{"id":31,"name":"劈砍防御力%","percent":true},{"id":32,"name":"穿刺防御力%","percent":true},{"id":33,"name":"魔法防御力%","percent":true},{"id":34,"name":"基础状态抵抗%","percent":true},{"id":35,"name":"伤害减免%","percent":true},{"id":36,"name":"伤害反射%","percent":true},{"id":37,"name":"格挡%","percent":true},{"id":38,"name":"洞察%","percent":true},{"id":39,"name":"破甲%","percent":true},{"id":40,"name":"法力护盾%","percent":true},{"id":41,"name":"反击%","percent":true},{"id":42,"name":"魔法反馈%","percent":true},{"id":43,"name":"生命吸收%","percent":true},{"id":44,"name":"法力吸收%","percent":true},{"id":45,"name":"魔法穿透%","percent":true},{"id":46,"name":"强制命中率%","percent":true},{"id":47,"name":"每回合自动恢复生命%","percent":true},{"id":48,"name":"每回合自动恢复法力%","percent":true},{"id":49,"name":"生命","percent":false},{"id":50,"name":"按生命上限百分比扣血%","percent":true},{"id":51,"name":"法力","percent":false},{"id":52,"name":"回复最大法力值%","percent":true},{"id":53,"name":"出手速度","percent":false},{"id":54,"name":"命中","percent":false},{"id":55,"name":"躲闪","percent":false},{"id":56,"name":"魔法命中","percent":false},{"id":57,"name":"致命点","percent":false},{"id":58,"name":"劈砍攻击力","percent":false},{"id":59,"name":"穿刺攻击力","percent":false},{"id":60,"name":"魔法攻击力","percent":false},{"id":61,"name":"劈砍防御力","percent":false},{"id":62,"name":"穿刺防御力","percent":false},{"id":63,"name":"魔法防御力","percent":false},{"id":64,"name":"状态抵抗值","percent":false},{"id":65,"name":"伤害减免","percent":false},{"id":66,"name":"伤害反射","percent":false},{"id":67,"name":"格挡","percent":false},{"id":68,"name":"洞察","percent":false},{"id":69,"name":"破甲","percent":false},{"id":70,"name":"法力护盾","percent":false},{"id":71,"name":"反击","percent":false},{"id":72,"name":"魔法反馈","percent":false},{"id":73,"name":"基础生命吸收","percent":false},{"id":74,"name":"基础法力吸收","percent":false},{"id":75,"name":"魔法穿透","percent":false},{"id":76,"name":"基础强制命中率","percent":false},{"id":77,"name":"每回合自动恢复生命","percent":false},{"id":78,"name":"每回合自动恢复法力","percent":false},{"id":79,"name":"清除目标状态","percent":false},{"id":80,"name":"战斗中复活并回复生命和法力","percent":false},{"id":81,"name":"技能附带伤害","percent":false},{"id":82,"name":"技能附带命中","percent":false},{"id":84,"name":"附带致命点","percent":false},{"id":85,"name":"附加强制命中率%","percent":true},{"id":86,"name":"无视目标法术防御点数","percent":false},{"id":87,"name":"无视物理防御（破甲）","percent":false},{"id":88,"name":"清除自身状态","percent":false},{"id":89,"name":"宠物伤害%","percent":true},{"id":90,"name":"宠物生命上限%","percent":true},{"id":91,"name":"宠物法力上限%","percent":true},{"id":92,"name":"宠物力量%","percent":true},{"id":93,"name":"宠物体质%","percent":true},{"id":94,"name":"宠物敏捷%","percent":true},{"id":95,"name":"宠物智力%","percent":true},{"id":96,"name":"宠物感知%","percent":true},{"id":97,"name":"复活并回复体力及法力%","percent":true},{"id":98,"name":"战斗后自动恢复生命和法力%","percent":true},{"id":99,"name":"开通仓库存放格数","percent":false},{"id":100,"name":"直接开启","percent":false},{"id":101,"name":"需要万能钥匙","percent":false},{"id":102,"name":"需要神秘钥匙","percent":false},{"id":103,"name":"需求槽位（内部标记）","percent":false},{"id":104,"name":"传送到世界地图","percent":false},{"id":105,"name":"传送到指定坐标（ToXY）","percent":false},{"id":106,"name":"有效期（内部标记）","percent":false},{"id":107,"name":"重置任务","percent":false},{"id":108,"name":"宝箱钥匙等级（内部标记）","percent":false},{"id":109,"name":"宠物蛋（内部标记）","percent":false},{"id":110,"name":"时装（内部标记）","percent":false},{"id":111,"name":"传送（内部标记）","percent":false},{"id":112,"name":"称号","percent":false},{"id":113,"name":"替目标抵挡劈砍攻击%","percent":true},{"id":114,"name":"替目标抵挡穿刺攻击%","percent":true},{"id":115,"name":"替目标抵挡魔法攻击%","percent":true},{"id":116,"name":"替目标抵挡诅咒攻击%","percent":true},{"id":117,"name":"替目标抵挡所有攻击%","percent":true},{"id":118,"name":"使用后，目前所携带宠物经验","percent":false},{"id":119,"name":"使用后，角色经验","percent":false},{"id":120,"name":"战斗经验倍数","percent":false},{"id":121,"name":"未鉴定属性","percent":false},{"id":122,"name":"用剑时攻击次数","percent":false},{"id":123,"name":"用刀时攻击次数","percent":false},{"id":124,"name":"用重型时攻击次数","percent":false},{"id":125,"name":"用长柄时攻击次数","percent":false},{"id":126,"name":"用法杖时攻击次数","percent":false},{"id":127,"name":"空手时攻击次数","percent":false},{"id":128,"name":"用远程武器时攻击次数","percent":false},{"id":129,"name":"用手持物时攻击次数","percent":false},{"id":130,"name":"攻击次数","percent":false},{"id":131,"name":"合成（内部标记）","percent":false},{"id":133,"name":"剑类武器伤害、耐久%","percent":true},{"id":134,"name":"刀类伤害、耐久%","percent":true},{"id":135,"name":"重型武器伤害、耐久%","percent":true},{"id":136,"name":"长柄武器伤害、耐久%","percent":true},{"id":137,"name":"法杖武器伤害、耐久%","percent":true},{"id":138,"name":"空手伤害%","percent":true},{"id":139,"name":"远程武器伤害、耐久%","percent":true},{"id":140,"name":"手持物伤害、耐久%","percent":true},{"id":141,"name":"武器伤害、耐久%","percent":true},{"id":142,"name":"装备防具耐久%","percent":true},{"id":145,"name":"恢复自身生命","percent":false},{"id":146,"name":"恢复自身生命%","percent":true},{"id":147,"name":"恢复自身法力","percent":false},{"id":148,"name":"恢复自身法力%","percent":true},{"id":149,"name":"附带生命吸收%","percent":true},{"id":150,"name":"附带法力吸收%","percent":true},{"id":151,"name":"目标反击值","percent":false},{"id":152,"name":"目标魔法反馈值","percent":false},{"id":153,"name":"目标格挡值","percent":false},{"id":154,"name":"目标洞察值","percent":false},{"id":155,"name":"目标状态抵抗率","percent":false},{"id":156,"name":"目标伤害减免值","percent":false},{"id":157,"name":"主人受劈砍时替其承伤%","percent":true},{"id":158,"name":"主人受穿刺时替其承伤%","percent":true},{"id":159,"name":"主人受魔法时替其承伤%","percent":true},{"id":160,"name":"主人受诅咒时替其承伤%","percent":true},{"id":161,"name":"主人受攻击时替其承伤%","percent":true},{"id":162,"name":"宠物替其承受劈砍伤害%","percent":true},{"id":163,"name":"宠物替其承受穿刺伤害%","percent":true},{"id":164,"name":"宠物替其承受魔法伤害%","percent":true},{"id":165,"name":"宠物替其承受诅咒伤害%","percent":true},{"id":166,"name":"宠物替其承受所有伤害%","percent":true},{"id":167,"name":"任务经验倍数","percent":false},{"id":168,"name":"无视反击","percent":false},{"id":169,"name":"无视魔法反馈","percent":false},{"id":170,"name":"无视格挡","percent":false},{"id":171,"name":"无视洞察","percent":false},{"id":172,"name":"无视状态抵抗","percent":false},{"id":173,"name":"无视伤害减免","percent":false},{"id":174,"name":"用法器时攻击次数","percent":false},{"id":175,"name":"法器武器伤害、耐久%","percent":true},{"id":176,"name":"技能卷轴（内部标记）","percent":false},{"id":177,"name":"宠物技能卷轴（内部标记）","percent":false},{"id":178,"name":"免伤护盾","percent":false},{"id":179,"name":"获得新宠物（内部标记）","percent":false},{"id":180,"name":"获得新道具（内部标记）","percent":false},{"id":181,"name":"附魔卡（内部标记）","percent":false},{"id":182,"name":"阵型书（内部标记）","percent":false},{"id":183,"name":"需要黄金钥匙","percent":false},{"id":184,"name":"登陆礼盒","percent":false},{"id":185,"name":"变身怪物卡（内部标记）","percent":false},{"id":186,"name":"宠物技能书（内部标记）","percent":false},{"id":190,"name":"用火枪时攻击次数","percent":false},{"id":191,"name":"火枪类武器伤害、耐久%","percent":true},{"id":192,"name":"用锤类时攻击次数","percent":false},{"id":193,"name":"锤类武器伤害、耐久%","percent":true},{"id":194,"name":"用扇子时攻击次数","percent":false},{"id":195,"name":"扇类武器伤害、耐久%","percent":true},{"id":196,"name":"法术百分比%","percent":true},{"id":197,"name":"能量","percent":false},{"id":201,"name":"抗致命点数","percent":false},{"id":202,"name":"抗致命点数百分比%","percent":true},{"id":203,"name":"致命伤害%","percent":true},{"id":204,"name":"致命伤害百分比%","percent":true},{"id":210,"name":"用轻刀时攻击次数","percent":false},{"id":211,"name":"用重刀时攻击次数","percent":false},{"id":212,"name":"用轻剑时攻击次数","percent":false},{"id":213,"name":"用重剑时攻击次数","percent":false},{"id":214,"name":"用轻弩时攻击次数","percent":false},{"id":215,"name":"用重弩时攻击次数","percent":false},{"id":216,"name":"用弓箭时攻击次数","percent":false},{"id":230,"name":"轻刀武器伤害、耐久%","percent":true},{"id":231,"name":"重刀武器伤害、耐久%","percent":true},{"id":232,"name":"轻剑武器伤害、耐久%","percent":true},{"id":233,"name":"重剑武器伤害、耐久%","percent":true},{"id":234,"name":"重弩武器伤害、耐久%","percent":true},{"id":235,"name":"轻弩武器伤害、耐久%","percent":true},{"id":236,"name":"弓箭武器伤害、耐久%","percent":true},{"id":250,"name":"远程劈砍防御点数","percent":false},{"id":251,"name":"远程劈砍防御百分比%","percent":true},{"id":252,"name":"近身劈砍防御点数","percent":false},{"id":253,"name":"近身劈砍防御百分比%","percent":true},{"id":254,"name":"远程穿刺防御点数","percent":false},{"id":255,"name":"远程穿刺防御百分比%","percent":true},{"id":256,"name":"近身穿刺防御点数","percent":false},{"id":257,"name":"近身穿刺防御百分比%","percent":true},{"id":258,"name":"近身劈砍攻击点数","percent":false},{"id":259,"name":"近身劈砍攻击百分比%","percent":true},{"id":260,"name":"远程劈砍攻击点数","percent":false},{"id":261,"name":"远程劈砍攻击百分比%","percent":true},{"id":262,"name":"近战穿刺攻击点数","percent":false},{"id":263,"name":"近战穿刺攻击百分比%","percent":true},{"id":264,"name":"远程穿刺攻击点数","percent":false},{"id":265,"name":"远程穿刺攻击百分比%","percent":true},{"id":301,"name":"增加铜币","percent":false},{"id":302,"name":"增加银币","percent":false},{"id":303,"name":"增加金币","percent":false},{"id":304,"name":"获得道具（内部标记）","percent":false}],"forms":[{"id":1,"name":"天覆阵","teamcount":2,"power1":28,"value1":22,"power2":29,"value2":16,"power3":27,"value3":11},{"id":2,"name":"地载阵","teamcount":2,"power1":31,"value1":22,"power2":33,"value2":16,"power3":12,"value3":13},{"id":3,"name":"风扬阵","teamcount":2,"power1":23,"value1":24,"power2":25,"value2":16,"power3":24,"value3":11},{"id":4,"name":"云垂阵","teamcount":3,"power1":30,"value1":22,"power2":48,"value2":17,"power3":45,"value3":11},{"id":5,"name":"龙飞阵","teamcount":3,"power1":27,"value1":21,"power2":28,"value2":17,"power3":39,"value3":11},{"id":6,"name":"虎翼阵","teamcount":3,"power1":12,"value1":24,"power2":31,"value2":17,"power3":35,"value3":12},{"id":7,"name":"鸟翔阵","teamcount":4,"power1":23,"value1":22,"power2":25,"value2":18,"power3":6,"value3":13},{"id":8,"name":"蛇蟠阵","teamcount":4,"power1":43,"value1":22,"power2":44,"value2":16,"power3":47,"value3":13},{"id":9,"name":"一字长蛇阵","teamcount":2,"power1":46,"value1":21,"power2":28,"value2":16,"power3":23,"value3":11},{"id":10,"name":"二龙出水阵","teamcount":2,"power1":45,"value1":22,"power2":30,"value2":17,"power3":26,"value3":11},{"id":11,"name":"天地三才阵","teamcount":3,"power1":2,"value1":19,"power2":7,"value2":15,"power3":3,"value3":11},{"id":12,"name":"四门兜底阵","teamcount":3,"power1":37,"value1":22,"power2":41,"value2":16,"power3":31,"value3":12},{"id":13,"name":"五虎群羊阵","teamcount":4,"power1":28,"value1":23,"power2":24,"value2":16,"power3":27,"value3":10},{"id":14,"name":"六丁六甲阵","teamcount":4,"power1":40,"value1":22,"power2":33,"value2":17,"power3":48,"value3":12},{"id":15,"name":"七星北斗阵","teamcount":5,"power1":38,"value1":21,"power2":39,"value2":16,"power3":26,"value3":11},{"id":16,"name":"八门金锁阵","teamcount":5,"power1":35,"value1":21,"power2":36,"value2":16,"power3":40,"value3":12}]}</script>
+<script>
+"use strict";
+/* ============================================================
+ * 阵法编辑器（第 94 版）
+ *
+ * 数据流：data/local-formation-slots.json ⇄ 本编辑器
+ * 生效链：lib/local-formation-slots.mjs → /formation-slots.js（电脑版）
+ *         / globals.mjs（APK）→ lib/client-formation-slot-patch.mjs → 战斗中属性计算
+ *
+ * 口径说明（写进界面让用户放心）：
+ *   · 原版每个阵有 3 组「统一加成」，全队所有人吃一样的；这里配的是**额外**的阵位加成。
+ *   · add 模式 = 统一加成 + 阵位加成；replace 模式 = 顶掉统一加成，只吃阵位加成。
+ *   · 阵位按战斗中己方「角色」（不含宠物）站位从前到后排名；宠物单独一套。
+ * ============================================================ */
+const LABELS = JSON.parse(document.getElementById('slot-labels').textContent);
+const POWERS = (LABELS.powers || []).slice().sort((a, b) => a.id - b.id);
+const FORMS = (LABELS.forms || []).slice().sort((a, b) => a.id - b.id);
+const POWER_MAP = new Map(POWERS.map(p => [p.id, p]));
+/* 常用项置顶（阵法通常调这些：攻击/防御/速度/命中/致命/生命法力） */
+const COMMON_POWERS = [28, 29, 30, 31, 32, 33, 23, 24, 25, 26, 27, 12, 14];
+const REVISION = 'formation-slots-20261025-v1';
+
+const state = {
+  conf: { revision: REVISION, mode: 'add', forms: {} },   // {mode, forms:{id:{mode,slots:[[{power,value}]],pet:[...]}}}
+  selected: null,
+  dirHandle: null,
+  loaded: false
+};
+
+const $ = s => document.querySelector(s);
+const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+let toastTimer = null;
+function toast(msg, ms = 2200) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms); }
+function status(msg, kind = '') { const s = $('#status'); if (!msg) { s.style.display = 'none'; return; } s.className = kind; s.innerHTML = msg; s.style.display = 'block'; }
+
+/* ── 配置读写 ─────────────────────────────────────────── */
+function normalizeIncoming(raw) {
+  const out = { revision: (raw && raw.revision) || REVISION, mode: raw && raw.mode === 'replace' ? 'replace' : 'add', forms: {} };
+  const src = raw && raw.forms && typeof raw.forms === 'object' ? raw.forms : {};
+  for (const [key, value] of Object.entries(src)) {
+    const id = Number(key);
+    if (!Number.isInteger(id) || id <= 0) continue;
+    const form = { mode: value && value.mode === 'replace' ? 'replace' : (raw && raw.mode === 'replace' ? 'replace' : 'add'), slots: [[], [], [], [], []], pet: [] };
+    const slots = value && Array.isArray(value.slots) ? value.slots : [];
+    for (let i = 0; i < 5; i++) {
+      const powers = slots[i] && Array.isArray(slots[i].powers) ? slots[i].powers : [];
+      form.slots[i] = powers.map(row => ({ power: Number(row[0]) || 0, value: Number(row[1]) || 0 })).filter(x => x.power > 0 && x.value !== 0);
+    }
+    const pet = value && value.pet && Array.isArray(value.pet.powers) ? value.pet.powers : [];
+    form.pet = pet.map(row => ({ power: Number(row[0]) || 0, value: Number(row[1]) || 0 })).filter(x => x.power > 0 && x.value !== 0);
+    out.forms[id] = form;
+  }
+  return out;
+}
+
+function buildConfigText() {
+  const forms = {};
+  for (const [id, form] of Object.entries(state.conf.forms)) {
+    const slots = form.slots.map(list => ({ powers: list.filter(x => x.power > 0 && x.value !== 0).map(x => [x.power, x.value]) }));
+    const pet = { powers: form.pet.filter(x => x.power > 0 && x.value !== 0).map(x => [x.power, x.value]) };
+    const anySlot = slots.some(s => s.powers.length) || pet.powers.length;
+    if (!anySlot) continue;                                  // 全空 = 不写（避免塞垃圾）
+    forms[String(id)] = { mode: form.mode, slots, pet };
+  }
+  return JSON.stringify({
+    _readme: [
+      "阵法阵位差异化加成（第 94 版）。原版每个阵只有 3 组统一加成（全队一样），",
+      "本文件让同一个阵可以「第 1 个人加伤害、第 2 个人加减伤、宠物另算」。",
+      "forms[阵型id] = { mode:'add'|'replace', slots:[5 个阵位], pet:{powers} }；",
+      "add=在统一加成之上叠加，replace=顶掉统一加成只吃阵位加成。",
+      "阵位按战斗中己方角色（不含宠物）站位从前到后排名；非战斗面板按第 1 位。",
+      "由 阵法编辑器.html 生成；读取方 lib/local-formation-slots.mjs。"
+    ],
+    revision: state.conf.revision || REVISION,
+    mode: state.conf.mode === 'replace' ? 'replace' : 'add',
+    forms
+  }, null, 1) + "\n";
+}
+
+async function loadFromDir() {
+  if (typeof window.showDirectoryPicker !== 'function') {
+    status("这个浏览器不支持直接读目录（需要 Chrome/Edge）。可改用「下载配置」后再手动放进 <b>data/</b>。", "err");
+    return;
+  }
+  try {
+    const dir = await window.showDirectoryPicker({ mode: 'readwrite', id: 'worldol-data' });
+    state.dirHandle = dir;
+    let raw = null;
+    try {
+      const fh = await dir.getFileHandle('local-formation-slots.json');
+      raw = JSON.parse(await (await fh.getFile()).text());
+    } catch (err) {
+      if (err && err.name !== 'NotFoundError' && err.name !== 'TypeError') throw err;
+    }
+    state.conf = normalizeIncoming(raw);
+    state.loaded = true;
+    state.selected = state.selected || (FORMS[0] && FORMS[0].id) || null;
+    $("#btn-save").disabled = false;
+    $("#btn-download").disabled = false;
+    renderList(); renderEditor();
+    const n = Object.keys(state.conf.forms).length;
+    status(raw ? ("已载入配置（" + n + " 个阵有自定义阵位加成）。改完点<b>保存到 data/</b>，重启游戏生效。") : "目录里还没有配置文件，已从空白开始。", "ok");
+  } catch (err) {
+    if (err && err.name === 'AbortError') { state.dirHandle = null; return; }
+    status("读取失败：" + (err && err.message || err), "err");
+  }
+}
+
+async function save() {
+  const text = buildConfigText();
+  if (state.dirHandle) {
+    try {
+      const fh = await state.dirHandle.getFileHandle('local-formation-slots.json', { create: true });
+      const w = await fh.createWritable();
+      await w.write(text); await w.close();
+      const n = Object.keys(JSON.parse(text).forms).length;
+      status("已写入 <b>local-formation-slots.json</b>（" + n + " 个阵）。重启游戏（电脑版）或重新打包（APK）生效。", "ok");
+      toast("写入成功");
+      return;
+    } catch (err) {
+      status("直接写入失败（" + (err && err.message || err) + "），已改为下载文件，请手动放进 data/。", "err");
+    }
+  }
+  download('local-formation-slots.json', text);
+  toast("已下载，请放进 data/ 目录");
+}
+
+function download(name, text) {
+  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/* ── 列表 ─────────────────────────────────────────────── */
+function renderList() {
+  const list = $('#form-list');
+  list.innerHTML = '';
+  for (const form of FORMS) {
+    const conf = state.conf.forms[form.id];
+    const done = conf && (conf.slots.some(s => s.length) || conf.pet.length);
+    const item = el('div', 'item' + (state.selected === form.id ? ' active' : '') + (done ? ' done' : ''));
+    item.appendChild(el('span', 'nm', form.name));
+    item.appendChild(el('span', 'dot'));
+    item.onclick = () => { state.selected = form.id; renderList(); renderEditor(); };
+    list.appendChild(item);
+  }
+}
+
+/* ── 编辑区 ───────────────────────────────────────────── */
+function formConf(id) {
+  if (!state.conf.forms[id]) state.conf.forms[id] = { mode: state.conf.mode, slots: [[], [], [], [], []], pet: [] };
+  return state.conf.forms[id];
+}
+function powerName(id) { const p = POWER_MAP.get(id); return p ? p.name : ('未知(' + id + ')'); }
+function baseText(form) {
+  const parts = [];
+  for (let i = 1; i <= 3; i++) {
+    const p = form['power' + i], v = form['value' + i];
+    if (p && v) parts.push(powerName(p) + ' ' + (v > 0 ? '+' : '') + v);
+  }
+  return parts.length ? ('原版统一加成：' + parts.join('，')) : '原版无统一加成';
+}
+
+function powerSelect(current, onPick) {
+  const sel = document.createElement('select');
+  const addGroup = (label, list) => {
+    if (!list.length) return;
+    const g = document.createElement('optgroup');
+    g.label = label;
+    for (const p of list) {
+      const o = document.createElement('option');
+      o.value = String(p.id);
+      o.textContent = p.name + '（' + p.id + '）';
+      g.appendChild(o);
+    }
+    sel.appendChild(g);
+  };
+  const common = COMMON_POWERS.map(id => POWER_MAP.get(id)).filter(Boolean);
+  const commonIds = new Set(common.map(p => p.id));
+  addGroup('常用', common);
+  addGroup('全部', POWERS.filter(p => p.id !== 0 && !commonIds.has(p.id)));
+  if (!POWER_MAP.has(current) && current) {
+    const o = document.createElement('option');
+    o.value = String(current); o.textContent = '未知（' + current + '）';
+    sel.appendChild(o);
+  }
+  sel.value = String(current || 28);
+  sel.onchange = () => onPick(Number(sel.value));
+  return sel;
+}
+
+function rowEditor(list, index, onChange, onRemove) {
+  const item = list[index];
+  const row = el('div', 'row');
+  row.appendChild(powerSelect(item.power, v => { item.power = v; onChange(); }));
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.min = '-200'; inp.max = '200'; inp.step = '1';
+  inp.value = item.value;
+  inp.onchange = () => {
+    const v = Number(inp.value);
+    item.value = Number.isFinite(v) ? Math.round(v) : 0;
+    inp.value = item.value;
+    onChange();
+  };
+  row.appendChild(inp);
+  row.appendChild(el('span', 'hint', '百分点（负数=削减）'));
+  const del = el('button', 'del', '删除');
+  del.onclick = () => { onRemove(index); };
+  row.appendChild(del);
+  return row;
+}
+
+function buildPowerCard(title, sub, list, baseLine) {
+  const card = el('div', 'card');
+  const head = el('div', 'slothead');
+  const h = el('h2', null, title);
+  if (sub) h.appendChild(el('span', 'sub', sub));
+  head.appendChild(h);
+  const add = el('button', 'add', '+ 加一条加成');
+  add.onclick = () => { list.push({ power: 28, value: 5 }); rerender(); };
+  head.appendChild(add);
+  card.appendChild(head);
+  if (baseLine) card.appendChild(el('div', 'base', baseLine));
+  if (!list.length) card.appendChild(el('div', 'hint', '还没有配置（这个位置保持原版数值）'));
+  list.forEach((item, i) => {
+    card.appendChild(rowEditor(list, i, () => rerender(false), () => { list.splice(i, 1); rerender(); }));
+  });
+  return card;
+}
+
+function rerender(rebuild = true) {
+  if (rebuild) renderEditor();
+  else { /* 单行改动不重建，避免输入框失焦 */ }
+}
+
+function renderEditor() {
+  const pane = $('#editor');
+  pane.innerHTML = '';
+  if (!state.selected) { pane.appendChild(el('div', 'empty', '从左边选一个阵开始配置')); return; }
+  const form = FORMS.find(f => f.id === state.selected);
+  if (!form) { pane.appendChild(el('div', 'empty', '未知阵型')); return; }
+  const conf = formConf(form.id);
+
+  const head = el('div', 'card');
+  const h = el('h2', null, form.name);
+  h.appendChild(el('span', 'sub', 'teamcount ' + (form.teamcount || '-') + ' · 阵型 id ' + form.id));
+  head.appendChild(h);
+  head.appendChild(el('div', 'base', baseText(form)));
+
+  const modeBar = el('div', 'modebar');
+  const mkMode = (value, label, tip) => {
+    const lab = el('label');
+    const r = document.createElement('input');
+    r.type = 'radio'; r.name = 'form-mode'; r.value = value;
+    r.checked = (conf.mode === value);
+    r.onchange = () => { conf.mode = value; renderList(); };
+    lab.appendChild(r);
+    lab.appendChild(document.createTextNode(' ' + label));
+    lab.title = tip;
+    return lab;
+  };
+  modeBar.appendChild(mkMode('add', '叠加模式', '原版统一加成 + 下面的阵位加成'));
+  modeBar.appendChild(mkMode('replace', '替换模式', '顶掉原版统一加成，只吃下面的阵位加成'));
+  modeBar.appendChild(el('span', 'hint', '当前：' + (conf.mode === 'replace' ? '替换' : '叠加')));
+  head.appendChild(modeBar);
+  head.appendChild(el('div', 'hint', '阵位按战斗中己方「角色」（不含宠物）站位从前到后排名：第 1 位=最靠前的那个。非战斗面板按第 1 位算。'));
+  pane.appendChild(head);
+
+  for (let i = 0; i < 5; i++) {
+    const card = buildPowerCard('第 ' + (i + 1) + ' 位', i === 0 ? '（最靠前的角色）' : '', conf.slots[i]);
+    pane.appendChild(card);
+  }
+  pane.appendChild(buildPowerCard('宠物（所有宠物统一）', '不占角色阵位', conf.pet));
+
+  const tip = el('div', 'card');
+  tip.appendChild(el('h2', null, '说明'));
+  tip.appendChild(el('div', 'hint',
+    '· 「叠加模式」下，这一位的角色 = 原版统一加成 + 这里配的加成；没配的位置保持原版数值。\n' +
+    '· 「替换模式」下，原版 3 组统一加成对全队失效，每个位置只吃这里配的（没配=没有加成）。\n' +
+    '· 加成的 power 与技能/装备同一套（28=劈砍攻击%、31=劈砍防御%、23=出手速度% 等）。\n' +
+    '· 改完点「保存到 data/」，电脑版重启生效；APK 需要重新打包。'));
+  pane.appendChild(tip);
+}
+
+/* ── 事件 ─────────────────────────────────────────────── */
+$('#btn-load').onclick = loadFromDir;
+$('#btn-save').onclick = save;
+$('#btn-download').onclick = () => { download('local-formation-slots.json', buildConfigText()); toast('已下载，请放进 data/ 目录'); };
+
+/* 初始化：没有载入目录时也允许先看界面（用空白配置） */
+state.selected = FORMS[0] && FORMS[0].id;
+renderList();
+renderEditor();
+status("先点右上角「载入 data 目录」选游戏的 <code>data</code> 文件夹；没有配置文件时从空白开始。", "");
+</script>
+</body>
+</html>

@@ -46,6 +46,7 @@ import {patchFormationBooks} from './client-formation-book-patch.mjs';
 import {patchSkillFxSwitch} from './client-skill-fx-patch.mjs';
 import {patchAutoSkillChance} from './client-auto-skill-chance-patch.mjs';
 import {patchRandomTarget} from './client-random-target-patch.mjs';
+import {patchFormationSlots} from './client-formation-slot-patch.mjs';
 
 /** 原版主包在 v305 客户端里的相对路径（站点根 / client 根通用）。 */
 export const CLIENT_MAIN_PATH='js/ff/fff570bb4753f056432680e781d827dc.js';
@@ -126,7 +127,9 @@ export const CLIENT_MAIN_STEPS=[
  // 第 93 版 B 层玩法补丁：自动技能触发概率 + 技能随机目标。
  // 两者都在运行时按特征扫 req.c 找战斗类（不硬编码模块号），配置缺失即退化为原生。
  ['autoSkillChance',patchAutoSkillChance],
- ['randomTarget',patchRandomTarget]
+ ['randomTarget',patchRandomTarget],
+ // 第 94 版：阵法按阵位差异化加成（换 formationSkill 查表源，属性公式不动）
+ ['formationSlots',patchFormationSlots]
 ];
 
 /** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */

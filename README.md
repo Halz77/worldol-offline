@@ -307,6 +307,7 @@ lib/http-routes.mjs 的 WEB_PATHS
 | 工具 | 用途 |
 | --- | --- |
 | `技能编辑器.html` | 修改技能等级与效果（写 `local-skill-overrides.json`）、作用范围可设「敌/我随机 N 个」、自动技能可设触发概率（写 `local-auto-skill-chance.json`） |
+| `阵法编辑器.html` | 给每个阵的 5 个阵位和宠物分别配加成（叠加/替换两种模式），写入 `data/local-formation-slots.json` |
 | `装备编辑器.html` | 修改装备属性，写入 `data/local-item-overrides.json` |
 | 技能面板「效」按钮 | 游戏内换技能特效（181 个候选 + 随机模式 + 收藏清单），配置按角色存 localStorage |
 | 单机菜单 → 伤害计算器 | 导入存档，模拟技能与木桩伤害 |
