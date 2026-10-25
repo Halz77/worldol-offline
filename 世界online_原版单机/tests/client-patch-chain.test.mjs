@@ -119,7 +119,7 @@ test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4609630,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4610796,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 

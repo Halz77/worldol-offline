@@ -135,6 +135,33 @@ export function installFormationSlots(req, host) {
     return Array.isArray(powers) && powers.length ? ('第' + idx + '位') : null;
   }
 
+  /** 诊断（第 102 版临时）：把面板 e 的运行时结构打出来，定位「战斗前后数值不变」的根因。 */
+  function diag(unit) {
+    const vo = unit && (unit.vo || unit);
+    if (!vo) return '【diag】e 为空\n';
+    const parts = [];
+    let hasVo = false;
+    try { hasVo = unit && unit.vo !== undefined; } catch (_) {}
+    parts.push('【diag】');
+    parts.push('有vo=' + (hasVo ? '是' : '否'));
+    let type = '?';
+    try { type = typeof vo.getType === 'function' ? vo.getType() : '?'; } catch (_) {}
+    parts.push('type=' + type);
+    let pos = '?';
+    try { pos = (vo.position !== undefined ? vo.position : (unit && unit.position)); } catch (_) {}
+    parts.push('pos=' + pos);
+    let fs = 'null';
+    try { fs = vo.formationSkill ? ('id' + vo.formationSkill.id) : 'null'; } catch (_) {}
+    parts.push('formationSkill=' + fs);
+    let gpd = '?';
+    try { gpd = typeof vo.getPowerValue === 'function' ? '有' : '无'; } catch (_) {}
+    parts.push('getPowerValue=' + gpd);
+    let battle = '无';
+    try { battle = battleRef() ? '有' : '无'; } catch (_) {}
+    parts.push('battle=' + battle);
+    return parts.join(' ') + '\n';
+  }
+
   function battleRef() {
     try {
       const mod = req(54);
@@ -466,6 +493,8 @@ export function installFormationSlots(req, host) {
     },
     /** 战斗信息面板用：这个单位吃哪个阵位（没配加成的返回 null，不标注）。 */
     slotLabel: slotLabel,
+    /** 诊断（第 102 版临时）：输出面板 e 的运行时结构。 */
+    diag: diag,
     /** 诊断用：当前生效的阵型 id（军团单位没有 formationSkill 时靠它）。 */
     activeFormation: activeFormationId,
     /** 测试钩子：手动补挂（模拟轮询路径）。 */
