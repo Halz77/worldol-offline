@@ -33,7 +33,7 @@ export function installFormationSlots(req, host) {
   host = host || globalThis;
   if (host.__worldolFormationSlotPatch) return host.__worldolFormationSlotPatch;
   const MAX_POS = 34, LEFT_MAX_POS = 20;     // analysis/modules/0061.js
-  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0 };
+  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0, lastCall: null };
   const hooked = { role: false, cal: false, base: false, petBase: false, petPower: false };
   let timer = null;
 
@@ -160,6 +160,21 @@ export function installFormationSlots(req, host) {
     try { wrapped = vo.getPowerValue && vo.getPowerValue.__worldolWrapped ? '是' : '否'; } catch (_) {}
     parts.push('已包装=' + wrapped);
     parts.push('回退=' + counters.fallbacks);
+    // 最近一次注入结果（slot/form/ok）
+    const lc = counters.lastCall;
+    parts.push('注入=' + (lc ? ('位' + lc.slot + '/阵' + lc.form + (lc.pet ? '/宠' : '') + (lc.ok ? '/成' : '/败')) : '无'));
+    // 决定性对比：同一个 VO，躲闪(ModelConst.DODGE=42)在「含阵位」与「摘掉阵法」时各是多少。
+    // 两者相同 ⇒ 注入没起作用；不同 ⇒ 注入生效（面板数值已经含阵位）。
+    let withFs = '?', withoutFs = '?';
+    try {
+      if (typeof vo.get === 'function') {
+        withFs = vo.get(42);
+        const had = vo.formationSkill;
+        try { vo.formationSkill = null; withoutFs = vo.get(42); }
+        finally { vo.formationSkill = had; }
+      }
+    } catch (_) {}
+    parts.push('躲闪含阵位=' + withFs + '/去掉=' + withoutFs);
     let battle = '无';
     try { battle = battleRef() ? '有' : '无'; } catch (_) {}
     parts.push('battle=' + battle);
@@ -279,6 +294,8 @@ export function installFormationSlots(req, host) {
       const isPet = isPetUnit(this);
       const slotIndex = isPet ? 1 : slotIndexOf(this);
       const adapter = makeAdapter(real, formId, slotIndex, isPet);
+      // 诊断：记录最近一次注入结果（面板那次调用到底成没成功）
+      counters.lastCall = {slot: slotIndex, form: formId, pet: isPet, ok: !!adapter, hasFs: !!real};
       if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
       this.formationSkill = adapter;
       counters.rolePatches++;
