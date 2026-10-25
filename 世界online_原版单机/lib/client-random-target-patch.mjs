@@ -26,7 +26,7 @@
  * 另外补了 **作用范围中文标签**：客户端 skillAreaText 只有 0—38，40—59 会直接显示
  * 成 `skillArea_44`（玩家看到的就是「乱码」）。这里把 40—59 的中文名补进表里。
  */
-export const randomTargetRevision = 'random-target-patch-20261025-v3';
+export const randomTargetRevision = 'random-target-patch-20261025-v4';
 
 /** area 号段：40—49 敌随机、50—59 我随机。 */
 export const RANDOM_TARGET_MIN = 40;
@@ -120,7 +120,6 @@ export function installRandomTarget(req, host) {
       if (!c) continue;
       if (hookAreaLabelsOn(c)) break;
     }
-    if (state.hooked) return true;
     for (var j = 0; j < list.length; j++) {
       var d = list[j];
       if (!d) continue;
@@ -161,24 +160,42 @@ export function installRandomTarget(req, host) {
     }
   }
 
-  /** 算候选池并按原版语义过滤出存活单位（用**原生** getSelectArea 取池，避免自己判敌我侧）。 */
+  /**
+   * 算候选池并按原版语义过滤出存活单位。
+   *
+   * ⚠ 第 99 版修正：**不能要求 `unit.battleSprite` 存在**。施法规划/AI 选目标时战斗动画还没建，
+   * 单位上根本没有 battleSprite，于是池子被过滤成空 ⇒ getSelectArea 返回 null ⇒ 技能放不出来
+   * （上机就是这样：随机 调用 2 / 回 0 / 空 2）。原版 `countNotNullPlayerPos` 也只判
+   * `isValidBattlePlayer`（null / 已死 / 逃跑），不判图标。
+   */
   function pickPool(battle, pos, side) {
-    if (!battle || !state.native) return null;
+    if (!battle) return null;
     if (typeof pos !== 'number' || pos < 0 || pos >= 34) return null;
-    // 原版 getSelectArea 会先判「光标和施法者是否同侧」，所以给一个必然对侧/同侧的探测位
-    var probe = side === 'enemy'
-      ? (pos < LEFT_MAX_POS ? LEFT_MAX_POS : 0)
-      : pos;
+    var probe = side === 'enemy' ? (pos < LEFT_MAX_POS ? LEFT_MAX_POS : 0) : pos;
     var pool = null;
-    try { pool = state.native.call(battle, pos, probe, side === 'enemy' ? ENEMY_ALL : ME_ALL); } catch (_) { pool = null; }
-    if (!pool || !pool.length) return null;
+    try {
+      if (state.native) pool = state.native.call(battle, pos, probe, side === 'enemy' ? ENEMY_ALL : ME_ALL);
+    } catch (_) { pool = null; }
+    if (!pool || !pool.length) {
+      // 原生拿不到（rowLeft/rowRight 未初始化等）⇒ 退回自己枚举全部位置，敌我靠 isSameSide 判
+      pool = [];
+      for (var i = 0; i < 34; i++) pool.push(i);
+    }
     var alive = [];
-    for (var i = 0; i < pool.length; i++) {
-      var p = pool[i], u = null;
+    for (var k = 0; k < pool.length; k++) {
+      var p = pool[k], u = null;
       try { u = battle.getPlayerByPos(p); } catch (_) { u = null; }
-      if (!u || !u.battleSprite) continue;                      // 空位 / 还没上场
+      if (!u) continue;                                          // 空位
+      var same;
       try {
-        if (typeof battle.isValidBattlePlayer === 'function' && !battle.isValidBattlePlayer(u)) continue;   // 已阵亡
+        same = typeof battle.isSameSide === 'function'
+          ? !!battle.isSameSide(pos, p)
+          : ((p < LEFT_MAX_POS) === (pos < LEFT_MAX_POS));
+      } catch (_) { continue; }
+      if (side === 'enemy' ? same : !same) continue;              // 只要对面 / 只要自己这边
+      try {
+        if (typeof battle.isValidBattlePlayer === 'function' && !battle.isValidBattlePlayer(u)) continue;  // 已阵亡/逃跑
+        else if (typeof u.isDeadNoWithDelay === 'function' && u.isDeadNoWithDelay()) continue;
       } catch (_) { continue; }
       alive.push(p);
     }
@@ -246,8 +263,10 @@ export function installRandomTarget(req, host) {
   }
 
   function attach() {
-    if (!state.hooked || !counters.labelHooked) scanCache();
-    if (!state.hooked || !counters.labelHooked) hookFactories();
+    // 每次都扫：同一个类可能有多份模块拷贝（后加载的那份必须也挂上），
+    // 靠 proto 上的标记防重复包装。
+    scanCache();
+    hookFactories();
     return state.hooked;
   }
 
@@ -259,7 +278,7 @@ export function installRandomTarget(req, host) {
   }, 1000);
 
   var api = {
-    revision: 'random-target-patch-20261025-v3',
+    revision: 'random-target-patch-20261025-v4',
     get status() {
       return {
         hooked: state.hooked, cursorHooked: state.cursorHooked, labelHooked: counters.labelHooked,

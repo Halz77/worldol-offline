@@ -43,19 +43,21 @@ function fakeBattleReq(kind) {
  const proto = kind === 'auto'
   ? { getAutoSkillIDByRound() { return 108; }, doAutoSkill() {}, autoSkillID: [108], round: 1, getAutoSkillCount() { return 1; } }
   : (() => {
-   // 随机目标用：敌侧池 1—10 里只有 1/2/5/7/9 在场，我方池 11—13 都在场
-   const alive = new Set([1, 2, 5, 7, 9, 11, 12, 13]);
+   // 随机目标用（真实布阵口径）：施法者在我方 25（右侧），敌人占左侧 1/2/5/7/9，
+   // 我方 21/22/23 在场；3/4 等是空位。
+   const alive = new Set([1, 2, 5, 7, 9, 21, 22, 23]);
    const calls = [];
    return {
     calls,
     getSelectArea(actorPos, targetPos, area) {
      calls.push(area);
-     if (area === 19) return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];   // 敌全体：10 个位置（含空）
-     if (area === 29) return [11, 12, 13];
+     if (area === 19) return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];      // 敌全体：10 个位置（含空）
+     if (area === 29) return [20, 21, 22, 23, 24];                 // 我全体
      return ['passthrough', area];
     },
     getPlayerByPos(pos) { return alive.has(pos) ? { battleSprite: {} } : null; },
-    isValidBattlePlayer(unit) { return !!unit; }
+    isValidBattlePlayer(unit) { return !!unit; },
+    isSameSide(a, b) { return (a < 20) === (b < 20); }
    };
   })();
  const mods = { 251: { default: proto } };
@@ -104,7 +106,7 @@ test('概率补丁：入口幂等 + 锚点校验 + 追加注入', () => {
  assert.ok(patched.endsWith(')(window.__worldReq,window);\n'));
  assert.throws(() => patchAutoSkillChance(patched), /already installed/);
  assert.throws(() => patchAutoSkillChance('no anchor'), /mismatch/);
- assert.equal(autoSkillChancePatchRevision, 'auto-skill-chance-patch-20261025-v3');
+ assert.equal(autoSkillChancePatchRevision, 'auto-skill-chance-patch-20261025-v4');
 });
 
 // ── 随机目标补丁 ─────────────────────────────────────────
@@ -126,19 +128,19 @@ test('随机目标：敌随机 N 从存活池里挑 N 个，不足返回实际�
  const host = {};
  const api = installRandomTarget(req, host);
  assert.equal(api.status.hooked, true);
- // 敌全体池 = [1..10]，存活只有 1,2,5,7,9 ⇒ 5 个
- const five = proto.getSelectArea(1, 1, 45);          // 敌随机 6 个
+ // 敌全体池 = [0..9]，存活只有 1,2,5,7,9 ⇒ 5 个
+ const five = proto.getSelectArea(25, 25, 45);        // 敌随机 6 个
  assert.equal(five.length, 5, '池里只有 5 个存活 ⇒ 返回 5 个（不返回 null）');
  assert.ok(five.every(p => [1, 2, 5, 7, 9].includes(p)), '只能挑存活位置');
  assert.equal(new Set(five).size, 5, '不能重复');
- const two = proto.getSelectArea(1, 1, 42);           // 敌随机 3 个
+ const two = proto.getSelectArea(25, 25, 42);         // 敌随机 3 个
  assert.equal(two.length, 3);
  // 我方随机
- const mine = proto.getSelectArea(1, 1, 52);
+ const mine = proto.getSelectArea(25, 25, 52);
  assert.ok(mine.length <= 3);
  // 非随机段 ⇒ 原样透传（area 19/29 是随机段内部借用的「全体池」，不算透传样本）
- assert.deepEqual(proto.getSelectArea(1, 1, 0), ['passthrough', 0]);
- assert.deepEqual(proto.getSelectArea(1, 1, 38), ['passthrough', 38]);
+ assert.deepEqual(proto.getSelectArea(25, 25, 0), ['passthrough', 0]);
+ assert.deepEqual(proto.getSelectArea(25, 25, 38), ['passthrough', 38]);
  assert.equal(api.status.randomCalls, 3);
  api.stop();
 });
@@ -161,7 +163,7 @@ test('随机目标：入口幂等 + 锚点校验 + pick 钩子', () => {
  assert.ok(patched.startsWith(ORIGINAL));
  assert.throws(() => patchRandomTarget(patched), /already installed/);
  assert.throws(() => patchRandomTarget('nothing'), /mismatch/);
- assert.equal(randomTargetRevision, 'random-target-patch-20261025-v3');
+ assert.equal(randomTargetRevision, 'random-target-patch-20261025-v4');
  const pool = [1, 2, 3, 4, 5];
  // 这个 req 找不到战斗类 ⇒ install 会起 800ms 轮询补挂，必须 stop() 否则测试进程不退出
  const api = installRandomTarget(id => ({ default: {} }), {});

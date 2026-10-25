@@ -1,4 +1,4 @@
-export const battleCheckRevision='battle-check-full-fields-v6';
+export const battleCheckRevision='battle-check-full-fields-v7';
 
 // 战斗里「查看」弹出的战斗信息面板（BattleCheck）原来只在一处开关后面显示 12 个字段：
 //   e.isCheckAll &&（出手速度/闪避/三项防御/状态抵抗/伤害减免/格挡/洞察）
@@ -54,18 +54,46 @@ export function patchBattleCheckFields(source){
   if(source.split(gate).length!==2)throw Error('v305 battle check gate patch mismatch');
   source=source.replace(gate,gateNew);
 
+  // --- 1.5 原来那 9 个字段读的是 VO 上的**原始字段**（e.speed/e.dodge/e.def_str…） ------
+  // 第 99 版：这些字段在玩家单位上根本没被填过，面板上永远是 0（玩家反馈「劈砍防御力/闪避/
+  // 出手速度/状态抵抗/伤害减免/格挡/洞察全是 0」）。改成和其它字段同一口径：
+  //   e.get(ModelConst.X) —— 走引擎的属性计算（含装备/技能/被动/阵法/称号/buffer）。
+  // 劈砍/穿刺防御优先取 DEF_STR/DEF_AGI，为 0 时退回「近身」那一列（这游戏实际用的是近身/远程两列）。
+  const attrFixes=[
+   ['t.append(n.GameText.STR_ATTR_SPEED+":"+e.speed+"\\n")',
+    't.append(n.GameText.STR_ATTR_SPEED+":"+(e.get(a.ModelConst.SPEED)||0)+"\\n")'],
+   ['t.append(n.GameText.STR_CHANGE_ATT_DESC_DODGE+":"+e.dodge+"  ")',
+    't.append(n.GameText.STR_CHANGE_ATT_DESC_DODGE+":"+(e.get(a.ModelConst.DODGE)||0)+"  ")'],
+   ['t.append(n.GameText.STR_MONSTER_DEF_STR+e.def_str+"\\n")',
+    't.append(n.GameText.STR_MONSTER_DEF_STR+((e.get(a.ModelConst.DEF_STR)||0)||(e.get(a.ModelConst.DEF_STR_NEARBY)||0))+"\\n")'],
+   ['t.append(n.GameText.STR_MONSTER_DEF_AGI+e.def_agi+"  ")',
+    't.append(n.GameText.STR_MONSTER_DEF_AGI+((e.get(a.ModelConst.DEF_AGI)||0)||(e.get(a.ModelConst.DEF_AGI_NEARBY)||0))+"  ")'],
+   ['t.append(n.GameText.STR_MONSTER_DEF_MAGIC+e.def_magic+"\\n")',
+    't.append(n.GameText.STR_MONSTER_DEF_MAGIC+(e.get(a.ModelConst.DEF_MAGIC)||0)+"\\n")'],
+   ['t.append(n.GameText.STR_ATTR_WIL+":"+e.wil+"  ")',
+    't.append(n.GameText.STR_ATTR_WIL+":"+(e.get(a.ModelConst.WIL)||0)+"  ")'],
+   ['t.append(n.GameText.STR_ATTR_TOUGH+":"+e.tough+"\\n")',
+    't.append(n.GameText.STR_ATTR_TOUGH+":"+(e.get(a.ModelConst.TOUGH)||0)+"\\n")'],
+   ['t.append(n.GameText.STR_ATTR_BLOCK+":"+e.block+"  ")',
+    't.append(n.GameText.STR_ATTR_BLOCK+":"+(e.get(a.ModelConst.BLOCK)||0)+"  ")'],
+   ['t.append(n.GameText.STR_ATTR_INSIGHT+":"+e.insight+"\\n")',
+    't.append(n.GameText.STR_ATTR_INSIGHT+":"+(e.get(a.ModelConst.INSIGHT)||0)+"\\n")']
+  ];
+  for(const [from,to] of attrFixes){
+    if(source.split(from).length!==2)throw Error('v305 battle check attr patch mismatch: '+from.slice(0,60));
+    source=source.replace(from,to);
+  }
+
   // --- 2. 洞察之后补 12 个字段（每行两个）---------------------------------
   // 文案命名空间（这就是上一版把标签渲染成 undefined 的真正原因）：
   //   · GameText（模块 10）：STR_ATTR_INSIGHT/BLOCK/BACK/MAGIC_BACK/DEF_FIELD/ATK_TIME 等
   //   · GameText2（模块 23）：STR_ATTR_IGNORE_BACK/MAGIC_BACK/BLOCK/INSIGHT/WIL/TOUCH
   //     —— 面板模块只 import 了模块 10，所以「无视*」必须经 window.__worldReq(23).GameText2 取；
   //        写成 n.GameText.STR_ATTR_IGNORE_BLOCK 恒为 undefined（面板上就是 `undefined:0`）。
-  const tail='t.append(n.GameText.STR_ATTR_INSIGHT+":"+e.insight+"\\n")),null!=e.formationSkill&&';
-  const tailNew='t.append(n.GameText.STR_ATTR_INSIGHT+":"+e.insight+"\\n"),'
-   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_NEARBY_DEF_STR+":"+(e.get(a.ModelConst.DEF_STR_NEARBY)||0)+"  "),'
-   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_RANGE_DEF_STR+":"+(e.get(a.ModelConst.DEF_STR_RANGE)||0)+"\\n"),'
-   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_NEARBY_DEF_AGI+":"+(e.get(a.ModelConst.DEF_AGI_NEARBY)||0)+"  "),'
-   +'t.append(n.GameText.STR_CHANGE_ATT_DESC_RANGE_DEF_AGI+":"+(e.get(a.ModelConst.DEF_AGI_RANGE)||0)+"\\n"),'
+  // 注意：上面 attrFixes 已经把 insight 那句改写成 e.get(...)，这里的锚点要用**改写后**的文本
+  const tail='t.append(n.GameText.STR_ATTR_INSIGHT+":"+(e.get(a.ModelConst.INSIGHT)||0)+"\\n")),null!=e.formationSkill&&';
+  const tailNew='t.append(n.GameText.STR_ATTR_INSIGHT+":"+(e.get(a.ModelConst.INSIGHT)||0)+"\\n"),'
+   // 第 99 版：近身/远程四列不再显示（玩家要求；劈砍/穿刺防御力已经在上面按 DEF_STR→近身 兜底显示）
    +'t.append(n.GameText.STR_ATTR_DEF_FIELD+":"+(e.get(a.ModelConst.DEF_FIELD)||0)+"  "),'
    +'t.append(n.GameText.STR_ATTR_ATK_TIME+":"+(e.get(a.ModelConst.ATK_TIME)||0)+"\\n"),'
    +'t.append(n.GameText.STR_ATTR_BACK+":"+(e.get(a.ModelConst.BACK)||0)+"  "),'

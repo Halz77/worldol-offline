@@ -350,7 +350,7 @@ test('裸环境：阵法说明末尾追加「阵位加成」一行（说明跟�
   inst.name = '鸟翔阵';
   const text = inst.getFormationInfo();
   assert.match(text, /^鸟翔阵:出手速度\+22% 躲闪\+18%/);
-  assert.match(text, /阵位加成：第1位 效果23\+6 · 宠物 效果31\+8/);
+  assert.match(text, /阵位加成：\n第1位 效果23\+6  宠物 效果31\+8/, '阵位加成要逐行输出，不能横向出框');
 
   const arr = inst.getFormationInfo(true);
   assert.ok(Array.isArray(arr), '取数组模式要保持数组');

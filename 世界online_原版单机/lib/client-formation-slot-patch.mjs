@@ -26,15 +26,15 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v3';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v4';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
   host = host || globalThis;
   if (host.__worldolFormationSlotPatch) return host.__worldolFormationSlotPatch;
   const MAX_POS = 34, LEFT_MAX_POS = 20;     // analysis/modules/0061.js
-  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0 };
-  const hooked = { role: false, cal: false, petBase: false, petPower: false };
+  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0 };
+  const hooked = { role: false, cal: false, base: false, petBase: false, petPower: false };
   let timer = null;
 
   function cfg() {
@@ -183,7 +183,6 @@ export function installFormationSlots(req, host) {
   }
 
   function hookRoleOn(proto) {
-    if (hooked.role) return true;
     if (!isRoleProto(proto)) return false;
     if (!Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlot')) {
       wrapRoleMethod(proto, 'getPowerValue');
@@ -195,6 +194,20 @@ export function installFormationSlots(req, host) {
         proto.__worldolFormationSlotCal = true;
         hooked.cal = true;
       }
+    }
+    // getBaseValue（6 参）也吃 formationSkill —— 面板五维走这条
+    if (!proto.__worldolFormationSlotBase && typeof proto.getBaseValue === 'function') {
+      if (wrapRoleMethod(proto, 'getBaseValue')) {
+        proto.__worldolFormationSlotBase = true;
+        hooked.base = true;
+      }
+    }
+    // 诊断：面板/世界数据到底有没有走这个类的 get()（只计数，行为不变）。
+    // 若 getCalls 有值但 rolePatches 一直是 0，说明这个实例的方法被别的拷贝遮住了。
+    if (!proto.__worldolFormationSlotGet && typeof proto.get === 'function') {
+      const nativeGet = proto.get;
+      proto.get = function () { counters.getCalls++; return nativeGet.apply(this, arguments); };
+      proto.__worldolFormationSlotGet = true;
     }
     hooked.role = true;
     return true;
@@ -219,7 +232,6 @@ export function installFormationSlots(req, host) {
   }
 
   function hookPetOn(proto) {
-    if (hooked.petBase && hooked.petPower) return true;
     if (!isPetProto(proto)) return false;
     if (!Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlotPet')) {
       hooked.petBase = wrapPetMethod(proto, 'getPetBaseValue');
@@ -273,12 +285,15 @@ export function installFormationSlots(req, host) {
     if (petText) parts.push('宠物 ' + petText);
     if (!parts.length) return null;
     const head = form.mode === 'replace' ? '阵位加成（替换原效果）：' : '阵位加成：';
-    return '\n' + head + parts.join(' · ');
+    // 战斗信息面板按行渲染、不会自动折行，一行塞 5 个阵位会横向溢出（玩家反馈文字出框）：
+    // 每行两个，最多 3 行。
+    const lines = [];
+    for (let i = 0; i < parts.length; i += 2) lines.push(parts.slice(i, i + 2).join('  '));
+    return '\n' + head + '\n' + lines.join('\n');
   }
 
   let infoHooked = false;
   function hookInfoOn(proto) {
-    if (infoHooked) return true;
     if (!proto || typeof proto.getFormationInfo !== 'function') return false;
     if (proto.__worldolFormationInfo) { infoHooked = true; return true; }
     const original = proto.getFormationInfo;
@@ -303,9 +318,9 @@ export function installFormationSlots(req, host) {
       grabPowerDesc(c);
       const proto = c.prototype || (typeof c === 'object' ? c : null);
       if (!proto) continue;
-      if (!hooked.role && isRoleProto(proto)) hookRoleOn(proto);
-      if (!(hooked.petBase && hooked.petPower) && isPetProto(proto)) hookPetOn(proto);
-      if (!infoHooked && typeof proto.getFormationInfo === 'function') hookInfoOn(proto);
+      if (isRoleProto(proto)) hookRoleOn(proto);
+      if (isPetProto(proto)) hookPetOn(proto);
+      if (typeof proto.getFormationInfo === 'function') hookInfoOn(proto);
     }
     return hooked.role;
   }
@@ -342,8 +357,9 @@ export function installFormationSlots(req, host) {
   }
 
   function attach() {
-    if (!hooked.role) scanCache();
-    if (!hooked.role || !(hooked.petBase && hooked.petPower) || !infoHooked) hookFactories();
+    // 每次都扫（同一个类可能有多份模块拷贝），proto 标记防重复包装
+    scanCache();
+    hookFactories();
     return hooked.role && (hooked.petBase || hooked.petPower);
   }
 
@@ -352,10 +368,11 @@ export function installFormationSlots(req, host) {
   timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v3',
+    revision: 'formation-slot-patch-20261025-v4',
     get status() {
       return {
-        roleHooked: hooked.role, calHooked: hooked.cal, petHooked: hooked.petBase || hooked.petPower, infoHooked,
+        roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base,
+        petHooked: hooked.petBase || hooked.petPower, infoHooked, getCalls: counters.getCalls,
         rolePatches: counters.rolePatches, petPatches: counters.petPatches,
         adapters: counters.adapters, fallbacks: counters.fallbacks,
         configured: cfg() ? Object.keys(cfg().forms).length : 0

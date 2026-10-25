@@ -48,9 +48,10 @@ export function installDiagnostics(req, host) {
     const api = host.__worldolFormationSlotPatch;
     if (!api) return '阵位  ✗ 未挂载（补丁链没跑到）';
     const s = api.status || {};
-    return '阵位  角色' + mark(s.roleHooked) + ' Cal' + mark(s.calHooked) + ' 宠物' + mark(s.petHooked)
+    return '阵位  角色' + mark(s.roleHooked) + ' Cal' + mark(s.calHooked) + ' Base' + mark(s.baseHooked)
+      + ' 宠物' + mark(s.petHooked)
       + ', 应用 ' + (s.rolePatches || 0) + '/' + (s.petPatches || 0) + ' 回退 ' + (s.fallbacks || 0)
-      + ', 配置阵 ' + (s.configured || 0) + ' 个';
+      + ', get ' + (s.getCalls || 0) + ', 配置阵 ' + (s.configured || 0) + ' 个';
   }
 
   function build() {

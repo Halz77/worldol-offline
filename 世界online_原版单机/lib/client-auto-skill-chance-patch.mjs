@@ -17,7 +17,7 @@
  *   · APK：安卓打包/standalone/globals.mjs → entry.mjs 的 installGeneratedGlobals
  *   读不到配置 ⇒ 一律走原生行为（不抛错、不阻断）。
  */
-export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v3';
+export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v4';
 
 /**
  * 安装概率层。req = window.__worldReq，host = window。
@@ -148,8 +148,8 @@ export function installAutoSkillChance(req, host) {
   }
 
   function attach() {
-    if (hooked) return true;
-    if (scanCache()) return true;          // 已经 require 过的模块
+    // 每次都扫（同一份类可能被多个模块拷贝持有），proto 标记防重复包装
+    scanCache();
     hookFactories();                       // 之后才 require 的模块：实例化即刻挂
     return hooked;
   }
@@ -159,7 +159,7 @@ export function installAutoSkillChance(req, host) {
   timer = setInterval(() => { if (attach()) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'auto-skill-chance-patch-20261025-v3',
+    revision: 'auto-skill-chance-patch-20261025-v4',
     get status() {
       const table = host.worldolAutoSkillChance;
       return {

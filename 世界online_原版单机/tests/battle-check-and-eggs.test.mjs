@@ -67,17 +67,26 @@ test('战斗查看面板补丁：去掉 isCheckAll 门并补 12 个防御字段 
  // 「反击 / 魔法反馈 / 攻击次数 / 法力护盾 / 近身远程防御」在那儿；
  // 「无视洞察 / 无视格挡 / 无视状态抵抗 / 无视伤害减免」在模块 23（GameText2）里，
  // 写成 n.GameText.STR_ATTR_IGNORE_* 恒为 undefined → 面板显示 `undefined:0`。
- for(const key of ['STR_ATTR_INSIGHT','STR_ATTR_DEF_FIELD','STR_ATTR_ATK_TIME','STR_ATTR_BACK','STR_ATTR_MAGIC_BACK',
-  'STR_CHANGE_ATT_DESC_NEARBY_DEF_STR','STR_CHANGE_ATT_DESC_RANGE_DEF_STR',
-  'STR_CHANGE_ATT_DESC_NEARBY_DEF_AGI','STR_CHANGE_ATT_DESC_RANGE_DEF_AGI']){
+ for(const key of ['STR_ATTR_INSIGHT','STR_ATTR_DEF_FIELD','STR_ATTR_ATK_TIME','STR_ATTR_BACK','STR_ATTR_MAGIC_BACK']){
   assert.ok(patched.includes('n.GameText.'+key),'面板要用 GameText.'+key);
+ }
+ // 第 99 版：近身/远程四列不再显示（玩家要求），原来的「劈砍防御力/穿刺防御力」改成
+ // 先读 DEF_STR/DEF_AGI、为 0 时退回近身那一列。
+ assert.ok(!patched.includes('STR_CHANGE_ATT_DESC_NEARBY_DEF_STR+'),
+  '近身/远程四列要整段去掉，不能留在面板上');
+ for(const key of ['SPEED','DODGE','DEF_STR','DEF_STR_NEARBY','DEF_AGI','DEF_AGI_NEARBY','DEF_MAGIC','WIL','TOUGH','BLOCK','INSIGHT']){
+  assert.ok(patched.includes('a.ModelConst.'+key),'这 9 个基础字段要按属性计算取值（ModelConst.'+key+'）');
+ }
+ // 反例守卫：不能再退回读 VO 上的原始字段（那几个字段玩家单位上永远是 0）
+ for(const raw of ['+e.speed+"','+e.dodge+"','+e.def_str+"','+e.def_agi+"','+e.def_magic+"','+e.wil+"','+e.tough+"','+e.block+"','+e.insight+"']){
+  assert.ok(!patched.includes(raw),'不能再用原始字段取值：'+raw);
+ }
+ for(const key of ['BACK','MAGIC_BACK','ATK_TIME','DEF_FIELD',
+  'IGNORE_INSIGHT','IGNORE_BLOCK','IGNORE_WIL','IGNORE_TOUCH']){
+  assert.ok(patched.includes('a.ModelConst.'+key),'要读 ModelConst.'+key);
  }
  for(const key of ['STR_ATTR_IGNORE_INSIGHT','STR_ATTR_IGNORE_BLOCK','STR_ATTR_IGNORE_WIL','STR_ATTR_IGNORE_TOUCH']){
   assert.ok(patched.includes('window.__worldReq(23).GameText2.'+key),'「无视*」在 GameText2（模块 23），要按命名空间取：'+key);
- }
- for(const key of ['BACK','MAGIC_BACK','ATK_TIME','DEF_FIELD','DEF_STR_NEARBY','DEF_STR_RANGE','DEF_AGI_NEARBY','DEF_AGI_RANGE',
-  'IGNORE_INSIGHT','IGNORE_BLOCK','IGNORE_WIL','IGNORE_TOUCH']){
-  assert.ok(patched.includes('a.ModelConst.'+key),'要读 ModelConst.'+key);
  }
  // 第 89 版：攻击侧字段（玩家自制技能要测打出去的数值）。面板原来只有防御侧。
  for(const key of ['ATK_MIN','ATK_MAX','BRK_ARMOR','ATK_STR','ATK_AGI','ATK_MAGIC',
