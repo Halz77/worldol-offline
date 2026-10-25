@@ -1,0 +1,26 @@
+{
+  "_readme": [
+    "怪物属性覆盖（第 94 版，2026-10-25）。改的是运行时怪物表，不动 data/official-v305.json 原始抓包。",
+    "",
+    "结构：monsters[怪物id] = { 字段: 值 }",
+    "可改字段（与 monsterWireBytes 的编码顺序一致，见 lib/monster-balance.mjs）：",
+    "  基础：name(名称) level(等级) monstertype(怪物类型) icon1(外观图标号)",
+    "  生存：hpMax mpMax speed",
+    "  攻击：atkType(攻击方式) atkMin atkMax atk_time(攻击次数，原版存的是次数-1)",
+    "  命中闪避：hitrate hitMagic dodge",
+    "  六维攻防：atk_str atk_agi atk_magic def_str def_agi def_magic",
+    "           以及各自的 _nearby(近身) / _range(远程) 变体",
+    "  暴击：critical(致命值) ignoreCritical criticalDmg",
+    "  抗性/特殊：ignore_back ignore_magic_back ignore_block ignore_insight ignore_touch ignore_wil",
+    "            wil tough block brkArmor insight def_field back magic_back",
+    "            life_absorption mana_absorption magic_penetration newReflection",
+    "  天生状态：bornStatus（位图，数字；0=无。位含义随版本不同，编辑器里按原始数值编辑）",
+    "",
+    "生效方式：套用后会用 monsterWireBytes 重新编码该怪的 wireBase64，",
+    "战斗包里发的新数据 ⇒ 改完重启（电脑版）或重新打包（APK）即生效。",
+    "读取方：lib/local-monster-overrides.mjs，在 official-data.ensure() 建表之后套用。",
+    "怪物编辑器.html 写的就是本文件。"
+  ],
+  "revision": "monster-overrides-20261025-v1",
+  "monsters": {}
+}

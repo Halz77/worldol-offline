@@ -31,6 +31,7 @@ import {applyDailyDungeonEntrances} from './daily-dungeon-directory.mjs';
 import {applyGuardChallenges} from './guard-challenges-data.mjs';
 import {applyItemOverrides,applyIdentifyOverrides,identifyOverrides} from './item-overrides.mjs';
 import {applyFormationBooks} from './formation-data.mjs';
+import {applyMonsterOverrides} from './local-monster-overrides.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -189,6 +190,9 @@ fixMidAutumnFinalBoss(official);
   officialItems:new Map(official.items.map(m=>[m.id,m])),
   officialSkills:official.skills.filter(s=>s.sources.some(x=>x.origin==='shop'||x.origin==='learned-definition')),
  };
+ // 第 94 版怪物编辑器：属性覆盖必须在建 Map 之后、任何战斗打包之前套用
+ // （会重编码每只被改怪的 wireBase64；提前改会被 captured81 的冲突检查拦下）。
+ applyMonsterOverrides(built.officialMonsters);
  return built;
 }
 
