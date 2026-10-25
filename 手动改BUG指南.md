@@ -289,7 +289,62 @@ powershell -ExecutionPolicy Bypass -File .\构建APK.ps1      # 5~15 分钟
 
 ---
 
-## 10. 出错了怎么退回
+## 10. 存档与回退（大改之前必看）
+
+### 三种存档粒度（按场景选）
+
+| 场景 | 做法 | 命令 |
+| --- | --- | --- |
+| 每次动大手术前留个还原点 | 提交 + 打 tag | `git add -A && git commit -m "说明" && git tag -a vXX-说明 -m "说明"` |
+| 要连续改很久（比如战斗逻辑） | **开分支**，main 保持稳定 | `git checkout -b exp/战斗大改` |
+| 改失败想整个丢掉 | 切回 main | `git checkout main` |
+
+### 建议的工作流（战斗逻辑大改这种量级）
+
+```bat
+:: ① 动手之前：确认工作区干净，给当前版本打一个稳定 tag
+git status                          :: 应该没有输出
+git tag -a v93-stable -m "第 93 版稳定版"
+git push origin main --follow-tags  :: 顺带备份到 GitHub（异地，不怕硬盘坏）
+
+:: ② 开实验分支，所有大改都在这上面做（main 永远是可玩的稳定版）
+git checkout -b exp/battle-overhaul
+
+:: ③ 中途随便提交，改坏了也不影响 main
+git add -A
+git commit -m "wip: 多段动画第一步"
+
+:: ④ 改满意了：合回 main
+git checkout main
+git merge exp/battle-overhaul
+
+:: ⑤ 改失败了：回到稳定版（实验分支留着备查，想删就 git branch -D exp/battle-overhaul）
+git checkout main
+```
+
+### 已经存好的版本
+
+| tag | 内容 | 验证状态 |
+| --- | --- | --- |
+| `v93-stable` | 第 93 版：技能自定义特效 + 自动技能触发概率 + 技能随机目标 + 阵法系统 | 全量 759 用例 728 过（唯一失败是既有的 loot.test.mjs） |
+
+回到这一版：
+
+```bat
+git checkout v93-stable                 :: 只想看看（分离 HEAD），看完 git checkout main 回来
+git checkout -b 回到稳定版 v93-stable    :: 想在这个版本上继续改
+git diff v93-stable --stat              :: 只看「从那以后都改了什么」
+```
+
+### 注意事项
+
+- **`client/`、`analysis/`、`node_modules/`、`saves/`、`logs/`、APK 产物不在 git 里**（`.gitignore` 排除了）。
+  换机器时这几样要单独拷；APK 产物在 `安卓打包/output/`，重要版本建议另存一份。
+- **`data/` 是在 git 里的**（214 个文件，含 official-v305.json 等大表），所以技能/物品覆盖层、
+  新增的 `local-*.json` 都会一起存档，不用另外备份。
+- 提交前跑一遍 `npm run check && npm test`；提交信息写清「第 N 版 + 改了什么」，以后查历史方便。
+
+### 出错速查（改坏了先看这里）
 
 | 情况 | 怎么办 |
 | --- | --- |
