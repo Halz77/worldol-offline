@@ -210,6 +210,23 @@ test('补丁：任务 NPC / 佣兵 / 伙伴 不占阵位，也不吃阵位加成
   api.stop();
 });
 
+test('补丁：军团（TYPE_LEGION=10）占阵位，且自己也能吃加成', () => {
+  // 0256.js：军团 VO 继承 i(56)=PlayerVO（})(s["default"]) ⇒ 有 getPowerValue，
+  // 所以军团既参与阵位排名，也能吃到对应阵位的加成（单机陪战的军团要这个）。
+  const { roleProto, api, battle } = makeEnv(CONF);
+  battle.units[21] = { position: 21, battleSprite: {}, vo: { getType: () => 10 } };   // 军团
+  const realFs = { id: 1, getPowerValue: () => 0 };
+  // 己方参与排名：21(军团) 22 23 25 26 27 ⇒ 军团=第1位、22=第2位、25=第4位、27=第6位（钳到5）
+  const legion = { position: 21, formationSkill: realFs, vo: { getType: () => 10 } };
+  assert.equal(roleProto.getPowerValue.call(legion, 100, 0, 28, 999), 106, '军团第 1 位 +6% 劈砍攻击');
+  const second = { position: 22, formationSkill: realFs, vo: { getType: () => 3 } };
+  assert.equal(roleProto.getPowerValue.call(second, 100, 0, 31, 999), 105, '22 被挤到第 2 位 +5% 劈砍防御');
+  const fourth = { position: 25, formationSkill: realFs, vo: { getType: () => 3 } };
+  assert.equal(roleProto.getPowerValue.call(fourth, 100, 0, 23, 999), 100, '25 变第 4 位（该位没配）⇒ 原样');
+  assert.equal(legion.formationSkill, realFs, '调用后仍要还原');
+  api.stop();
+});
+
 test('补丁入口：幂等 + 锚点校验 + 追加注入 + peek', () => {
  const patched = patchFormationSlots(ORIGINAL);
  assert.ok(patched.startsWith(ORIGINAL));

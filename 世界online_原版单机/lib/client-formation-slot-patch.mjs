@@ -98,8 +98,9 @@ export function installFormationSlots(req, host) {
   /**
    * 单位类型（MODEL_TYPE，见 analysis/modules/0004.js）：
    *   1=NPC 2=怪 3=玩家角色 4=宠物 5=佣兵 6=玩家怪 7=宠物怪 8=竞速 9=竞速宠 10=军团 11=伙伴
-   * 阵位**只由玩家角色（3）排**：任务里塞进队伍的 NPC(1)、佣兵(5)、伙伴(11)、军团(10)
-   * 都不占角色阵位，否则会把我方角色的名次整体后移、加成错位。
+   * 阵位由「玩家角色(3) + 军团(10)」参与排名 —— 军团是单机里陪玩家打的人形单位，要算。
+   * 任务里塞进来的系统 NPC(1)、宠物(4，走宠物段)、佣兵(5)、伙伴(11) 不占角色阵位，
+   * 否则会把我方角色的名次整体后移、加成错位。
    * 取不到类型时按「非宠物即角色」处理（真包 vo.getType() 一定存在，见 0241.js）。
    */
   function unitType(u) {
@@ -108,7 +109,7 @@ export function installFormationSlots(req, host) {
       return vo && typeof vo.getType === 'function' ? vo.getType() : null;
     } catch (_) { return null; }
   }
-  const PLAYER_TYPE = 3;
+  const SLOT_TYPES = { 3: true, 10: true };   // 3=玩家角色 10=军团
 
   /** 己方角色按位置升序排名，返回 1-based 阵位序号；不参与阵位的单位返回 0。 */
   function slotIndexOf(unit) {
@@ -126,7 +127,7 @@ export function installFormationSlots(req, host) {
       if (isPetUnit(u)) continue;                               // 宠物不占角色阵位
       if ((p < LEFT_MAX_POS) !== side) continue;
       const type = unitType(u);
-      if (type !== null && type !== PLAYER_TYPE) continue;      // NPC/佣兵/伙伴/军团 都不占位
+      if (type !== null && !SLOT_TYPES[type]) continue;         // NPC/佣兵/伙伴等 都不占位
       list.push(p);
     }
     if (!list.length) return 1;
