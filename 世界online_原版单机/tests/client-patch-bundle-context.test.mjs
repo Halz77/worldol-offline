@@ -513,6 +513,49 @@ test('裸环境：宠物躲闪走 PlayerVO.getPowerValue 也吃宠物段加成 +
   api.stop();
 });
 
+test('裸环境：战斗单位的固化属性字段（this.dodge 等）被阵位加成直接修正', () => {
+  // 战斗单位的 get(DODGE) 是 `return this.dodge`（战斗开始时固化），动态注入进不去，
+  // 必须直接改字段。战斗单位没有 addValue，所以直接赋值。
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100);
+    }
+  };
+  const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};   // 原版鸟翔阵：躲闪%18
+  const battleUnits = new Map([
+    [25, {position: 25, getType: () => 3, dodge: 2512, speed: 75616, atk_str: 13013, formationSkill: origFs}]
+  ]);
+  const battle = {getPlayerByPos(p) { return battleUnits.get(p) || null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  // replace 模式：第 1 位 躲闪%30（原版鸟翔阵是 躲闪%18）
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}]}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+
+  const u = battleUnits.get(25);
+  // 固化原值 2512（含原版鸟翔阵 躲闪%18）⇒ replace 后：2512/1.18 × 1.30
+  const expected = Math.trunc((2512 / 1.18) * 1.3);
+  api.ensureHook(u);
+  assert.equal(u.dodge, expected, '躲闪固化字段应被改成 replace 后的值（2512 → ' + expected + '）');
+  assert.ok(u.dodge > 2512, '躲闪应变大（2512 → ' + u.dodge + '）');
+  // 幂等：再调一次不应重复叠加（每次都从原始固化值重算）
+  api.ensureHook(u);
+  assert.equal(u.dodge, expected, '重复施加不应叠加');
+  api.stop();
+});
+
 // ── 自检面板 ─────────────────────────────────────────────
 test('裸环境：自检面板能画出来，且如实反映「未挂载」', () => {
   const created = [];

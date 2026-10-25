@@ -33,7 +33,7 @@ export function installFormationSlots(req, host) {
   host = host || globalThis;
   if (host.__worldolFormationSlotPatch) return host.__worldolFormationSlotPatch;
   const MAX_POS = 34, LEFT_MAX_POS = 20;     // analysis/modules/0061.js
-  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0, lastCall: null };
+  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0, lastCall: null, fieldPatches: 0 };
   const hooked = { role: false, cal: false, base: false, petBase: false, petPower: false };
   let timer = null;
 
@@ -308,7 +308,91 @@ export function installFormationSlots(req, host) {
   }
 
   /**
-   * ★ 第 103 版：就地补挂。
+   * 属性 → [字段名, 平加power键, 百分比power键]
+   * 从主包 PlayerVO.get() 的各个 case 里提取（case ModelConst.X: … this.getPowerValue(i, this.<字段>,
+   * POWER_A, POWER_B)）。例：DODGE → [dodge, 55(POWER_DODGE), 25(POWER_DODGE_PERCENT)]。
+   * ★ 第 104 版：战斗单位的 get(DODGE) 等是 **return this.dodge**（战斗开始时固化写死的字段），
+   *   动态注入 formationSkill 进不去 ⇒ 阵位加成必须直接改这些字段。
+   */
+  const ATTR_FIELDS = {
+    SPEED: ['speed', 53, 23], ATK_STR: ['atk_str', 58, 28], ATK_AGI: ['atk_agi', 59, 29],
+    ATK_MAGIC: ['atk_magic', 60, 30], DEF_STR: ['def_str', 61, 31], DEF_AGI: ['def_agi', 62, 32],
+    DEF_MAGIC: ['def_magic', 63, 33], DODGE: ['dodge', 55, 25], HIT_RATE: ['hitrate', 54, 24],
+    HIT_MAGIC: ['hitMagic', 56, 26], CRITICAL: ['critical', 57, 27], FORCE_HIT: ['forceHit', 76, 46],
+    TOUGH: ['tough', 65, 35], BLOCK: ['block', 67, 37], BRK_ARMOR: ['brkArmor', 69, 39],
+    MAGIC_PENETRATION: ['magic_penetration', 75, 45], INSIGHT: ['insight', 68, 38],
+    DEF_FIELD: ['def_field', 70, 40], BACK: ['back', 71, 41], MAGIC_BACK: ['magic_back', 72, 42],
+    LIFE_ABSORPTION: ['life_absorption', 73, 43], MANA_ABSORPTION: ['mana_absorption', 74, 44],
+    HEAL_RECOVERY: ['heal_recovery', 77, 47], MANA_RECOVERY: ['mana_recovery', 78, 48]
+  };
+
+  /**
+   * ★ 第 104 版：把阵位加成直接写进战斗单位的**固化字段**。
+   *
+   * 背景：战斗开始时属性被算好写进 vo.speed / vo.dodge / vo.atk_str …（战斗单位的 get(DODGE)
+   * 就是 `return this.dodge`），之后再读都是这个固化值。我们在 getPowerValue 里注入阵位加成，
+   * 只对「现算」的读取有效，对固化字段无效 ⇒ 面板数值看着完全没变。
+   *
+   * 算法（近似，但与引擎口径一致）：
+   *   固化值 v = (base + 全部平加) × (1 + 全部百分比/100)
+   *   去掉原版阵法：v0 = v/(1+fsPct/100) - fsAdd
+   *   加上阵位：  v1 = (v0 + newAdd) × (1 + newPct/100)
+   *   newAdd/newPct：add 模式 = 原版+阵位；replace 模式 = 只用阵位。
+   * 幂等：打过标记的单位不重复施加。
+   */
+  function applySlotBonusToFields(unit) {
+    const vo = unit && (unit.vo || unit);
+    if (!vo) return 0;
+    const conf = cfg();
+    if (!conf) return 0;
+    // 非战斗不施加（玩家要求：只有战斗中才有阵位加成）
+    if (!battleRef()) return 0;
+    const isPet = isPetUnit(vo);
+    const fs = vo.formationSkill;
+    // ★ 原版阵法对象必须先在位：replace 模式要扣掉原版统一加成，缺了它算出来的值是错的。
+    //   等阵型就绪后再施加（轮询会再来）。
+    if (!fs || typeof fs.getPowerValue !== 'function') return 0;
+    const formId = Number(fs.id) > 0 ? fs.id : activeFormationId();
+    const form = conf.forms[formId];
+    if (!form) return 0;
+    const mode = form.mode === 'replace' ? 'replace' : 'add';
+    let powers = [];
+    if (isPet) powers = (form.pet && form.pet.powers) || [];
+    else {
+      const idx = slotIndexOf(vo);
+      if (!(idx > 0)) return 0;
+      powers = (Array.isArray(form.slots) && form.slots[Math.min(Math.max(1, idx), 5) - 1] && form.slots[Math.min(Math.max(1, idx), 5) - 1].powers) || [];
+    }
+    const map = sumPowers(powers);
+    if (!Object.keys(map).length) return 0;
+    // 记录施加前的原始固化值：之后每次都从原始值重算（天然幂等，不会重复叠加）。
+    let base0 = null;
+    try { base0 = vo.__worldolSlotBase || (vo.__worldolSlotBase = {}); } catch (_) { return 0; }
+    let changed = 0;
+    for (const attr in ATTR_FIELDS) {
+      const spec = ATTR_FIELDS[attr];
+      const field = spec[0], addKey = spec[1], pctKey = spec[2];
+      const cur = Number(vo[field]);
+      if (!Number.isFinite(cur) || cur === 0) continue;
+      const ownAdd = map[addKey] || 0, ownPct = map[pctKey] || 0;
+      if (!ownAdd && !ownPct) continue;
+      let fsAdd = 0, fsPct = 0;
+      try { fsAdd = fs.getPowerValue(addKey) || 0; fsPct = fs.getPowerValue(pctKey) || 0; } catch (_) { fsAdd = 0; fsPct = 0; }
+      const newAdd = mode === 'replace' ? ownAdd : fsAdd + ownAdd;
+      const newPct = mode === 'replace' ? ownPct : fsPct + ownPct;
+      if (base0[field] === undefined) base0[field] = cur;        // 第一次：记原始固化值
+      const origin = base0[field];
+      const base = origin / (1 + fsPct / 100) - fsAdd;
+      const next = Math.max(0, Math.trunc((base + newAdd) * (1 + newPct / 100)));
+      if (next === cur) continue;
+      try { vo[field] = next; changed++; } catch (_) {}
+    }
+    if (changed) counters.fieldPatches += changed;
+    return changed;
+  }
+
+  /**
+   * ★ 第 104 版：就地补挂。
    * 上机诊断证实：战斗单位本身就是 VO（无 .vo），pos/formationSkill/getPowerValue 都在，
    * 但数值不变 —— 说明我们包装的那份 PlayerVO 拷贝不是这个对象实际用的那份
    * （客户端存在多份 PlayerVO 拷贝，第 98 版踩过模块缓存多拷贝）。
@@ -322,6 +406,8 @@ export function installFormationSlots(req, host) {
       if (isRoleProto(proto)) hookRoleOn(proto);
       if (isPetProto(proto)) hookPetOn(proto);
     } catch (_) { /* 诊断路径绝不抛错 */ }
+    // 固化字段修正：属性是战斗开始时算好写死的，动态注入进不去，必须直接改字段
+    try { applySlotBonusToFields(vo); } catch (_) {}
   }
 
   function hookRoleOn(proto) {
@@ -499,10 +585,28 @@ export function installFormationSlots(req, host) {
     }
   }
 
+  /** 第 104 版：给战斗里所有己方单位（玩家/军团/宠物）施加阵位加成的固化字段修正。
+   *  战斗开始后属性已固化，动态注入无效 ⇒ 必须直接改字段。幂等（打过标记就跳过）。 */
+  function applyBattleUnits() {
+    const battle = battleRef();
+    if (!battle || typeof battle.getPlayerByPos !== 'function') return;
+    for (let p = 0; p < MAX_POS; p++) {
+      let u = null;
+      try { u = battle.getPlayerByPos(p); } catch (_) { u = null; }
+      if (!u) continue;
+      const vo = u.vo || u;
+      let type = null;
+      try { type = typeof vo.getType === 'function' ? vo.getType() : null; } catch (_) { type = null; }
+      if (type !== null && type !== 3 && type !== 10 && type !== 4) continue;  // 只要玩家/军团/宠物
+      try { applySlotBonusToFields(vo); } catch (_) {}
+    }
+  }
+
   function attach() {
     // 每次都扫（同一个类可能有多份模块拷贝），proto 标记防重复包装
     scanCache();
     hookFactories();
+    try { applyBattleUnits(); } catch (_) {}
     return hooked.role && (hooked.petBase || hooked.petPower);
   }
 
