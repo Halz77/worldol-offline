@@ -359,7 +359,7 @@ test('裸环境：阵法说明末尾追加「阵位加成」一行（说明跟�
   api.stop();
 });
 
-test('裸环境：单位自己没有 formationSkill（军团/队友）也按玩家阵型吃阵位加成 + 面板能标出站位', () => {
+test('裸环境：非战斗（无 battle）不加成；战斗里军团无 formationSkill 也按玩家阵型吃阵位加成 + 标注', () => {
   const roleProto = {
     getSkillPowerValue() { return 0; },
     getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
@@ -373,9 +373,17 @@ test('裸环境：单位自己没有 formationSkill（军团/队友）也按玩�
   };
   // DATA_FORMATION 只挂在玩家身上（模块 5 的 myPlayer），军团/队友那边没有
   const playerFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};
+  // 战斗单例：我方（右侧）4 个军团在 22/24/26/28
+  const battleUnits = new Map([
+    [22, {vo: {position: 22, getType: () => 10}}],
+    [24, {vo: {position: 24, getType: () => 10}}],
+    [26, {vo: {position: 26, getType: () => 10}}],
+    [28, {vo: {position: 28, getType: () => 10}}]
+  ]);
+  const battle = {getPlayerByPos(p) { return battleUnits.get(p) || null; }};
   const req = id => {
     if (id === 5) return {myPlayer: {vo: {formationSkill: playerFs}}};
-    if (id === 54) return {default: {ins: {battle: null}}};
+    if (id === 54) return {default: {ins: {battle}}};
     return undefined;
   };
   req.c = {56: {default: function PlayerVO() {}}};
@@ -386,17 +394,43 @@ test('裸环境：单位自己没有 formationSkill（军团/队友）也按玩�
   assert.equal(api.status.roleHooked, true);
   assert.equal(api.activeFormation(), 7, '要能从世界单例取到玩家当前阵型');
 
+  // 战斗中：军团 22 = 第 1 位，加 power 55 固定 +30（add 模式 + 无原版阵）
   const legion = Object.create(roleProto);
-  legion.position = 23;
-  // 第 1 位配的是 power 55 = 固定躲闪 +30（玩家改的是百分比键 25，这里用固定键验证「没 formationSkill 也能吃到」）
-  // 计算：base 100 + 阵位 30 = 130；百分比键 25 在原版阵里是 +18%，但军团自己没 formationSkill，
-  // 只有我们注入的阵位适配器（只覆盖 getPowerValue），所以百分比键走适配器的 0，最终 130。
-  assert.equal(legion.getPowerValue(100, 0, 55, 25), 130, '100 + 阵位固定 30 = 130（百分比键本阵没配、军团无原版阵）');
+  legion.position = 22;
+  legion.getType = () => 10;
+  assert.equal(legion.getPowerValue(100, 0, 55, 25), 130, '100 + 阵位固定 30 = 130（军团无原版阵，只叠阵位）');
   assert.equal(legion.formationSkill, undefined, '原来没有 formationSkill 就不能被留下');
+  assert.equal(api.slotLabel(legion), '第1位', '战斗里军团标出第 1 位');
 
-  // slotLabel：非战斗（没有 battle 单例）时按第 1 位算
-  assert.equal(api.slotLabel(legion), '第1位', '军团自己没阵法对象也能标出第 1 位');
+  // 非战斗（battle 为 null）⇒ 不加成、不标注。用**独立原型**（避免上一个 install 已把原型包装、闭包复用）
+  const roleProto2 = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100);
+    }
+  };
+  const reqNoBattle = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: playerFs}}};
+    if (id === 54) return {default: {ins: {battle: null}}};
+    return undefined;
+  };
+  reqNoBattle.c = {56: {default: function PlayerVO() {}}};
+  reqNoBattle.c[56].default.prototype = roleProto2;
+  const host2 = {worldolFormationSlots: {forms: {7: {mode: 'add', slots: [{powers: [[55, 30]]}, {powers: [[55, 10]]}]}}}};
+  runBare(installFormationSlots, reqNoBattle, host2);
+  const api2 = host2.__worldolFormationSlotPatch;
+  const panelVo = Object.create(roleProto2);
+  panelVo.position = 22;
+  panelVo.getType = () => 10;
+  assert.equal(panelVo.getPowerValue(100, 0, 55, 25), 100, '非战斗（无 battle）不加成，返回原值');
+  assert.equal(api2.slotLabel(panelVo), null, '非战斗不标注');
   api.stop();
+  api2.stop();
 });
 
 test('裸环境：战斗中按站位标序号，没配加成的阵位不标', () => {

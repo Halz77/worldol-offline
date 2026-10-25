@@ -169,13 +169,16 @@ export function installFormationSlots(req, host) {
 
   /** 己方角色按位置升序排名，返回 1-based 阵位序号；不参与阵位的单位返回 0。
    * 入参**永远是属性 VO**（getPowerValue 的 this、或面板里的 e）。VO 上有 position/getType/formationSkill，
-   * 没有 `.vo` 包裹。遍历时 battle.getPlayerByPos(p) 返回的是战斗单位（有 .vo），那边用 unitType/isPetUnit 里的 `u.vo||u` 取 VO。 */
+   * 没有 `.vo` 包裹。遍历时 battle.getPlayerByPos(p) 返回的是战斗单位（有 .vo），那边用 unitType/isPetUnit 里的 `u.vo||u` 取 VO。
+   *
+   * ★ 非战斗（角色面板、没有 battle 单例、position 越界）一律返回 0 —— 阵位加成**只在战斗里生效**，
+   *   没进战斗前不对属性做任何加成（玩家明确要求）。 */
   function slotIndexOf(unit) {
     let pos;
     try { pos = unit && unit.position; } catch (_) { pos = undefined; }
-    if (typeof pos !== 'number' || pos < 0 || pos >= MAX_POS) return 1;   // 非战斗（角色面板）⇒ 第 1 位
+    if (typeof pos !== 'number' || pos < 0 || pos >= MAX_POS) return 0;   // 非战斗（角色面板）⇒ 0，不参与阵位
     const battle = battleRef();
-    if (!battle || typeof battle.getPlayerByPos !== 'function') return 1;
+    if (!battle || typeof battle.getPlayerByPos !== 'function') return 0; // 没有战斗单例 ⇒ 0，不加成
     const side = pos < LEFT_MAX_POS;
     const list = [];
     for (let p = 0; p < MAX_POS; p++) {
@@ -190,7 +193,7 @@ export function installFormationSlots(req, host) {
     }
     // ⚠ 第 99 版：不要用 `u.battleSprite` 过滤 —— 属性计算可能发生在战斗动画建好之前，
     // 那时候所有单位都没有图标，名单会空 ⇒ 阵位算不出来 ⇒ 阵位加成整块不生效。
-    if (!list.length) return 1;                                 // 查不到同侧单位 ⇒ 至少按第 1 位
+    if (!list.length) return 0;                                 // 查不到同侧单位 ⇒ 0，不参与（不硬塞第 1 位）
     list.sort(function (a, b) { return a - b; });
     const i = list.indexOf(pos);
     return i < 0 ? 0 : i + 1;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
