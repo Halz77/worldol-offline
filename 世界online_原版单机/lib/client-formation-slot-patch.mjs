@@ -58,6 +58,7 @@ export function installFormationSlots(req, host) {
   function makeAdapter(realFs, formId, slotIndex, isPet) {
     const conf = cfg();
     if (!conf) return null;
+    if (!isPet && !(slotIndex > 0)) return null;              // 不参与阵位的单位（NPC 等）⇒ 不干预
     const form = conf.forms[formId];
     if (!form) return null;
     const mode = form.mode === 'replace' ? 'replace' : 'add';
@@ -94,7 +95,22 @@ export function installFormationSlots(req, host) {
     try { return u && u.ownerVo !== undefined; } catch (_) { return false; }
   }
 
-  /** 己方角色按位置升序排名，返回 1-based 阵位序号（非战斗/查不到 ⇒ 1）。 */
+  /**
+   * 单位类型（MODEL_TYPE，见 analysis/modules/0004.js）：
+   *   1=NPC 2=怪 3=玩家角色 4=宠物 5=佣兵 6=玩家怪 7=宠物怪 8=竞速 9=竞速宠 10=军团 11=伙伴
+   * 阵位**只由玩家角色（3）排**：任务里塞进队伍的 NPC(1)、佣兵(5)、伙伴(11)、军团(10)
+   * 都不占角色阵位，否则会把我方角色的名次整体后移、加成错位。
+   * 取不到类型时按「非宠物即角色」处理（真包 vo.getType() 一定存在，见 0241.js）。
+   */
+  function unitType(u) {
+    try {
+      const vo = u && (u.vo || u);
+      return vo && typeof vo.getType === 'function' ? vo.getType() : null;
+    } catch (_) { return null; }
+  }
+  const PLAYER_TYPE = 3;
+
+  /** 己方角色按位置升序排名，返回 1-based 阵位序号；不参与阵位的单位返回 0。 */
   function slotIndexOf(unit) {
     let pos;
     try { pos = unit && unit.position; } catch (_) { pos = undefined; }
@@ -109,12 +125,14 @@ export function installFormationSlots(req, host) {
       if (!u || !u.battleSprite) continue;
       if (isPetUnit(u)) continue;                               // 宠物不占角色阵位
       if ((p < LEFT_MAX_POS) !== side) continue;
+      const type = unitType(u);
+      if (type !== null && type !== PLAYER_TYPE) continue;      // NPC/佣兵/伙伴/军团 都不占位
       list.push(p);
     }
     if (!list.length) return 1;
     list.sort(function (a, b) { return a - b; });
     const i = list.indexOf(pos);
-    return i < 0 ? 1 : i + 1;
+    return i < 0 ? 0 : i + 1;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
   }
 
   // ── 找原型 ────────────────────────────────────────────────

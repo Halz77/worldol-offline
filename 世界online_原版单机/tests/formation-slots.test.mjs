@@ -193,6 +193,23 @@ test('补丁：空阵位（配了阵但该位没有加成）不干预，add 模�
  api.stop();
 });
 
+test('补丁：任务 NPC / 佣兵 / 伙伴 不占阵位，也不吃阵位加成', () => {
+  const { roleProto, api, battle } = makeEnv(CONF);
+  // 战场里塞两个系统 NPC（TYPE_NPC=1）到己方 21、28 位
+  battle.units[21] = { position: 21, battleSprite: {}, vo: { getType: () => 1 } };
+  battle.units[28] = { position: 28, battleSprite: {}, vo: { getType: () => 1 } };
+  const realFs = { id: 1, getPowerValue: () => 0 };
+  // 我方角色位置仍是 22/23/25/26/27 ⇒ 排名不变：22=第1位(+6%)、25=第3位(+7%)
+  const me = { position: 25, formationSkill: realFs };
+  assert.equal(roleProto.getPowerValue.call(me, 100, 0, 23, 999), 107, 'NPC 不占位：我仍是第 3 位');
+  const first = { position: 22, formationSkill: realFs };
+  assert.equal(roleProto.getPowerValue.call(first, 100, 0, 28, 999), 106, '第 1 位仍是位置 22');
+  // NPC 自己调用属性计算 ⇒ 不参与阵位（走原版，不注入 adapter）
+  const npc = { position: 21, formationSkill: realFs, vo: { getType: () => 1 } };
+  assert.equal(roleProto.getPowerValue.call(npc, 100, 0, 28, 999), 100, 'NPC 不吃阵位加成');
+  api.stop();
+});
+
 test('补丁入口：幂等 + 锚点校验 + 追加注入 + peek', () => {
  const patched = patchFormationSlots(ORIGINAL);
  assert.ok(patched.startsWith(ORIGINAL));
