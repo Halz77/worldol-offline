@@ -56,6 +56,27 @@
 补丁链 `client-patch-chain.mjs` 和动态全局量 `generated-globals.mjs` 都有两个投放口，
 改一处必崩。
 
+4. **追加式补丁（`source + installX.toString()`）的函数体必须完全自包含**。
+   这类补丁是把函数源码原样塞到主包末尾执行，客户端里**没有模块作用域**：
+   文件顶层的 `const`、辅助函数、`import` 过来的常量全都不存在，引用即
+   `ReferenceError`，而且是在**每次调用时**才炸（打包/启动都看不出来）。
+   第 93 版随机目标补丁就踩了：引用了模块级的 `decodeRandomArea` / `AREA_ENEMY_ALL`，
+   结果客户端每次 `getSelectArea` 都抛错 ⇒ **所有技能都放不出来**，看起来像「概率不生效」。
+   写这类补丁的规矩：所有常量和辅助函数都写在 install 内部；`tests/client-patch-bundle-context.test.mjs`
+   会用 `vm.runInNewContext` 在只有内建对象的空环境里跑一遍，越界引用立刻报红。
+
+## 二·五、战斗系统改造的三个已知坑（第 97 版踩完记下的）
+
+- **自动施放不走 `getSelectArea` 选目标**：`doAutoSkill` 用的是
+  `Battle.prototype.searchAICursor(单位, area)`，`getSelectArea` 只在 `doUseSkill` 里算命中列表
+  和手动选光标时用。做「新作用范围」必须**两处都包**，否则手动能放、自动永远判定目标无效。
+- **属性有两套计算函数**：`getPowerValue(base,上限,平加键,百分比键,…)`（8 参）和
+  `getPowerValueCal(base,上限,描述数组,…)`。面板/伤害预估走后者，只包前者会出现
+  「战斗里生效、面板不变」。阵位加成两个都包。
+- **阵法说明是 `FormationSkill.prototype.getFormationInfo` 拼的**（power1-3 + 人数），
+  与阵位加成无关，改阵位不会改说明。要玩家看见就自己往返回值里追加一行。
+
+
 ## 三、数据与覆盖层
 
 - `data/*.json` 是抓包产物，**一字节不改**。`career-skills.json` 是验收契约：

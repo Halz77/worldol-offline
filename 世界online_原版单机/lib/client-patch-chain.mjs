@@ -47,6 +47,7 @@ import {patchSkillFxSwitch} from './client-skill-fx-patch.mjs';
 import {patchAutoSkillChance} from './client-auto-skill-chance-patch.mjs';
 import {patchRandomTarget} from './client-random-target-patch.mjs';
 import {patchFormationSlots} from './client-formation-slot-patch.mjs';
+import {patchDiagnostics} from './client-diagnostics-patch.mjs';
 
 /** 原版主包在 v305 客户端里的相对路径（站点根 / client 根通用）。 */
 export const CLIENT_MAIN_PATH='js/ff/fff570bb4753f056432680e781d827dc.js';
@@ -129,7 +130,10 @@ export const CLIENT_MAIN_STEPS=[
  ['autoSkillChance',patchAutoSkillChance],
  ['randomTarget',patchRandomTarget],
  // 第 94 版：阵法按阵位差异化加成（换 formationSkill 查表源，属性公式不动）
- ['formationSlots',patchFormationSlots]
+ ['formationSlots',patchFormationSlots],
+ // 第 97 版：自检面板（画在游戏左上角，开关 data/local-diagnostics.json）。
+ // 必须放最后：它每 1 秒读前三个补丁的 status，挂载先后无所谓。
+ ['diagnostics',patchDiagnostics]
 ];
 
 /** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */

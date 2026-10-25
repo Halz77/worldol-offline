@@ -26,7 +26,7 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v1';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v2';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
@@ -34,7 +34,7 @@ export function installFormationSlots(req, host) {
   if (host.__worldolFormationSlotPatch) return host.__worldolFormationSlotPatch;
   const MAX_POS = 34, LEFT_MAX_POS = 20;     // analysis/modules/0061.js
   const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0 };
-  const hooked = { role: false, petBase: false, petPower: false };
+  const hooked = { role: false, cal: false, petBase: false, petPower: false };
   let timer = null;
 
   function cfg() {
@@ -161,13 +161,17 @@ export function installFormationSlots(req, host) {
     return null;
   }
 
-  function hookRole() {
-    if (hooked.role) return true;
-    const proto = findRoleProto();
-    if (!proto) return false;
-    if (Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlot')) { hooked.role = true; return true; }
-    const original = proto.getPowerValue;
-    proto.getPowerValue = function () {
+  /**
+   * 包一层角色 VO 的属性计算：临时把 formationSkill 换成按阵位查表的适配器，调用完还原。
+   * 同一套逻辑要挂两个方法（都在 PlayerVO.prototype 上）：
+   *   · getPowerValue(base, 上限, 平加键, 百分比键, …)        —— 单个属性，战斗/面板都用
+   *   · getPowerValueCal(base, 上限, 描述数组, …)             —— 多属性一次算（面板、伤害预估走这个）
+   * 第 97 版补：之前只包了 getPowerValue，走 getPowerValueCal 的界面看起来「没生效」。
+   */
+  function wrapRoleMethod(proto, name) {
+    const original = proto[name];
+    if (typeof original !== 'function') return false;
+    proto[name] = function () {
       const real = this && this.formationSkill;
       if (!real) { counters.fallbacks++; return original.apply(this, arguments); }
       const adapter = makeAdapter(real, real.id, slotIndexOf(this), false);
@@ -177,7 +181,24 @@ export function installFormationSlots(req, host) {
       try { return original.apply(this, arguments); }
       finally { this.formationSkill = real; }                  // 立刻还原（同步调用，安全）
     };
-    proto.__worldolFormationSlot = true;
+    return true;
+  }
+
+  function hookRole() {
+    if (hooked.role) return true;
+    const proto = findRoleProto();
+    if (!proto) return false;
+    if (!Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlot')) {
+      wrapRoleMethod(proto, 'getPowerValue');
+      proto.__worldolFormationSlot = true;
+    }
+    // getPowerValueCal 是可选加成：有就挂，没有不影响主路径
+    if (!proto.__worldolFormationSlotCal && typeof proto.getPowerValueCal === 'function') {
+      if (wrapRoleMethod(proto, 'getPowerValueCal')) {
+        proto.__worldolFormationSlotCal = true;
+        hooked.cal = true;
+      }
+    }
     hooked.role = true;
     return true;
   }
@@ -214,19 +235,95 @@ export function installFormationSlots(req, host) {
     return hooked.petBase || hooked.petPower;
   }
 
+  // ── 阵法说明补一行「阵位加成」 ──────────────────────────────
+  // 原版说明是 FormationSkill.prototype.getFormationInfo(取数组?) —— 只拼 power1-3 + 人数，
+  // 根本没有阵位概念，所以玩家改完阵位加成后点开说明还是老样子。这里在末尾追加一行。
+  function findFormationProto() {
+    const cache = req.c; if (!cache) return null;
+    for (const key in cache) {
+      let mod; try { mod = cache[key]; } catch (_) { continue; }
+      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
+      if (proto && typeof proto.getFormationInfo === 'function') return proto;
+    }
+    return null;
+  }
+  /** 效果名格式化函数（原版 getPowerDesc(powerId,value,vo) → "出手速度+22%"）。 */
+  function findPowerDesc() {
+    const cache = req.c; if (!cache) return null;
+    for (const key in cache) {
+      let mod; try { mod = cache[key]; } catch (_) { continue; }
+      const holders = [mod, mod && mod.default];
+      for (const h of holders) if (h && typeof h.getPowerDesc === 'function') return h.getPowerDesc.bind(h);
+    }
+    return null;
+  }
+
+  function describePowers(list, desc) {
+    const out = [];
+    if (!Array.isArray(list)) return out;
+    for (const row of list) {
+      if (!Array.isArray(row) || row.length < 2) continue;
+      const id = Number(row[0]), value = Number(row[1]);
+      if (!id || !value) continue;
+      let text = null;
+      if (desc) { try { text = desc(id, value, null); } catch (_) { text = null; } }
+      out.push(String(text || ('效果' + id + (value > 0 ? '+' : '') + value)).replace(/\s+$/, ''));
+    }
+    return out;
+  }
+
+  function slotInfoLine(formSkill) {
+    const conf = cfg();
+    if (!conf || !formSkill) return null;
+    const form = conf.forms[formSkill.id];
+    if (!form) return null;
+    const desc = findPowerDesc();
+    const parts = [];
+    const slots = Array.isArray(form.slots) ? form.slots : [];
+    for (let i = 0; i < slots.length; i++) {
+      const text = describePowers(slots[i] && slots[i].powers, desc).join('、');
+      if (text) parts.push('第' + (i + 1) + '位 ' + text);
+    }
+    const petText = describePowers(form.pet && form.pet.powers, desc).join('、');
+    if (petText) parts.push('宠物 ' + petText);
+    if (!parts.length) return null;
+    const head = form.mode === 'replace' ? '阵位加成（替换原效果）：' : '阵位加成：';
+    return '\n' + head + parts.join(' · ');
+  }
+
+  let infoHooked = false;
+  function hookFormationInfo() {
+    if (infoHooked) return true;
+    const proto = findFormationProto();
+    if (!proto || proto.__worldolFormationInfo) { infoHooked = !!proto; return infoHooked; }
+    const original = proto.getFormationInfo;
+    proto.getFormationInfo = function (asArray) {
+      const out = original.apply(this, arguments);
+      let line = null;
+      try { line = slotInfoLine(this); } catch (_) { line = null; }
+      if (!line) return out;
+      if (Array.isArray(out)) { out.push(line.replace(/^\n/, '')); return out; }
+      return (out == null ? '' : String(out)) + line;
+    };
+    proto.__worldolFormationInfo = true;
+    infoHooked = true;
+    return true;
+  }
+
   function attach() {
     const role = hookRole();
     const pet = hookPet();
+    hookFormationInfo();
     return role && pet;
   }
 
   if (!attach()) timer = setInterval(function () { if (attach()) { clearInterval(timer); timer = null; } }, 800);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v1',
+    revision: 'formation-slot-patch-20261025-v2',
     get status() {
       return {
-        roleHooked: hooked.role, petHooked: hooked.petBase || hooked.petPower,
+        roleHooked: hooked.role, calHooked: hooked.cal, petHooked: hooked.petBase || hooked.petPower, infoHooked,
         rolePatches: counters.rolePatches, petPatches: counters.petPatches,
         adapters: counters.adapters, fallbacks: counters.fallbacks,
         configured: cfg() ? Object.keys(cfg().forms).length : 0

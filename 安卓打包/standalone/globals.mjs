@@ -15,6 +15,7 @@ import { starLimit } from '../../世界online_原版单机/lib/equipment-policy.
 import { petSnapshotDirectory } from '../../世界online_原版单机/lib/pet-snapshot-vitals.mjs';
 import { autoSkillChanceGlobals } from '../../世界online_原版单机/lib/local-auto-skill-chance.mjs';
 import { formationSlotGlobals } from '../../世界online_原版单机/lib/local-formation-slots.mjs';
+import { diagnosticGlobals } from '../../世界online_原版单机/lib/local-diagnostics.mjs';
 
 // 对应 server.mjs 里的 /equipment-rules.js
 export const equipmentRules = equipmentRulesGlobals();
@@ -24,6 +25,9 @@ export const autoSkillChance = autoSkillChanceGlobals();
 
 // 对应 /formation-slots.js（第 94 版：阵法阵位差异化加成）
 export const formationSlots = formationSlotGlobals();
+
+// 对应 /worldol-diag.js（第 97 版：战斗改造自检面板开关）
+export const diagnostics = diagnosticGlobals();
 
 // 对应 /equipment-rules.js 里的 window.worldolStarLimit
 export { starLimit };

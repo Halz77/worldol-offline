@@ -17,15 +17,23 @@
  *   · APK：安卓打包/standalone/globals.mjs → entry.mjs 的 installGeneratedGlobals
  *   读不到配置 ⇒ 一律走原生行为（不抛错、不阻断）。
  */
-export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v1';
+export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v2';
 
-/** 安装概率层。req = window.__worldReq，host = window。 */
+/**
+ * 安装概率层。req = window.__worldReq，host = window。
+ *
+ * ★ 本函数体会被 toString() 塞进客户端主包执行 ⇒ 必须完全自包含（不能引用模块作用域的常量/函数）。
+ */
 export function installAutoSkillChance(req, host) {
   host = host || globalThis;
   if (host.__worldolAutoSkillChancePatch) return host.__worldolAutoSkillChancePatch;
-  const counters = { rolls: 0, passed: 0, skipped: 0, unconfigured: 0 };
+  const counters = { rolls: 0, passed: 0, skipped: 0, unconfigured: 0, coerced: 0, memoHits: 0 };
   let hooked = false;
   let timer = null;
+  // 同一回合内同一个单位的判定结果固定下来：避免「预览一次、执行一次」两次掷骰结果不同，
+  // 也避免某些 UI 反复调用 getAutoSkillIDByRound 时把概率放大/缩小。
+  let memoRound = null;
+  let memo = null;
 
   // 按特征找战斗类（不硬编码模块号：0251 是同源 v305 的号，换包会漂）。
   function findBattleProto() {
@@ -43,14 +51,30 @@ export function installAutoSkillChance(req, host) {
     return null;
   }
 
-  /** 读配置里的百分比；未配置返回 null（=走原生）。 */
+  /** 读配置里的百分比；未配置返回 null（=走原生）。兼容写成字符串的 "30"（编辑器/手改都可能）。 */
   function chanceOf(skillId) {
     const table = host.worldolAutoSkillChance;
     const map = table && table.chance;
     if (!map) return null;
-    const pct = map[skillId];
-    if (typeof pct !== 'number' || !Number.isFinite(pct)) return null;
+    const raw = map[skillId];
+    if (raw === undefined || raw === null || raw === '') return null;
+    let pct = raw;
+    if (typeof pct !== 'number') {
+      pct = Number(raw);
+      counters.coerced++;
+    }
+    if (!Number.isFinite(pct)) return null;
     return pct;
+  }
+
+  function memoGet(round, pos) {
+    if (memoRound !== round) { memoRound = round; memo = {}; }
+    const key = String(pos);
+    return Object.prototype.hasOwnProperty.call(memo, key) ? memo[key] : null;
+  }
+  function memoSet(round, pos, value) {
+    if (memoRound !== round) { memoRound = round; memo = {}; }
+    memo[String(pos)] = value;
   }
 
   function attach() {
@@ -67,8 +91,15 @@ export function installAutoSkillChance(req, host) {
       if (pct === null) { counters.unconfigured++; return id; }
       if (pct >= 100) { counters.passed++; return id; }
       if (pct <= 0) { counters.skipped++; counters.rolls++; return -1; }
+      const pos = player && typeof player.position === 'number' ? player.position : -1;
+      const round = this && this.round;
+      const memoable = typeof round === 'number' && pos >= 0;   // 回合号拿不到就不记忆，避免永久固化
+      const saved = memoable ? memoGet(round, pos) : null;
+      if (saved !== null) { counters.memoHits++; return saved ? id : -1; }
       counters.rolls++;
-      if (Math.random() * 100 < pct) { counters.passed++; return id; }
+      const ok = Math.random() * 100 < pct;
+      if (memoable) memoSet(round, pos, ok);
+      if (ok) { counters.passed++; return id; }
       counters.skipped++;
       return -1;                              // ← doAutoSkill 里 `0 > o` 会直接 return（本回合空过）
     };
@@ -80,8 +111,16 @@ export function installAutoSkillChance(req, host) {
   if (!attach()) timer = setInterval(() => { if (attach()) { clearInterval(timer); timer = null; } }, 800);
 
   const api = {
-    revision: 'auto-skill-chance-patch-20261025-v1',
-    get status() { return { hooked, rolls: counters.rolls, passed: counters.passed, skipped: counters.skipped, unconfigured: counters.unconfigured }; },
+    revision: 'auto-skill-chance-patch-20261025-v2',
+    get status() {
+      const table = host.worldolAutoSkillChance;
+      return {
+        hooked, rolls: counters.rolls, passed: counters.passed, skipped: counters.skipped,
+        unconfigured: counters.unconfigured, coerced: counters.coerced, memoHits: counters.memoHits,
+        configLoaded: !!(table && table.chance),
+        configuredSkills: table && table.chance ? Object.keys(table.chance).length : 0
+      };
+    },
     /** 测试钩子：直接判定某个技能 id 本次是否施放（返回 true/false；未配置返回 null）。 */
     peek: skillId => {
       const pct = chanceOf(skillId);

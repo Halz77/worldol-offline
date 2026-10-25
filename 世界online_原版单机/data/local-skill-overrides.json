@@ -8,7 +8,7 @@
   "改了 power/powerValue/statusBit 时，还会自动清掉 info（技能说明）里构建工具写的",
   "旧效果行（保留来源标题）—— 客户端会把 info 原样接在效果行后面显示，不清就会新旧混排。"
  ],
- "revision": "local-skill-overrides-20261020-v1",
+ "revision": "local-skill-overrides-20261025-v1",
  "skills": {
   "129": {
    "levels": "all",
@@ -242,6 +242,17 @@
     "powerValue2": 0,
     "power3": 0,
     "powerValue3": 0
+   }
+  },
+  "4848": {
+   "levels": "all",
+   "set": {
+    "area": 44,
+    "power1": 58,
+    "power2": 61,
+    "powerValue2": -500,
+    "powerValue1": -500,
+    "power3": 0
    }
   }
  }

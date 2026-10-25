@@ -1,0 +1,10 @@
+{
+  "_comment": [
+    "战斗改造自检面板（第 97 版）：排查「补丁挂没挂上 / 配置到没到客户端」用。",
+    "overlay=true 时游戏画面左上角会显示一块半透明小面板，点一下可收起；排查完改 false 即可。",
+    "logToConsole=true 时同样的内容会每 5 秒打到浏览器控制台（电脑版 F12 可见）。"
+  ],
+  "revision": "diagnostics-20261025-v1",
+  "overlay": true,
+  "logToConsole": true
+}

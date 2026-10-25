@@ -1,5 +1,5 @@
 /**
- * 客户端补丁：技能随机目标（第 93 版，2026-10-25）。
+ * 客户端补丁：技能随机目标（第 93 版，2026-10-25；第 97 版修正）。
  *
  * 需求：技能的作用范围可以设成「敌方随机 N 个」「我方随机 N 个」，N 自己填。
  *
@@ -9,18 +9,24 @@
  *   2. 目标是「数量可调」，一个字节足够：area 值直接编码数量，编辑器把它换算成
  *      中文选项（敌随机 1—10 / 我随机 1—10），玩家看到的仍是「作用范围」一项。
  *
- * 号段约定（原版 0—38 已占用，见 analysis/modules/0004.js 与技能编辑器的 skillAreas 表）：
+ * 号段约定（原版 0—38 已占用，见 skillAreaText 表）：
  *   40—49 = 敌方随机 N（N = area - 39，即 40=随机1个 … 49=随机10个）
  *   50—59 = 我方随机 N（N = area - 49）
  *   39 留空作为缓冲，60+ 未使用。
  *
- * 实现：包装 Battle.prototype.getSelectArea(actorPos, targetPos, area)
- *   - 命中号段时，先用**原版自己的「全体」分支**（19 敌全体 / 29 我全体）算出候选池
- *     —— 不自己判敌我侧（战场位置是 34 格：左 20 右 14，自己算容易错边）；
- *   - 过滤出真存活单位（原版全体列表含空位，社区版 centerFrontTarget 踩过这个坑）；
- *   - 洗牌取 N；不足 N 个时返回实际数量；一个都没有时返回 null（原版语义=目标无效）。
+ * ⚠ 第 97 版修的两个线上问题（都是「补丁塞进客户端后」才会暴露的）：
+ *   1. **不能引用模块作用域的任何东西**。install 函数会被 toString() 塞进客户端主包执行，
+ *      那边的 window 上不存在 decodeRandomArea / RANDOM_TARGET_MIN 这些标识符 ⇒
+ *      每次 getSelectArea 都抛 ReferenceError，导致**所有技能都放不出来**。
+ *      现在全部常量和辅助函数都写在 install 内部（自包含），并加了单测钉住。
+ *   2. **自动施放不走 getSelectArea 选光标**，走 Battle.prototype.searchAICursor(单位, area)。
+ *      只包 getSelectArea 时，area 40—59 在 searchAICursor 里算不出光标 ⇒
+ *      doAutoSkill 拿到的目标位置无效 ⇒ 该技能「每到它的回合都不放」。现在一并包上。
+ *
+ * 另外补了 **作用范围中文标签**：客户端 skillAreaText 只有 0—38，40—59 会直接显示
+ * 成 `skillArea_44`（玩家看到的就是「乱码」）。这里把 40—59 的中文名补进表里。
  */
-export const randomTargetRevision = 'random-target-patch-20261025-v1';
+export const randomTargetRevision = 'random-target-patch-20261025-v2';
 
 /** area 号段：40—49 敌随机、50—59 我随机。 */
 export const RANDOM_TARGET_MIN = 40;
@@ -36,88 +42,212 @@ export function decodeRandomArea(area) {
   return { side: enemy ? 'enemy' : 'me', count: enemy ? area - 39 : area - 49 };
 }
 
-/** 安装随机目标层。req = window.__worldReq，host = window。 */
+/** 40—59 的中文名（和技能编辑器的下拉一致）。 */
+export function randomAreaLabel(area) {
+  const spec = decodeRandomArea(area);
+  if (!spec) return null;
+  return (spec.side === 'enemy' ? '敌随机' : '我随机') + spec.count + '个';
+}
+
+/**
+ * 安装随机目标层。req = window.__worldReq，host = window。
+ *
+ * ★ 本函数体会被 toString() 原样塞进客户端主包执行 ⇒ **必须完全自包含**：
+ *   ​不能引用本文件里其它的常量 / 函数（客户端里不存在），否则运行时 ReferenceError。
+ */
 export function installRandomTarget(req, host) {
   host = host || globalThis;
   if (host.__worldolRandomTargetPatch) return host.__worldolRandomTargetPatch;
-  const counters = { randomCalls: 0, returned: 0, empty: 0, passthrough: 0 };
-  let hooked = false;
+
+  const AREA_MIN = 40, AREA_MAX = 59, ENEMY_ALL = 19, ME_ALL = 29, LEFT_MAX_POS = 20;
+  const counters = { randomCalls: 0, returned: 0, empty: 0, passthrough: 0, cursorCalls: 0, labelHooked: false };
+  const state = { hooked: false, cursorHooked: false, native: null };
   let timer = null;
 
-  // 按特征找战斗类：同时具备 getSelectArea + getPlayerByPos（不硬编码模块号）。
-  function findBattleProto() {
-    const cache = req.c;
-    if (!cache) return null;
-    for (const key in cache) {
-      let mod;
+  function decodeArea(area) {
+    if (!Number.isInteger(area)) return null;
+    if (area < AREA_MIN || area > AREA_MAX) return null;
+    var enemy = area < 50;
+    return { side: enemy ? 'enemy' : 'me', count: enemy ? area - 39 : area - 49 };
+  }
+
+  function areaLabel(area) {
+    var spec = decodeArea(area);
+    if (!spec) return null;
+    return (spec.side === 'enemy' ? '敌随机' : '我随机') + spec.count + '个';
+  }
+
+  // ── 作用范围中文标签（skillAreaText 只有 0—38） ───────────────────
+  function hookAreaLabels() {
+    var cache;
+    try { cache = req.c; } catch (_) { return false; }
+    if (!cache) return false;
+    for (var key in cache) {
+      var mod;
       try { mod = cache[key]; } catch (_) { continue; }
-      // 真环境导出类（方法在 prototype 上）；少数模块导出单例实例，两种都认。
-      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (proto && typeof proto.getSelectArea === 'function' && typeof proto.getPlayerByPos === 'function')
-        return proto;
+      var holders = [mod, mod && mod.default];
+      for (var i = 0; i < holders.length; i++) {
+        var holder = holders[i];
+        if (!holder || !Array.isArray(holder.skillAreaText)) continue;
+        var arr = holder.skillAreaText;
+        for (var area = AREA_MIN; area <= AREA_MAX; area++) arr[area] = areaLabel(area) || '';
+        if (!arr[39]) arr[39] = '—';
+        // getSkillAreaString 用 `t >= skillAreaText.length` 判越界，写 59 后 length=60，
+        // 40—59 就能正常工作；再加一层兜底：表被换来换去时也不至于退回 skillArea_xx。
+        if (typeof holder.getSkillAreaString === 'function' && !holder.__worldolAreaLabel) {
+          var nativeString = holder.getSkillAreaString;
+          holder.getSkillAreaString = function (value) {
+            var text = nativeString.apply(this, arguments);
+            if (typeof text === 'string' && text.indexOf('skillArea_') === 0) {
+              var label = areaLabel(value);
+              if (label) return label;
+            }
+            return text;
+          };
+          holder.__worldolAreaLabel = true;
+        }
+        counters.labelHooked = true;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ── 找战斗类 ──────────────────────────────────────────────────
+  // 按特征找（不硬编码模块号）：同时具备 getSelectArea + getPlayerByPos。
+  function findBattleProto() {
+    var cache;
+    try { cache = req.c; } catch (_) { return null; }
+    if (!cache) return null;
+    for (var key in cache) {
+      var mod;
+      try { mod = cache[key]; } catch (_) { continue; }
+      var proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
+      if (proto && typeof proto.getSelectArea === 'function' && typeof proto.getPlayerByPos === 'function') return proto;
     }
     return null;
   }
 
-  function attach() {
-    if (hooked) return true;
-    const proto = findBattleProto();
-    if (!proto) return false;
-    if (Object.prototype.hasOwnProperty.call(proto, '__worldolRandomTarget')) { hooked = true; return true; }
-    const original = proto.getSelectArea;
-
-    proto.getSelectArea = function (actorPos, targetPos, area) {
-      const spec = decodeRandomArea(area);
-      if (!spec) { counters.passthrough++; return original.apply(this, arguments); }
-      counters.randomCalls++;
-      let pool = null;
+  /** 算候选池并按原版语义过滤出存活单位（用**原生** getSelectArea 取池，避免自己判敌我侧）。 */
+  function pickPool(battle, pos, side) {
+    if (!battle || !state.native) return null;
+    if (typeof pos !== 'number' || pos < 0 || pos >= 34) return null;
+    // 原版 getSelectArea 会先判「光标和施法者是否同侧」，所以给一个必然对侧/同侧的探测位
+    var probe = side === 'enemy'
+      ? (pos < LEFT_MAX_POS ? LEFT_MAX_POS : 0)
+      : pos;
+    var pool = null;
+    try { pool = state.native.call(battle, pos, probe, side === 'enemy' ? ENEMY_ALL : ME_ALL); } catch (_) { pool = null; }
+    if (!pool || !pool.length) return null;
+    var alive = [];
+    for (var i = 0; i < pool.length; i++) {
+      var p = pool[i], u = null;
+      try { u = battle.getPlayerByPos(p); } catch (_) { u = null; }
+      if (!u || !u.battleSprite) continue;                      // 空位 / 还没上场
       try {
-        // 借原版「全体」分支算候选（该分支内部已按敌我侧过滤，但**含空位**）
-        pool = original.call(this, actorPos, targetPos, spec.side === 'enemy' ? AREA_ENEMY_ALL : AREA_ME_ALL);
-      } catch (_) { pool = null; }
-      if (!pool || !pool.length) { counters.empty++; return null; }
-      const alive = [];
-      for (let i = 0; i < pool.length; i++) {
-        const pos = pool[i];
-        let unit = null;
-        try { unit = this.getPlayerByPos(pos); } catch (_) { unit = null; }
-        if (!unit || !unit.battleSprite) continue;                 // 空位 / 还没上场的单位
-        try {
-          if (typeof this.isValidBattlePlayer === 'function' && !this.isValidBattlePlayer(unit)) continue; // 已阵亡
-        } catch (_) { continue; }
-        alive.push(pos);
-      }
-      if (!alive.length) { counters.empty++; return null; }
-      // Fisher-Yates 洗牌（用 Math.random，和原版 AI 的随机同源）
-      for (let i = alive.length - 1; i > 0; i--) {
-        const j = (Math.random() * (i + 1)) | 0;
-        const t = alive[i]; alive[i] = alive[j]; alive[j] = t;
-      }
-      const picked = alive.slice(0, Math.min(spec.count, alive.length));
-      counters.returned++;
-      return picked;                                                // 不足 N 个时返回实际数量
+        if (typeof battle.isValidBattlePlayer === 'function' && !battle.isValidBattlePlayer(u)) continue;   // 已阵亡
+      } catch (_) { continue; }
+      alive.push(p);
+    }
+    return alive.length ? alive : null;
+  }
+
+  function shufflePick(list, count) {
+    var alive = list.slice();
+    for (var i = alive.length - 1; i > 0; i--) {
+      var j = (Math.random() * (i + 1)) | 0;
+      var t = alive[i]; alive[i] = alive[j]; alive[j] = t;
+    }
+    return alive.slice(0, Math.min(count, alive.length));
+  }
+
+  /** 同一次施法里 getSelectArea 会被调用多次（伤害结算一次、播放控制一次）——
+   *  随机结果必须稳定，否则会出现「动画打这 5 个、实际掉血的是另 5 个」。 */
+  var memoKey = null;
+  var memoPick = null;
+
+  function pickFor(round, actorPos, area, compute) {
+    var key = (typeof round === 'number' ? round : '-') + ':' + actorPos + ':' + area;
+    if (memoKey === key && memoPick) return memoPick.slice();
+    var picked = compute();
+    if (picked && picked.length) { memoKey = key; memoPick = picked; }
+    return picked;
+  }
+
+  function attach() {
+    hookAreaLabels();
+    if (state.hooked) return true;
+    var proto = findBattleProto();
+    if (!proto) return false;
+    if (Object.prototype.hasOwnProperty.call(proto, '__worldolRandomTarget')) { state.hooked = true; return true; }
+
+    state.native = proto.getSelectArea;                         // ★ 先留原生的，池子要用
+    proto.getSelectArea = function (actorPos, targetPos, area) {
+      var spec = decodeArea(area);
+      if (!spec) { counters.passthrough++; return state.native.apply(this, arguments); }
+      counters.randomCalls++;
+      var battle = this;
+      return pickFor(this && this.round, actorPos, area, function () {
+        var pool = pickPool(battle, actorPos, spec.side);
+        if (!pool) { counters.empty++; return null; }
+        counters.returned++;
+        return shufflePick(pool, spec.count);                   // 不足 N 个时返回实际数量
+      });
     };
     proto.__worldolRandomTarget = true;
-    hooked = true;
+    state.hooked = true;
+
+    // ── 自动施放 / AI 选光标（doAutoSkill 走这里，不是 getSelectArea） ──
+    if (typeof proto.searchAICursor === 'function' && !proto.__worldolRandomCursor) {
+      var nativeCursor = proto.searchAICursor;
+      proto.searchAICursor = function (unit, area) {
+        var spec = decodeArea(area);
+        if (!spec) return nativeCursor.apply(this, arguments);
+        counters.cursorCalls++;
+        var pool = pickPool(this, unit && unit.position, spec.side);
+        if (!pool) return 0;                                    // 没有目标 ⇒ 0（原版「无效目标」约定）
+        return pool[(Math.random() * pool.length) | 0];
+      };
+      proto.__worldolRandomCursor = true;
+      state.cursorHooked = true;
+    }
     return true;
   }
 
-  if (!attach()) timer = setInterval(() => { if (attach()) { clearInterval(timer); timer = null; } }, 800);
+  attach();
+  // 继续补挂：战斗类可能还没被 require（req.c 是懒加载缓存），作用范围标签表也同理。
+  // 最多重试 ~40 秒，之后放弃（不影响任何原生行为）。
+  var attempts = 0;
+  timer = setInterval(function () {
+    if (++attempts > 50) { clearInterval(timer); timer = null; return; }
+    attach();
+    if (state.hooked && counters.labelHooked) { clearInterval(timer); timer = null; }
+  }, 800);
 
-  const api = {
-    revision: 'random-target-patch-20261025-v1',
-    get status() { return { hooked, randomCalls: counters.randomCalls, returned: counters.returned, empty: counters.empty, passthrough: counters.passthrough }; },
-    /** 测试钩子：把候选池按规则挑 N 个（不依赖战斗实例，纯逻辑复用）。 */
-    pick: (pool, count) => {
-      const alive = pool.slice();
-      for (let i = alive.length - 1; i > 0; i--) {
-        const j = (Math.random() * (i + 1)) | 0;
-        const t = alive[i]; alive[i] = alive[j]; alive[j] = t;
-      }
-      return alive.slice(0, Math.min(count, alive.length));
+  var api = {
+    revision: 'random-target-patch-20261025-v2',
+    get status() {
+      return {
+        hooked: state.hooked, cursorHooked: state.cursorHooked, labelHooked: counters.labelHooked,
+        randomCalls: counters.randomCalls, returned: counters.returned,
+        empty: counters.empty, passthrough: counters.passthrough, cursorCalls: counters.cursorCalls
+      };
     },
-    probeAttach: () => attach(),
-    stop: () => { if (timer) { clearInterval(timer); timer = null; } }
+    get areaLabelHooked() { return counters.labelHooked; },
+    /** 测试钩子：area → {side,count}（与生产同一份实现）。 */
+    decode: decodeArea,
+    label: areaLabel,
+    /** 测试钩子：把候选池按规则挑 N 个（不依赖战斗实例，纯逻辑复用）。 */
+    pick: function (pool, count) {
+      var list = pool.slice();
+      for (var i = list.length - 1; i > 0; i--) {
+        var j = (Math.random() * (i + 1)) | 0;
+        var t = list[i]; list[i] = list[j]; list[j] = t;
+      }
+      return list.slice(0, Math.min(count, list.length));
+    },
+    probeAttach: attach,
+    stop: function () { if (timer) { clearInterval(timer); timer = null; } }
   };
   host.__worldolRandomTargetPatch = api;
   return api;

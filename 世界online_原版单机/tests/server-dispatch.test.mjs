@@ -307,7 +307,7 @@ test('路由表顺序与原 if 链逐条对应',()=>{
   // 第 93 版：自动技能触发概率（动态全局变量，与 /equipment-rules.js 同区）
   '/skill-auto-chance.js',
   // 第 94 版：阵法阵位差异化加成
-  '/formation-slots.js',
+  '/formation-slots.js','/worldol-diag.js',
   '/api/content-library','/api/official-content',
   '/api/status','/status',
   // 第 90 版：伤害计算器（只读；GET 当前存档 / POST 导入 / POST 模拟），

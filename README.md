@@ -307,6 +307,7 @@ lib/http-routes.mjs 的 WEB_PATHS
 | 工具 | 用途 |
 | --- | --- |
 | `技能编辑器.html` | 修改技能等级与效果（写 `local-skill-overrides.json`）、作用范围可设「敌/我随机 N 个」、自动技能可设触发概率（写 `local-auto-skill-chance.json`） |
+| `data/local-diagnostics.json` | 战斗改造自检面板：`overlay:true` 时游戏左上角显示概率/随机目标/阵位的挂载状态与计数，排查用，平时改 false |
 | `怪物编队编辑器.html` | 设计 10 格自定义编队并替换某条挑战，写入 `data/local-encounters.json` |
 | `怪物编辑器.html` | 改怪物属性/天生状态（生命、攻防、命中暴击、抗性、吸血吸蓝等 46 项），写入 `data/local-monster-overrides.json` |
 | `阵法编辑器.html` | 给每个阵的 5 个阵位和宠物分别配加成（叠加/替换两种模式），写入 `data/local-formation-slots.json` |
