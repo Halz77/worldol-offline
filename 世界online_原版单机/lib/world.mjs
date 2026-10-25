@@ -13,6 +13,7 @@ import {importedCombatFields} from './character-import-codec.mjs';
 import {actorSettings} from './system-settings-service.mjs';
 import {towerExtraGroups} from './climb-tower.mjs';
 import {trialExtraGroups} from './trial-challenge.mjs';
+import {formationWorldBlock} from './formation-data.mjs';
 // Native v305 actor layout, populated from this local character.
 export function playerDetail(w,p,{includeLegion=true}={}){
   normalizeRole(p);
@@ -40,7 +41,7 @@ export function worldData(p,detail=true){
   normalizeRole(p);
   const w=new Writer();
   const city=isPersonalCity(p.mapId)?cityState(p):null;
-  const flags=(detail?2|4|8|16|32:0)|256|1024|2048|4096|(city?32768:0);
+  const flags=(detail?2|4|8|16|32|(1<<20):0)|256|1024|2048|4096|(city?32768:0);
   w.int(p.mapId||1).byte(p.x??19).byte(p.y??15).int(flags);
   if(detail){playerDetail(w,p);w.bytes(missionBits(p));missionsPacket(w,p);bagPacket(w,p);skillList(w,p);}
   w.string(maps[p.mapId].name).string('').byte(0);
@@ -51,6 +52,10 @@ export function worldData(p,detail=true){
   const extra=[...towerExtraGroups(p),...trialExtraGroups(p)];
   npcPacket(w,p);monsterGroups(w,p,extra);monsterModels(w,p,extra);
   if(city)w.int(p.id).string(city.name).int(city.prosperity).int(city.army).byte(0).byte(city.level-1);
+  // DATA_FORMATION(1<<20)：已学阵法列表 + 当前阵法。客户端 processDataWorld 先读
+  // doGetFormation(t) 的 count 列表，再读 bool 与当前 formationSkill；必须排在
+  // DATA_CITY / DATA_NOTICE 之后、DATA_TURN_MONSTER 之前（当前两项都未下发）。
+  if(detail)formationWorldBlock(w,p);
   return w;
 }
 export function enterWorld(p){

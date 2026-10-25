@@ -83,6 +83,13 @@
       req(3).default.sendNt(req(2).SkillEvent.DO_SET_AUTO_SKILL);
     };
     window.installDailyTaskReset(req);
+    // 第 93 版技能自定义特效：挂 window.__worldolSkillFx 桥（战斗补丁读它换特效）。
+    // 带存在性保护：core/thumbs/js 三个文件任何一个没加载（旧缓存、旧包、部分导出）
+    // 时不能把整个离线安装链带挂——特效是增强层，离线本体优先。
+    if(typeof window.installSkillFx==='function'){
+     const skillFx=window.installSkillFx(req);
+     if(skillFx&&skillFx.revision)record('技能自定义特效已载入：'+skillFx.revision);
+    }
     let battleToken=0;
     function flushPosition(){
       const world=req(5).default,p=world.myPlayer;
@@ -277,7 +284,12 @@
     // 明确提示，而不是像以前那样点了毫无反应。
     // 921 是「强化、鉴定、宝石」合并商店（第 73 版，服务端 lib/supply-shops.mjs 的
     // MERGED_SUPPLY_SHOP）：补给商人菜单里只给这一条，903/904/905 三个原号仍可直连开店。
-    const localShops=[51,52,55,901,902,903,904,905,906,907,908,909,910,911,912,916,918,919,920,921];
+    // 922 是「阵法书」分类（第 92 版阵法系统，lib/supply-shops.mjs 的 FORMATION_SHOP）。
+    // ⚠ 以后新增商店号这里必须同步：漏加的店号会掉到下面的原版分支，被 go.openPay
+    // 挡得死死的——服务端 12004 明明正常回包，客户端却「点了毫无反应」（第 92 版
+    // 阵法书当初就漏了，表现为补给商人里点阵法书打不开商店）。
+    // tests/beauty-salon-shops.test.mjs 有一条不变量用例守着这份名单。
+    const localShops=[51,52,55,901,902,903,904,905,906,907,908,909,910,911,912,916,918,919,920,921,922];
     World.doBrowseShop=function(id,...args){if(id===req(1).default.EVENT_ALL_MENU_CSS)return req(1).default.createChiselSealUI();if(id===917)return req(67).ShopItem.openItemShop(918);if(id>=913&&id<=915)return composition.open(id===913?'attribute':id===914?'skill':'vip');return localShops.includes(id)?req(67).ShopItem.openItemShop(id):browseShop.call(this,id,...args);};
     // 长菜单（个人城市的飞行驿站补完 60 条航线后一共 65 项）：
     //   原版 power-NPC 菜单（UI.createMissionUI → MissionDialogMdr）把整份选项一次铺进

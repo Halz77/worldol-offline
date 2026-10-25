@@ -42,6 +42,7 @@ import {combatRating,combatRatingRevision} from './combat-rating.mjs';
 // 别再在这儿抄表达式：第 37 版就是因为两处各写一份、只改了一处，导致包进 APK 后
 // 客户端拿到的 identifyItemIds 是个函数，整个菜单加载不出来。
 import {equipmentRulesGlobals,compositionGlobals} from './generated-globals.mjs';
+import {autoSkillChanceGlobals,autoSkillChanceSummary} from './local-auto-skill-chance.mjs';
 import {upgradeRules} from './item-affixes.mjs';
 import {starLimit} from './equipment-policy.mjs';
 import {nativeUiRevision,nativeResourceManifest} from './native-ui-restoration.mjs';
@@ -99,7 +100,9 @@ async function readJsonBody(req,limit=32*1024*1024){
  */
 const WEB_PATHS={'/':'index.html','/index.html':'index.html','/offline.js':'offline.js','/native-pet-shop.js':'native-pet-shop.js','/role-slots.js':'role-slots.js','/recorded-content.js':'recorded-content.js','/combat-rating.js':'combat-rating.js','/career-skills.js':'career-skills.js','/equipment-workshop.js':'equipment-workshop.js','/equipment-composition.js':'equipment-composition.js','/offline.css':'offline.css','/catalog':'catalog.html','/catalog.js':'catalog.js','/catalog.css':'catalog.css',
  '/entry-pledge.js':'entry-pledge.js','/system-settings.js':'system-settings.js','/daily-reset.js':'daily-reset.js','/pet-snapshot-vitals.js':'pet-snapshot-vitals.js','/character-features.js':'character-features.js','/native-vip.js':'native-vip.js','/legion.js':'legion.js','/home-features.js':'home-features.js','/home-features.css':'home-features.css','/native-features.js':'native-features.js',
- '/damage-calculator.html':'damage-calculator.html','/damage-calculator':'damage-calculator.html','/damage-calculator.js':'damage-calculator.js'};
+ '/damage-calculator.html':'damage-calculator.html','/damage-calculator':'damage-calculator.html','/damage-calculator.js':'damage-calculator.js',
+ // 第 93 版技能自定义特效：core/thumbs 必须先于 skill-fx.js 加载（顺序敏感）
+ '/worldol-fx-thumbs.js':'worldol-fx-thumbs.js','/skill-fx-core.js':'skill-fx-core.js','/skill-fx.js':'skill-fx.js'};
 
 /**
  * 造路由表。
@@ -154,6 +157,8 @@ export function createHttpRouter(env){
   {kind:'path',path:'/api/combat-rating',reply:({res,url})=>roleJson(res,findRole(url.searchParams.get('role')),combatRating,'{"error":"没有找到这个角色"}')},
   {kind:'path',path:'/equipment-composition-data.js',reply:({res})=>answer(res,200,mime['.js'],`window.worldolCompositionData=${JSON.stringify(compositionGlobals())};`)},
   {kind:'path',path:'/equipment-rules.js',reply:({res})=>answer(res,200,mime['.js'],`(()=>{const rules=${JSON.stringify(equipmentRulesGlobals())},starRules=rules.star;window.worldolEquipmentRules=rules;window.worldolStarLimit=${starLimit.toString()};})();`)},
+  // 第 93 版自动技能触发概率：配置在 data/local-auto-skill-chance.json，客户端补丁读这个全局
+  {kind:'path',path:'/skill-auto-chance.js',reply:({res})=>answer(res,200,mime['.js'],'window.worldolAutoSkillChance='+JSON.stringify(autoSkillChanceGlobals())+';')},
   {kind:'path',path:'/api/content-library',reply:({res})=>answer(res,200,mime['.json'],fs.readFileSync(path.join(root,'data/content-library.json')))},
   {kind:'path',path:'/api/official-content',reply:({res})=>answer(res,200,mime['.json'],JSON.stringify({version:'0.6.4',maps:official.maps.map(m=>({id:m.id,name:m.name})),itemIds:[...officialItems.keys()],catalog:official.catalog.length,missions:official.missions.length,supportedMissions:supportedMissionCount}))},
   // /api/status 必须排在 /status 前面：否则 /status 会被前者吃掉前 11 个字符？不会 —— 精确匹配，

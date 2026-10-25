@@ -18,18 +18,23 @@
  *   3. 季节入口 NPC 的可见位修复（`applyDailyDungeonEntrances`：91 财神爷、92 祈福小子
  *      在被抓包时 status 是「可交互但看不见」，看板点过去找不到人）。
  *
- * ## 与 4.0 的两处有意差异
- * - `unavailable` 只保留本工程**确实还缺东西**的三行（77 缺地图 943 / 78 缺任务 941 /
- *   86 缺地图 973）。4.0 的其余备注（「地图未收录」「缺编队 11706」等）在本工程早已补完
+ * ## 与 4.0 的差异
+ * - `unavailable` 备注已于 2026-10-25 **全部清除**。第 84 版移植时保留了三行
+ *   （77 缺地图 943 / 78 缺任务 941 / 86 缺地图 973），那原是 4.0 自己数据里缺的号；
+ *   全量复验证明本工程这三行的任务/地图/NPC/链**全部完整**——水底秘洞在 980/982、
+ *   鹊桥在 985/986、彩蛋森林在 834/835，且 77 的续链 1211、9159—9162 是
+ *   `lib/dungeon-story-repairs.mjs` 本地补写的（收尾 9162 返回九歌镇 954）。
+ *   943/941/973 在本工程**没有任何引用方**：补定义只会造出幻影数据，故只清备注。
+ *   4.0 的其余备注（「地图未收录」「缺编队 11706」等）在本工程早已补完
  *   （英灵迷宫 2813—2816、英雄枷锁 9149—9152、月宫编队 11733、十殿 11706、无极深渊
  *   9167—9171、太阳城 9163—9166、辞灶 9153—9156、情人节 2791—2796、BOSS 挑战赛 1305…），
- *   照抄只会误导。该字段只做记账，不进任务包（`encodeWithSchema` 只发 schema 里的字段）。
+ *   照抄只会误导。`unavailable` 字段本就不进任务包（`encodeWithSchema` 只发 schema 里的字段）。
  * - `entryPrerequisite/entryFallback`（行 74 高难万圣噩梦）原样保留作数据，但**不**实现
  *   4.0 那套「前置没完成就改指 263:10」的降级 —— 本工程里 259:98 这处入口本来就能用。
  */
 import {Reader} from './codec.mjs';
 
-export const DIRECTORY_REVISION='daily-dungeon-directory-v1-20261013';
+export const DIRECTORY_REVISION='daily-dungeon-directory-v2-20261025';
 
 /** 看板行默认字段（与 4.0 推进看板时用的那份默认值一致）。 */
 const ROW_DEFAULTS={
@@ -63,8 +68,8 @@ export const DAILY_DUNGEON_DIRECTORY=[
  {id:74,name:'高难万圣噩梦',icon:'dungeon_nightmare_halloween',proposalLevel:120,frequency:-1,mapId:259,px:21,py:24,npcID:98,navigationMissionIds:[3038,3039,3040,3041,3042,3250,3251,3252,3253,3254,3255,3256,3257,3258,3259,3260,3261,3262,3263,3264],entryPrerequisite:3042,entryPrerequisiteMissionIds:[3038,3039,3040,3041,3042],entryFallback:{mapId:263,npcID:10,px:2,py:19}},
  {id:75,name:'光棍村',icon:'dungeon_singles_village',proposalLevel:120,frequency:-1,mapId:967,px:9,py:7,npcID:1,navigationMissionIds:[3265,3266,3267,3268,3269,3270,3271,3272,3273,3274,3275,3276,3277,3278,3279,3280,3281,3282,3283]},
  {id:76,name:'圣诞副本',icon:'dungeon_christmas',proposalLevel:120,frequency:-1,mapId:969,px:15,py:14,npcID:1,navigationMissionIds:[3284,3285,3286,3287,3288,3300]},
- {id:77,name:'九歌端午与水底秘洞',icon:'dungeon_dragonboat_water',proposalLevel:60,frequency:-1,mapId:954,px:17,py:12,npcID:1,navigationMissionIds:[885,886,887,888,889,890,891,892,893,894,895,896,897,898,899,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1218],unavailable:'缺地图定义：943'},
- {id:78,name:'碧莲山·鹊桥',icon:'dungeon_magpie_bridge',proposalLevel:70,frequency:-1,mapId:985,px:22,py:27,npcID:0,navigationMissionIds:[1900,1901,1902,1903,1904,1905,1906,1907,1908,1909,1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920,1921,1922,1923,1924,1925],unavailable:'缺任务定义：941'},
+ {id:77,name:'九歌端午与水底秘洞',icon:'dungeon_dragonboat_water',proposalLevel:60,frequency:-1,mapId:954,px:17,py:12,npcID:1,navigationMissionIds:[885,886,887,888,889,890,891,892,893,894,895,896,897,898,899,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1218]},
+ {id:78,name:'碧莲山·鹊桥',icon:'dungeon_magpie_bridge',proposalLevel:70,frequency:-1,mapId:985,px:22,py:27,npcID:0,navigationMissionIds:[1900,1901,1902,1903,1904,1905,1906,1907,1908,1909,1910,1911,1912,1913,1914,1915,1916,1917,1918,1919,1920,1921,1922,1923,1924,1925]},
  {id:79,name:'月宫',icon:'dungeon_moon_palace',proposalLevel:120,frequency:-1,mapId:987,px:7,py:27,npcID:0,navigationMissionIds:[1926,1927,1928,1929,1930,1931,1932,1933,1934,1935,1936,1937,1938,1939,1940,1941,1942]},
  {id:80,name:'地狱之门·十殿阎罗',icon:'dungeon_hell_yama',proposalLevel:120,frequency:-1,mapId:959,px:15,py:36,npcID:0,navigationMissionIds:[3956,3957,3958,3959,3960,3961,3962,3963,3964,3965,3966,3967,3968,3969,3970,3971,3972]},
  {id:81,name:'帕伦克·正义与邪恶',icon:'dungeon_world_end',proposalLevel:70,frequency:-1,mapId:35,px:17,py:30,npcID:2,navigationMissionIds:[1950,1951,1952,1953,1954,1955,1956,1957,1958,1959,1960,1961,1962,1963,1964,1965,1966,1967,1968,1969,1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990]},
@@ -72,7 +77,7 @@ export const DAILY_DUNGEON_DIRECTORY=[
  {id:83,name:'屠苏村元旦副本',icon:'dungeon_tusu_newyear',proposalLevel:120,frequency:-1,mapId:911,px:15,py:27,npcID:2,navigationMissionIds:[1230,1231,1232,1233,1234,1235,1236,1237,1238,1239,1240,1241,1242,1243,1244,1245]},
  {id:84,name:'劳动节·小城市',icon:'dungeon_labour_town',proposalLevel:60,frequency:-1,mapId:912,px:15,py:8,npcID:2,navigationMissionIds:[1346,1347,1348,1349,1350,1351,1352,1353,1354,1355,1356,1357,1358,1359,1360,1361,1362,1363,1364,1365,1366]},
  {id:85,name:'MJ纪念副本',icon:'dungeon_mj_thriller',proposalLevel:120,frequency:-1,mapId:952,px:22,py:8,npcID:52,navigationMissionIds:[2820,2821,2822,2823,2824,2825,2826,2827,2828,2829,2831]},
- {id:86,name:'奥哈拉·彩蛋森林',icon:'dungeon_egg_forest',proposalLevel:85,frequency:-1,mapId:835,px:13,py:25,npcID:1,navigationMissionIds:[1450,1451,1452,1453,1454,1455,1456,1457,1458,1459,1460,1461,1462,1463,1464,1465,1466,1467,1468,1469,1470,1471,1472,1473,1474,1475,1476,1477,1478],unavailable:'缺地图定义：973'},
+ {id:86,name:'奥哈拉·彩蛋森林',icon:'dungeon_egg_forest',proposalLevel:85,frequency:-1,mapId:835,px:13,py:25,npcID:1,navigationMissionIds:[1450,1451,1452,1453,1454,1455,1456,1457,1458,1459,1460,1461,1462,1463,1464,1465,1466,1467,1468,1469,1470,1471,1472,1473,1474,1475,1476,1477,1478]},
  {id:87,name:'无极深渊',icon:'dungeon_infinite_abyss',proposalLevel:0,frequency:-1,mapId:988,px:7,py:4,npcID:1,navigationMissionIds:[1401,1402,1403,1404,1405,1406,1407]},
  {id:88,name:'太阳城遗迹·考古救援',icon:'dungeon_sun_ruins',proposalLevel:65,frequency:-1,mapId:260,px:19,py:22,npcID:10,navigationMissionIds:[1318,1319,1320,1321,1322,1323,1324]},
  {id:89,name:'失魂沙漠精英挑战',icon:'dungeon_desert_elite',proposalLevel:30,frequency:-1,mapId:279,px:27,py:22,npcID:1,navigationMissionIds:[2765,2766,2767,2768,2769]},

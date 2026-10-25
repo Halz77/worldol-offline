@@ -26,6 +26,7 @@ import { enterWorld,worldData } from './lib/world.mjs';
 import {rolePayload,roleListPacket} from './lib/role-list.mjs';
 import {identificationPreview} from './lib/catalog-packets.mjs';
 import {syncCombatRating} from './lib/combat-rating.mjs';
+import {syncFormation} from './lib/formation-data.mjs';
 import {ensureDaily,taskSnapshot} from './lib/daily-activity.mjs';
 import {notifyDaily,encodeDaily} from './lib/daily-service.mjs';
 import {nextTaskResetAt,resetTaskDays} from './lib/task-reset.mjs';
@@ -157,7 +158,13 @@ wss.on('connection',(ws,request)=>{
       }
       unknown.add(type);log('unsupported',{type,name:protoName.name(type)});
     }catch(error){log('protocol-error',{type,error:String(error),stack:error.stack});if(type===P.CG_LOGIN_ACTORLEAVE)send(type,new Writer().byte(leaveType).byte(-1).string(error.message));else if(ERROR_NOTIFY_TYPES.includes(type))send(type,new Writer().byte(-1).string(error.message));}
-    finally{try{syncCombatRating(context,send);}catch(error){log('combat-rating-error',{role:context.role?.id,error:String(error)});}}
+    finally{
+      try{syncCombatRating(context,send);}catch(error){log('combat-rating-error',{role:context.role?.id,error:String(error)});}
+      // 阵法切换/学习/遗忘后补推 14014，让客户端本地的 formationSkill 跟服务端一致。
+      // 客户端的 14012/14013/14015 回调只刷新 formationList，不会自己改 formationSkill；
+      // 登录时世界数据也有一份，但这里状态变化时仍要推（重复推同一状态会被 syncFormation 跳过）。
+      try{syncFormation(context,send);}catch(error){log('formation-sync-error',{role:context.role?.id,error:String(error)});}
+    }
   });
   ws.on('error',e=>log('socket-error',{error:String(e)}));
   ws.on('close',()=>{taskClients.delete(ws);try{flushHomeSession(context,store);}catch(error){log('home-session-save-error',{role:context.role?.id,error:String(error)});}});

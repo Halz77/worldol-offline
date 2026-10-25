@@ -42,6 +42,10 @@ import {patchEmptyNativeShop} from './native-ui-restoration.mjs';
 import {patchEscortBattle} from './client-escort-battle-patch.mjs';
 import {patchEscortBoard} from './client-escort-board-patch.mjs';
 import {patchPromptBriefing} from './client-prompt-patch.mjs';
+import {patchFormationBooks} from './client-formation-book-patch.mjs';
+import {patchSkillFxSwitch} from './client-skill-fx-patch.mjs';
+import {patchAutoSkillChance} from './client-auto-skill-chance-patch.mjs';
+import {patchRandomTarget} from './client-random-target-patch.mjs';
 
 /** 原版主包在 v305 客户端里的相对路径（站点根 / client 根通用）。 */
 export const CLIENT_MAIN_PATH='js/ff/fff570bb4753f056432680e781d827dc.js';
@@ -114,7 +118,15 @@ export const CLIENT_MAIN_STEPS=[
  ['weaponIcon',patchWeaponIcon],
  ['escortBattle',patchEscortBattle],
  ['escortBoard',patchEscortBoard],
- ['promptBriefing',patchPromptBriefing]
+ ['promptBriefing',patchPromptBriefing],
+ ['formationBooks',patchFormationBooks],
+ // 追加式补丁（append install 函数），无锚点冲突，放链尾。战斗播放层替换技能特效，
+ // 读 web/skill-fx.js 维护的 window.__worldolSkillFx 桥。
+ ['skillFxSwitch',patchSkillFxSwitch],
+ // 第 93 版 B 层玩法补丁：自动技能触发概率 + 技能随机目标。
+ // 两者都在运行时按特征扫 req.c 找战斗类（不硬编码模块号），配置缺失即退化为原生。
+ ['autoSkillChance',patchAutoSkillChance],
+ ['randomTarget',patchRandomTarget]
 ];
 
 /** 第一个补丁注入的标记，同时也是「已打过补丁」的判据。 */

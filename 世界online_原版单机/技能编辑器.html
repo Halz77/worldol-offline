@@ -281,7 +281,15 @@ const BUFFERS=LABELS.buffers||["无"];    // 索引 = 状态编号
 const SKILL_TYPES=LABELS.skillTypes||[];
 const SKILL_WEAPONS=LABELS.skillWeapons||[];
 const SKILL_ATK_TYPES=LABELS.skillAtkTypes||[];
-const SKILL_AREAS=LABELS.skillAreas||[];
+const SKILL_AREAS=(LABELS.skillAreas||[]).slice();
+/* 第 93 版：随机目标号段（与服务端 lib/client-random-target-patch.mjs 的 decodeRandomArea
+   一一对应）。原版 0—38 已占用，39 留空作缓冲：
+     40—49 = 敌随机 1—10 个
+     50—59 = 我随机 1—10 个
+   选成随机目标后，战斗中会从对应阵营的存活单位里随机抽 N 个（不足 N 个按实际数量）。 */
+while(SKILL_AREAS.length<40)SKILL_AREAS.push("（未使用）");
+for(let _n=1;_n<=10;_n++)SKILL_AREAS[39+_n]="敌随机 "+_n+" 个";
+for(let _n=1;_n<=10;_n++)SKILL_AREAS[49+_n]="我随机 "+_n+" 个";
 const SKILL_POSITIONS=LABELS.skillPositions||[];
 // 怪物自带技能（内嵌）：{id:{name,type,levels:[...]}}。怪物技能与人技能共用 id，
 // 所以只按 id 合并来源标记；怪物专属技能（人物/装备表里没有的）也只有这里有定义。
@@ -370,6 +378,7 @@ function sourceTags(rec){return Object.keys(SOURCE_LABEL).filter(k=>rec.sources.
 const state={
   skills:new Map(),     // id -> {id,name,profession,category,type,levels:[],sources:Set,origins:[]}
   rules:new Map(),      // id -> {levels:'all'|number[], set:{}, perLevel:{}, _note}
+  chance:new Map(),     // 第 93 版：技能 id -> 自动触发概率（%）。独立存 local-auto-skill-chance.json
   readme:null,
   loaded:false,
   selected:null,
@@ -452,6 +461,7 @@ async function loadFromFiles(files){
   const extra=await readJson("equipment-skill-levels-extra.json");
   const local=await readJson("local-career-skills.json");
   const overrides=await readJson("local-skill-overrides.json");
+  const chanceFile=await readJson("local-auto-skill-chance.json");   // 第 93 版：自动技能触发概率
   const monsterFile=await readJson("official-v305.json")||await readJson("recorded-expansion-20260922.json");
   if(!career&&!equipment&&!local&&!monsterFile)throw Error("这堆文件里没有 career-skills.json / equipment-skill-levels.json，请选 data 目录。");
   // 官方资料里带 monsterAI 来源的技能 —— 与内置清单互补（重新抓包后新出现的怪物技能）。
@@ -491,6 +501,14 @@ async function loadFromFiles(files){
   }
   state.loaded=true;
   state.selected=null;
+  // 第 93 版：载入自动技能触发概率（独立文件，不进技能覆盖层）
+  state.chance=new Map();
+  if(chanceFile&&chanceFile.chance&&typeof chanceFile.chance==="object"){
+    for(const [id,pct] of Object.entries(chanceFile.chance)){
+      const n=Number(id),v=Number(pct);
+      if(Number.isInteger(n)&&n>0&&Number.isFinite(v)&&v<100)state.chance.set(n,Math.round(v));
+    }
+  }
   $("#btn-save").disabled=false;
   $("#btn-download").disabled=false;
   renderProfessionFilter();
@@ -656,6 +674,8 @@ function renderList(){
     li.appendChild(el("span","sname",rec.name||"(无名)"));
     const tags=sourceTags(rec);
     if(tags)li.appendChild(el("span","tag",tags));
+    const pct=state.chance.get(rec.id);
+    if(pct!=null&&pct<100)li.appendChild(el("span","tag","触发 "+pct+"%"));
     li.onclick=()=>{selectSkill(rec.id);};
     list.appendChild(li);
   }
@@ -913,7 +933,36 @@ function buildParams(pane,rec,level){
   }
   card.appendChild(grid);
   if(isPassive)card.appendChild(el("div","hint","被动技能不写攻击方式/范围/回合这些字段；把「技能类型」改成「主动」或「自动」它们就会出现。"));
+  // 第 93 版：自动技能（type=2）多一栏「自动触发概率」。
+  // 它不写技能字节（skills 覆盖层白名单也不收），而是存独立的 local-auto-skill-chance.json；
+  // 服务端会按这个值在技能说明末尾自动追加一行【自动释放】，玩家在帮助气泡里能看到。
+  if(!isPassive&&Number(vals.type)===2)card.appendChild(chanceRow(rec));
   pane.appendChild(card);
+}
+/** 自动技能触发概率（100=每回合必定释放；低于 100 时其余回合本回合不施放）。 */
+function chanceRow(rec){
+  const wrap=el("div");
+  const grid=el("div","params");
+  const cell=el("div","pcell wide");
+  cell.appendChild(el("span","plbl","自动触发概率"));
+  const inp=document.createElement("input");
+  inp.type="number";inp.min="0";inp.max="100";inp.step="1";
+  const cur=state.chance.get(rec.id);
+  inp.value=cur==null?100:cur;
+  inp.onchange=()=>{
+    const raw=Number(inp.value);
+    const v=Number.isFinite(raw)?Math.max(0,Math.min(100,Math.round(raw))):100;
+    if(v>=100)state.chance.delete(rec.id);else state.chance.set(rec.id,v);
+    inp.value=v;
+    renderList();
+    toast(v>=100?"已恢复默认 100%（必定释放）":"已设为 "+v+"%（说明会自动写进技能描述）");
+  };
+  cell.appendChild(inp);
+  cell.appendChild(el("span","punit","%"));
+  grid.appendChild(cell);
+  wrap.appendChild(grid);
+  wrap.appendChild(el("div","hint","100＝每回合必定释放（默认，不写进配置文件）；低于 100 时只有该概率施放，其余回合本回合不施放、也不显示任何效果。这个数值会自动写进技能说明的【自动释放】一行。"));
+  return wrap;
 }
 /** 表格单元格：平时显示中文名，点一下才变成下拉（避免一屏塞几千个 option）。 */
 function inlinePick(cell,table,current,onPick,text){
@@ -1045,6 +1094,23 @@ function revisionValue(){
   const d=new Date(),p=n=>String(n).padStart(2,"0");
   return "local-skill-overrides-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-v1";
 }
+/** 第 93 版：自动技能触发概率文件（与技能覆盖层分开写，见 lib/local-auto-skill-chance.mjs）。 */
+function buildChanceText(){
+  const chance={};
+  for(const [id,pct] of [...state.chance.entries()].sort((a,b)=>a[0]-b[0]))chance[String(id)]=pct;
+  return JSON.stringify({
+    _readme:[
+      "自动技能触发概率（第 93 版新增）。只影响客户端「是否施放」这一层，不改变技能数值、不写技能字节。",
+      "chance[技能id] = 30 表示：每回合轮到该自动技能时，30% 概率施放、70% 完全不施放（该单位本回合空过，无任何加成与提示）。",
+      "1-99 之间按百分比；100 与「留空/不写」等价（必定施放）；0 表示永不施放。",
+      "infoMode：changed（默认）=只给 <100% 的技能在说明里追加一行；all=所有自动技能都追加，未配置的显示 100%。",
+      "技能编辑器「自动触发概率」一栏写的就是本文件；服务端会自动把概率写进技能说明的【自动释放】一行。"
+    ],
+    revision:"auto-skill-chance-20261025-v1",
+    infoMode:"changed",
+    chance
+  },null,1)+"\n";
+}
 function buildOverrideText(){
   const skills={};
   for(const [id,rule] of [...state.rules.entries()].sort((a,b)=>a[0]-b[0])){
@@ -1078,8 +1144,11 @@ $("#btn-download").onclick=()=>{
   toast("已下载，请覆盖到 data/ 目录");
 };
 $("#btn-save").onclick=async()=>{
-  if(!state.rules.size){toast("还没有任何改动");return;}
-  const text=buildOverrideText();
+  // 第 93 版：两个文件一起写 —— 技能覆盖层（数值）+ 自动触发概率（玩法配置）。
+  // 概率文件总是写（即使清空也要落盘，否则删掉的配置不会生效）。
+  const files=[];
+  if(state.rules.size)files.push(["local-skill-overrides.json",buildOverrideText()]);
+  files.push(["local-auto-skill-chance.json",buildChanceText()]);
   if(typeof window.showDirectoryPicker==="function"){
     try{
       let dir=state.dirHandle;
@@ -1087,10 +1156,12 @@ $("#btn-save").onclick=async()=>{
         dir=await window.showDirectoryPicker({mode:"readwrite",id:"worldol-data"});
         state.dirHandle=dir;
       }
-      const fh=await dir.getFileHandle("local-skill-overrides.json",{create:true});
-      const w=await fh.createWritable();
-      await w.write(text);await w.close();
-      status("已写入所选目录下的 <b>local-skill-overrides.json</b>（"+state.rules.size+" 条覆盖）。接着跑 构建APK.ps1 即可。","ok");
+      for(const [name,text] of files){
+        const fh=await dir.getFileHandle(name,{create:true});
+        const w=await fh.createWritable();
+        await w.write(text);await w.close();
+      }
+      status("已写入所选目录：<b>"+files.map(f=>f[0]).join("</b> + <b>")+"</b>（技能覆盖 "+state.rules.size+" 条 / 自动触发概率 "+state.chance.size+" 条）。接着跑 构建APK.ps1 即可。","ok");
       toast("写入成功");
       return;
     }catch(err){
@@ -1098,8 +1169,8 @@ $("#btn-save").onclick=async()=>{
       status("直接写入失败（"+err.message+"），已改为下载文件，请手动放进 data/ 目录。","err");
     }
   }
-  download("local-skill-overrides.json",text);
-  toast("浏览器不支持直接写入，已下载文件");
+  for(const [name,text] of files)download(name,text);
+  toast("浏览器不支持直接写入，已下载 "+files.length+" 个文件");
 };
 
 /* ============================== 初始化 ============================== */

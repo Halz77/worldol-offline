@@ -9,6 +9,7 @@ import {setAttributeData} from './equipment-sets.mjs';
 import {selectedTitle} from './recorded-content.mjs';
 import {characterFeaturePowers} from './character-features.mjs';
 import {importedCombatFields} from './character-import-codec.mjs';
+import {formationSkill as localFormationSkill} from './formation-data.mjs';
 
 // Run only reviewed, pure v305 attribute methods. No client startup, UI, socket,
 // battle state or save mutation is involved. This keeps scoring on native stats.
@@ -62,7 +63,12 @@ function nativePlayer(role){
  // 收集系统：属性计算不读 p.handbook，老存档里残留的 powers 由 handbook.refreshHandbook()
  // 在进世界时清空，客户端也会收到空的 32109（bookGroupPower 被清空）。
  const player={...Object.fromEntries(zeroFields.map(k=>[k,0])),...playerMethods,type:3,level:role.level||1,bag,itemSetData:setAttributeData(role),getSkillPowerValue:(type,key)=>key>0?((type===1?(powers.get(key)||0):0)+(featurePowers.get(key)||0)):0,getCountryBuffer:()=>0};
- player.level2=role.level2||0;for(const key of importedCombatFields)player[key]=role.importedCombatModifiers?.[key]||0;
+ player.level2=role.level2||0;
+ // 阵法：客户端 0056 的 getBaseValue / getPowerValue 会直接调用
+ // this.formationSkill.getPowerValue(power)。把同一个桩挂到 nativePlayer 上，
+ // 面板、战力评分、导入角色与战斗校验就都走原版口径（不再自己写一份公式）。
+ player.formationSkill=localFormationSkill(role);
+ for(const key of importedCombatFields)player[key]=role.importedCombatModifiers?.[key]||0;
  ['str','con','agi','ilt','wis'].forEach((key,i)=>player[key]=role.baseStats?.[i]??10);
  const title=selectedTitle(role);Object.assign(player,{titlePower1:title?.power1||0,titlePowerValue1:title?.value1||0,titlePower2:title?.power2||0,titlePowerValue2:title?.value2||0});
  const get=player.get;

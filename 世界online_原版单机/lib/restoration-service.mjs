@@ -22,6 +22,7 @@ import {localEnchantments} from './enchantment-data.mjs';
 import {spiritRules,spiritRunes,isSpiritBox} from './spirit-seal-data.mjs';
 import {appearanceShops,appearanceByItemId,applyAppearance} from './local-fashion.mjs';
 import {towerShopList,towerShopBuy} from './tower-shop.mjs';
+import {isFormationBook,learnFormationFromBook,setActiveFormation,forgetFormation,formationListPacket,formationLearnPacket} from './formation-data.mjs';
 // 美容院的「更换发型 / 更换脸型 / 全新发型」在原版里也是普通道具商店（51 / 52 / 55），
 // 但卖的不是装备，而是**买下即生效**的造型道具：客户端读到购买回包的状态位 2 就调用
 // updateHair / updateFace 改写自己的外观位域（icon1 的发型 7..10 位 / 脸型 13..16 位），
@@ -43,7 +44,7 @@ export function shopItems(id){
  if(id===OFFICIAL_SHOP)return [...officialItems.keys()].map(id=>equipment.get(id)).filter(e=>soldPetItem(e)&&!spiritRunes.has(e.id)&&!isSpiritBox(e.id));
  return supplyShopById.get(id)?.items.map(id=>equipment.get(id));
 }
-const operations=new Set([12001,12003,12004,12005,12006,12020,12021,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010]);
+const operations=new Set([12001,12003,12004,12005,12006,12020,12021,12036,12037,14001,14002,14003,14004,14005,14006,14009,14010,14012,14013,14015]);
 export function handleRestoration(type,r,context,{store,send,log}){
  if(!operations.has(type)||!context.role)return false;
  const p=context.role;let shop;
@@ -72,6 +73,42 @@ export function handleRestoration(type,r,context,{store,send,log}){
    const previous={inventory:p.inventory,coins:p.coins};
    buyItem(p,id,quantity);try{store.save();}catch(error){Object.assign(p,previous);throw error;}
    send(type,new Writer().byte(0).int(id).short(shop).byte(quantity).int(p.gold||0).int(p.silver||0).int(p.coins).short(-1).short(-1));if(e.type===41)for(const item of p.inventory.filter(i=>i.itemId===id&&i.slot>=30))send(17603,itemPacket(new Writer().short(item.slot),item));log('item-bought',{role:p.id,shop,id,quantity});return true;
+  }
+  // 阵法（第 92 版）：14012 学书、14013 遗忘、14015 切换默认。客户端主包本来就有
+  // 这三条协议与属性面板，回包结构见 lib/formation-data.mjs 的 formationSkillBlock。
+  // 14012 的回包 = byte(formationType) + formationSkill（客户端回调拿首字节替换列表）；
+  // 14013/14015 = byte(0) + 列表块。
+  if(type===14012){
+   const bookSlot=r.short(),bookId=r.int();
+   const item=p.inventory.find(i=>i.slot===bookSlot),def=item?equipment.get(item.itemId):null;
+   if(!item||!def||!isFormationBook(def)||item.itemId!==bookId||!Number.isInteger(item.quantity)||item.quantity<1)throw Error('请选择背包中的阵法书。');
+   const before=structuredClone(p);
+   try{
+    const f=learnFormationFromBook(p,def);
+    item.quantity--;
+    if(!item.quantity)p.inventory=p.inventory.filter(i=>i!==item);
+    clampVitals(p);
+    store.save();
+    send(type,formationLearnPacket(p,f));
+    log('formation-learned',{role:p.id,form:f.id,book:item.itemId});
+   }catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   return true;
+  }
+  if(type===14015){
+   const skillId=r.byte()&255,before=structuredClone(p);
+   try{setActiveFormation(p,skillId);clampVitals(p);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   send(type,new Writer().byte(0).raw(formationListPacket(p).done()));
+   log('formation-default-changed',{role:p.id,skillId});
+   return true;
+  }
+  if(type===14013){
+   const skillId=r.byte()&255,before=structuredClone(p);
+   try{forgetFormation(p,skillId);clampVitals(p);store.save();}
+   catch(error){for(const key of Object.keys(p))if(!(key in before))delete p[key];Object.assign(p,before);throw error;}
+   send(type,new Writer().byte(0).raw(formationListPacket(p).done()));
+   log('formation-forgotten',{role:p.id,skillId});
+   return true;
   }
   if(type===12001){
    const waitType=r.byte(),action=r.byte(),slot=r.short(),quantity=r.int();

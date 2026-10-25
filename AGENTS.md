@@ -6,7 +6,7 @@
 
 - 详细开发日志：`docs/memory/INDEX.md`
 - 逐版玩家改动：`修复记录.txt`
-- 不开 AI 的操作手册：`改BUG与重新打包APK指南.md`
+- 不开 AI 的操作手册：`手动改BUG指南.md`
 - 本文件只保留长期有效的高频信息；具体版本过程看上面的日志。
 - 新踩的坑、新约定请追加到对应小节，不要在版本日志里只记一份。
 
@@ -104,6 +104,17 @@
   页面逻辑放外部 JS，用相对路径（`file://` 和电脑版都能找到）。
 - `official-data.ensure()` 里建 `officialGroups/officialMonsters` 等 Map；
   运行时注册的怪/编队/地图必须注册在建索引**之前**，否则索引里没有。
+- **`web/offline.js` 里调用新的 `window.installXxx(req)` 必须带存在性保护**
+  （`if(typeof window.installXxx==='function')`）：多个测试只加载 offline.js 跑 vm，
+  不加载全部 web 文件；且玩家端旧缓存/旧包缺文件时，增强层不能把离线安装链带挂
+  （第 93 版 skill-fx 踩过：4 个无关测试全红）。
+- **技能 `area` 号段已被扩展占用**：原版 0—38，第 93 版把 **40—49 定为「敌随机 1—10」、
+  50—59 定为「我随机 1—10」**（39 留空缓冲），见 `lib/client-random-target-patch.mjs` 的
+  `decodeRandomArea` 与技能编辑器的 `SKILL_AREAS`。新增 area 号段前先查这两处，别撞号。
+- **玩法开关走「配置 + 全局变量 + 补丁」三件套，不许塞进技能/装备字节**：
+  `data/local-*.json`（独立文件）→ `/xxx.js` 动态路由（电脑版）+ `globals.mjs`/`entry.mjs`（APK）
+  → `lib/client-*.mjs` 包装对应函数（配置缺失一律退化为原生行为）。范例：
+  `local-auto-skill-chance.mjs` + `/skill-auto-chance.js` + `client-auto-skill-chance-patch.mjs`。
 - 战斗 12501/12502：`context.battle` 被拒要搬 `rejectedBattle` 并清空；报错点名哪一项；
   包尾用 `locateTrailer()`。血蓝上限 `nativeVitalsCeiling()` 分级放宽；
   宠物走 `petVitalsCeiling()`（自研上限 + 50% 宽容），放宽的只是校验，
@@ -125,6 +136,7 @@
 | 挑战副本 | `daily-dungeon-directory.mjs`、`dungeon-repairs.mjs`、`replayable-chains.mjs` | 38 条目录行；录制收尾任务不要做同日复位 |
 | 守卫挑战 | `guard-challenges-data.mjs` | 8901—8933；必须排在所有补怪/补编队之后 |
 | 英雄图鉴 | `handbook.mjs`、`handbook-item.mjs` | 只做收集显示，**不提供属性加成**；读状态只读 |
+| 阵法 | `formation-data.mjs`、`restoration-service.mjs`、`world.mjs`、`supply-shops.mjs`、`client-formation-book-patch.mjs` | 16 本 `62009—62144`、商店 922、`DATA_FORMATION`、`14012/14013/14015`、`14014` 同步；`skillId` 必须写阵型 id，不能照 APK 写 0 |
 | 无限试炼 | `trial-challenge.mjs`、`web/home-features.js` | 发奖闸门 `state.awarded`；同一场只发一次 |
 | 永泽塔 | `climb-tower.mjs` | 困难塔变体怪用本地号 21000+；奖励表与 30002 下发同步 |
 | 免费装备合成 | `equipment-composition.mjs` | `attribute` / `skill` / `identify` 三种模式 |

@@ -5,6 +5,7 @@ import {isSolarMission} from './solar-challenge-data.mjs';
 import {isBossTournamentMission} from './boss-tournament-data.mjs';
 import {isAskSwordMission} from './ask-sword-data.mjs';
 import {Reader,Writer} from './codec.mjs';
+import {BOSS_HUB_MAP_ID} from './boss-hub.mjs';
 /**
  * 棋盘玩法任务：太阳神殿的英雄挑战赛（2592—2606）、新月古镇广场的 BOSS 挑战赛（1305）、
  * 风雪之城的问剑十一峰（2604 / 2650 / 2651，本地重建，见 lib/ask-sword-data.mjs）。
@@ -15,8 +16,18 @@ export const isBoardMission=id=>isSolarMission(id)||isBossTournamentMission(id)|
 // Local play does not require unavailable reward definitions or unimplemented
 // country/escort systems. Retain known objectives and all supported rewards.
 export function missionRewards(q){return {...q,rewardItems:(q.rewardItems||[]).filter(i=>officialItems.has(i.id)),selectItems:(q.selectItems||[]).filter(i=>officialItems.has(i.id))};}
-export const repeatableChallengeMissions=new Set([3042]);
-export const missionClientSetting=q=>(q.setting&~(64|128|512|32768))|(repeatableChallengeMissions.has(q.id)?8:0);
+// MOD(boss-repeatable)（2026-10-25 移植自社区版「无神器自制龙宫」）：地图 277「boss直达」
+// （入口见 lib/boss-hub.mjs）上带 localChallenge 标记的挑战任务全部可重复接取。
+// 原版集合只有 3042（恶梦爆破），直达的 39 个挑战交完就关门。数据驱动：以后往 277
+// 加新 BOSS 不用改这段。
+// ⚠ 懒求值：officialMissions 是懒加载（lib/official-data.mjs 的 lazyBox），建模块时
+//   访问会把整张数据图拉进堆——第一次用到时才算，之后缓存。
+let repeatableSet=null;
+export function repeatableChallengeMissions(){
+ if(!repeatableSet)repeatableSet=new Set([3042,...[...officialMissions.values()].filter(q=>q.localChallenge&&q.mapId===BOSS_HUB_MAP_ID).map(q=>q.id)]);
+ return repeatableSet;
+}
+export const missionClientSetting=q=>(q.setting&~(64|128|512|32768))|(repeatableChallengeMissions().has(q.id)?8:0);
 // User-authorized single gap: 杀手组织 -> 俘虏. Keep the recorded definitions
 // and completion history intact; only this successor bypasses missing 1678.
 // The new 1358 packet mistakenly points to itself; recorded 1359 explicitly

@@ -49,12 +49,28 @@ function rebuildPortalWire(npc){
  return build([...menu,{label:ENTRY.label,target:ENTRY.target,gx:ENTRY.gx,gy:ENTRY.gy}],PORTAL_TEXT.welcome,PORTAL_TEXT.talkDetail).toString('base64');
 }
 
+// 直达任务 9106「挑战太阳神-库库尔坎」录制到的 acceptBattleID=20500，这个编队在
+// official-v305 / recorded-expansion 里都不存在（社区版是自己在服务端补了 20500）。
+// 表现为 missionBlockers 以「剧情战斗数据尚未采集」挡掉，277:7 这个 NPC 接不了任务。
+// 这里把战斗改指已采集的 11781（含怪物 3352 太阳神-库库尔坎，与征战广场 945:5 的
+// 挑战同一只怪），照旧不动 data/。幂等：改过就不再动。
+const KUKULKAN_MISSION_ID=9106,BROKEN_GROUP_ID=20500,KUKULKAN_GROUP_ID=11781,KUKULKAN_MONSTER_ID=3352;
+function repairKukulkanBattle(official){
+ const mission=official.missions.find(q=>q.id===KUKULKAN_MISSION_ID);
+ if(!mission||mission.acceptBattleID!==BROKEN_GROUP_ID)return;
+ const group=official.groups.find(g=>g.groupId===KUKULKAN_GROUP_ID);
+ if(!group||!(group.monsters||[]).includes(KUKULKAN_MONSTER_ID)||!official.monsters.some(m=>m.id===KUKULKAN_MONSTER_ID))
+  throw Error('太阳神-库库尔坎的替补编队 '+KUKULKAN_GROUP_ID+' 不可用');
+ mission.acceptBattleID=KUKULKAN_GROUP_ID;
+}
+
 export function applyBossHub(official){
  const map=official.maps.find(m=>m.id===PORTAL.mapId);
  const npc=map?.npcs.find(n=>n.id===PORTAL.npcId);
  if(!npc||npc.npcType!==5||!npc.jumpMapID?.length)throw Error('boss hub portal npc is missing or changed');
  const hub=official.maps.find(m=>m.id===BOSS_HUB_MAP_ID);
  if(!hub)throw Error('boss hub map '+BOSS_HUB_MAP_ID+' is missing');
+ repairKukulkanBattle(official);
  // 幂等：已经补过菜单就只做校验，不再重排一次 wire。
  if(!npc.menuJumpMap.includes(ENTRY.label)){
   // 先按原 wire 重建一次（内部会校验解析结果与自己一致），拿到新 wire 再改数组：

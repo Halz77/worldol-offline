@@ -20,6 +20,7 @@ import {handleRestoration,shopItems,APPEARANCE_SHOPS} from '../lib/restoration-s
 import {appearanceShops} from '../lib/local-fashion.mjs';
 import {readPayload} from '../tools/build-fashion-icons.mjs';
 import {equipment} from '../lib/restoration.mjs';
+import {supplyShops,MERGED_SUPPLY_SHOP} from '../lib/supply-shops.mjs';
 
 const root=fileURLToPath(new URL('..',import.meta.url)),d=decoders(root);
 const catalog=readPayload();
@@ -92,12 +93,17 @@ test('识别范围与原版 NPC 定义一致：美容院菜单里的小号商店
  }
 });
 
-test('客户端离线补丁把造型商店放进本地白名单，绕开原版 go.openPay 闸门，并把图标接上图集',()=>{
+test('客户端离线补丁把本地商店（造型/补给/阵法书）放进白名单，绕开原版 go.openPay 闸门，并把图标接上图集',()=>{
  const src=fs.readFileSync(new URL('../web/offline.js',import.meta.url),'utf8');
  const list=src.match(/const localShops=\[([^\]]*)\]/);
  assert.ok(list,'web/offline.js 里应该有 localShops 白名单');
  const ids=list[1].split(',').map(value=>Number(value.trim()));
- for(const id of [51,52,55,901,920])assert.ok(ids.includes(id),`白名单缺少 ${id}`);
+ for(const id of [51,52,55,901,902,920])assert.ok(ids.includes(id),`白名单缺少 ${id}`);
+ assert.ok(ids.includes(MERGED_SUPPLY_SHOP),`白名单缺少合并商店 ${MERGED_SUPPLY_SHOP}「强化、鉴定、宝石」`);
+ // 第 92 版回归（阵法书 922）：补给商人菜单里能点的每个商店号都必须在白名单里。
+ // 922 当初就是漏了这里——服务端 12004 回包完全正常，客户端却掉回原版
+ // doBrowseShop 被 go.openPay 挡死，玩家看到的就是「点了阵法书毫无反应、商店打不开」。
+ for(const shop of supplyShops)assert.ok(ids.includes(shop.id),`白名单缺少补给商店 ${shop.id}「${shop.name}」`);
  assert.match(src,/return localShops\.includes\(id\)\?req\(67\)\.ShopItem\.openItemShop\(id\):browseShop\.call\(this,id,\.\.\.args\);/);
  assert.match(src,/playerIsFemale/,'造型道具的图标要按角色性别取男/女那份头像');
  assert.match(src,/common_icon_wenhao2/,'图集没就绪时要退回问号图');

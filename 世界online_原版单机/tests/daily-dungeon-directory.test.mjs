@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {Writer,Reader} from '../lib/codec.mjs';
 import {normalizeRole} from '../lib/content.mjs';
 import {officialMaps,officialMissions,origins} from '../lib/official-data.mjs';
+import {missionBlockers,missionFollowupId} from '../lib/official-rules.mjs';
 import {dailyData,taskSnapshot,dailyRevision,recordMissionCompletion} from '../lib/daily-activity.mjs';
 import {encodeDaily,decodeDaily} from '../lib/daily-service.mjs';
 import {npcPacket} from '../lib/game-packets.mjs';
@@ -60,19 +61,38 @@ test('挑战副本目录：38 行全部进看板，行形状与客户端契约�
  assert.equal(directoryEntry(999),null);
 });
 
-test('挑战副本目录：目录里只留本工程确实还缺东西的备注',()=>{
- // 77 缺地图 943 / 78 缺任务 941 / 86 缺地图 973 —— 这三条是真缺口；
- // 4.0 的其余备注（英灵迷宫、月宫编队 11733、十殿 11706、无极深渊…）在本工程早已补完。
- // ⚠ 备注只留在模块数据里：绑定进度时看板行会删掉它（4.0 同款），
- //   客户端也读不到这个字段（不在 protobuf schema 里）。
- assert.deepEqual(DAILY_DUNGEON_DIRECTORY.filter(r=>r.unavailable).map(r=>r.id),[77,78,86]);
- for(const id of [77,78,86]){
-  assert.match(directoryEntry(id).unavailable,/缺/);
-  assert.equal(rowOf(id).unavailable,undefined,`行 ${id} 绑定后不再标缺口`);
- }
+test('挑战副本目录：77/78/86 的过期 unavailable 备注已清除，全链复验通过',()=>{
+ // 第 84 版移植时保留了三行备注（77 缺地图 943 / 78 缺任务 941 / 86 缺地图 973），
+ // 那原是 4.0 自己数据里缺的号。2026-10-25 全量复验：三行的任务/地图/NPC/链全部完整
+ // ——水底秘洞在 980/982、鹊桥在 985/986、彩蛋森林在 834/835，且 77 的续链
+ // 1211、9159—9162 由 lib/dungeon-story-repairs.mjs 本地补写（收尾 9162 回九歌镇 954）。
+ // 943/941/973 没有任何引用方：补定义只会造幻影数据，正确动作是清备注。
+ assert.deepEqual(DAILY_DUNGEON_DIRECTORY.filter(r=>r.unavailable),[],'不应再有过期缺口备注');
+ // 幻影号防护：谁都不该给这三个号补定义——没有引用方，补了就是幻影数据。
  assert.equal(officialMaps.has(943),false);
  assert.equal(officialMaps.has(973),false);
  assert.equal(officialMissions.has(941),false);
+ // 三行的完整依赖图（目录导航任务 + 故事位表节点）逐项可解析。
+ for(const id of [77,78,86]){
+  const row=rowOf(id);
+  assert.ok(row.linkage,`行 ${id} 应已绑定进度`);
+  const nodes=new Set([...(directoryEntry(id).navigationMissionIds||[]),...(row.linkage.missionIds||[])]);
+  assert.ok(nodes.size>0,`行 ${id} 的节点集非空`);
+  for(const n of nodes){
+   const q=officialMissions.get(n);
+   assert.ok(q,`行 ${id} 的节点 ${n} 有任务定义`);
+   assert.ok(officialMaps.has(q.mapId),`行 ${id} 节点 ${n} 的地图 ${q.mapId} 存在`);
+   if(q.npcId>0)assert.ok(officialMaps.get(q.mapId).npcs.some(npc=>npc.id===q.npcId),`行 ${id} 节点 ${n} 的 NPC ${q.mapId}:${q.npcId} 存在`);
+   assert.deepEqual(missionBlockers(q),[],`行 ${id} 节点 ${n} 不应有未采集的依赖`);
+   const next=missionFollowupId(q);
+   if(next>0)assert.ok(officialMissions.has(next),`行 ${id} 节点 ${n} 的下一环 ${next} 存在`);
+  }
+ }
+ // 77 的水底秘洞续链（本地补写）逐环对上：1210→1211→9159→…→9162。
+ for(const [from,to] of [[1210,1211],[1211,9159],[9160,9161],[9161,9162]])
+  assert.equal(officialMissions.get(from).submitNextMissionID,to,`${from} 的下一环应是 ${to}`);
+ assert.equal(rowOf(77).linkage.terminal,9162);
+ assert.ok(rowOf(77).linkage.missionIds.includes(9162),'收尾 9162 必须进位表');
 });
 
 test('挑战副本目录：16 行目录行 + 97/98/99 三行绑了进度与导航，其余 22 行只做目录式导航',()=>{

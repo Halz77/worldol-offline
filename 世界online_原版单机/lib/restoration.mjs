@@ -16,10 +16,12 @@ import {automaticSkillSlots} from './automatic-skills.mjs';
 import {equipmentSkillLevels,MAX_EQUIPMENT_SKILL_LEVEL} from './equipment-skill-levels.mjs';
 import {LEGENDARY_EGG_ID,LEGENDARY_EGG_PRICE} from './pet-catalog.mjs';
 import {spiritRules} from './spirit-seal-data.mjs';
+import {clientFormationPowers} from './formation-data.mjs';
 import {skillBytes} from './character-import-codec.mjs';
 import {IGNORE_REQUIREMENT_ITEM_ID} from './local-items.mjs';
 import {localCareerSkills,localCareerSkillIds} from './local-career-skills.mjs';
 import {applySkillOverrides,applyOverrideToDefinition,applyOverrideToDefinitions} from './local-skill-overrides.mjs';
+import {decorateAutoSkillChance} from './local-auto-skill-chance.mjs';
 
 /**
  * 运行时物品表与技能表 —— 服务端每次算属性、每次开背包都要用，但**只有登录之后**才用。
@@ -56,6 +58,9 @@ function ensure(){
  // data/career-skills.json 是上游验收契约不能改，覆盖写在 data/local-skill-overrides.json，
  // 这里套用到运行时表（重算 powers 与 wireBase64，三处——结算/客户端定义/说明——保持一致）。
  applySkillOverrides(skills);
+ // 第 93 版：自动技能的触发概率写进技能说明（客户端帮助气泡读的就是 wire 里的 info）。
+ // 必须排在 applySkillOverrides 之后：显式覆盖的 info 先落地，概率行永远追加在末尾。
+ decorateAutoSkillChance(skills,skillBytes);
  built={restored,equipment,skills};
  return built;
 }
@@ -129,7 +134,7 @@ export function reconcileSkillSettings(p){const list=activeSkills(p),ids=new Set
 // 14001 回包在每条后面额外带一个 byte 的 maxLevel。这里必须保持「下一级」，
 // 否则人物技能店的列表会整列显示成满级（上游验收用例也按 (p.skills[id]||0)+1 断言）。
 export function availableSkills(p,shop){return [...skills.values()].filter(s=>s.native?s.shops.includes(shop)&&s.levels.some(x=>x.level===1):(shop===SKILL_SHOP||s.shop===shop)).map(s=>{const wanted=(p.skills[s.id]||0)+1;const data=s.levels.find(x=>x.level===wanted)||s.levels.at(-1);return {...s,...data};});}
-export function powers(p,kind){const rows=kind==='skill'?activeSkills(p):p.inventory.filter(x=>x.slot<30&&!x.pet).map(x=>{const e=equipment.get(x.itemId)||x.recordedDefinition;if(!e)throw Error('未知装备: '+x.itemId);return e.native?{...e,powers:equipmentPowers(e,x)}:e;});if(kind!=='skill')rows.push({powers:[...setPowers(p),...titlePowers(p)]});if(kind==='skill')rows.push({powers:characterFeaturePowers(p)});const result=new Map();for(const r of rows){if(kind==='skill'&&r.native&&r.type!==1)continue;for(const [id,n] of r.powers)result.set(id,(result.get(id)||0)+n);}return id=>result.get(id)||0;}
+export function powers(p,kind){const rows=kind==='skill'?activeSkills(p):p.inventory.filter(x=>x.slot<30&&!x.pet).map(x=>{const e=equipment.get(x.itemId)||x.recordedDefinition;if(!e)throw Error('未知装备: '+x.itemId);return e.native?{...e,powers:equipmentPowers(e,x)}:e;});if(kind!=='skill')rows.push({powers:[...setPowers(p),...titlePowers(p),...clientFormationPowers(p)]});if(kind==='skill')rows.push({powers:characterFeaturePowers(p)});const result=new Map();for(const r of rows){if(kind==='skill'&&r.native&&r.type!==1)continue;for(const [id,n] of r.powers)result.set(id,(result.get(id)||0)+n);}return id=>result.get(id)||0;}
 const clamp=(x,min,max)=>Math.min(max,Math.max(min,x));
 export function attributes(p){
  if(p.importedCharacter){const {stats,base}=nativeCharacterStats(p);return {base,hp:stats.HPMAX,mp:stats.MPMAX};}

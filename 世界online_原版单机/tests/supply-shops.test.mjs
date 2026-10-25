@@ -16,13 +16,15 @@ import {canIdentify} from '../lib/item-affixes.mjs';
 import {shopItem} from '../lib/restoration-packets.mjs';
 import {APPEARANCE_ITEM_IDS} from '../lib/local-fashion.mjs';
 import {soldPetItem,selectablePetEggs} from '../lib/pet-catalog.mjs';
+import {isFormationBook} from '../lib/formation-data.mjs';
 const selectableEggIds=new Set(selectablePetEggs().map(e=>e.id));
 // 「技能书」分类的两条等式（见下面两条用例）：
 //   · petBookIds —— 唯一来源 lib/pet-skill-book-data.mjs 给出的在架编号；
 //   · isNativeSkillBook —— 原版目录里的技能书类条目（type 31 / power1 176·177·182·186 / 61001），
-//     它们现在一件都不该在架。
+//     它们现在一件都不该在架。阵法书也是 type 31、power1 182，但走独立的 922
+//     （见 lib/formation-data.mjs），不属于「原版人物技能书」。
 const petBookIds=petSkillShopBookIds();
-const isNativeSkillBook=e=>e.type===31||[176,177,182,186].includes(e.power1)||e.id===61001;
+const isNativeSkillBook=e=>!isFormationBook(e)&&(e.type===31||[176,177,182,186].includes(e.power1)||e.id===61001);
 
 const d=decoders(fileURLToPath(new URL('..',import.meta.url)));
 const role=()=>normalizeRole({id:1,name:'补给验收',level:97,mapId:19,x:21,y:18,coins:39602,gold:12,silver:34,inventory:[],restoration:{starterIssued:true}});

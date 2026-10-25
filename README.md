@@ -57,7 +57,7 @@
 ├─ 运行基础自检.cmd             # 环境 + 存档/覆盖 JSON + 语法 + 核心用例
 ├─ 修复记录.txt                 # 面向玩家的逐版改动
 ├─ AGENTS.md                   # 面向开发者的长期约定
-└─ 改BUG与重新打包APK指南.md    # 不开 AI 也能照着做的操作手册
+└─ 手动改BUG指南.md             # 不开 AI 也能照着做的操作手册
 ```
 
 以下内容不会进入 Git：
@@ -298,7 +298,7 @@ lib/http-routes.mjs 的 WEB_PATHS
 
 - `AGENTS.md`
 - `docs/memory/INDEX.md`
-- `改BUG与重新打包APK指南.md`
+- `手动改BUG指南.md`
 
 ---
 
@@ -306,12 +306,14 @@ lib/http-routes.mjs 的 WEB_PATHS
 
 | 工具 | 用途 |
 | --- | --- |
-| `技能编辑器.html` | 修改技能等级与效果，写入 `data/local-skill-overrides.json` |
+| `技能编辑器.html` | 修改技能等级与效果（写 `local-skill-overrides.json`）、作用范围可设「敌/我随机 N 个」、自动技能可设触发概率（写 `local-auto-skill-chance.json`） |
 | `装备编辑器.html` | 修改装备属性，写入 `data/local-item-overrides.json` |
+| 技能面板「效」按钮 | 游戏内换技能特效（181 个候选 + 随机模式 + 收藏清单），配置按角色存 localStorage |
 | 单机菜单 → 伤害计算器 | 导入存档，模拟技能与木桩伤害 |
 | `tools/check-syntax.mjs` | 语法检查 |
 | `tools/check-data.mjs` | 存档与覆盖 JSON 检查 |
 | `tools/run-tests.mjs` | 测试运行器 |
+| `tools/verify-skill-fx-release.mjs` | 出包守门：校验站点内特效功能四件套齐全（对旧包必须 FAIL） |
 
 修改编辑器内嵌资料后，需要重新生成对应数据：
 
@@ -405,7 +407,7 @@ npm test
 
 - `先看这里.md` — 压缩包/日常使用入口
 - `修复记录.txt` — 面向玩家的逐版改动
-- `改BUG与重新打包APK指南.md` — 改 bug、跑电脑版、重新打包 APK
+- `手动改BUG指南.md` — 改 bug、跑电脑版、重新打包 APK
 - `安卓打包/说明.md` — APK 构建细节
 - `AGENTS.md` — 开发者长期约定
 - `docs/memory/INDEX.md` — 开发日志索引
