@@ -513,6 +513,113 @@ test('裸环境：宠物躲闪走 PlayerVO.getPowerValue 也吃宠物段加成 +
   api.stop();
 });
 
+test('裸环境：宠物走真实 PetVO.get 路径（default 分支会覆盖 formationSkill）也吃宠物段加成', () => {
+  // ★ 第 105 版修的就是这条：PetVO.get() 的 default 分支第一句是
+  //   `this.formationSkill = this.ownerVo.formationSkill` —— 会把只注入在 this.formationSkill
+  //   上的适配器当场覆盖掉（analysis/modules/0042.js:461）。玩家/军团没有这句所以一直是对的，
+  //   宠物就成了「唯一不动的那个」。修法：在 get() 这一层注入，并连持有人的一起换。
+  const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};   // 原版鸟翔阵：躲闪%18
+  // PlayerVO 原型：get(DODGE=42) = getPowerValue(base, this.dodge, 55, 25)
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100) + (Number(t) || 0);
+    },
+    getType() { return 3; }
+  };
+  roleProto.get = function (t) {
+    if (t !== 42) return 0;
+    return this.getPowerValue(60, this.dodge || 0, 55, 25, 0, 0, 0, false);
+  };
+  // PetVO 原型：default 分支先把 formationSkill 从持有人那里「捞」过来，再走 PlayerVO.get
+  const petProto = Object.create(roleProto);
+  petProto.getPetBaseValue = function () { return 0; };
+  petProto.getPetPowerValue = function () { return 0; };
+  petProto.getType = function () { return 4; };                 // TYPE_PET
+  petProto.get = function (t) {
+    if (this.ownerVo) this.formationSkill = this.ownerVo.formationSkill;
+    return roleProto.get.call(this, t);
+  };
+
+  const battle = {getPlayerByPos() { return null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}, 42: {default: function PetVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  req.c[42].default.prototype = petProto;
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}], pet: {powers: [[25, 30]]}}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+  assert.equal(api.status.getHooked, true, 'get() 这一层必须挂上（宠物靠它）');
+
+  const owner = {formationSkill: origFs, getType() { return 3; }};
+  const pet = Object.create(petProto);
+  pet.position = 24;
+  pet.dodge = 0;
+  pet.ownerVo = owner;
+
+  // 没装补丁（关掉注入）：原版鸟翔 躲闪%18 ⇒ 60×1.18 = 70
+  api.setNoSlot(true);
+  assert.equal(pet.get(42), 70, '关掉补丁时应回落到原版 18%（70）');
+  api.setNoSlot(false);
+  // 装上补丁：宠物段 躲闪%30 ⇒ 60×1.30 = 78
+  assert.equal(pet.get(42), 78, '宠物应吃到宠物段 30%（78），而不是原版 18%');
+  assert.ok(api.status.petCalls > 0, '应有宠物 get 调用被识别');
+  // 注入不能把持有人的阵法永久改坏
+  assert.equal(owner.formationSkill, origFs, '调用结束后持有人的 formationSkill 必须还原');
+  api.stop();
+});
+
+test('裸环境：动态单位（get 现算）不会被误当成固化字段去改（第 105 版防回归）', () => {
+  // PlayerVO 的 get(DODGE) 是 getPowerValue(base, this.dodge, …) 现算的，
+  // this.dodge 只是「平加」，不是总值。对它做「固化字段修正」会把数值算错。
+  const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100) + (Number(t) || 0);
+    },
+    getType() { return 3; }
+  };
+  roleProto.get = function (t) {
+    if (t !== 42) return 0;
+    return this.getPowerValue(1000, this.dodge || 0, 55, 25, 0, 0, 0, false);
+  };
+  const battleUnits = new Map([
+    [25, Object.assign(Object.create(roleProto), {position: 25, dodge: 500, formationSkill: origFs})]
+  ]);
+  const battle = {getPlayerByPos(p) { return battleUnits.get(p) || null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}], pet: {powers: [[25, 30]]}}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+  const u = battleUnits.get(25);
+  api.ensureHook(u);
+  assert.equal(u.dodge, 500, '动态单位的 dodge 平加字段不能被改写（否则百分比部分会被算错）');
+  // 正确结果应当来自 get() 层的注入：1000×1.3 + 500 = 1800
+  assert.equal(u.get(42), 1800, '躲闪 = 1000×1.30 + 500 = 1800');
+  api.stop();
+});
+
 test('裸环境：战斗单位的固化属性字段（this.dodge 等）被阵位加成直接修正', () => {
   // 战斗单位的 get(DODGE) 是 `return this.dodge`（战斗开始时固化），动态注入进不去，
   // 必须直接改字段。战斗单位没有 addValue，所以直接赋值。

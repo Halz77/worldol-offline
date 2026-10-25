@@ -26,16 +26,21 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v4';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v5';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
   host = host || globalThis;
   if (host.__worldolFormationSlotPatch) return host.__worldolFormationSlotPatch;
   const MAX_POS = 34, LEFT_MAX_POS = 20;     // analysis/modules/0061.js
-  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0, lastCall: null, fieldPatches: 0 };
-  const hooked = { role: false, cal: false, base: false, petBase: false, petPower: false };
+  const counters = { rolePatches: 0, petPatches: 0, adapters: 0, fallbacks: 0, getCalls: 0, lastCall: null, fieldPatches: 0, petCalls: 0 };
+  const hooked = { role: false, cal: false, base: false, petBase: false, petPower: false, get: false };
   let timer = null;
+  // 重入保护：get(DODGE) 内部会再调 get(AGI)/get(WIS)，嵌套注入会重复叠加（add 模式会翻倍）。
+  // 最外层负责换 formationSkill，内层直接用外面那一份。
+  let injectDepth = 0;
+  // 诊断开关：置 true 后一律不注入（用来量「没装补丁时」的原生值）
+  let noSlot = false;
 
   function cfg() {
     const t = host.worldolFormationSlots;
@@ -80,12 +85,17 @@ export function installFormationSlots(req, host) {
    * realFs 允许为 null —— 军团/队友单位本来就没有 formationSkill，我们只叠加自己的阵位加成。
    */
   function makeAdapter(realFs, formId, slotIndex, isPet) {
+    if (noSlot) return null;                                   // 诊断开关：模拟「没装补丁」
     const conf = cfg();
     if (!conf) return null;
-    if (!isPet && !(slotIndex > 0)) return null;              // 不参与阵位的单位（NPC 等）⇒ 不干预
+    if (!(slotIndex > 0)) return null;                         // 不参与阵位的单位（非战斗、NPC 等）⇒ 不干预
     if (!(Number(formId) > 0)) return null;
     const form = conf.forms[formId];
     if (!form) return null;
+    // 每次属性读取都重建适配器太浪费（战斗里 get() 调用非常频繁），按 阵型|阵位|是否宠物 缓存。
+    if (cacheConf !== conf) { cacheConf = conf; adapterCache = {}; }
+    const key = formId + '|' + (isPet ? 'pet' : slotIndex);
+    if (adapterCache[key]) return adapterCache[key];
     const mode = form.mode === 'replace' ? 'replace' : 'add';
     let powers = [];
     if (isPet) powers = (form.pet && form.pet.powers) || [];
@@ -107,8 +117,10 @@ export function installFormationSlots(req, host) {
     adapter.__worldolSlotIndex = isPet ? 0 : Math.min(Math.max(1, slotIndex), 5);
     adapter.__worldolIsPet = !!isPet;
     counters.adapters++;
+    adapterCache[key] = adapter;
     return adapter;
   }
+  let cacheConf = null, adapterCache = {};
 
   /** 给面板用：这个单位吃的是哪个阵位（没配加成的阵位返回 null，不标注）。
    *  入参就是**属性 VO**（战斗信息面板里 `e` 是 VO，直接有 getLevel/getName/formationSkill/position）。 */
@@ -163,18 +175,20 @@ export function installFormationSlots(req, host) {
     // 最近一次注入结果（slot/form/ok）
     const lc = counters.lastCall;
     parts.push('注入=' + (lc ? ('位' + lc.slot + '/阵' + lc.form + (lc.pet ? '/宠' : '') + (lc.ok ? '/成' : '/败')) : '无'));
-    // 决定性对比：同一个 VO，躲闪(ModelConst.DODGE=42)在「含阵位」与「摘掉阵法」时各是多少。
-    // 两者相同 ⇒ 注入没起作用；不同 ⇒ 注入生效（面板数值已经含阵位）。
+    parts.push('宠物=' + (isPetUnit(vo) ? '是' : '否'));
+    // 决定性对比：躲闪(ModelConst.DODGE=42)在「装了补丁」与「关掉补丁」时各是多少。
+    // ★ 第 105 版：之前用 `vo.formationSkill=null` 来量「去掉」，但适配器在 fs 为 null 时会退化成
+    //   activeFormationId() 照样注入 ⇒ 两个值必然相同，诊断一直是假阴性。改用总开关 noSlot。
     let withFs = '?', withoutFs = '?';
     try {
       if (typeof vo.get === 'function') {
-        withFs = vo.get(42);
-        const had = vo.formationSkill;
-        try { vo.formationSkill = null; withoutFs = vo.get(42); }
-        finally { vo.formationSkill = had; }
+        noSlot = false; withFs = vo.get(42);
+        noSlot = true;
+        try { withoutFs = vo.get(42); } finally { noSlot = false; }
       }
-    } catch (_) {}
-    parts.push('躲闪含阵位=' + withFs + '/去掉=' + withoutFs);
+    } catch (_) { noSlot = false; }
+    parts.push('躲闪装补丁=' + withFs + '/关掉=' + withoutFs);
+    parts.push('dodge字段=' + (vo.dodge === undefined ? '无' : vo.dodge));
     let battle = '无';
     try { battle = battleRef() ? '有' : '无'; } catch (_) {}
     parts.push('battle=' + battle);
@@ -230,6 +244,22 @@ export function installFormationSlots(req, host) {
     const battle = battleRef();
     if (!battle || typeof battle.getPlayerByPos !== 'function') return 0; // 没有战斗单例 ⇒ 0，不加成
     const side = pos < LEFT_MAX_POS;
+    const map = slotMapFor(battle, side);
+    const idx = map[pos];
+    return idx > 0 ? idx : 0;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
+  }
+
+  /**
+   * 己方角色站位 → 阵位序号 的映射表（按位置升序排名）。
+   * get() 在战斗里会被非常频繁地调用，每调一次就遍历 34 个位置太浪费；
+   * 但战斗刚开局时名单还没齐，所以不能永久缓存 —— 每 64 次调用刷新一次。
+   */
+  let slotCalls = 0, slotCacheBattle = null, slotCacheSide = null, slotCacheMap = null;
+  function slotMapFor(battle, side) {
+    slotCalls++;
+    const fresh = slotCalls === 1 || slotCalls % 64 === 0;
+    if (!fresh && slotCacheMap && slotCacheBattle === battle && slotCacheSide === side) return slotCacheMap;
+    const map = {};
     const list = [];
     for (let p = 0; p < MAX_POS; p++) {
       let u;
@@ -243,10 +273,10 @@ export function installFormationSlots(req, host) {
     }
     // ⚠ 第 99 版：不要用 `u.battleSprite` 过滤 —— 属性计算可能发生在战斗动画建好之前，
     // 那时候所有单位都没有图标，名单会空 ⇒ 阵位算不出来 ⇒ 阵位加成整块不生效。
-    if (!list.length) return 0;                                 // 查不到同侧单位 ⇒ 0，不参与（不硬塞第 1 位）
     list.sort(function (a, b) { return a - b; });
-    const i = list.indexOf(pos);
-    return i < 0 ? 0 : i + 1;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
+    for (let i = 0; i < list.length; i++) map[list[i]] = i + 1;
+    slotCacheBattle = battle; slotCacheSide = side; slotCacheMap = map;
+    return map;
   }
 
   // ── 模块导出解析 ────────────────────────────────────────────
@@ -284,6 +314,7 @@ export function installFormationSlots(req, host) {
     if (typeof original !== 'function') return false;
     if (original.__worldolWrapped) return true;                 // 这份已经包过（多拷贝场景）
     const wrapped = function () {
+      if (injectDepth > 0) return original.apply(this, arguments);   // 外层 get() 已经换过了，别重复叠加
       const had = this && this.formationSkill;
       const real = had || null;
       // 军团/队友这些单位自己没挂 formationSkill（阵法块只给玩家），仍然按玩家当前阵型算阵位加成
@@ -308,6 +339,56 @@ export function installFormationSlots(req, host) {
   }
 
   /**
+   * ★ 第 105 版：直接包 VO 的 `get()` —— 宠物阵位加成的决定性修复。
+   *
+   * 为什么必须包 get：
+   *   · 宠物躲闪走 PetVO.get() 的 default 分支，里面第一件事就是
+   *     `this.formationSkill = this.ownerVo.formationSkill` —— **把我们注入的适配器当场覆盖掉**。
+   *     所以只在 getPowerValue 里换 `this.formationSkill` 对宠物无效（军团/玩家没有这行，所以它们一直是对的，
+   *     这也是「角色和军团都生效、就宠物不动」的根因）。
+   *   · 这里把「宠物持有人的 formationSkill」一起换成适配器，宠物内部那句赋值取到的就是适配器。
+   *   · 同时它也是最通用的一层：不管属性最终由 getPowerValue / getPowerValueCal / getPetPowerValue
+   *     哪条路算出来，只要读 formationSkill 就吃到阵位加成。
+   *
+   * 重入保护：get(DODGE) 内部会再调 get(AGI)/get(WIS)，嵌套注入会在 add 模式下翻倍，
+   * 所以最外层换一次，内层（injectDepth>0）直接放行。
+   */
+  function wrapGetMethod(proto) {
+    const original = proto.get;
+    if (typeof original !== 'function') return false;
+    if (original.__worldolWrapped) return true;                 // 这份已经包过（多拷贝场景）
+    const wrapped = function () {
+      counters.getCalls++;
+      if (injectDepth > 0) return original.apply(this, arguments);
+      const isPet = isPetUnit(this);
+      if (isPet) counters.petCalls++;
+      const had = this && this.formationSkill;
+      const real = had || null;
+      const formId = real && Number(real.id) > 0 ? real.id : activeFormationId();
+      // ★ 玩家要求：阵位加成只在战斗里生效。宠物段同理 —— 没进战斗就 0（不参与）。
+      const slotIndex = isPet ? (battleRef() ? 1 : 0) : slotIndexOf(this);
+      const adapter = makeAdapter(real, formId, slotIndex, isPet);
+      counters.lastCall = {slot: slotIndex, form: formId, pet: isPet, ok: !!adapter, hasFs: !!real, via: 'get'};
+      if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
+      // 宠物：连持有人的一起换（PetVO.get 的 default 分支会从 ownerVo 取）
+      const holder = isPet ? (this.ownerVo || this.owner) : null;
+      const hadHolder = holder ? holder.formationSkill : undefined;
+      this.formationSkill = adapter;
+      if (holder) holder.formationSkill = adapter;
+      injectDepth++;
+      try { return original.apply(this, arguments); }
+      finally {
+        injectDepth--;
+        this.formationSkill = had;
+        if (holder) holder.formationSkill = hadHolder;
+      }
+    };
+    wrapped.__worldolWrapped = true;
+    proto.get = wrapped;
+    return true;
+  }
+
+  /**
    * 属性 → [字段名, 平加power键, 百分比power键]
    * 从主包 PlayerVO.get() 的各个 case 里提取（case ModelConst.X: … this.getPowerValue(i, this.<字段>,
    * POWER_A, POWER_B)）。例：DODGE → [dodge, 55(POWER_DODGE), 25(POWER_DODGE_PERCENT)]。
@@ -325,6 +406,40 @@ export function installFormationSlots(req, host) {
     LIFE_ABSORPTION: ['life_absorption', 73, 43], MANA_ABSORPTION: ['mana_absorption', 74, 44],
     HEAL_RECOVERY: ['heal_recovery', 77, 47], MANA_RECOVERY: ['mana_recovery', 78, 48]
   };
+
+  /** ModelConst（模块 12）里的属性 id：把 ATTR_FIELDS 的 key 名（DODGE/SPEED/…）换成数字。 */
+  function modelConst() {
+    try {
+      const m = req(12);
+      return (m && (m.ModelConst || m.default || m)) || null;
+    } catch (_) { return null; }
+  }
+
+  /**
+   * ★ 第 105 版：只有「字段就是最终值」的单位才改字段。
+   *
+   * 取证（analysis/modules）：PlayerVO(0056) 的 get(DODGE) 是**动态**的 ——
+   *   `getPowerValue(10*(AGI+WIS)/25, this.dodge, POWER_DODGE, POWER_DODGE_PERCENT, …)`
+   *   这里 `this.dodge` 只是**平加**（在百分比之后再加），不是总值；
+   * 而 MonsterVO(0091) 的 get(DODGE) 是 `return this.dodge`，字段**就是**总值。
+   * 对动态单位改字段 = 只改了平加那一项、还会残留原版加成 ⇒ 数值算错。
+   *
+   * 判定方法：把字段 +1，看 get(属性) 是不是也正好 +1。是 ⇒ 字段即总值（固化）。
+   */
+  function fieldIsFrozen(vo, field, constId) {
+    if (typeof vo.get !== 'function') return true;              // 没有 get ⇒ 只能靠字段
+    if (!(constId > 0)) return false;
+    const cur = vo[field];
+    if (typeof cur !== 'number' || !isFinite(cur)) return false;
+    const probe = cur + 1;
+    let same = false;
+    try {
+      vo[field] = probe;
+      same = (vo.get(constId) === probe);
+    } catch (_) { same = false; }
+    try { vo[field] = cur; } catch (_) {}
+    return same;
+  }
 
   /**
    * ★ 第 104 版：把阵位加成直接写进战斗单位的**固化字段**。
@@ -369,6 +484,7 @@ export function installFormationSlots(req, host) {
     let base0 = null;
     try { base0 = vo.__worldolSlotBase || (vo.__worldolSlotBase = {}); } catch (_) { return 0; }
     let changed = 0;
+    const MC = modelConst();
     for (const attr in ATTR_FIELDS) {
       const spec = ATTR_FIELDS[attr];
       const field = spec[0], addKey = spec[1], pctKey = spec[2];
@@ -376,6 +492,14 @@ export function installFormationSlots(req, host) {
       if (!Number.isFinite(cur) || cur === 0) continue;
       const ownAdd = map[addKey] || 0, ownPct = map[pctKey] || 0;
       if (!ownAdd && !ownPct) continue;
+      // ★ 第 105 版：只改「字段即总值」的单位。玩家/军团/宠物是动态计算的，改它们会算错。
+      const constId = MC ? MC[attr] : 0;
+      let frozen = null;
+      try { frozen = vo.__worldolFrozen || (vo.__worldolFrozen = {}); } catch (_) { frozen = null; }
+      if (frozen) {
+        if (frozen[field] === undefined) frozen[field] = fieldIsFrozen(vo, field, constId) ? 1 : 0;
+        if (!frozen[field]) continue;
+      } else if (!fieldIsFrozen(vo, field, constId)) continue;
       let fsAdd = 0, fsPct = 0;
       try { fsAdd = fs.getPowerValue(addKey) || 0; fsPct = fs.getPowerValue(pctKey) || 0; } catch (_) { fsAdd = 0; fsPct = 0; }
       const newAdd = mode === 'replace' ? ownAdd : fsAdd + ownAdd;
@@ -430,12 +554,10 @@ export function installFormationSlots(req, host) {
         hooked.base = true;
       }
     }
-    // 诊断：面板/世界数据到底有没有走这个类的 get()（只计数，行为不变）。
-    // 若 getCalls 有值但 rolePatches 一直是 0，说明这个实例的方法被别的拷贝遮住了。
+    // ★ 第 105 版：get() 这一层必须注入（宠物就是靠它才吃到加成的）。
+    //   getCalls 仍然在这里计数：有计数但 rolePatches 一直是 0 ⇒ 说明实例的方法被别的拷贝遮住了。
     if (!proto.__worldolFormationSlotGet && typeof proto.get === 'function') {
-      const nativeGet = proto.get;
-      proto.get = function () { counters.getCalls++; return nativeGet.apply(this, arguments); };
-      proto.__worldolFormationSlotGet = true;
+      if (wrapGetMethod(proto)) { proto.__worldolFormationSlotGet = true; hooked.get = true; }
     }
     hooked.role = true;
     return true;
@@ -446,6 +568,7 @@ export function installFormationSlots(req, host) {
     const original = proto[name];
     if (typeof original !== 'function') return false;
     proto[name] = function () {
+      if (injectDepth > 0) return original.apply(this, arguments);   // 外层 get() 已经换过了
       const holder = this && (this.ownerVo || this.owner);
       const had = holder && holder.formationSkill;
       const real = had || null;
@@ -615,16 +738,18 @@ export function installFormationSlots(req, host) {
   timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v4',
+    revision: 'formation-slot-patch-20261025-v5',
     get status() {
       return {
-        roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base,
+        roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base, getHooked: hooked.get,
         petHooked: hooked.petBase || hooked.petPower, infoHooked, getCalls: counters.getCalls,
-        rolePatches: counters.rolePatches, petPatches: counters.petPatches,
+        rolePatches: counters.rolePatches, petPatches: counters.petPatches, petCalls: counters.petCalls,
         adapters: counters.adapters, fallbacks: counters.fallbacks,
         configured: cfg() ? Object.keys(cfg().forms).length : 0
       };
     },
+    /** 诊断开关：true = 一律不注入（量「没装补丁时」的原生值）。 */
+    setNoSlot: function (v) { noSlot = !!v; },
     /** 测试钩子：算某阵某阵位的加成表（不依赖战斗实例）。 */
     peek: function (formId, slotIndex, isPet) {
       const conf = cfg();
