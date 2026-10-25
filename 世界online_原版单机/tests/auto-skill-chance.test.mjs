@@ -32,10 +32,10 @@ test('配置层：默认空表、globals 结构、百分比说明文案', () => 
  assert.ok(globals.revision, 'globals 应带 revision');
  assert.equal(typeof globals.chance, 'object');
  assert.equal(AUTO_SKILL_CHANCE_REVISION, 'auto-skill-chance-20261025-v1');
- assert.match(chanceInfoLine(30), /30% 概率触发/);
- assert.match(chanceInfoLine(30), /约 3\.3 回合 1 次/);
- assert.match(chanceInfoLine(100), /100% 概率触发/);
- assert.match(chanceInfoLine(0), /不会自动施放/);
+ assert.match(chanceInfoLine(30), /每回合 30% 概率触发/);
+ assert.equal(chanceInfoLine(30), '每回合 30% 概率触发', '文案保持简洁：不带任何后缀');
+ assert.equal(chanceInfoLine(100), '每回合 100% 概率触发');
+ assert.equal(chanceInfoLine(0), '每回合 0% 概率触发');
 });
 
 // ── 自动技能概率补丁 ─────────────────────────────────────
@@ -185,12 +185,12 @@ test('技能说明：只给配了 <100% 的自动技能追加一行，并重算 
  const changed = decorateAutoSkillChance(map, fakeSkillBytes, { table: { 108: 30 }, mode: 'changed' });
  assert.equal(changed.length, 1);
  assert.equal(changed[0].id, 108);
- assert.match(auto.levels[0].info, /^提升攻击力。\n【自动释放】每回合 30% 概率触发/);
- assert.ok(auto.levels[0].info.includes(INFO_MARK));
- assert.match(auto.levels[1].info, /【自动释放】/, '每个等级都要带说明');
+ assert.match(auto.levels[0].info, /^提升攻击力。\n每回合 30% 概率触发/);
+ assert.ok(auto.levels[0].info.includes('每回合 30% 概率触发'));
+ assert.match(auto.levels[1].info, /每回合 30% 概率触发/, '每个等级都要带说明');
  // 注意：wire 里含换行，正则必须用 [\s\S] 而不是 .*
- assert.match(auto.levels[0].wireBase64, /^wire:[\s\S]*【自动释放】/, 'wireBase64 必须重算');
- assert.match(auto.levels[0].monsterWireBase64, /^wire:[\s\S]*【自动释放】/, 'monsterWireBase64 也要重算');
+ assert.match(auto.levels[0].wireBase64, /^wire:[\s\S]*每回合 30% 概率触发/, 'wireBase64 必须重算');
+ assert.match(auto.levels[0].monsterWireBase64, /^wire:[\s\S]*每回合 30% 概率触发/, 'monsterWireBase64 也要重算');
  assert.equal(active.levels[0].info, '造成伤害。', '主动技能不动');
  assert.equal(untouched.levels[0].info, '原文。', '未配置的自动技能不动（默认 100%）');
 });
@@ -200,16 +200,17 @@ test('技能说明：幂等（重复调用不会叠加标记行）+ infoMode=all
  const map = new Map([[108, auto]]);
  decorateAutoSkillChance(map, fakeSkillBytes, { table: { 108: 30 }, mode: 'changed' });
  decorateAutoSkillChance(map, fakeSkillBytes, { table: { 108: 30 }, mode: 'changed' });
- const marks = auto.levels[0].info.split(INFO_MARK).length - 1;
- assert.equal(marks, 1, '标记行只能有一条');
+ const countLine = () => auto.levels[0].info.split('概率触发').length - 1;   // 文案改简洁后没有【】前缀，按「概率触发」计数
+ const marks = countLine();
+ assert.equal(marks, 1, '概率行只能有一条');
  // 改概率后说明应更新为新数值，而不是再追加
  decorateAutoSkillChance(map, fakeSkillBytes, { table: { 108: 60 }, mode: 'changed' });
  assert.match(auto.levels[0].info, /60% 概率触发/);
- assert.equal(auto.levels[0].info.split(INFO_MARK).length - 1, 1, '改值后仍只有一条');
+ assert.equal(countLine(), 1, '改值后仍只有一条');
  // all 模式：100%
  const auto2 = { id: 300, type: 2, levels: [{ level: 1, info: '原文。' }] };
  decorateAutoSkillChance(new Map([[300, auto2]]), fakeSkillBytes, { table: {}, mode: 'all' });
- assert.match(auto2.levels[0].info, /【自动释放】每回合 100% 概率触发/);
+ assert.match(auto2.levels[0].info, /每回合 100% 概率触发/);
 });
 
 test('技能说明：不污染上游等级对象（浅拷贝替换）', () => {
@@ -217,5 +218,5 @@ test('技能说明：不污染上游等级对象（浅拷贝替换）', () => {
  const map = new Map([[108, { id: 108, type: 2, levels: [upstreamLevel] }]]);
  decorateAutoSkillChance(map, fakeSkillBytes, { table: { 108: 30 }, mode: 'changed' });
  assert.equal(upstreamLevel.info, '原始说明。', '上游对象不能被改');
- assert.match(map.get(108).levels[0].info, /【自动释放】/, '表里换成新对象');
+ assert.match(map.get(108).levels[0].info, /每回合 30% 概率触发/, '表里换成新对象');
 });

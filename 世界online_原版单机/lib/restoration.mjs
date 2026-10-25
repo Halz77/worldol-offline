@@ -21,7 +21,7 @@ import {skillBytes} from './character-import-codec.mjs';
 import {IGNORE_REQUIREMENT_ITEM_ID} from './local-items.mjs';
 import {localCareerSkills,localCareerSkillIds} from './local-career-skills.mjs';
 import {applySkillOverrides,applyOverrideToDefinition,applyOverrideToDefinitions} from './local-skill-overrides.mjs';
-import {decorateAutoSkillChance} from './local-auto-skill-chance.mjs';
+import {decorateAutoSkillChance,withChanceInfo} from './local-auto-skill-chance.mjs';
 
 /**
  * 运行时物品表与技能表 —— 服务端每次算属性、每次开背包都要用，但**只有登录之后**才用。
@@ -88,7 +88,10 @@ export function normalizeRestoration(p){
 // MOD(local-skill-overrides)：本地技能效果覆盖（如「飘雪穿云掌去掉中毒/流血」）。
 // data/career-skills.json 是上游验收契约不能改，覆盖写在 data/local-skill-overrides.json，
 // 这里在建运行时技能表时套用。技能 id 与装备自带技能是同一套，见 activeSkills 里的第二次套用。
-export function learned(p){return Object.entries(p.skills||{}).map(([id,level])=>{const skill=skills.get(Number(id)),imported=p.importedSkillDefinitions?.[`${id}:${level}`],data=imported?applyOverrideToDefinition(Number(id),imported):skill?.levels.find(x=>x.level===level);if(!data)throw Error('存档中的技能版本无法识别: '+id);return {...skill,...data};});}
+export function learned(p){return Object.entries(p.skills||{}).map(([id,level])=>{const skill=skills.get(Number(id)),imported=p.importedSkillDefinitions?.[`${id}:${level}`],data=imported?applyOverrideToDefinition(Number(id),imported):skill?.levels.find(x=>x.level===level);if(!data)throw Error('存档中的技能版本无法识别: '+id);
+ // 导入的技能定义会绕过运行时表（上面 decorate 改不到）⇒ 概率说明单独补
+ const withInfo=imported?withChanceInfo(data,Number(id),skillBytes,skill&&skill.type):data;
+ return {...skill,...withInfo};});}
 export function activeSkills(p){
  const result=new Map(learned(p).map(s=>[s.id,{...s,addLevel:0}])),bonuses=new Map();
  for(const instance of (p.inventory||[]).filter(i=>i.slot>=0&&i.slot<30&&!i.pet)){
@@ -98,7 +101,7 @@ export function activeSkills(p){
   const s=instance.combinedSkill?item.skill:nativeEquipmentSkill(item);if(!s)continue;
   const bonus=bonuses.get(s.id)||{level:0,definitions:new Map(),slots:new Map()};
   bonus.level+=s.level;
-  if(!bonus.definitions.has(s.level)||instance.slot<bonus.slots.get(s.level)){bonus.definitions.set(s.level,{...s,native:true});bonus.slots.set(s.level,instance.slot);}
+  if(!bonus.definitions.has(s.level)||instance.slot<bonus.slots.get(s.level)){const withInfo=withChanceInfo(s,s.id,skillBytes,skills.get(s.id)&&skills.get(s.id).type);bonus.definitions.set(s.level,{...withInfo,native:true});bonus.slots.set(s.level,instance.slot);}
   bonuses.set(s.id,bonus);
  }
  for(const [id,bonus] of bonuses){
@@ -124,6 +127,9 @@ export function activeSkills(p){
    data={...data,level:wanted};
    if(data.native&&data.wireBase64)data.wireBase64=skillBytes(data).toString('base64');
   }
+  // 统一兜底：不管这条技能是从「自学 / 装备自带 / 叠加等级 / 导入定义」哪条路来的，
+  // 只要是自动技能就补一次概率说明（前面几处补的是数据源，这里保最终结果）。
+  if(data&&Number(data.type)===2)data=withChanceInfo(data,id,skillBytes,skill&&skill.type);
   if(data)result.set(id,{...skill,...data,addLevel:Math.max(0,data.level-learnedLevel),powers:data.native?[1,2,3].filter(n=>data['power'+n]).map(n=>[data['power'+n],data['powerValue'+n]]):data.powers});
  }
  return [...result.values()];

@@ -70,27 +70,27 @@ export function resetAutoSkillChance() { cache = undefined; }
 // 把概率写进技能说明（info），让玩家在游戏里能看见
 // ---------------------------------------------------------------------------
 
-/** 说明行标记：幂等判据，也是「这行是自动追加的」标识。 */
+/** 说明行标记（旧版用它做幂等判断；新版改用正则，常量保留给兼容检测）。 */
 export const INFO_MARK = '【自动释放】';
+/** 说明行的识别正则：新旧写法都能匹配，替换时整行摘掉。 */
+export const INFO_LINE_RE = /每回合\s*\d+%\s*概率触发|【自动释放】.*$/;
 
 /**
- * 读 infoMode 配置：
- *   'changed'（默认）—— 只给配了 <100% 的技能追加说明（未配置=100%，说明保持原版）
+ * 读 infoMode 配置（导出给 restoration 用：装备技能/导入技能要靠它判断要不要补说明）：
+ *   'changed'（默认）—— 只给配了 <100% 的技能追加说明
  *   'all'          —— 所有自动技能都追加，未配置的显示 100%
  */
-function infoModeOf() {
+export function autoSkillInfoMode() {
   let raw;
   try { raw = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch (_) { return 'changed'; }
   const mode = raw && typeof raw === 'object' ? raw.infoMode : null;
   return mode === 'all' ? 'all' : 'changed';
 }
 
-/** 生成说明行。格式统一成「X% 概率触发」，100% 也把数字写出来（玩家要的是能看到概率）。 */
+/** 生成说明行：统一成「每回合 X% 概率触发」（100% 也写数字）。 */
 export function chanceInfoLine(pct) {
-  if (pct >= 100) return INFO_MARK + '每回合 100% 概率触发（必定施放）';
-  if (pct <= 0) return INFO_MARK + '已关闭，不会自动施放';
-  const avg = pct > 0 ? Math.round(100 / pct * 10) / 10 : 0;
-  return INFO_MARK + '每回合 ' + pct + '% 概率触发（不触发则本回合不施放；约 ' + avg + ' 回合 1 次）';
+  const n = pct >= 100 ? 100 : (pct <= 0 ? 0 : Math.round(pct));
+  return '每回合 ' + n + '% 概率触发';
 }
 
 /**
@@ -107,7 +107,7 @@ export function chanceInfoLine(pct) {
 export function decorateAutoSkillChance(skills, skillBytes, options) {
   if (!skills || typeof skills.forEach !== 'function') return [];
   const table = (options && options.table) || autoSkillChanceTable();
-  const mode = (options && options.mode) || infoModeOf();
+  const mode = (options && options.mode) || autoSkillInfoMode();
   const changed = [];
   for (const skill of skills.values()) {
     if (!skill || Number(skill.type) !== 2) continue;          // 只处理自动技能
@@ -121,7 +121,7 @@ export function decorateAutoSkillChance(skills, skillBytes, options) {
       if (!level) return level;
       const base = String(level.info || '')
         .split('\n')
-        .filter(l => !l.startsWith(INFO_MARK))                  // 幂等：先摘掉旧标记行
+        .filter(l => !INFO_LINE_RE.test(l))                    // 幂等：先摘掉旧的概率行（新旧写法都认）
         .join('\n')
         .trimEnd();
       const info = base ? base + '\n' + line : line;
@@ -135,4 +135,31 @@ export function decorateAutoSkillChance(skills, skillBytes, options) {
     if (touched) changed.push({ id: skill.id, pct });
   }
   return changed;
+}
+
+/**
+ * 把概率说明补到一份技能定义上 —— 用于**绕过运行时技能表**的两种情况：
+ *   · 装备自带的技能（activeSkills 用 item.skill，等级是装备加成出来的，表里可能没有该级）
+ *   · 存档导入的技能定义（learned 的 importedSkillDefinitions 分支）
+ * 概率本来就按**技能 id** 配置（与等级无关），所以不需要查等级。
+ * @param {object} def 技能定义（含 info / wireBase64）
+ * @param {number} skillId 技能 id
+ * @param {(skill:object)=>{toString:()=>string}} skillBytes 编码器（character-import-codec 的 skillBytes）
+ * @param {number} [typeHint] def 上没有 type 时用它判断是不是自动技能
+ */
+export function withChanceInfo(def, skillId, skillBytes, typeHint) {
+  if (!def) return def;
+  const type = def.type !== undefined ? Number(def.type) : Number(typeHint);
+  if (type !== 2) return def;                                 // 只处理自动技能
+  const table = autoSkillChanceTable();
+  const pct = table[skillId] === undefined ? 100 : table[skillId];
+  if (pct >= 100 && autoSkillInfoMode() !== 'all') return def;
+  const line = chanceInfoLine(pct);
+  const base = String(def.info || '').split('\n').filter(l => !INFO_LINE_RE.test(l)).join('\n').trimEnd();
+  const info = base ? base + '\n' + line : line;
+  if (info === def.info) return def;
+  const next = { ...def, info };
+  if (next.wireBase64 !== undefined) next.wireBase64 = skillBytes(next).toString('base64');
+  if (next.monsterWireBase64 !== undefined) next.monsterWireBase64 = skillBytes(next).toString('base64');
+  return next;
 }
