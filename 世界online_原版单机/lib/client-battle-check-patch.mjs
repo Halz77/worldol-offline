@@ -113,7 +113,10 @@ export function patchBattleCheckFields(source){
    +'t.append(n.GameText.STR_ATTR_HIT_RATE+":"+(e.get(a.ModelConst.HIT_RATE)||0)+"\\n"),'
    +'t.append(n.GameText.STR_ATTR_HIT_MAGIC+":"+(e.get(a.ModelConst.HIT_MAGIC)||0)+"  "),'
    +'t.append(n.GameText.STR_ATTR_FORCE_HIT+":"+(e.get(a.ModelConst.FORCE_HIT)||0)+"\\n"),'
-   +'t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n")),null!=e.formationSkill&&';
+   +'t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n"),'
+   // 阵位标注（第 99 版）：只给「真的吃到阵位加成」的单位标一行，多人同屏时好分辨谁在第几位。
+   // 军团/队友自己没有 formationSkill 也照样能标（补丁里会用玩家当前阵型 + 阵位序号算）。
+   +'t.append((function(){var L=window.__worldolFormationSlotPatch,s=L&&L.slotLabel?L.slotLabel(e):null;return s?"【阵位："+s+"，吃阵位加成】\\n":"";})())),null!=e.formationSkill&&';
   if(source.split(tail).length!==2)throw Error('v305 battle check tail patch mismatch');
   source=source.replace(tail,tailNew);
   return source;

@@ -187,7 +187,7 @@ export function installAutoSkillChance(req, host) {
 
 /** 补丁链入口：追加 install 函数到主包末尾。 */
 export function patchAutoSkillChance(source) {
-  if (source.includes('__worldolAutoSkillChancePatch')) throw Error('Auto skill chance patch already installed');
+  if (source.includes('function installAutoSkillChance(')) throw Error('Auto skill chance patch already installed');
   if (!source.includes('getAutoSkillIDByRound=function'))
     throw Error('auto skill chance patch mismatch: getAutoSkillIDByRound=function');
   return source + '\n;(' + installAutoSkillChance.toString() + ')(window.__worldReq,window);\n';

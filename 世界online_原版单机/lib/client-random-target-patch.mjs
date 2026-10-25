@@ -308,7 +308,7 @@ export function installRandomTarget(req, host) {
 
 /** 补丁链入口：追加 install 函数到主包末尾。 */
 export function patchRandomTarget(source) {
-  if (source.includes('__worldolRandomTargetPatch')) throw Error('Random target patch already installed');
+  if (source.includes('function installRandomTarget(')) throw Error('Random target patch already installed');
   if (!source.includes('getSelectArea=function'))
     throw Error('random target patch mismatch: getSelectArea=function');
   return source + '\n;(' + installRandomTarget.toString() + ')(window.__worldReq,window);\n';

@@ -54,11 +54,36 @@ export function installFormationSlots(req, host) {
     return map;
   }
 
-  /** 造适配器：继承原 formationSkill（阵名/id 等字段照旧），只覆盖 getPowerValue。 */
+  /**
+   * 当前生效的阵型 id。
+   *
+   * 为什么要这个：DATA_FORMATION 的 formationSkill 只挂在**玩家自己**的单位上，
+   * 军团 / 队友 / 宠物那些单位的 formationSkill 常常是 null —— 原版公式里
+   * `null != this.formationSkill` 直接跳过，所以「全员」阵位加成对它们从来没生效过。
+   * 这里在拿不到 formationSkill 时，从世界单例（模块 5 的 myPlayer）取玩家当前阵型 id，
+   * 再用配置里的阵位加成顶上。
+   */
+  function activeFormationId() {
+    try {
+      const world = req(5);
+      const me = world && (world.myPlayer || (world.default && world.default.myPlayer));
+      const fs = me && (me.formationSkill || (me.vo && me.vo.formationSkill));
+      if (fs && Number(fs.id) > 0) return Number(fs.id);
+    } catch (_) { /* 取不到就退化 */ }
+    const conf = cfg();
+    const keys = conf ? Object.keys(conf.forms) : [];
+    return keys.length === 1 ? Number(keys[0]) : null;          // 只配了一个阵 ⇒ 就用它
+  }
+
+  /**
+   * 造适配器：继承原 formationSkill（阵名/id 等字段照旧），只覆盖 getPowerValue。
+   * realFs 允许为 null —— 军团/队友单位本来就没有 formationSkill，我们只叠加自己的阵位加成。
+   */
   function makeAdapter(realFs, formId, slotIndex, isPet) {
     const conf = cfg();
     if (!conf) return null;
     if (!isPet && !(slotIndex > 0)) return null;              // 不参与阵位的单位（NPC 等）⇒ 不干预
+    if (!(Number(formId) > 0)) return null;
     const form = conf.forms[formId];
     if (!form) return null;
     const mode = form.mode === 'replace' ? 'replace' : 'add';
@@ -78,8 +103,36 @@ export function installFormationSlots(req, host) {
       const base = realFs && typeof realFs.getPowerValue === 'function' ? realFs.getPowerValue(key) : 0;
       return base + own;
     };
+    // 面板要显示「第 N 位」用（只有真的吃加成才标）
+    adapter.__worldolSlotIndex = isPet ? 0 : Math.min(Math.max(1, slotIndex), 5);
+    adapter.__worldolIsPet = !!isPet;
     counters.adapters++;
     return adapter;
+  }
+
+  /** 给面板用：这个单位吃的是哪个阵位（没配加成的阵位返回 null，不标注）。
+   *  入参就是**属性 VO**（战斗信息面板里 `e` 是 VO，直接有 getLevel/getName/formationSkill/position）。 */
+  function slotLabel(unit) {
+    const vo = unit || null;
+    if (!vo) return null;
+    const conf = cfg();
+    if (!conf) return null;
+    const isPet = isPetUnit(vo);
+    if (isPet) {
+      const holder = vo.ownerVo || vo.owner;
+      const fs = (holder && holder.formationSkill) || vo.formationSkill;
+      const form = fs ? conf.forms[fs.id] : conf.forms[activeFormationId()];
+      const powers = form && form.pet && form.pet.powers;
+      return Array.isArray(powers) && powers.length ? '宠物' : null;
+    }
+    const fs = vo.formationSkill;
+    const form = fs ? conf.forms[fs.id] : conf.forms[activeFormationId()];
+    if (!form) return null;
+    const idx = slotIndexOf(vo);
+    if (!(idx > 0)) return null;
+    const slot = Array.isArray(form.slots) ? form.slots[Math.min(idx, 5) - 1] : null;
+    const powers = slot && slot.powers;
+    return Array.isArray(powers) && powers.length ? ('第' + idx + '位') : null;
   }
 
   function battleRef() {
@@ -92,7 +145,10 @@ export function installFormationSlots(req, host) {
   }
 
   function isPetUnit(u) {
-    try { return u && u.ownerVo !== undefined; } catch (_) { return false; }
+    try {
+      const vo = u && (u.vo || u);
+      return !!(vo && (vo.ownerVo !== undefined || (u && u.ownerVo !== undefined)));
+    } catch (_) { return false; }
   }
 
   /**
@@ -111,11 +167,13 @@ export function installFormationSlots(req, host) {
   }
   const SLOT_TYPES = { 3: true, 10: true };   // 3=玩家角色 10=军团
 
-  /** 己方角色按位置升序排名，返回 1-based 阵位序号；不参与阵位的单位返回 0。 */
+  /** 己方角色按位置升序排名，返回 1-based 阵位序号；不参与阵位的单位返回 0。
+   * 入参**永远是属性 VO**（getPowerValue 的 this、或面板里的 e）。VO 上有 position/getType/formationSkill，
+   * 没有 `.vo` 包裹。遍历时 battle.getPlayerByPos(p) 返回的是战斗单位（有 .vo），那边用 unitType/isPetUnit 里的 `u.vo||u` 取 VO。 */
   function slotIndexOf(unit) {
     let pos;
     try { pos = unit && unit.position; } catch (_) { pos = undefined; }
-    if (typeof pos !== 'number' || pos < 0 || pos >= MAX_POS) return 1;
+    if (typeof pos !== 'number' || pos < 0 || pos >= MAX_POS) return 1;   // 非战斗（角色面板）⇒ 第 1 位
     const battle = battleRef();
     if (!battle || typeof battle.getPlayerByPos !== 'function') return 1;
     const side = pos < LEFT_MAX_POS;
@@ -123,14 +181,16 @@ export function installFormationSlots(req, host) {
     for (let p = 0; p < MAX_POS; p++) {
       let u;
       try { u = battle.getPlayerByPos(p); } catch (_) { u = null; }
-      if (!u || !u.battleSprite) continue;
+      if (!u) continue;
       if (isPetUnit(u)) continue;                               // 宠物不占角色阵位
       if ((p < LEFT_MAX_POS) !== side) continue;
       const type = unitType(u);
       if (type !== null && !SLOT_TYPES[type]) continue;         // NPC/佣兵/伙伴等 都不占位
       list.push(p);
     }
-    if (!list.length) return 1;
+    // ⚠ 第 99 版：不要用 `u.battleSprite` 过滤 —— 属性计算可能发生在战斗动画建好之前，
+    // 那时候所有单位都没有图标，名单会空 ⇒ 阵位算不出来 ⇒ 阵位加成整块不生效。
+    if (!list.length) return 1;                                 // 查不到同侧单位 ⇒ 至少按第 1 位
     list.sort(function (a, b) { return a - b; });
     const i = list.indexOf(pos);
     return i < 0 ? 0 : i + 1;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
@@ -170,14 +230,16 @@ export function installFormationSlots(req, host) {
     const original = proto[name];
     if (typeof original !== 'function') return false;
     proto[name] = function () {
-      const real = this && this.formationSkill;
-      if (!real) { counters.fallbacks++; return original.apply(this, arguments); }
-      const adapter = makeAdapter(real, real.id, slotIndexOf(this), false);
+      const had = this && this.formationSkill;
+      const real = had || null;
+      // 军团/队友这些单位自己没挂 formationSkill（阵法块只给玩家），仍然按玩家当前阵型算阵位加成
+      const formId = real && Number(real.id) > 0 ? real.id : activeFormationId();
+      const adapter = makeAdapter(real, formId, slotIndexOf(this), false);
       if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
       this.formationSkill = adapter;
       counters.rolePatches++;
       try { return original.apply(this, arguments); }
-      finally { this.formationSkill = real; }                  // 立刻还原（同步调用，安全）
+      finally { this.formationSkill = had; }                   // 立刻还原（同步调用，安全）
     };
     return true;
   }
@@ -219,14 +281,15 @@ export function installFormationSlots(req, host) {
     if (typeof original !== 'function') return false;
     proto[name] = function () {
       const holder = this && (this.ownerVo || this.owner);
-      const real = holder && holder.formationSkill;
-      if (!real) { counters.fallbacks++; return original.apply(this, arguments); }
-      const adapter = makeAdapter(real, real.id, 1, true);
+      const had = holder && holder.formationSkill;
+      const real = had || null;
+      const formId = real && Number(real.id) > 0 ? real.id : activeFormationId();
+      const adapter = makeAdapter(real, formId, 1, true);
       if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
-      holder.formationSkill = adapter;
+      if (holder) holder.formationSkill = adapter;
       counters.petPatches++;
       try { return original.apply(this, arguments); }
-      finally { holder.formationSkill = real; }
+      finally { if (holder) holder.formationSkill = had; }
     };
     return true;
   }
@@ -389,6 +452,10 @@ export function installFormationSlots(req, host) {
         : ((Array.isArray(form.slots) && form.slots[Math.min(Math.max(1, slotIndex), 5) - 1] && form.slots[Math.min(Math.max(1, slotIndex), 5) - 1].powers) || []);
       return { mode: mode, powers: powers };
     },
+    /** 战斗信息面板用：这个单位吃哪个阵位（没配加成的返回 null，不标注）。 */
+    slotLabel: slotLabel,
+    /** 诊断用：当前生效的阵型 id（军团单位没有 formationSkill 时靠它）。 */
+    activeFormation: activeFormationId,
     /** 测试钩子：手动补挂（模拟轮询路径）。 */
     probeAttach: attach,
     stop: function () { if (timer) { clearInterval(timer); timer = null; } }
@@ -399,7 +466,9 @@ export function installFormationSlots(req, host) {
 
 /** 补丁链入口：追加 install 函数到主包末尾。 */
 export function patchFormationSlots(source) {
-  if (source.includes('__worldolFormationSlotPatch')) throw Error('Formation slot patch already installed');
+  // 用函数名判断（不能用 __worldolFormationSlotPatch：面板补丁会引用这个全局名，
+  // 那条补丁排在本条之前，会让这里误判成「已安装」）
+  if (source.includes('function installFormationSlots(')) throw Error('Formation slot patch already installed');
   // 锚点：宠物方法在 v305 主包里唯一，且它的存在意味着 0042/0056 的结构没变
   if (!source.includes('getPetBaseValue=function'))
     throw Error('formation slot patch mismatch: getPetBaseValue=function');
