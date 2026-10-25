@@ -32,6 +32,7 @@ import {applyGuardChallenges} from './guard-challenges-data.mjs';
 import {applyItemOverrides,applyIdentifyOverrides,identifyOverrides} from './item-overrides.mjs';
 import {applyFormationBooks} from './formation-data.mjs';
 import {applyMonsterOverrides} from './local-monster-overrides.mjs';
+import {applyLocalEncounters} from './local-encounters.mjs';
 
 /**
  * 原版 v305 目录（34.8 MB）+ 五张 id 索引表 —— 整个服务端最重的一份数据。
@@ -169,6 +170,9 @@ fixMidAutumnFinalBoss(official);
  // 必须排在装备覆盖之前，这样以后在装备编辑器里也能改到它们。建索引之前即可被
  // officialItems / restoration.equipment / 商店目录同时看到。
  applyFormationBooks(official);
+ // 第 96 版怪物编队编辑器：自定义编队必须在建 officialGroups 之前注册
+ // （它往 official.groups 里加条目，并把 replaceMission 指向的任务改指过去）。
+ applyLocalEncounters(official);
  // 本地装备属性覆盖（第 86 版，见 lib/item-overrides.mjs + 装备编辑器.html）。
  // 必须排在**所有补道具的补丁之后**：① 覆盖表里可能有本地补出来的道具；
  // ② 前面的补丁（如 applyCustomAdventures 重建 1002/1011/1022/1032 定义字节时会逐字节

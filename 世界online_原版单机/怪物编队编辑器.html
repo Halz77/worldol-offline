@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>怪物编队编辑器 · 世界OL 单机版</title>
+<style>
+  :root{--bg:#10162a;--panel:#1b2340;--panel2:#151c33;--line:#36477a;--line2:#4a6db8;
+    --text:#dfe7f7;--dim:#8fa3c8;--gold:#ffe9a8;--gold2:#c8a34d;--ok:#7fd18a;--err:#ff8f8f;
+    --btn:#2e4270;--btn2:#3b5aa6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:13px/1.55 "Microsoft YaHei",system-ui,sans-serif}
+  header{position:sticky;top:0;z-index:9;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 14px;
+    background:linear-gradient(#1d2748,#161e36);border-bottom:1px solid var(--line)}
+  header h1{margin:0;font-size:17px;color:var(--gold)}
+  header .ver{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:10px;padding:1px 7px}
+  header .grow{flex:1}
+  button{background:var(--btn);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:5px 11px;cursor:pointer;font-size:12px}
+  button:hover{background:var(--btn2)}
+  button.primary{background:#2f5ea8;border-color:#6f9fe8}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.danger{border-color:#7d3f3f;color:var(--err)}
+  main{display:grid;grid-template-columns:230px 1fr;height:calc(100vh - 52px)}
+  aside{border-right:1px solid var(--line);background:var(--panel2);display:flex;flex-direction:column}
+  aside .head{padding:7px;border-bottom:1px solid var(--line);display:flex;gap:6px}
+  aside .list{overflow:auto;flex:1;padding:5px}
+  aside .item{display:flex;gap:6px;align-items:center;padding:6px 8px;border:1px solid transparent;border-radius:5px;cursor:pointer;font-size:12px}
+  aside .item:hover{background:#222c4d}
+  aside .item.active{background:#35467a;border-color:var(--gold2)}
+  aside .item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  section{padding:12px 16px;overflow:auto}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 13px;margin-bottom:11px}
+  .card h2{margin:0 0 8px;font-size:14px;color:var(--gold)}
+  .row{display:flex;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap}
+  .row label{color:var(--dim);font-size:12px;min-width:96px}
+  input,select{background:#0e1526;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:4px 7px;font-size:12px}
+  input[type=number]{width:92px}
+  .grid10{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:6px}
+  .slot{background:#0e1526;border:1px solid var(--line);border-radius:7px;padding:7px;text-align:center}
+  .slot .pos{font-size:11px;color:var(--dim);margin-bottom:4px}
+  .slot .nm{font-size:12px;color:var(--gold);min-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .slot .lv{font-size:11px;color:var(--dim)}
+  .slot input{width:100%;text-align:center}
+  .slot .clr{font-size:11px;color:var(--dim);cursor:pointer}
+  .slot .clr:hover{color:var(--err)}
+  .hint{font-size:11px;color:var(--dim);margin-top:6px}
+  .empty{color:var(--dim);text-align:center;padding:26px;border:1px dashed var(--line);border-radius:9px}
+  #status{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);max-width:80vw;padding:7px 13px;border-radius:7px;
+    font-size:12px;display:none;z-index:20;background:#222c4d;border:1px solid var(--line2)}
+  #status.ok{border-color:#3f7d4d;background:#1b3326;color:var(--ok)}
+  #status.err{border-color:#7d3f3f;background:#331b1b;color:var(--err)}
+  #toast{position:fixed;left:50%;top:64px;transform:translateX(-50%);background:#2f5ea8;color:#fff;padding:7px 15px;
+    border-radius:7px;font-size:12px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+  #toast.show{opacity:1}
+  pre{background:#0e1526;border:1px solid var(--line);border-radius:6px;padding:8px;font-size:11px;overflow:auto;color:var(--dim)}
+</style>
+</head>
+<body>
+<header>
+  <h1>怪物编队编辑器</h1><span class="ver">第 96 版 · 自定义编队 + 替换挑战</span>
+  <span class="grow"></span>
+  <button id="btn-load">载入 data 目录</button>
+  <button id="btn-save" class="primary" disabled>保存到 data/</button>
+  <button id="btn-download" disabled>下载配置</button>
+</header>
+<main>
+  <aside>
+    <div class="head"><button id="btn-add">+ 新建编队</button></div>
+    <div class="list" id="list"></div>
+  </aside>
+  <section id="editor"><div class="empty">左边新建或选一个编队开始设计</div></section>
+</main>
+<div id="status"></div>
+<div id="toast"></div>
+
+<datalist id="monster-list"><option value="1">巨大的翼兽 Lv16</option><option value="2">骷髅兵 Lv16</option><option value="3">灵蛇 Lv21</option><option value="4">地狱使者 Lv34</option><option value="5">地狱使者 Lv34</option><option value="6">黑鬼指挥官 Lv39</option><option value="7">小鬼 Lv39</option><option value="8">地狱业火 Lv39</option><option value="9">地狱腐狮 Lv39</option><option value="10">奇美拉 Lv39</option><option value="11">鹰身人 Lv39</option><option value="12">黑无常 Lv39</option><option value="13">白无常 Lv39</option><option value="14">游骑兵 Lv34</option><option value="15">游骑女兵 Lv34</option><option value="16">游骑首领 Lv34</option><option value="17">地狱之火 Lv34</option><option value="18">地狱骑兵 Lv39</option><option value="19">鬼将 Lv39</option><option value="20">地狱翼狮 Lv39</option><option value="21">哈士奇 Lv2</option><option value="22">小偷 Lv2</option><option value="23">祭师 Lv30</option><option value="24">塔洛斯的士兵 Lv30</option><option value="25">塔洛斯国王 Lv30</option><option value="26">冻害的手下 Lv40</option><option value="27">大树先生 Lv40</option><option value="28">花仙子 Lv40</option><option value="29">仙人花 Lv40</option><option value="30">研究所追兵 Lv40</option><option value="40">树怪 Lv30</option><option value="41">竹怪 Lv30</option><option value="42">恶灵(Boss） Lv30</option><option value="43">恶灵 Lv30</option><option value="91">放火的倭寇 Lv60</option><option value="92">鬼祟的倭寇 Lv60</option><option value="93">游荡的倭寇 Lv60</option><option value="94">藤原大佐 Lv60</option><option value="95">泽田大国师 Lv60</option><option value="96">倭寇士兵 Lv60</option><option value="97">倭寇中尉 Lv60</option><option value="98">倭寇看守 Lv60</option><option value="99">朱雀村守卫军 Lv60</option><option value="100">日出小分队1号 Lv60</option><option value="101">日出小分队2号 Lv60</option><option value="102">木栏 Lv60</option><option value="103">溃败的倭寇 Lv60</option><option value="119">妖狼 Lv16</option><option value="120">狼人 Lv16</option><option value="121">天玄剑客 Lv16</option><option value="122">魔鹰 Lv16</option><option value="123">骷髅精 Lv16</option><option value="124">鹰身人 Lv21</option><option value="125">月狼 Lv21</option><option value="128">妖尊者 Lv21</option><option value="129">蛇妖箭手 Lv21</option><option value="130">灵蛇守卫 Lv21</option><option value="132">骷髅王 Lv16</option><option value="133">月狼宗宗主 Lv21</option><option value="134">万兽宗宗主 Lv21</option><option value="135">蛮妖王 Lv26</option><option value="136">妖将 Lv26</option><option value="137">蛮兵 Lv26</option><option value="138">妖帅 Lv26</option><option value="139">巫毒师 Lv26</option><option value="140">妖王 Lv26</option><option value="141">无头骷髅 Lv18</option><option value="142">骷髅刀斧手 Lv18</option><option value="143">骷髅剑士 Lv18</option><option value="144">骷髅弓箭手 Lv18</option><option value="145">守墓将军 Lv18</option><option value="146">毒尸 Lv23</option><option value="147">飞头蛮 Lv23</option><option value="149">古狸 Lv23</option><option value="150">白骨刽子手 Lv23</option><option value="154">护陵鬼兵 Lv28</option><option value="155">护陵召唤师 Lv28</option><option value="156">护陵将军 Lv28</option><option value="157">石狮子 Lv28</option><option value="159">豹 Lv34</option><option value="160">紫豹王 Lv34</option><option value="162">游民族人 Lv34</option><option value="163">迷幻之火 Lv34</option><option value="164">火元素 Lv39</option><option value="165">鹰身人 Lv39</option><option value="166">黑鬼兵 Lv39</option><option value="169">狂暴的鹰身人 Lv21</option><option value="170">小恶魔 Lv21</option><option value="171">蛇女 Lv21</option><option value="172">护陵箭手 Lv28</option><option value="177">鹰身人首领 Lv39</option><option value="179">岩狱腐狮 Lv39</option><option value="180">火元素精灵 Lv39</option><option value="181">恐怖的岩狱腐狮 Lv39</option><option value="182">翼狮 Lv39</option><option value="183">小阎王 Lv39</option><option value="184">大刀手 Lv39</option><option value="185">奇美拉 Lv39</option><option value="187">黑鬼天王 Lv39</option><option value="188">侍卫军 Lv41</option><option value="189">刺客 Lv41</option><option value="190">禁卫兵 Lv41</option><option value="192">树妖 Lv41</option><option value="193">重弩刺客 Lv41</option><option value="194">长剑杀手 Lv41</option><option value="195">西城城主 Lv41</option><option value="196">弑剑宗弟子 Lv46</option><option value="198">弑剑宗剑手 Lv46</option><option value="199">弑剑宗杂兵 Lv46</option><option value="200">魔物-刑天 Lv65</option><option value="201">思剑 Lv46</option><option value="202">刑天 Lv46</option><option value="300">古尸 Lv18</option><option value="301">僵尸 Lv23</option><option value="302">机关师 Lv23</option><option value="303">汉代武将 Lv23</option><option value="304">无头武将 Lv23</option><option value="305">幽女 Lv23</option><option value="306">骷髅恶鬼 Lv23</option><option value="307">骷髅剑士 Lv23</option><option value="308">毒蛙 Lv23</option><option value="309">汉代古尸 Lv23</option><option value="311">夜叉鬼 Lv28</option><option value="312">游魂 Lv28</option><option value="313">汉王 Lv28</option><option value="314">乌羊兽 Lv28</option><option value="315">侍卫军长 Lv41</option><option value="316">史玉 Lv41</option><option value="317">杀手 Lv41</option><option value="318">西域杀手 Lv41</option><option value="319">妖术师 Lv41</option><option value="320">禁卫军 Lv41</option><option value="321">西域一点红 Lv41</option><option value="322">快剑 Lv41</option><option value="323">岚剑 Lv46</option><option value="324">岩剑 Lv46</option><option value="325">古尘 Lv46</option><option value="326">般若 Lv46</option><option value="327">弑剑宗高手 Lv46</option><option value="328">弑剑宗剑手 Lv46</option><option value="329">弑剑宗箭手 Lv46</option><option value="330">惊寂 Lv46</option><option value="331">贪狼 Lv46</option><option value="332">叛变的弟子 Lv65</option><option value="337">玉凤 Lv65</option><option value="338">神兵-岚剑 Lv65</option><option value="339">神兵-岩剑 Lv65</option><option value="340">神兵-古尘 Lv65</option><option value="341">神兵-般若 Lv65</option><option value="342">神兵-惊寂 Lv65</option><option value="343">神兵-贪狼 Lv65</option><option value="409">野狼 Lv15</option><option value="410">拦路山贼 Lv15</option><option value="411">黑胡子山贼 Lv15</option><option value="412">山贼头领 Lv15</option><option value="413">大刀强 Lv15</option><option value="414">精英大刀强 Lv15</option><option value="415">巡逻山贼 Lv15</option><option value="416">看守的山贼 Lv15</option><option value="417">精英山贼 Lv15</option><option value="418">山贼头领 Lv15</option><option value="419">驯化狼 Lv15</option><option value="420">浩克 Lv20</option><option value="421">小恶魔 Lv20</option><option value="422">翼手族 Lv25</option><option value="423">大刀绿皮 Lv20</option><option value="424">骷髅剑士 Lv20</option><option value="425">绿魔 Lv20</option><option value="426">红魔 Lv20</option><option value="427">玛吉纳 Lv20</option><option value="429">死灵弓手 Lv25</option><option value="430">地精恶魔 Lv25</option><option value="432">恐怖利刃 Lv20</option><option value="433">魔化恐怖利刃 Lv25</option><option value="437">阿巴顿 Lv22</option><option value="438">死灵腐尸 Lv17</option><option value="439">使徒 Lv17</option><option value="441">使魔 Lv17</option><option value="442">召唤使魔 Lv17</option><option value="443">使徒小头领 Lv17</option><option value="444">傀儡恶魔 Lv22</option><option value="445">帕吉纳 Lv22</option><option value="446">双头奇美拉 Lv22</option><option value="447">洞穴牛头人 Lv22</option><option value="448">死灵骷髅 Lv22</option><option value="450">使徒 Lv22</option><option value="451">墓穴守护者 Lv22</option><option value="452">被控制的恶魔 Lv22</option><option value="454">巨魔守护者 Lv22</option><option value="455">毒魔 Lv22</option><option value="456">教徒头领 Lv22</option><option value="459">蝙蝠魔 Lv22</option><option value="460">火灵 Lv27</option><option value="461">炎魔 Lv27</option><option value="463">板斧骷髅 Lv27</option><option value="464">骷髅法师 Lv27</option><option value="465">血灵 Lv27</option><option value="466">蛇发女妖 Lv27</option><option value="467">死亡骑士 Lv27</option><option value="468">梦魇 Lv27</option><option value="469">恶魔 Lv15</option><option value="470">山贼守卫 Lv15</option><option value="471">雪狼 Lv30</option><option value="472">大棒野蛮人 Lv30</option><option value="473">暴力野蛮人 Lv30</option><option value="474">野蛮人头领 Lv30</option><option value="475">食人魔 Lv30</option><option value="476">雪山亡灵 Lv30</option><option value="477">亡灵士兵 Lv30</option><option value="478">无头骷髅 Lv30</option><option value="479">亡灵巫师 Lv30</option><option value="480">大剑食人魔 Lv35</option><option value="481">怨灵 Lv35</option><option value="482">腐狮 Lv35</option><option value="483">守卫食人魔 Lv35</option><option value="484">凶残食人魔 Lv35</option><option value="485">狂暴食人魔 Lv35</option><option value="486">奇美拉 Lv35</option><option value="487">死亡骑士 Lv30</option><option value="488">愤怒的怨灵 Lv35</option><option value="489">食人魔头领 Lv35</option><option value="491">远古猎豹 Lv40</option><option value="492">毒液魔兽 Lv40</option><option value="493">远古树精 Lv40</option><option value="494">月夜狼人 Lv40</option><option value="495">黑魔使 Lv40</option><option value="496">翼狮 Lv40</option><option value="497">地狱双头怪 Lv40</option><option value="498">紫云豹 Lv40</option><option value="500">骸骨刀兵 Lv45</option><option value="501">长毛狮 Lv45</option><option value="502">死亡骑士 Lv45</option><option value="503">无头骑士 Lv45</option><option value="504">无头骑士的头 Lv45</option><option value="505">地狱双头犬 Lv45</option><option value="506">食尸鬼 Lv45</option><option value="508">骷髅士兵 Lv45</option><option value="509">屠夫 Lv45</option><option value="510">骷髅斧手 Lv45</option><option value="511">骷髅法师 Lv45</option><option value="512">火精灵 Lv45</option><option value="513">红炎龙王 Lv50</option><option value="514">黑魔导师 Lv50</option><option value="515">黑魔使 Lv50</option><option value="516">黑魔守护者 Lv50</option><option value="517">暗杀使 Lv45</option><option value="520">商人的鬼魂 Lv15</option><option value="521">暗夜魔王 Lv20</option><option value="522">死亡骑士-阿巴顿 Lv22</option><option value="523">双头奇美拉 Lv22</option><option value="524">遗忘法师-帕吉纳 Lv22</option><option value="525">哀嚎女妖 Lv27</option><option value="526">白无常 Lv30</option><option value="527">夺走灵魂的食人魔 Lv35</option><option value="528">万年妖树 Lv40</option><option value="529">无头将军 Lv45</option><option value="530">黑无常 Lv45</option><option value="531">山贼头领 Lv15</option><option value="532">有思想的头颅 Lv45</option><option value="533">刀疤杰森 Lv15</option><option value="534">巨魔 Lv20</option><option value="535">翼手族首领 Lv25</option><option value="536">召唤使魔 Lv17</option><option value="537">梦魇 Lv27</option><option value="538">雪女 Lv30</option><option value="539">食人魔头领 Lv35</option><option value="541">无头骑士 Lv45</option><option value="542">黑魔导师 Lv45</option><option value="1500">邪灵教徒杂兵 Lv1</option><option value="1501">小恶魔 Lv2</option><option value="1505">狂战士鲁尼 Lv3</option><option value="1542">地精短刀手 Lv40</option><option value="1543">地精大刀手 Lv40</option><option value="1544">疯狂地精 Lv40</option><option value="1545">地精纵火者 Lv40</option><option value="1546">地精头领 Lv45</option><option value="1547">地精候选头领 Lv45</option><option value="1563">蓝龙 Lv50</option><option value="1707">黑袍法师-雷斯林 Lv45</option><option value="1708">黑袍法师-雷斯林 Lv45</option><option value="1709">火龙 Lv90</option><option value="1710">火龙 Lv90</option><option value="1711">暴走法师-雷斯林 Lv50</option><option value="1729">血腥狼人 Lv50</option><option value="1730">冰原狼 Lv50</option><option value="1731">座狼 Lv50</option><option value="1732">堕狼魔 Lv53</option><option value="1733">冰墙 Lv50</option><option value="1734">小年兽 Lv100</option><option value="1735">大年兽 Lv120</option><option value="1736">年兽 Lv70</option><option value="1737">祈福小队长 Lv100</option><option value="1738">祈福小队 Lv80</option><option value="1739">祈福小队 Lv80</option><option value="1740">祈福小队 Lv80</option><option value="1741">祈福小队 Lv80</option><option value="1742">福猫 Lv50</option><option value="1743">福女 Lv50</option><option value="1744">福鹰 Lv50</option><option value="1745">福宝 Lv50</option><option value="1746">福儿 Lv50</option><option value="1800">大刀女 Lv20</option><option value="1801">暴力女 Lv20</option><option value="1802">刀女 Lv20</option><option value="1803">女法师 Lv20</option><option value="1804">女弓手 Lv20</option><option value="1805">大地 Lv20</option><option value="1806">女仆 Lv20</option><option value="1807">鹰 Lv20</option><option value="1808">熊猫 Lv20</option><option value="1809">火精灵 Lv20</option><option value="1810">双刀女 Lv70</option><option value="1811">暴力女 Lv70</option><option value="1812">刀女 Lv70</option><option value="1813">女法师 Lv70</option><option value="1814">女射手 Lv70</option><option value="1815">大地 Lv70</option><option value="1816">女仆 Lv70</option><option value="1817">鹰 Lv70</option><option value="1818">熊猫 Lv70</option><option value="1819">火精灵 Lv70</option><option value="1824">饥饿的秃鹫 Lv34</option><option value="1825">鹰身人哨兵 Lv34</option><option value="1826">火元素 Lv34</option><option value="1830">食人鬼 Lv20</option><option value="1891">失魂鹰身人 Lv60</option><option value="1892">魔眼美杜莎 Lv60</option><option value="1893">变异猎鹰 Lv60</option><option value="1894">沙漠魈兽 Lv60</option><option value="1895">沙漠火龙-炎帝 Lv60</option><option value="1896">火焰 Lv50</option><option value="1952">火焰 Lv50</option><option value="1958">箭塔 Lv50</option><option value="1959">墙１ Lv80</option><option value="1960">血烟佣兵团弓箭手 Lv50</option><option value="1961">墙２ Lv80</option><option value="1962">墙３ Lv80</option><option value="1963">血烟佣兵团士兵 Lv50</option><option value="1964">血烟佣兵团法师 Lv50</option><option value="1965">血烟佣兵团将领 Lv50</option><option value="1966">血烟－石锤 Lv50</option><option value="1967">血烟团长－恶灵 Lv50</option><option value="1978">宝箱怪 Lv50</option><option value="1979">小型中国僵尸 Lv50</option><option value="1980">僵尸 Lv50</option><option value="1981">女巫 Lv50</option><option value="1982">可怕的自爆南瓜 Lv50</option><option value="1983">疯狂的自爆南瓜 Lv50</option><option value="1984">悲伤的自爆南瓜 Lv50</option><option value="1985">怪异的园丁 Lv50</option><option value="2016">偷袭的箭手 Lv3</option><option value="2017">围攻的教众 Lv3</option><option value="2018">亥起 Lv5</option><option value="2019">紫嫣 Lv9</option><option value="2020">魔教枪兵 Lv3</option><option value="2021">魔教刀兵 Lv3</option><option value="2022">魔教箭手 Lv5</option><option value="2023">魔教修真者 Lv5</option><option value="2025">魔教刀手 Lv7</option><option value="2028">魔教屠夫 Lv5</option><option value="2029">修真者梦龙 Lv9</option><option value="2030">魔教三雄 Lv7</option><option value="2031">红发刀客 Lv6</option><option value="2032">白发刀客 Lv6</option><option value="2034">斑纹豹 Lv1</option><option value="2035">魔教恶僧 Lv9</option><option value="2036">魔教刺客 Lv9</option><option value="2037">严峰 Lv6</option><option value="2038">丽莎 Lv6</option><option value="2039">白日死 Lv10</option><option value="2041">魔教刀客 Lv12</option><option value="2042">魔教剑客 Lv12</option><option value="2043">魔天王吴星 Lv13</option><option value="2044">魔天王吴用 Lv13</option><option value="2045">任独行 Lv15</option><option value="2046">志天笑 Lv9</option><option value="2047">剑客李文衍 Lv3</option><option value="2048">剑客严人英 Lv3</option><option value="2049">韩松 Lv3</option><option value="2050">战斗女仆 Lv8</option><option value="2051">祈福小队长 Lv100</option><option value="2052">祈福小队 Lv80</option><option value="2053">祈福小队 Lv80</option><option value="2054">祈福小队 Lv80</option><option value="2055">祈福小队 Lv80</option><option value="2056">福猫 Lv60</option><option value="2057">福女 Lv60</option><option value="2058">福鹰 Lv60</option><option value="2059">福宝 Lv60</option><option value="2060">福儿 Lv60</option><option value="2062">不是这小子 Lv60</option><option value="2258">大树先生 Lv60</option><option value="2259">熊人 Lv60</option><option value="2260">噬人鸦 Lv60</option><option value="2261">狼 Lv60</option><option value="2262">猎豹 Lv60</option><option value="3087">泽田大国师 Lv60</option><option value="3237">牛头怪 Lv70</option><option value="3247">厚皮雪人 Lv80</option><option value="4044">鬼王 Lv120</option><option value="4045">鬼王分身 Lv100</option><option value="4046">千年僵尸 Lv80</option><option value="4070">塔洛斯女神 Lv120</option><option value="4071">怨气恶魔 Lv100</option></datalist>
+<datalist id="mission-list"></datalist>
+<script id="encounter-labels" type="application/json">{"missions":[{"id":13,"name":"勾魂使","group":3},{"id":80,"name":"鬼将","group":17},{"id":304,"name":"击败狼人","group":125},{"id":309,"name":"翼兽的袭击","group":1},{"id":319,"name":"月狼族的委托","group":131},{"id":335,"name":"骷髅王","group":134},{"id":338,"name":"是敌是友","group":135},{"id":340,"name":"妖蛇守卫","group":178},{"id":341,"name":"突袭","group":137},{"id":355,"name":"五灵蛇","group":139},{"id":360,"name":"打败蛮妖王","group":142},{"id":365,"name":"溃败","group":145},{"id":371,"name":"友军的援助","group":144},{"id":372,"name":"友军的援助","group":147},{"id":375,"name":"双蛇","group":138},{"id":380,"name":"合力之战","group":148},{"id":381,"name":"盗墓者","group":150},{"id":388,"name":"击退古尸","group":220},{"id":389,"name":"击退古尸","group":220},{"id":396,"name":"守墓将军","group":154},{"id":409,"name":"机关师","group":225},{"id":412,"name":"汉代武将","group":226},{"id":437,"name":"汉王古尸","group":238},{"id":441,"name":"击退古尸","group":220},{"id":448,"name":"无头武将","group":227},{"id":449,"name":"幽女","group":228},{"id":450,"name":"恶鬼骷髅","group":229},{"id":506,"name":"野蛮人头领","group":473},{"id":534,"name":"凶恶的怨灵","group":489},{"id":541,"name":"灵魂法阵","group":487},{"id":542,"name":"灵魂法阵","group":487},{"id":543,"name":"灵魂法阵","group":487},{"id":545,"name":"合成的怪物","group":486},{"id":554,"name":"阻止食人魔头领","group":490},{"id":579,"name":"不听劝告","group":495},{"id":586,"name":"突然出现的怪物","group":497},{"id":590,"name":"愤怒的黑魔使","group":499},{"id":604,"name":"最后的试炼","group":503},{"id":610,"name":"挡路的屏障","group":507},{"id":614,"name":"不讲信用的屠夫","group":509},{"id":623,"name":"红炎龙王","group":513},{"id":626,"name":"围攻的怪物","group":516},{"id":628,"name":"起死回生","group":515},{"id":630,"name":"怪物的围攻","group":516},{"id":632,"name":"愤怒的法师","group":10001},{"id":664,"name":"迷之恶魔","group":469},{"id":728,"name":"山贼的袭击","group":412},{"id":746,"name":"打败山贼头领","group":418},{"id":763,"name":"贪婪的精灵","group":425},{"id":764,"name":"兄弟相争","group":426},{"id":781,"name":"恐怖利刃的力量","group":433},{"id":782,"name":"魔化恐怖利刃","group":434},{"id":805,"name":"突然出现的使魔","group":443},{"id":814,"name":"凶恶的使徒","group":439},{"id":824,"name":"梦魇的部下","group":455},{"id":834,"name":"愤怒的守护者","group":454},{"id":838,"name":"狂妄的使徒","group":456},{"id":847,"name":"熔岩之地的恶魔","group":461},{"id":849,"name":"梦魇的手下","group":455},{"id":860,"name":"骷髅法师","group":464},{"id":864,"name":"恐怖的蛇发女妖","group":466},{"id":867,"name":"梦魇的挑战","group":468},{"id":905,"name":"挟持倭寇！","group":607},{"id":909,"name":"狼狈的藤原大佐","group":11667},{"id":913,"name":"营救成功","group":613},{"id":915,"name":"日出小分队1号","group":614},{"id":920,"name":"日出小分队2号","group":615},{"id":921,"name":"打败国师","group":11668},{"id":1129,"name":"祭师？","group":62},{"id":1133,"name":"和谈","group":64},{"id":1138,"name":"无聊的冻害","group":65},{"id":1147,"name":"离别","group":69},{"id":1154,"name":"祭拜","group":82},{"id":1161,"name":"激战！","group":81},{"id":1170,"name":"阴森恐怖的鬼冢","group":11728},{"id":1171,"name":"挑战强大的鬼王","group":11727},{"id":1172,"name":"被邪恶怨气附体的塔洛斯女神","group":11739},{"id":1505,"name":"紫豹王来袭","group":172},{"id":1518,"name":"鹰身人","group":183},{"id":1555,"name":"不速之客","group":239},{"id":1673,"name":"阴谋","group":243},{"id":1675,"name":"妖术师","group":244},{"id":1679,"name":"俘虏","group":248},{"id":1681,"name":"西城城主","group":249},{"id":1688,"name":"岚剑","group":250},{"id":1691,"name":"岩剑","group":251},{"id":1701,"name":"刑天","group":259},{"id":1706,"name":"刑天","group":213},{"id":2207,"name":"单挑的邀请","group":2014},{"id":2214,"name":"击败魔教屠夫","group":2017},{"id":2219,"name":"击败魔教三雄","group":2022},{"id":2231,"name":"击败白日死","group":2031},{"id":2237,"name":"强者的证明","group":2046},{"id":2248,"name":"击败魔天王吴星","group":2032},{"id":2249,"name":"击败魔天王吴用","group":2045},{"id":2591,"name":"雪地蓝龙捕猎","group":11610},{"id":2756,"name":"[找抽版]决战暴力女","group":12001},{"id":2757,"name":"决战暴力女","group":12000},{"id":2786,"name":"[精英]驱赶年兽","group":11615},{"id":2787,"name":"[普通]驱赶年兽","group":11616},{"id":2789,"name":"福队闹元宵（普通）","group":11617},{"id":2790,"name":"福队闹元宵（高难）","group":11678},{"id":3042,"name":"恶梦爆破","group":10007}]}</script>
+<script>
+"use strict";
+/* ============================================================
+ * 怪物编队编辑器（第 96 版）
+ *
+ * 数据流：data/local-encounters.json ⇄ 本编辑器
+ * 生效链：lib/local-encounters.mjs → official-data.ensure() 里
+ *         往 official.groups 注册编队（battleGroupWire 现编字节）
+ *         + 把 replaceMission 指向的任务 acceptBattleID 改成你的编队
+ * 打法：从原来的入口接那条任务（如 boss 直达里的挑战），打的就是你的编队。
+ * ============================================================ */
+const LABELS = JSON.parse(document.getElementById('encounter-labels').textContent);
+const MISSIONS = (LABELS.missions || []).slice().sort((a, b) => a.id - b.id);
+const REVISION = 'local-encounters-20261025-v1';
+const GROUP_MIN = 30100, GROUP_MAX = 30199;
+
+const state = { encounters: [], selected: null, dirHandle: null, nextId: GROUP_MIN };
+
+const $ = s => document.querySelector(s);
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x != null) n.textContent = x; return n; };
+let toastTimer = null;
+function toast(m, ms = 2000) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), ms); }
+function status(m, k = '') { const s = $('#status'); if (!m) { s.style.display = 'none'; return; } s.className = k; s.innerHTML = m; s.style.display = 'block'; }
+
+function normalizeIncoming(raw) {
+  const out = [];
+  const src = raw && Array.isArray(raw.encounters) ? raw.encounters : [];
+  for (const item of src) {
+    if (!item || typeof item !== 'object') continue;
+    const monsters = new Array(10).fill(0);
+    if (Array.isArray(item.monsters)) for (let i = 0; i < 10 && i < item.monsters.length; i++) monsters[i] = Number(item.monsters[i]) || 0;
+    if (!monsters.some(id => id > 0)) continue;
+    out.push({
+      name: String(item.name || '').slice(0, 20) || ('编队 ' + out.length),
+      groupId: Number(item.groupId) || 0,
+      monsters,
+      npcs: Array.isArray(item.npcs) ? item.npcs.slice(0, 4) : [],
+      flag: Number(item.flag) || 0,
+      coefficient: Number(item.coefficient) || 0,
+      replaceMission: Number(item.replaceMission) || null
+    });
+  }
+  return out;
+}
+function buildConfigText() {
+  return JSON.stringify({
+    _readme: [
+      "自定义怪物编队（第 96 版）。设计 10 格编队（用已有怪物），并替换某条挑战任务 ——",
+      "这样从原来的入口接那条任务，打的就是你的编队。",
+      "encounters[] = { name, groupId(30100-30199), monsters[10], npcs[], flag, coefficient, replaceMission }",
+      "编队字节由 lib/local-encounters.mjs 用 battleGroupWire 现编；读取方见同一文件。",
+      "由 怪物编队编辑器.html 生成。"
+    ],
+    revision: REVISION,
+    encounters: state.encounters.filter(e => e.monsters.some(id => id > 0)).map(e => ({
+      name: e.name, groupId: e.groupId, monsters: e.monsters, npcs: e.npcs,
+      flag: e.flag, coefficient: e.coefficient, replaceMission: e.replaceMission || null
+    }))
+  }, null, 1) + "\n";
+}
+async function loadFromDir() {
+  if (typeof window.showDirectoryPicker !== 'function') {
+    status("这个浏览器不支持直接读目录（需要 Chrome/Edge）。可改用「下载配置」再放进 data/。", "err");
+    return;
+  }
+  try {
+    const dir = await window.showDirectoryPicker({ mode: 'readwrite', id: 'worldol-data' });
+    state.dirHandle = dir;
+    let raw = null;
+    try {
+      const fh = await dir.getFileHandle('local-encounters.json');
+      raw = JSON.parse(await (await fh.getFile()).text());
+    } catch (err) {
+      if (err && err.name !== 'NotFoundError' && err.name !== 'TypeError') throw err;
+    }
+    state.encounters = normalizeIncoming(raw);
+    state.selected = state.encounters[0] || null;
+    assignIds();
+    $("#btn-save").disabled = false;
+    $("#btn-download").disabled = false;
+    renderList(); renderEditor();
+    status(raw ? ('已载入 ' + state.encounters.length + ' 个编队。改完保存，重启游戏生效。') : '目录里还没有配置文件，已从空白开始。', 'ok');
+  } catch (err) {
+    if (err && err.name === 'AbortError') { state.dirHandle = null; return; }
+    status('读取失败：' + (err && err.message || err), 'err');
+  }
+}
+async function save() {
+  const text = buildConfigText();
+  if (state.dirHandle) {
+    try {
+      const fh = await state.dirHandle.getFileHandle('local-encounters.json', { create: true });
+      const w = await fh.createWritable();
+      await w.write(text); await w.close();
+      const n = JSON.parse(text).encounters.length;
+      status('已写入 <b>local-encounters.json</b>（' + n + ' 个编队）。重启游戏（电脑版）或重新打包（APK）生效。', 'ok');
+      toast('写入成功');
+      return;
+    } catch (err) {
+      status('直接写入失败（' + (err && err.message || err) + '），已改为下载文件。', 'err');
+    }
+  }
+  download('local-encounters.json', text);
+  toast('已下载，请放进 data/ 目录');
+}
+function download(name, text) {
+  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function assignIds() {
+  const used = new Set();
+  for (const e of state.encounters) if (e.groupId >= GROUP_MIN && e.groupId <= GROUP_MAX) used.add(e.groupId);
+  let next = GROUP_MIN;
+  for (const e of state.encounters) {
+    if (!(e.groupId >= GROUP_MIN && e.groupId <= GROUP_MAX) || used.has('dup-' + e.groupId)) {
+      while (used.has(next) && next <= GROUP_MAX) next++;
+      e.groupId = next; used.add(next);
+    }
+  }
+  while (used.has(state.nextId)) state.nextId++;
+}
+function renderList() {
+  const list = $('#list');
+  list.innerHTML = '';
+  if (!state.encounters.length) { list.appendChild(el('div', 'hint', '还没有编队，点上面「+ 新建编队」')); return; }
+  for (const e of state.encounters) {
+    const filled = e.monsters.filter(id => id > 0).length;
+    const item = el('div', 'item' + (state.selected === e ? ' active' : ''));
+    item.appendChild(el('span', 'nm', e.name));
+    item.appendChild(el('span', 'nm', filled + '/10'));
+    item.onclick = () => { state.selected = e; renderList(); renderEditor(); };
+    list.appendChild(item);
+  }
+}
+function monsterName(id) {
+  const opt = document.querySelector('#monster-list option[value="' + id + '"]');
+  return opt ? opt.textContent : ('未知 ' + id);
+}
+function renderEditor() {
+  const pane = $('#editor');
+  pane.innerHTML = '';
+  const e = state.selected;
+  if (!e) { pane.appendChild(el('div', 'empty', '左边新建或选一个编队开始设计')); return; }
+
+  const base = el('div', 'card');
+  base.appendChild(el('h2', null, '编队信息'));
+  const r1 = el('div', 'row');
+  r1.appendChild(el('label', null, '名称'));
+  const nm = document.createElement('input'); nm.type = 'text'; nm.maxLength = 20; nm.value = e.name; nm.style.width = '180px';
+  nm.onchange = () => { e.name = nm.value.trim() || ('编队 ' + e.groupId); renderList(); };
+  r1.appendChild(nm);
+  r1.appendChild(el('label', null, '编队号'));
+  const gid = document.createElement('input'); gid.type = 'number'; gid.min = String(GROUP_MIN); gid.max = String(GROUP_MAX); gid.value = e.groupId;
+  gid.onchange = () => {
+    let v = Number(gid.value);
+    if (!Number.isInteger(v) || v < GROUP_MIN || v > GROUP_MAX) { v = e.groupId; toast('编队号必须在 ' + GROUP_MIN + '—' + GROUP_MAX); }
+    if (state.encounters.some(x => x !== e && x.groupId === v)) { v = e.groupId; toast('编队号已被占用'); }
+    e.groupId = v; gid.value = v; renderList();
+  };
+  r1.appendChild(gid);
+  base.appendChild(r1);
+
+  const r2 = el('div', 'row');
+  r2.appendChild(el('label', null, '替换哪条挑战'));
+  const sel = document.createElement('select');
+  sel.style.minWidth = '320px';
+  const optNone = document.createElement('option'); optNone.value = ''; optNone.textContent = '（不替换，只注册）';
+  sel.appendChild(optNone);
+  for (const m of MISSIONS) {
+    const o = document.createElement('option');
+    o.value = String(m.id);
+    o.textContent = m.id + ' · ' + (m.name || '') + '（打 ' + m.group + '）';
+    sel.appendChild(o);
+  }
+  sel.value = e.replaceMission ? String(e.replaceMission) : '';
+  sel.onchange = () => { e.replaceMission = sel.value ? Number(sel.value) : null; renderEditor(); };
+  r2.appendChild(sel);
+  base.appendChild(r2);
+  base.appendChild(el('div', 'hint', '选一条挑战后，从原来能接它的地方（boss 直达 / 征战广场等）接任务，打的就是这个编队。'));
+
+  const r3 = el('div', 'row');
+  r3.appendChild(el('label', null, '标记 flag'));
+  const flag = document.createElement('input'); flag.type = 'number'; flag.min = '0'; flag.max = '3'; flag.value = e.flag;
+  flag.onchange = () => { e.flag = Math.max(0, Math.min(3, Number(flag.value) || 0)); flag.value = e.flag; };
+  r3.appendChild(flag);
+  r3.appendChild(el('label', null, '强度系数'));
+  const coef = document.createElement('input'); coef.type = 'number'; coef.min = '0'; coef.max = '9999'; coef.value = e.coefficient;
+  coef.onchange = () => { e.coefficient = Math.max(0, Math.min(9999, Math.round(Number(coef.value) || 0))); coef.value = e.coefficient; };
+  r3.appendChild(coef);
+  r3.appendChild(el('span', 'hint', 'flag=3 时启用 NPC 槽（大部分自定义编队用 0 即可）'));
+  base.appendChild(r3);
+  pane.appendChild(base);
+
+  const gridCard = el('div', 'card');
+  gridCard.appendChild(el('h2', null, '编队（10 格，输入怪物 id 或从下拉里选）'));
+  const grid = el('div', 'grid10');
+  for (let i = 0; i < 10; i++) {
+    const slot = el('div', 'slot');
+    slot.appendChild(el('div', 'pos', '第 ' + (i + 1) + ' 格'));
+    const id = e.monsters[i] || 0;
+    slot.appendChild(el('div', 'nm', id > 0 ? monsterName(id) : '（空）'));
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.setAttribute('list', 'monster-list');
+    inp.value = id > 0 ? id : '';
+    inp.placeholder = '怪物 id';
+    inp.onchange = () => {
+      const v = Number(inp.value) || 0;
+      if (v > 0 && !document.querySelector('#monster-list option[value="' + v + '"]')) { toast('没有这只怪：' + v); inp.value = id || ''; return; }
+      e.monsters[i] = v; renderList(); renderEditor();
+    };
+    slot.appendChild(inp);
+    const clr = el('div', 'clr', '清空');
+    clr.onclick = () => { e.monsters[i] = 0; renderList(); renderEditor(); };
+    slot.appendChild(clr);
+    grid.appendChild(slot);
+  }
+  gridCard.appendChild(grid);
+  gridCard.appendChild(el('div', 'hint', '空位不需要填。整队可以只放 1 只怪，也可以铺满 10 只。'));
+  pane.appendChild(gridCard);
+
+  const actions = el('div', 'card');
+  actions.appendChild(el('h2', null, '其他'));
+  const del = el('button', 'danger', '删除这个编队');
+  del.onclick = () => {
+    state.encounters = state.encounters.filter(x => x !== e);
+    state.selected = state.encounters[0] || null;
+    renderList(); renderEditor(); toast('已删除');
+  };
+  actions.appendChild(del);
+  actions.appendChild(el('div', 'hint',
+    '· 保存后重启游戏生效；战斗里遇到的敌人数量按你填的格子来（空位不生成怪物）。\n' +
+    '· 「替换哪条挑战」不填只是注册编队，不会被任何入口用到。\n' +
+    '· 编队号 30100—30199 是我们自定义的保留段，不会和原版/守卫挑战撞号。'));
+  pane.appendChild(actions);
+}
+
+$('#btn-load').onclick = loadFromDir;
+$('#btn-save').onclick = save;
+$('#btn-download').onclick = () => { download('local-encounters.json', buildConfigText()); toast('已下载，请放进 data/ 目录'); };
+$('#btn-add').onclick = () => {
+  const e = { name: '新编队 ' + (state.encounters.length + 1), groupId: state.nextId, monsters: new Array(10).fill(0), npcs: [], flag: 0, coefficient: 0, replaceMission: null };
+  state.encounters.push(e); state.selected = e; assignIds();
+  renderList(); renderEditor();
+};
+$('#btn-save').disabled = false;
+$('#btn-download').disabled = false;
+renderList(); renderEditor();
+status('新建编队 → 填 10 格怪物 → 选「替换哪条挑战」→ 保存到 data/。', '');
+</script>
+</body>
+</html>

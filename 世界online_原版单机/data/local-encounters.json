@@ -1,0 +1,22 @@
+{
+  "_readme": [
+    "自定义怪物编队（第 96 版，2026-10-25）。设计 10 格编队（用已有怪物），并替换某条挑战任务，",
+    "这样从原来的入口（boss 直达 / 征战广场等）接那条任务，打的就是你的编队。",
+    "",
+    "结构：encounters[] = {",
+    "  name: '编队名（≤20 字）',",
+    "  groupId: 30100..30199   // 不填自动分配；必须在这个号段内，避开原版与已注册编队",
+    "  monsters: [10 个怪物 id，0=空位]",
+    "  npcs: [最多 4 个 NPC id]（可选）",
+    "  flag: 0|1|2|3           // 3 = 带 NPC（照社区版：flag&2 时后面补 4 个 NPC 槽）",
+    "  coefficient: 0..9999    // 怪物强度系数（原版多为 0）",
+    "  replaceMission: 9101    // 可选：把这条任务的战斗改成你的编队（不填 = 只注册，不替换）",
+    "}",
+    "",
+    "编队字节由 lib/local-encounters.mjs 用 battleGroupWire 现编，战斗包原样发给客户端。",
+    "读取方：lib/local-encounters.mjs，在 official-data.ensure() 建索引之前套用。",
+    "怪物编队编辑器.html 写的就是本文件。"
+  ],
+  "revision": "local-encounters-20261025-v1",
+  "encounters": []
+}
