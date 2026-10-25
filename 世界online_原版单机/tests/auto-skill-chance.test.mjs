@@ -104,7 +104,7 @@ test('概率补丁：入口幂等 + 锚点校验 + 追加注入', () => {
  assert.ok(patched.endsWith(')(window.__worldReq,window);\n'));
  assert.throws(() => patchAutoSkillChance(patched), /already installed/);
  assert.throws(() => patchAutoSkillChance('no anchor'), /mismatch/);
- assert.equal(autoSkillChancePatchRevision, 'auto-skill-chance-patch-20261025-v2');
+ assert.equal(autoSkillChancePatchRevision, 'auto-skill-chance-patch-20261025-v3');
 });
 
 // ── 随机目标补丁 ─────────────────────────────────────────
@@ -161,7 +161,7 @@ test('随机目标：入口幂等 + 锚点校验 + pick 钩子', () => {
  assert.ok(patched.startsWith(ORIGINAL));
  assert.throws(() => patchRandomTarget(patched), /already installed/);
  assert.throws(() => patchRandomTarget('nothing'), /mismatch/);
- assert.equal(randomTargetRevision, 'random-target-patch-20261025-v2');
+ assert.equal(randomTargetRevision, 'random-target-patch-20261025-v3');
  const pool = [1, 2, 3, 4, 5];
  // 这个 req 找不到战斗类 ⇒ install 会起 800ms 轮询补挂，必须 stop() 否则测试进程不退出
  const api = installRandomTarget(id => ({ default: {} }), {});

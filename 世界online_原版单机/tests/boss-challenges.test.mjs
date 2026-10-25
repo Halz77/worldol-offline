@@ -54,14 +54,20 @@ test('plaza packets retain every captured monster stat, AI, skill and all eleven
  assert.ok(actual.ai.length>=bossChallenges.ai.length,`ai ${actual.ai.length}`);
  for(const [key,id] of [['monsters','id'],['skills','id'],['ai','id'],['groups','groupId']])for(const recorded of bossChallenges[key]){
   const decoded=actual[key].find(x=>x[id]===recorded[id]&&(key!=='skills'||x.level===recorded.level));
-  assert.ok(decoded);const {sources,variants,...expected}=recorded;
+  assert.ok(decoded);
+  // MOD(local-skill-overrides)：技能期望值也要过一遍覆盖层 —— 玩家在技能编辑器里改过的技能
+  // （data/local-skill-overrides.json）本来就与抓包不同，服务端在建索引前套了同一层覆盖。
+  // 不这么做的话，玩家每改一个技能这条测试就会红一次，把真正的回归掩盖掉。
+  const baseline=key==='skills'?applyOverrideToDefinition(recorded.id,recorded):recorded;
+  const {sources,variants,...expected}=baseline;
   // MOD(captured81)：81 录制包会把同一批怪/技能/AI 的 sources **追加合并**
   // （mergeSources 按「录制+序号+地图+NPC」去重，见 lib/captured81.mjs）。
   // 业务字段（属性/技能效果/编队槽位）一个都不该变，变的只有来源条数 ——
   // 而 sources 是**嵌套**的（怪物里带技能表，技能各自也有 sources），
-  // 所以要递归剥掉，不只是最外层。
+  // 所以要递归剥掉，不只是最外层。`powers` 是覆盖层计算出来的派生数组（=power1-3 的
+  // [id,value] 形式），下发的技能包里没有这一项，比业务字段时一并忽略。
   const stripSources=v=>Array.isArray(v)?v.map(stripSources)
-   :(v&&typeof v==='object'?Object.fromEntries(Object.entries(v).filter(([k])=>k!=='sources').map(([k,x])=>[k,stripSources(x)])):v);
+   :(v&&typeof v==='object'?Object.fromEntries(Object.entries(v).filter(([k])=>k!=='sources'&&k!=='powers').map(([k,x])=>[k,stripSources(x)])):v);
   assert.deepEqual(stripSources(JSON.parse(JSON.stringify(decoded))),stripSources(expected),`${key}:${recorded[id]}`);
  }
  for(const c of cases){const m=actual.monsters.find(m=>m.id===c.boss);assert.equal(m.hpMax,c.hp);assert.equal(m.mpMax,c.mp);assert.equal(actual.groups.find(g=>g.groupId===c.group).monsters.filter(id=>id>0).length,11);}

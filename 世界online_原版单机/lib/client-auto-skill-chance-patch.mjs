@@ -17,7 +17,7 @@
  *   · APK：安卓打包/standalone/globals.mjs → entry.mjs 的 installGeneratedGlobals
  *   读不到配置 ⇒ 一律走原生行为（不抛错、不阻断）。
  */
-export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v2';
+export const autoSkillChancePatchRevision = 'auto-skill-chance-patch-20261025-v3';
 
 /**
  * 安装概率层。req = window.__worldReq，host = window。
@@ -35,20 +35,90 @@ export function installAutoSkillChance(req, host) {
   let memoRound = null;
   let memo = null;
 
-  // 按特征找战斗类（不硬编码模块号：0251 是同源 v305 的号，换包会漂）。
-  function findBattleProto() {
-    const cache = req.c;
-    if (!cache) return null;
+  // ── 找战斗类 ─────────────────────────────────────────────
+  // ⚠ 第 98 版修正：这个包是 webpack 风格，`__worldReq.c[id]` 存的是
+  //   `{i, l, exports}` 这样的**模块记录**，导出在 `.exports` 上（类挂在 exports.default）。
+  //   之前直接读 `mod.default` / `mod.prototype` 永远拿不到 ⇒ 三个补丁全部 hooked=false。
+  //   现在先解出 exports，再按特征匹配；另外包一层模块工厂，之后才被 require 的模块
+  //   在实例化那一刻就能挂上（不依赖轮询时机）。
+  function exportCandidates(mod) {
+    const out = [];
+    if (!mod) return out;
+    const ex = mod.exports || mod;
+    if (ex) { out.push(ex); if (ex.default) out.push(ex.default); }
+    if (mod !== ex) out.push(mod);
+    return out;
+  }
+
+  function tryHook(proto) {
+    if (!proto) return false;
+    if (Object.prototype.hasOwnProperty.call(proto, '__worldolAutoSkillChance')) { hooked = true; return true; }
+    const original = proto.getAutoSkillIDByRound;
+    proto.getAutoSkillIDByRound = function (player) {
+      const id = original.apply(this, arguments);
+      // 原生返回 -1/-2/-3 等负数 = 本来就不施放，原样放行
+      if (typeof id !== 'number' || id <= 0) return id;
+      const pct = chanceOf(id);
+      if (pct === null) { counters.unconfigured++; return id; }
+      if (pct >= 100) { counters.passed++; return id; }
+      if (pct <= 0) { counters.skipped++; counters.rolls++; return -1; }
+      const pos = player && typeof player.position === 'number' ? player.position : -1;
+      const round = this && this.round;
+      const memoable = typeof round === 'number' && pos >= 0;   // 回合号拿不到就不记忆，避免永久固化
+      const saved = memoable ? memoGet(round, pos) : null;
+      if (saved !== null) { counters.memoHits++; return saved ? id : -1; }
+      counters.rolls++;
+      const ok = Math.random() * 100 < pct;
+      if (memoable) memoSet(round, pos, ok);
+      if (ok) { counters.passed++; return id; }
+      counters.skipped++;
+      return -1;                              // ← doAutoSkill 里 `0 > o` 会直接 return（本回合空过）
+    };
+    proto.__worldolAutoSkillChance = true;
+    hooked = true;
+    return true;
+  }
+
+  function tryModule(mod) {
+    const list = exportCandidates(mod);
+    for (const c of list) {
+      if (!c) continue;
+      const proto = c.prototype || (typeof c === 'object' ? c : null);
+      if (!proto) continue;
+      if (typeof proto.getAutoSkillIDByRound === 'function' && typeof proto.doAutoSkill === 'function') return tryHook(proto);
+    }
+    return false;
+  }
+
+  function scanCache() {
+    let cache;
+    try { cache = req.c; } catch (_) { return false; }
+    if (!cache) return false;
     for (const key in cache) {
       let mod;
       try { mod = cache[key]; } catch (_) { continue; }
-      // 真环境里模块导出的是类（req(251).default 是构造函数，方法在 .prototype 上）；
-      // 少数模块导出单例实例（方法直接在对象上），两种都认。
-      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (proto && typeof proto.getAutoSkillIDByRound === 'function' && typeof proto.doAutoSkill === 'function')
-        return proto;
+      if (tryModule(mod)) return true;
     }
-    return null;
+    return false;
+  }
+
+  /** 给还没被 require 的模块包一层：实例化完立刻检查导出。 */
+  function hookFactories() {
+    let factories;
+    try { factories = req.m; } catch (_) { return; }
+    if (!factories) return;
+    for (const id in factories) {
+      const fn = factories[id];
+      if (typeof fn !== 'function' || fn.__worldolChanceHook) continue;
+      factories[id] = (function (orig) {
+        return function (module, exports, require) {
+          const out = orig.apply(this, arguments);
+          try { tryModule(module); } catch (_) {}
+          return out;
+        };
+      })(fn);
+      factories[id].__worldolChanceHook = true;
+    }
   }
 
   /** 读配置里的百分比；未配置返回 null（=走原生）。兼容写成字符串的 "30"（编辑器/手改都可能）。 */
@@ -79,39 +149,17 @@ export function installAutoSkillChance(req, host) {
 
   function attach() {
     if (hooked) return true;
-    const proto = findBattleProto();
-    if (!proto) return false;
-    if (Object.prototype.hasOwnProperty.call(proto, '__worldolAutoSkillChance')) { hooked = true; return true; }
-    const original = proto.getAutoSkillIDByRound;
-    proto.getAutoSkillIDByRound = function (player) {
-      const id = original.apply(this, arguments);
-      // 原生返回 -1/-2/-3 等负数 = 本来就不施放，原样放行
-      if (typeof id !== 'number' || id <= 0) return id;
-      const pct = chanceOf(id);
-      if (pct === null) { counters.unconfigured++; return id; }
-      if (pct >= 100) { counters.passed++; return id; }
-      if (pct <= 0) { counters.skipped++; counters.rolls++; return -1; }
-      const pos = player && typeof player.position === 'number' ? player.position : -1;
-      const round = this && this.round;
-      const memoable = typeof round === 'number' && pos >= 0;   // 回合号拿不到就不记忆，避免永久固化
-      const saved = memoable ? memoGet(round, pos) : null;
-      if (saved !== null) { counters.memoHits++; return saved ? id : -1; }
-      counters.rolls++;
-      const ok = Math.random() * 100 < pct;
-      if (memoable) memoSet(round, pos, ok);
-      if (ok) { counters.passed++; return id; }
-      counters.skipped++;
-      return -1;                              // ← doAutoSkill 里 `0 > o` 会直接 return（本回合空过）
-    };
-    proto.__worldolAutoSkillChance = true;
-    hooked = true;
-    return true;
+    if (scanCache()) return true;          // 已经 require 过的模块
+    hookFactories();                       // 之后才 require 的模块：实例化即刻挂
+    return hooked;
   }
 
-  if (!attach()) timer = setInterval(() => { if (attach()) { clearInterval(timer); timer = null; } }, 800);
+  attach();
+  // 兜底轮询：工厂包装失效（包结构变了）时还能靠扫描补上。挂上就不再见。
+  timer = setInterval(() => { if (attach()) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'auto-skill-chance-patch-20261025-v2',
+    revision: 'auto-skill-chance-patch-20261025-v3',
     get status() {
       const table = host.worldolAutoSkillChance;
       return {

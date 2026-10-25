@@ -26,7 +26,7 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v2';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v3';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
@@ -136,29 +136,27 @@ export function installFormationSlots(req, host) {
     return i < 0 ? 0 : i + 1;                                   // 自己不在名单里 ⇒ 0（不参与，走原生）
   }
 
-  // ── 找原型 ────────────────────────────────────────────────
+  // ── 模块导出解析 ────────────────────────────────────────────
+  // ⚠ 第 98 版修正：这个包是 webpack 风格，`__worldReq.c[id]` 是模块记录 `{i,l,exports}`，
+  //   导出在 `.exports`（类在 exports.default）。之前直接读 mod / mod.default ⇒ 一个都匹配不到，
+  //   面板上三个补丁全显示 hooked=false。
+  function exportCandidates(mod) {
+    const out = [];
+    if (!mod) return out;
+    const ex = mod.exports || mod;
+    if (ex) { out.push(ex); if (ex.default) out.push(ex.default); }
+    if (mod !== ex) out.push(mod);
+    return out;
+  }
+
   // 角色：getPowerValue 是 8 参方法，且同类有 getSkillPowerValue（0056 PlayerVO）
-  function findRoleProto() {
-    const cache = req.c; if (!cache) return null;
-    for (const key in cache) {
-      let mod; try { mod = cache[key]; } catch (_) { continue; }
-      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (!proto) continue;
-      if (typeof proto.getPowerValue === 'function' && proto.getPowerValue.length >= 8
-        && typeof proto.getSkillPowerValue === 'function') return proto;
-    }
-    return null;
+  function isRoleProto(p) {
+    return !!p && typeof p.getPowerValue === 'function' && p.getPowerValue.length >= 8
+      && typeof p.getSkillPowerValue === 'function';
   }
   // 宠物：有 getPetBaseValue + getPetPowerValue（0042 PetVO）
-  function findPetProto() {
-    const cache = req.c; if (!cache) return null;
-    for (const key in cache) {
-      let mod; try { mod = cache[key]; } catch (_) { continue; }
-      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (!proto) continue;
-      if (typeof proto.getPetBaseValue === 'function' && typeof proto.getPetPowerValue === 'function') return proto;
-    }
-    return null;
+  function isPetProto(p) {
+    return !!p && typeof p.getPetBaseValue === 'function' && typeof p.getPetPowerValue === 'function';
   }
 
   /**
@@ -184,10 +182,9 @@ export function installFormationSlots(req, host) {
     return true;
   }
 
-  function hookRole() {
+  function hookRoleOn(proto) {
     if (hooked.role) return true;
-    const proto = findRoleProto();
-    if (!proto) return false;
+    if (!isRoleProto(proto)) return false;
     if (!Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlot')) {
       wrapRoleMethod(proto, 'getPowerValue');
       proto.__worldolFormationSlot = true;
@@ -221,10 +218,9 @@ export function installFormationSlots(req, host) {
     return true;
   }
 
-  function hookPet() {
+  function hookPetOn(proto) {
     if (hooked.petBase && hooked.petPower) return true;
-    const proto = findPetProto();
-    if (!proto) return false;
+    if (!isPetProto(proto)) return false;
     if (!Object.prototype.hasOwnProperty.call(proto, '__worldolFormationSlotPet')) {
       hooked.petBase = wrapPetMethod(proto, 'getPetBaseValue');
       hooked.petPower = wrapPetMethod(proto, 'getPetPowerValue');
@@ -238,25 +234,14 @@ export function installFormationSlots(req, host) {
   // ── 阵法说明补一行「阵位加成」 ──────────────────────────────
   // 原版说明是 FormationSkill.prototype.getFormationInfo(取数组?) —— 只拼 power1-3 + 人数，
   // 根本没有阵位概念，所以玩家改完阵位加成后点开说明还是老样子。这里在末尾追加一行。
-  function findFormationProto() {
-    const cache = req.c; if (!cache) return null;
-    for (const key in cache) {
-      let mod; try { mod = cache[key]; } catch (_) { continue; }
-      const proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (proto && typeof proto.getFormationInfo === 'function') return proto;
-    }
-    return null;
+  /** 效果名格式化函数（原版 getPowerDesc(powerId,value,vo) → "出手速度+22%"）。
+   *  扫描模块时顺手抓一个存下来（同一个导出对象上）。 */
+  let powerDescFn = null;
+  function grabPowerDesc(holder) {
+    if (powerDescFn || !holder || typeof holder.getPowerDesc !== 'function') return;
+    try { powerDescFn = holder.getPowerDesc.bind(holder); } catch (_) { powerDescFn = null; }
   }
-  /** 效果名格式化函数（原版 getPowerDesc(powerId,value,vo) → "出手速度+22%"）。 */
-  function findPowerDesc() {
-    const cache = req.c; if (!cache) return null;
-    for (const key in cache) {
-      let mod; try { mod = cache[key]; } catch (_) { continue; }
-      const holders = [mod, mod && mod.default];
-      for (const h of holders) if (h && typeof h.getPowerDesc === 'function') return h.getPowerDesc.bind(h);
-    }
-    return null;
-  }
+  function findPowerDesc() { return powerDescFn; }
 
   function describePowers(list, desc) {
     const out = [];
@@ -292,10 +277,10 @@ export function installFormationSlots(req, host) {
   }
 
   let infoHooked = false;
-  function hookFormationInfo() {
+  function hookInfoOn(proto) {
     if (infoHooked) return true;
-    const proto = findFormationProto();
-    if (!proto || proto.__worldolFormationInfo) { infoHooked = !!proto; return infoHooked; }
+    if (!proto || typeof proto.getFormationInfo !== 'function') return false;
+    if (proto.__worldolFormationInfo) { infoHooked = true; return true; }
     const original = proto.getFormationInfo;
     proto.getFormationInfo = function (asArray) {
       const out = original.apply(this, arguments);
@@ -310,17 +295,64 @@ export function installFormationSlots(req, host) {
     return true;
   }
 
-  function attach() {
-    const role = hookRole();
-    const pet = hookPet();
-    hookFormationInfo();
-    return role && pet;
+  /** 一个模块的导出：顺手抓 getPowerDesc，然后按特征挂角色/宠物/阵法说明。 */
+  function tryModule(mod) {
+    const list = exportCandidates(mod);
+    for (const c of list) {
+      if (!c) continue;
+      grabPowerDesc(c);
+      const proto = c.prototype || (typeof c === 'object' ? c : null);
+      if (!proto) continue;
+      if (!hooked.role && isRoleProto(proto)) hookRoleOn(proto);
+      if (!(hooked.petBase && hooked.petPower) && isPetProto(proto)) hookPetOn(proto);
+      if (!infoHooked && typeof proto.getFormationInfo === 'function') hookInfoOn(proto);
+    }
+    return hooked.role;
   }
 
-  if (!attach()) timer = setInterval(function () { if (attach()) { clearInterval(timer); timer = null; } }, 800);
+  function scanCache() {
+    let cache;
+    try { cache = req.c; } catch (_) { return false; }
+    if (!cache) return false;
+    for (const key in cache) {
+      let mod;
+      try { mod = cache[key]; } catch (_) { continue; }
+      tryModule(mod);
+    }
+    return hooked.role;
+  }
+
+  /** 给还没 require 的模块包一层：实例化完立刻检查导出。 */
+  function hookFactories() {
+    let factories;
+    try { factories = req.m; } catch (_) { return; }
+    if (!factories) return;
+    for (const id in factories) {
+      const fn = factories[id];
+      if (typeof fn !== 'function' || fn.__worldolSlotHook) continue;
+      factories[id] = (function (orig) {
+        return function (module, exports, require) {
+          const out = orig.apply(this, arguments);
+          try { tryModule(module); } catch (_) {}
+          return out;
+        };
+      })(fn);
+      factories[id].__worldolSlotHook = true;
+    }
+  }
+
+  function attach() {
+    if (!hooked.role) scanCache();
+    if (!hooked.role || !(hooked.petBase && hooked.petPower) || !infoHooked) hookFactories();
+    return hooked.role && (hooked.petBase || hooked.petPower);
+  }
+
+  attach();
+  // 兜底轮询（工厂包装失效时还能靠扫描补上）。全挂上就停。
+  timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v2',
+    revision: 'formation-slot-patch-20261025-v3',
     get status() {
       return {
         roleHooked: hooked.role, calHooked: hooked.cal, petHooked: hooked.petBase || hooked.petPower, infoHooked,

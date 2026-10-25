@@ -54,7 +54,13 @@ export function installDiagnostics(req, host) {
   }
 
   function build() {
-    return '世界OL 自检（点我收起）\n' + autoLine() + '\n' + randomLine() + '\n' + formationLine()
+    // 标题带补丁版本号，方便确认玩家跑的是哪一版（v3 = 第 98 版「模块缓存形状」修正）
+    let rev = '';
+    try {
+      const api = host.__worldolRandomTargetPatch;
+      rev = api && api.revision ? String(api.revision).split('-v').pop() : '';
+    } catch (_) { rev = ''; }
+    return '世界OL 自检' + (rev ? ' v' + rev : '') + '（点我收起）\n' + autoLine() + '\n' + randomLine() + '\n' + formationLine()
       + '\n配置: 概率' + (host.worldolAutoSkillChance ? '✓' : '✗')
       + ' 阵位' + (host.worldolFormationSlots ? '✓' : '✗');
   }
@@ -64,7 +70,8 @@ export function installDiagnostics(req, host) {
     if (text === state.lastLine) return text;
     state.lastLine = text;
     if (state.el) {
-      state.el.textContent = state.expanded ? text : '世界OL 自检（点我展开）';
+      const title = text.split('\n')[0].replace('收起', '展开');
+      state.el.textContent = state.expanded ? text : title;
     }
     if (useConsole) {
       const now = Date.now();

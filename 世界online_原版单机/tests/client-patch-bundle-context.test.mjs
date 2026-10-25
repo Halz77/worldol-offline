@@ -145,6 +145,90 @@ test('裸环境：同一次施法多次取目标结果一致（伤害结算与�
   api.stop();
 });
 
+// ── 真实包结构（webpack：req.c[id] = {i,l,exports}）──────────────
+test('裸环境：能解出真实 webpack 模块记录里的导出（三个补丁都要挂上）', () => {
+  const battleProto = makeBattleProto();
+  // 同一个战斗类上还有自动技能的两个方法（概率补丁按这两个特征识别）
+  battleProto.getAutoSkillIDByRound = function () { return 108; };
+  battleProto.doAutoSkill = function () {};
+  const consts = {
+    skillAreaText: new Array(39).fill('原版'),
+    getSkillAreaString(area) {
+      return area < 0 || area >= this.skillAreaText.length ? 'skillArea_' + area : this.skillAreaText[area];
+    }
+  };
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) { return Number(base) || 0; },
+    getPowerValueCal(base) { return Number(base) || 0; }
+  };
+  const petProto = {getPetBaseValue() { return 0; }, getPetPowerValue() { return 0; }};
+  const formationProto = {getFormationInfo() { return 'name:'; }};
+  const powerMod = {getPowerDesc(id, value) { return '效果' + id + '+' + value; }};
+
+  // ★ 真实形状：模块记录 {i, l, exports}，导出在 exports（类在 exports.default）
+  const req = id => (id === 54 ? {default: {ins: {battle: null}}} : undefined);
+  req.c = {
+    0: {i: 0, l: true, exports: consts},
+    4: {i: 4, l: true, exports: {default: function Battle() {}}},
+    23: {i: 23, l: true, exports: powerMod},
+    42: {i: 42, l: true, exports: {default: function PetVO() {}}},
+    56: {i: 56, l: true, exports: {default: function PlayerVO() {}}},
+    57: {i: 57, l: true, exports: {default: function FormationSkill() {}}}
+  };
+  req.c[4].exports.default.prototype = battleProto;
+  req.c[42].exports.default.prototype = petProto;
+  req.c[56].exports.default.prototype = roleProto;
+  req.c[57].exports.default.prototype = formationProto;
+
+  const host = {
+    worldolAutoSkillChance: {chance: {108: 50}},
+    worldolFormationSlots: {forms: {7: {mode: 'add', slots: [{powers: [[23, 6]]}]}}}
+  };
+  runBare(installRandomTarget, req, host);
+  runBare(installAutoSkillChance, req, host);
+  runBare(installFormationSlots, req, host);
+
+  const random = host.__worldolRandomTargetPatch.status;
+  assert.equal(random.hooked, true, '随机目标应挂上战斗类');
+  assert.equal(random.cursorHooked, true);
+  assert.equal(random.labelHooked, true, '作用范围标签应补上');
+  assert.equal(consts.getSkillAreaString(44), '敌随机5个');
+
+  const auto = host.__worldolAutoSkillChancePatch.status;
+  assert.equal(auto.hooked, true, '概率补丁应挂上战斗类');
+  assert.equal(auto.configLoaded, true);
+
+  const fs = host.__worldolFormationSlotPatch.status;
+  assert.equal(fs.roleHooked, true, '阵位应挂上角色类');
+  assert.equal(fs.calHooked, true);
+  assert.equal(fs.petHooked, true, '阵位应挂上宠物类');
+  assert.equal(fs.infoHooked, true, '阵法说明应挂上');
+
+  host.__worldolRandomTargetPatch.stop();
+  host.__worldolAutoSkillChancePatch.stop();
+  host.__worldolFormationSlotPatch.stop();
+});
+
+test('裸环境：模块之后才被 require 也能挂上（包模块工厂）', () => {
+  const proto = makeBattleProto();
+  const host = {};
+  const req = {c: {}, m: []};
+  req.m[251] = function (module, exports) {
+    exports.default = function Battle() {};
+    exports.default.prototype = proto;
+  };
+  runBare(installRandomTarget, req, host);
+  assert.equal(host.__worldolRandomTargetPatch.status.hooked, false, '安装时还没加载 ⇒ 不能算挂上');
+
+  // 模拟 webpack runtime：首次 require 时调用工厂
+  const mod = {i: 251, l: false, exports: {}};
+  req.m[251].call(mod.exports, mod, mod.exports, () => {});
+  assert.equal(host.__worldolRandomTargetPatch.status.hooked, true, '工厂被包后应立刻挂上');
+  assert.equal(proto.getSelectArea(0, 0, 44).length, 5);
+  host.__worldolRandomTargetPatch.stop();
+});
+
 // ── 自动技能概率 ─────────────────────────────────────────
 test('裸环境：概率补丁兼容字符串百分比，同回合判定固定', () => {
   const proto = {

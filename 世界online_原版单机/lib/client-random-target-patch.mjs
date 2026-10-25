@@ -26,7 +26,7 @@
  * 另外补了 **作用范围中文标签**：客户端 skillAreaText 只有 0—38，40—59 会直接显示
  * 成 `skillArea_44`（玩家看到的就是「乱码」）。这里把 40—59 的中文名补进表里。
  */
-export const randomTargetRevision = 'random-target-patch-20261025-v2';
+export const randomTargetRevision = 'random-target-patch-20261025-v3';
 
 /** area 号段：40—49 敌随机、50—59 我随机。 */
 export const RANDOM_TARGET_MIN = 40;
@@ -77,55 +77,88 @@ export function installRandomTarget(req, host) {
     return (spec.side === 'enemy' ? '敌随机' : '我随机') + spec.count + '个';
   }
 
+  // ── 模块导出解析（webpack：req.c[id] = {i,l,exports}） ────────────────
+  // 第 98 版修正：之前直接读 mod / mod.default，而这层是模块记录、导出在 .exports ⇒ 永远匹配不到。
+  function exportCandidates(mod) {
+    var out = [];
+    if (!mod) return out;
+    var ex = mod.exports || mod;
+    if (ex) { out.push(ex); if (ex.default) out.push(ex.default); }
+    if (mod !== ex) out.push(mod);
+    return out;
+  }
+
   // ── 作用范围中文标签（skillAreaText 只有 0—38） ───────────────────
-  function hookAreaLabels() {
+  function hookAreaLabelsOn(holder) {
+    if (!holder || !Array.isArray(holder.skillAreaText)) return false;
+    var arr = holder.skillAreaText;
+    for (var area = AREA_MIN; area <= AREA_MAX; area++) arr[area] = areaLabel(area) || '';
+    if (!arr[39]) arr[39] = '—';
+    // getSkillAreaString 用 `t >= skillAreaText.length` 判越界，写 59 后 length=60，
+    // 40—59 就能正常工作；再加一层兜底：表被换来换去时也不至于退回 skillArea_xx。
+    if (typeof holder.getSkillAreaString === 'function' && !holder.__worldolAreaLabel) {
+      var nativeString = holder.getSkillAreaString;
+      holder.getSkillAreaString = function (value) {
+        var text = nativeString.apply(this, arguments);
+        if (typeof text === 'string' && text.indexOf('skillArea_') === 0) {
+          var label = areaLabel(value);
+          if (label) return label;
+        }
+        return text;
+      };
+      holder.__worldolAreaLabel = true;
+    }
+    counters.labelHooked = true;
+    return true;
+  }
+
+  /** 尝试把一个模块的导出挂上（标签表 + 战斗类）。 */
+  function tryModule(mod) {
+    var list = exportCandidates(mod);
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      if (!c) continue;
+      if (hookAreaLabelsOn(c)) break;
+    }
+    if (state.hooked) return true;
+    for (var j = 0; j < list.length; j++) {
+      var d = list[j];
+      if (!d) continue;
+      var proto = d.prototype || (typeof d === 'object' ? d : null);
+      if (proto && typeof proto.getSelectArea === 'function' && typeof proto.getPlayerByPos === 'function') return hookBattle(proto);
+    }
+    return false;
+  }
+
+  function scanCache() {
     var cache;
     try { cache = req.c; } catch (_) { return false; }
     if (!cache) return false;
     for (var key in cache) {
       var mod;
       try { mod = cache[key]; } catch (_) { continue; }
-      var holders = [mod, mod && mod.default];
-      for (var i = 0; i < holders.length; i++) {
-        var holder = holders[i];
-        if (!holder || !Array.isArray(holder.skillAreaText)) continue;
-        var arr = holder.skillAreaText;
-        for (var area = AREA_MIN; area <= AREA_MAX; area++) arr[area] = areaLabel(area) || '';
-        if (!arr[39]) arr[39] = '—';
-        // getSkillAreaString 用 `t >= skillAreaText.length` 判越界，写 59 后 length=60，
-        // 40—59 就能正常工作；再加一层兜底：表被换来换去时也不至于退回 skillArea_xx。
-        if (typeof holder.getSkillAreaString === 'function' && !holder.__worldolAreaLabel) {
-          var nativeString = holder.getSkillAreaString;
-          holder.getSkillAreaString = function (value) {
-            var text = nativeString.apply(this, arguments);
-            if (typeof text === 'string' && text.indexOf('skillArea_') === 0) {
-              var label = areaLabel(value);
-              if (label) return label;
-            }
-            return text;
-          };
-          holder.__worldolAreaLabel = true;
-        }
-        counters.labelHooked = true;
-        return true;
-      }
+      tryModule(mod);
     }
-    return false;
+    return state.hooked;
   }
 
-  // ── 找战斗类 ──────────────────────────────────────────────────
-  // 按特征找（不硬编码模块号）：同时具备 getSelectArea + getPlayerByPos。
-  function findBattleProto() {
-    var cache;
-    try { cache = req.c; } catch (_) { return null; }
-    if (!cache) return null;
-    for (var key in cache) {
-      var mod;
-      try { mod = cache[key]; } catch (_) { continue; }
-      var proto = (mod && mod.prototype) || (mod && mod.default && (mod.default.prototype || mod.default)) || null;
-      if (proto && typeof proto.getSelectArea === 'function' && typeof proto.getPlayerByPos === 'function') return proto;
+  /** 给还没 require 的模块包一层：实例化完立刻检查导出。 */
+  function hookFactories() {
+    var factories;
+    try { factories = req.m; } catch (_) { return; }
+    if (!factories) return;
+    for (var id in factories) {
+      var fn = factories[id];
+      if (typeof fn !== 'function' || fn.__worldolRandomHook) continue;
+      factories[id] = (function (orig) {
+        return function (module, exports, require) {
+          var out = orig.apply(this, arguments);
+          try { tryModule(module); } catch (_) {}
+          return out;
+        };
+      })(fn);
+      factories[id].__worldolRandomHook = true;
     }
-    return null;
   }
 
   /** 算候选池并按原版语义过滤出存活单位（用**原生** getSelectArea 取池，避免自己判敌我侧）。 */
@@ -174,10 +207,8 @@ export function installRandomTarget(req, host) {
     return picked;
   }
 
-  function attach() {
-    hookAreaLabels();
-    if (state.hooked) return true;
-    var proto = findBattleProto();
+  /** 给战斗类挂上随机目标（getSelectArea + searchAICursor）。 */
+  function hookBattle(proto) {
     if (!proto) return false;
     if (Object.prototype.hasOwnProperty.call(proto, '__worldolRandomTarget')) { state.hooked = true; return true; }
 
@@ -214,18 +245,21 @@ export function installRandomTarget(req, host) {
     return true;
   }
 
+  function attach() {
+    if (!state.hooked || !counters.labelHooked) scanCache();
+    if (!state.hooked || !counters.labelHooked) hookFactories();
+    return state.hooked;
+  }
+
   attach();
-  // 继续补挂：战斗类可能还没被 require（req.c 是懒加载缓存），作用范围标签表也同理。
-  // 最多重试 ~40 秒，之后放弃（不影响任何原生行为）。
-  var attempts = 0;
+  // 兜底轮询：工厂包装失效（包结构变了）时靠扫描补上。全挂上就停。
   timer = setInterval(function () {
-    if (++attempts > 50) { clearInterval(timer); timer = null; return; }
     attach();
     if (state.hooked && counters.labelHooked) { clearInterval(timer); timer = null; }
-  }, 800);
+  }, 1000);
 
   var api = {
-    revision: 'random-target-patch-20261025-v2',
+    revision: 'random-target-patch-20261025-v3',
     get status() {
       return {
         hooked: state.hooked, cursorHooked: state.cursorHooked, labelHooked: counters.labelHooked,
