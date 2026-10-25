@@ -45,6 +45,14 @@ export const battleCheckRevision='battle-check-full-fields-v7';
 //     措辞与模块 4 的 getPowerDesc 一致：反击 / 魔法反馈 / 无视格挡 / 无视洞察 /
 //     无视状态抵抗 / 无视伤害减免 / 法力护盾。
 export function patchBattleCheckFields(source){
+  // --- 0. 面板 onShow 最前面就地补挂阵位补丁（第 103 版） ------------------
+  // 上机诊断证实：面板 e 是 VO，但「多份 PlayerVO 拷贝」导致我们包装的那份不是 e 实际用的那份。
+  // 在 onShow 读属性**之前**对 e 的原型做幂等补挂，保证本次面板数值就是加了阵位的。
+  const boot='onShow=function(){var e=this._showArgs;if(e){var t=new s["default"],i="（"+l.Tool.manageString(n.GameText.getText(n.GameText.TI_LEVEL)';
+  const bootNew='onShow=function(){var e=this._showArgs;if(e){try{var _wfp=window.__worldolFormationSlotPatch;_wfp&&_wfp.ensureHook&&_wfp.ensureHook(e);}catch(_e){}var t=new s["default"],i="（"+l.Tool.manageString(n.GameText.getText(n.GameText.TI_LEVEL)';
+  if(source.split(boot).length!==2)throw Error('v305 battle check boot patch mismatch');
+  source=source.replace(boot,bootNew);
+
   // --- 1. 摘掉 isCheckAll 门 ---------------------------------------------
   // 原代码：t.append(免伤护盾),e.isCheckAll&&(t.append(出手速度)...,t.append(洞察)) ,null!=e.formationSkill...
   // 改后：  t.append(免伤护盾),(t.append(出手速度)...,t.append(洞察)),null!=e.formationSkill...

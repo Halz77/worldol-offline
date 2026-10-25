@@ -113,6 +113,7 @@ export function installFormationSlots(req, host) {
   /** 给面板用：这个单位吃的是哪个阵位（没配加成的阵位返回 null，不标注）。
    *  入参就是**属性 VO**（战斗信息面板里 `e` 是 VO，直接有 getLevel/getName/formationSkill/position）。 */
   function slotLabel(unit) {
+    try { ensureHook(unit); } catch (_) {}                      // 第 103 版：就地补挂（多拷贝兜底）
     const vo = unit || null;
     if (!vo) return null;
     const conf = cfg();
@@ -135,8 +136,9 @@ export function installFormationSlots(req, host) {
     return Array.isArray(powers) && powers.length ? ('第' + idx + '位') : null;
   }
 
-  /** 诊断（第 102 版临时）：把面板 e 的运行时结构打出来，定位「战斗前后数值不变」的根因。 */
+  /** 诊断（第 102/103 版）：把面板 e 的运行时结构打出来 + 就地补挂 + 检查是否已包装。 */
   function diag(unit) {
+    try { ensureHook(unit); } catch (_) {}                      // 就地补挂（多拷贝兜底）
     const vo = unit && (unit.vo || unit);
     if (!vo) return '【diag】e 为空\n';
     const parts = [];
@@ -153,9 +155,11 @@ export function installFormationSlots(req, host) {
     let fs = 'null';
     try { fs = vo.formationSkill ? ('id' + vo.formationSkill.id) : 'null'; } catch (_) {}
     parts.push('formationSkill=' + fs);
-    let gpd = '?';
-    try { gpd = typeof vo.getPowerValue === 'function' ? '有' : '无'; } catch (_) {}
-    parts.push('getPowerValue=' + gpd);
+    // 关键检查：这个对象实际用的 getPowerValue 是不是我们包装过的（多拷贝问题的决定性证据）
+    let wrapped = '?';
+    try { wrapped = vo.getPowerValue && vo.getPowerValue.__worldolWrapped ? '是' : '否'; } catch (_) {}
+    parts.push('已包装=' + wrapped);
+    parts.push('回退=' + counters.fallbacks);
     let battle = '无';
     try { battle = battleRef() ? '有' : '无'; } catch (_) {}
     parts.push('battle=' + battle);
@@ -263,7 +267,8 @@ export function installFormationSlots(req, host) {
   function wrapRoleMethod(proto, name) {
     const original = proto[name];
     if (typeof original !== 'function') return false;
-    proto[name] = function () {
+    if (original.__worldolWrapped) return true;                 // 这份已经包过（多拷贝场景）
+    const wrapped = function () {
       const had = this && this.formationSkill;
       const real = had || null;
       // 军团/队友这些单位自己没挂 formationSkill（阵法块只给玩家），仍然按玩家当前阵型算阵位加成
@@ -280,7 +285,26 @@ export function installFormationSlots(req, host) {
       try { return original.apply(this, arguments); }
       finally { this.formationSkill = had; }                   // 立刻还原（同步调用，安全）
     };
+    wrapped.__worldolWrapped = true;                           // 诊断用：diag 检查 vo 的方法带不带这个标记
+    proto[name] = wrapped;
     return true;
+  }
+
+  /**
+   * ★ 第 103 版：就地补挂。
+   * 上机诊断证实：战斗单位本身就是 VO（无 .vo），pos/formationSkill/getPowerValue 都在，
+   * 但数值不变 —— 说明我们包装的那份 PlayerVO 拷贝不是这个对象实际用的那份
+   * （客户端存在多份 PlayerVO 拷贝，第 98 版踩过模块缓存多拷贝）。
+   * 兜底：面板/属性计算一旦拿到真实 VO，就地包装它的原型（幂等），不管它是哪份拷贝。
+   */
+  function ensureHook(vo) {
+    let proto = null;
+    try { proto = Object.getPrototypeOf(vo); } catch (_) { return; }
+    if (!proto) return;
+    try {
+      if (isRoleProto(proto)) hookRoleOn(proto);
+      if (isPetProto(proto)) hookPetOn(proto);
+    } catch (_) { /* 诊断路径绝不抛错 */ }
   }
 
   function hookRoleOn(proto) {
@@ -493,8 +517,10 @@ export function installFormationSlots(req, host) {
     },
     /** 战斗信息面板用：这个单位吃哪个阵位（没配加成的返回 null，不标注）。 */
     slotLabel: slotLabel,
-    /** 诊断（第 102 版临时）：输出面板 e 的运行时结构。 */
+    /** 诊断（第 102/103 版）：输出面板 e 的运行时结构。 */
     diag: diag,
+    /** 第 103 版：就地补挂（多拷贝兜底），面板 onShow 开头调用。 */
+    ensureHook: ensureHook,
     /** 诊断用：当前生效的阵型 id（军团单位没有 formationSkill 时靠它）。 */
     activeFormation: activeFormationId,
     /** 测试钩子：手动补挂（模拟轮询路径）。 */
