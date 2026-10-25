@@ -1,14 +1,14 @@
 {
-  "_readme": [
-    "自动技能触发概率（第 93 版新增）。只影响客户端「是否施放」这一层，不改变技能数值、不写技能字节。",
-    "chance[技能id] = 30 表示：每回合轮到该自动技能时，30% 概率施放、70% 完全不施放（该单位本回合空过，无任何加成与提示）。",
-    "1-99 之间按百分比；100 与「留空/不写」等价（必定施放）；0 表示永不施放。",
-    "读取方：lib/local-auto-skill-chance.mjs → /skill-auto-chance.js（电脑版）/ globals.mjs（APK）→ lib/client-auto-skill-chance-patch.mjs。",
-    "技能编辑器「自动触发概率」一栏写的就是本文件。",
-    "infoMode：'changed'（默认）=只给配了 <100% 的技能在说明里追加一行；'all'=所有自动技能都追加，未配置的显示 100%。",
-    "说明行由服务端在套完技能覆盖后自动追加到 info（不写进覆盖层），改配置即生效、不会与说明脱节。"
-  ],
-  "revision": "auto-skill-chance-20261025-v1",
-  "infoMode": "changed",
-  "chance": {}
+ "_readme": [
+  "自动技能触发概率（第 93 版新增）。只影响客户端「是否施放」这一层，不改变技能数值、不写技能字节。",
+  "chance[技能id] = 30 表示：每回合轮到该自动技能时，30% 概率施放、70% 完全不施放（该单位本回合空过，无任何加成与提示）。",
+  "1-99 之间按百分比；100 与「留空/不写」等价（必定施放）；0 表示永不施放。",
+  "读取方：lib/local-auto-skill-chance.mjs → /skill-auto-chance.js（电脑版）/ globals.mjs（APK）→ lib/client-auto-skill-chance-patch.mjs。",
+  "技能编辑器「自动触发概率」一栏写的就是本文件。",
+  "infoMode：'changed'（默认）=只给配了 <100% 的技能在说明里追加一行；'all'=所有自动技能都追加，未配置的显示 100%。",
+  "说明行由服务端在套完技能覆盖后自动追加到 info（不写进覆盖层），改配置即生效、不会与说明脱节。"
+ ],
+ "revision": "auto-skill-chance-20261025-v1",
+ "infoMode": "all",
+ "chance": {}
 }

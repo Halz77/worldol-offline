@@ -34,7 +34,7 @@ test('配置层：默认空表、globals 结构、百分比说明文案', () => 
  assert.equal(AUTO_SKILL_CHANCE_REVISION, 'auto-skill-chance-20261025-v1');
  assert.match(chanceInfoLine(30), /30% 概率触发/);
  assert.match(chanceInfoLine(30), /约 3\.3 回合 1 次/);
- assert.match(chanceInfoLine(100), /必定触发/);
+ assert.match(chanceInfoLine(100), /100% 概率触发/);
  assert.match(chanceInfoLine(0), /不会自动施放/);
 });
 
@@ -209,7 +209,7 @@ test('技能说明：幂等（重复调用不会叠加标记行）+ infoMode=all
  // all 模式：100%
  const auto2 = { id: 300, type: 2, levels: [{ level: 1, info: '原文。' }] };
  decorateAutoSkillChance(new Map([[300, auto2]]), fakeSkillBytes, { table: {}, mode: 'all' });
- assert.match(auto2.levels[0].info, /【自动释放】每回合必定触发/);
+ assert.match(auto2.levels[0].info, /【自动释放】每回合 100% 概率触发/);
 });
 
 test('技能说明：不污染上游等级对象（浅拷贝替换）', () => {

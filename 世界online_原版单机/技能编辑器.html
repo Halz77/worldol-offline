@@ -379,6 +379,7 @@ const state={
   skills:new Map(),     // id -> {id,name,profession,category,type,levels:[],sources:Set,origins:[]}
   rules:new Map(),      // id -> {levels:'all'|number[], set:{}, perLevel:{}, _note}
   chance:new Map(),     // 第 93 版：技能 id -> 自动触发概率（%）。独立存 local-auto-skill-chance.json
+  chanceMode:"changed", // 第 93 版：说明显示范围。'changed'=只显示 <100% 的；'all'=所有自动技能都显示
   readme:null,
   loaded:false,
   selected:null,
@@ -503,6 +504,7 @@ async function loadFromFiles(files){
   state.selected=null;
   // 第 93 版：载入自动技能触发概率（独立文件，不进技能覆盖层）
   state.chance=new Map();
+  state.chanceMode=chanceFile&&chanceFile.infoMode==="all"?"all":"changed";
   if(chanceFile&&chanceFile.chance&&typeof chanceFile.chance==="object"){
     for(const [id,pct] of Object.entries(chanceFile.chance)){
       const n=Number(id),v=Number(pct);
@@ -960,6 +962,20 @@ function chanceRow(rec){
   cell.appendChild(inp);
   cell.appendChild(el("span","punit","%"));
   grid.appendChild(cell);
+  // 第 93 版补充：全局显示范围（所有自动技能都显示概率 / 只显示 <100% 的）
+  const modeCell=el("div","pcell wide");
+  modeCell.appendChild(el("span","plbl","显示范围"));
+  const cb=document.createElement("input");
+  cb.type="checkbox";
+  cb.checked=state.chanceMode==="all";
+  cb.title="勾选=所有自动技能都显示【自动释放】一行（含 100%）；不勾=只显示配了 <100% 的技能";
+  cb.onchange=()=>{
+    state.chanceMode=cb.checked?"all":"changed";
+    toast(cb.checked?"所有自动技能都会在说明里显示概率":"只显示配了低于 100% 的技能");
+  };
+  modeCell.appendChild(cb);
+  modeCell.appendChild(el("span","hint-inline","勾选＝所有自动技能说明都加【自动释放】一行（含 100%）"));
+  grid.appendChild(modeCell);
   wrap.appendChild(grid);
   wrap.appendChild(el("div","hint","100＝每回合必定释放（默认，不写进配置文件）；低于 100 时只有该概率施放，其余回合本回合不施放、也不显示任何效果。这个数值会自动写进技能说明的【自动释放】一行。"));
   return wrap;
@@ -1107,7 +1123,7 @@ function buildChanceText(){
       "技能编辑器「自动触发概率」一栏写的就是本文件；服务端会自动把概率写进技能说明的【自动释放】一行。"
     ],
     revision:"auto-skill-chance-20261025-v1",
-    infoMode:"changed",
+    infoMode:state.chanceMode==="all"?"all":"changed",
     chance
   },null,1)+"\n";
 }

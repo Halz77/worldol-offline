@@ -85,9 +85,9 @@ function infoModeOf() {
   return mode === 'all' ? 'all' : 'changed';
 }
 
-/** 生成说明行。 */
+/** 生成说明行。格式统一成「X% 概率触发」，100% 也把数字写出来（玩家要的是能看到概率）。 */
 export function chanceInfoLine(pct) {
-  if (pct >= 100) return INFO_MARK + '每回合必定触发';
+  if (pct >= 100) return INFO_MARK + '每回合 100% 概率触发（必定施放）';
   if (pct <= 0) return INFO_MARK + '已关闭，不会自动施放';
   const avg = pct > 0 ? Math.round(100 / pct * 10) / 10 : 0;
   return INFO_MARK + '每回合 ' + pct + '% 概率触发（不触发则本回合不施放；约 ' + avg + ' 回合 1 次）';
