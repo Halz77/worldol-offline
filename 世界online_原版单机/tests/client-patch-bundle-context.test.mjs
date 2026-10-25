@@ -476,6 +476,43 @@ test('裸环境：战斗中按站位标序号，没配加成的阵位不标', ()
   api.stop();
 });
 
+test('裸环境：宠物躲闪走 PlayerVO.getPowerValue 也吃宠物段加成 + 标注「宠物」', () => {
+  // 宠物 VO 继承 PlayerVO：躲闪等非五维属性走 PlayerVO.get(DODGE) → getPowerValue，
+  // 而不是 getPetBaseValue/getPetPowerValue。补丁要能识别 type=4 并走宠物段。
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100);
+    },
+    getType() { return 4; }   // TYPE_PET
+  };
+  const petProto = {getPetBaseValue() { return 0; }, getPetPowerValue() { return 0; }, getType() { return 4; }};
+  const battle = {getPlayerByPos() { return null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: {id: 7, getPowerValue: () => 0}}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}, 42: {default: function PetVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  req.c[42].default.prototype = petProto;
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}], pet: {powers: [[25, 30]]}}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+
+  const pet = Object.create(roleProto);
+  pet.position = 24;
+  pet.formationSkill = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};  // 原版鸟翔 躲闪%18
+  assert.equal(pet.getPowerValue(60, 0, 55, 25, 0, 0, 0, false), 78, '宠物躲闪 replace = 60×1.3 = 78（走宠物段，不是角色第N位）');
+  assert.equal(api.slotLabel(pet), '宠物', '宠物标注「宠物」');
+  api.stop();
+});
+
 // ── 自检面板 ─────────────────────────────────────────────
 test('裸环境：自检面板能画出来，且如实反映「未挂载」', () => {
   const created = [];

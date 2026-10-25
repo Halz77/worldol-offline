@@ -147,7 +147,11 @@ export function installFormationSlots(req, host) {
   function isPetUnit(u) {
     try {
       const vo = u && (u.vo || u);
-      return !!(vo && (vo.ownerVo !== undefined || (u && u.ownerVo !== undefined)));
+      if (!vo) return false;
+      // 宠物 VO 构造时 setType(TYPE_PET=4)（0042.js:35），这个最可靠；
+      // ownerVo 只在 processDataPlayerDetail 里赋值（t.pet.ownerVo=t），战斗单位未必有，只作兜底。
+      if (typeof vo.getType === 'function' && vo.getType() === 4) return true;
+      return !!(vo.ownerVo !== undefined || (u && u.ownerVo !== undefined));
     } catch (_) { return false; }
   }
 
@@ -237,7 +241,12 @@ export function installFormationSlots(req, host) {
       const real = had || null;
       // 军团/队友这些单位自己没挂 formationSkill（阵法块只给玩家），仍然按玩家当前阵型算阵位加成
       const formId = real && Number(real.id) > 0 ? real.id : activeFormationId();
-      const adapter = makeAdapter(real, formId, slotIndexOf(this), false);
+      // ★ 宠物 VO 继承 PlayerVO，它的躲闪等属性走 PlayerVO.get(DODGE) → 这个 getPowerValue
+      //   （不是 getPetBaseValue/getPetPowerValue）。这里要识别出宠物（type=4），
+      //   让它走「宠物段」加成，而不是按角色阵位算第 N 位（宠物不在角色阵位名单里，会被排除）。
+      const isPet = isPetUnit(this);
+      const slotIndex = isPet ? 1 : slotIndexOf(this);
+      const adapter = makeAdapter(real, formId, slotIndex, isPet);
       if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
       this.formationSkill = adapter;
       counters.rolePatches++;
