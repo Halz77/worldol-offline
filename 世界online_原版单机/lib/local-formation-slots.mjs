@@ -56,9 +56,11 @@ function load() {
   try {
     raw = JSON.parse(fs.readFileSync(FILE, 'utf8'));
   } catch (error) {
-    if (error && error.code === 'ENOENT') return { revision: null, mode: 'add', forms: {} };
-    return { revision: null, mode: 'add', forms: {}, error: String(error && error.message || error) };
+    if (error && error.code === 'ENOENT') return { revision: null, mode: 'add', enabled: true, forms: {} };
+    return { revision: null, mode: 'add', enabled: true, forms: {}, error: String(error && error.message || error) };
   }
+  // ★ 第 106 版总开关：enabled:false ⇒ 客户端补丁整块退化成原生行为（排查用）。
+  const enabled = !(raw && raw.enabled === false);
   const globalMode = raw && raw.mode === 'replace' ? 'replace' : 'add';
   const forms = {};
   const src = raw && raw.forms && typeof raw.forms === 'object' ? raw.forms : {};
@@ -68,20 +70,20 @@ function load() {
     const form = normalizeForm(value);
     if (form) forms[id] = { ...form, mode: value.mode === undefined ? globalMode : form.mode };
   }
-  return { revision: (raw && raw.revision) || FORMATION_SLOT_REVISION, mode: globalMode, forms };
+  return { revision: (raw && raw.revision) || FORMATION_SLOT_REVISION, mode: globalMode, enabled, forms };
 }
 function data() { return cache ??= load(); }
 
 /** 归一化后的配置（服务端/测试用）。 */
 export function formationSlotConfig() {
   const d = data();
-  return { revision: d.revision || FORMATION_SLOT_REVISION, mode: d.mode, forms: d.forms, error: d.error || null };
+  return { revision: d.revision || FORMATION_SLOT_REVISION, mode: d.mode, enabled: d.enabled !== false, forms: d.forms, error: d.error || null };
 }
 
 /** 下发给客户端的全局变量体（电脑版 /formation-slots.js 与 APK globals 共用）。 */
 export function formationSlotGlobals() {
   const d = data();
-  return { revision: d.revision || FORMATION_SLOT_REVISION, mode: d.mode, forms: d.forms };
+  return { revision: d.revision || FORMATION_SLOT_REVISION, mode: d.mode, enabled: d.enabled !== false, forms: d.forms };
 }
 
 /** 供 /api/status 展示。 */
@@ -89,6 +91,7 @@ export function formationSlotSummary() {
   const d = data();
   return {
     revision: d.revision || FORMATION_SLOT_REVISION,
+    enabled: d.enabled !== false,
     configured: Object.keys(d.forms).length,
     mode: d.mode,
     error: d.error || null

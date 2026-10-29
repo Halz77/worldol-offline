@@ -48,6 +48,8 @@ export function installDiagnostics(req, host) {
     const api = host.__worldolFormationSlotPatch;
     if (!api) return '阵位  ✗ 未挂载（补丁链没跑到）';
     const s = api.status || {};
+    // 第 106 版总开关：配置里 enabled:false 时整块不生效，这里要一眼看得出来
+    if (s.disabled) return '阵位  ⏸ 总开关关闭（local-formation-slots.json → enabled:false）';
     return '阵位  角色' + mark(s.roleHooked) + ' Get' + mark(s.getHooked) + ' Cal' + mark(s.calHooked)
       + ' Base' + mark(s.baseHooked) + ' 宠物' + mark(s.petHooked)
       + ', 应用 ' + (s.rolePatches || 0) + '/' + (s.petPatches || 0) + ' 回退 ' + (s.fallbacks || 0)

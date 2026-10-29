@@ -26,7 +26,7 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v5';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v6';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
@@ -44,6 +44,9 @@ export function installFormationSlots(req, host) {
 
   function cfg() {
     const t = host.worldolFormationSlots;
+    // ★ 第 106 版：总开关。enabled:false 时整个补丁退化成原生行为，
+    //   用来一锤定音区分「数值是补丁改的」还是「游戏本来就是那个值」。
+    if (!t || t.enabled === false) return null;
     return t && t.forms && typeof t.forms === 'object' ? t : null;
   }
 
@@ -192,6 +195,10 @@ export function installFormationSlots(req, host) {
     let battle = '无';
     try { battle = battleRef() ? '有' : '无'; } catch (_) {}
     parts.push('battle=' + battle);
+    // ★ 第 106 版：真正决定「注不注入」的是这一项（战斗单例存在 且 该位置有人）
+    let inB = '?';
+    try { inB = inBattleFor(vo) ? '是' : '否'; } catch (_) {}
+    parts.push('战斗内=' + inB);
     return parts.join(' ') + '\n';
   }
 
@@ -202,6 +209,24 @@ export function installFormationSlots(req, host) {
       const inst = proxy && proxy.ins;
       return (inst && inst.battle) || null;
     } catch (_) { return null; }
+  }
+
+  /**
+   * ★ 第 106 版：这个单位**此刻真的在战斗里**吗？
+   *
+   * 只判断「有没有战斗单例」不够 —— 角色面板/宠物面板都是复用同一个 VO 对象，
+   * `position` 是上一次战斗留下的（玩家 25、宠物 24…），单看 position 也判断不出来。
+   * 唯一可靠的判据：战斗单例存在，**且** 这个位置上确实站着单位。
+   * 战斗结束后 cleanBattleData 会把 battle 置空（analysis/modules/0054.js:146），
+   * 于是这里返回 false ⇒ 战斗外一律不注入。
+   */
+  function inBattleFor(vo) {
+    const battle = battleRef();
+    if (!battle || typeof battle.getPlayerByPos !== 'function') return false;
+    let pos;
+    try { pos = vo && vo.position; } catch (_) { pos = undefined; }
+    if (typeof pos !== 'number' || pos < 0 || pos >= MAX_POS) return false;
+    try { return !!battle.getPlayerByPos(pos); } catch (_) { return false; }
   }
 
   function isPetUnit(u) {
@@ -323,7 +348,10 @@ export function installFormationSlots(req, host) {
       //   （不是 getPetBaseValue/getPetPowerValue）。这里要识别出宠物（type=4），
       //   让它走「宠物段」加成，而不是按角色阵位算第 N 位（宠物不在角色阵位名单里，会被排除）。
       const isPet = isPetUnit(this);
-      const slotIndex = isPet ? 1 : slotIndexOf(this);
+      // ★ 第 106 版：这里原来硬编码 `1`，等于**战斗外也给宠物加成** ——
+      //   宠物面板（复用同一个 VO 对象、position 是上次战斗留下的 24）会显示一个"战斗中的数"。
+      //   这就是玩家反馈「角色战斗外正常 2327、宠物战斗外还是 2512」的根因。
+      const slotIndex = isPet ? (inBattleFor(this) ? 1 : 0) : slotIndexOf(this);
       const adapter = makeAdapter(real, formId, slotIndex, isPet);
       // 诊断：记录最近一次注入结果（面板那次调用到底成没成功）
       counters.lastCall = {slot: slotIndex, form: formId, pet: isPet, ok: !!adapter, hasFs: !!real};
@@ -366,7 +394,7 @@ export function installFormationSlots(req, host) {
       const real = had || null;
       const formId = real && Number(real.id) > 0 ? real.id : activeFormationId();
       // ★ 玩家要求：阵位加成只在战斗里生效。宠物段同理 —— 没进战斗就 0（不参与）。
-      const slotIndex = isPet ? (battleRef() ? 1 : 0) : slotIndexOf(this);
+      const slotIndex = isPet ? (inBattleFor(this) ? 1 : 0) : slotIndexOf(this);
       const adapter = makeAdapter(real, formId, slotIndex, isPet);
       counters.lastCall = {slot: slotIndex, form: formId, pet: isPet, ok: !!adapter, hasFs: !!real, via: 'get'};
       if (!adapter) { counters.fallbacks++; return original.apply(this, arguments); }
@@ -442,6 +470,26 @@ export function installFormationSlots(req, host) {
   }
 
   /**
+   * ★ 第 106 版：把「固化字段修正」还原回战斗前的原始值。
+   *
+   * 为什么需要：VO 是长期存活的对象（退出战斗后宠物/角色还是同一个），
+   * 如果曾经改过它的固化字段，退出战斗后不会自己变回去 —— 面板上就会一直挂着一个
+   * 「战斗中的数」。这里在非战斗路径上把改过的字段按记录还原，保证战斗外一定是原值。
+   */
+  function restoreSlotFields(vo) {
+    const base0 = vo && vo.__worldolSlotBase;
+    if (!base0) return 0;
+    let n = 0;
+    for (const field in base0) {
+      try {
+        if (vo[field] !== base0[field]) { vo[field] = base0[field]; n++; }
+      } catch (_) {}
+    }
+    try { delete vo.__worldolSlotBase; } catch (_) { vo.__worldolSlotBase = null; }
+    return n;
+  }
+
+  /**
    * ★ 第 104 版：把阵位加成直接写进战斗单位的**固化字段**。
    *
    * 背景：战斗开始时属性被算好写进 vo.speed / vo.dodge / vo.atk_str …（战斗单位的 get(DODGE)
@@ -460,8 +508,8 @@ export function installFormationSlots(req, host) {
     if (!vo) return 0;
     const conf = cfg();
     if (!conf) return 0;
-    // 非战斗不施加（玩家要求：只有战斗中才有阵位加成）
-    if (!battleRef()) return 0;
+    // 非战斗不施加（玩家要求：只有战斗中才有阵位加成）；顺手把以前改过的字段还原回去
+    if (!inBattleFor(vo)) { restoreSlotFields(vo); return 0; }
     const isPet = isPetUnit(vo);
     const fs = vo.formationSkill;
     // ★ 原版阵法对象必须先在位：replace 模式要扣掉原版统一加成，缺了它算出来的值是错的。
@@ -569,6 +617,9 @@ export function installFormationSlots(req, host) {
     if (typeof original !== 'function') return false;
     proto[name] = function () {
       if (injectDepth > 0) return original.apply(this, arguments);   // 外层 get() 已经换过了
+      // ★ 第 106 版：这里原来硬编码 slotIndex=1，等于**战斗外也给宠物加成**（角色面板/宠物面板
+      //   会显示一个"战斗中的数"）。宠物段同样只在战斗里生效。
+      if (!inBattleFor(this)) return original.apply(this, arguments);
       const holder = this && (this.ownerVo || this.owner);
       const had = holder && holder.formationSkill;
       const real = had || null;
@@ -738,14 +789,15 @@ export function installFormationSlots(req, host) {
   timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v5',
+    revision: 'formation-slot-patch-20261025-v6',
     get status() {
       return {
         roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base, getHooked: hooked.get,
         petHooked: hooked.petBase || hooked.petPower, infoHooked, getCalls: counters.getCalls,
         rolePatches: counters.rolePatches, petPatches: counters.petPatches, petCalls: counters.petCalls,
         adapters: counters.adapters, fallbacks: counters.fallbacks,
-        configured: cfg() ? Object.keys(cfg().forms).length : 0
+        configured: cfg() ? Object.keys(cfg().forms).length : 0,
+        disabled: !cfg()
       };
     },
     /** 诊断开关：true = 一律不注入（量「没装补丁时」的原生值）。 */

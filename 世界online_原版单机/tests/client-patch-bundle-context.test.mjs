@@ -492,7 +492,9 @@ test('裸环境：宠物躲闪走 PlayerVO.getPowerValue 也吃宠物段加成 +
     getType() { return 4; }   // TYPE_PET
   };
   const petProto = {getPetBaseValue() { return 0; }, getPetPowerValue() { return 0; }, getType() { return 4; }};
-  const battle = {getPlayerByPos() { return null; }};
+  // 第 106 版起「在不在战斗里」要求该位置上真的站着单位 ⇒ 假战斗要把宠物摆进去
+  const battleUnits = new Map();
+  const battle = {getPlayerByPos(p) { return battleUnits.get(p) || null; }};
   const req = id => {
     if (id === 5) return {myPlayer: {vo: {formationSkill: {id: 7, getPowerValue: () => 0}}}};
     if (id === 54) return {default: {ins: {battle}}};
@@ -508,6 +510,7 @@ test('裸环境：宠物躲闪走 PlayerVO.getPowerValue 也吃宠物段加成 +
   const pet = Object.create(roleProto);
   pet.position = 24;
   pet.formationSkill = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};  // 原版鸟翔 躲闪%18
+  battleUnits.set(24, pet);
   assert.equal(pet.getPowerValue(60, 0, 55, 25, 0, 0, 0, false), 78, '宠物躲闪 replace = 60×1.3 = 78（走宠物段，不是角色第N位）');
   assert.equal(api.slotLabel(pet), '宠物', '宠物标注「宠物」');
   api.stop();
@@ -546,7 +549,8 @@ test('裸环境：宠物走真实 PetVO.get 路径（default 分支会覆盖 for
     return roleProto.get.call(this, t);
   };
 
-  const battle = {getPlayerByPos() { return null; }};
+  const battleUnits = new Map();
+  const battle = {getPlayerByPos(p) { return battleUnits.get(p) || null; }};
   const req = id => {
     if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
     if (id === 54) return {default: {ins: {battle}}};
@@ -565,6 +569,7 @@ test('裸环境：宠物走真实 PetVO.get 路径（default 分支会覆盖 for
   pet.position = 24;
   pet.dodge = 0;
   pet.ownerVo = owner;
+  battleUnits.set(24, pet);
 
   // 没装补丁（关掉注入）：原版鸟翔 躲闪%18 ⇒ 60×1.18 = 70
   api.setNoSlot(true);
@@ -617,6 +622,100 @@ test('裸环境：动态单位（get 现算）不会被误当成固化字段去�
   assert.equal(u.dodge, 500, '动态单位的 dodge 平加字段不能被改写（否则百分比部分会被算错）');
   // 正确结果应当来自 get() 层的注入：1000×1.3 + 500 = 1800
   assert.equal(u.get(42), 1800, '躲闪 = 1000×1.30 + 500 = 1800');
+  api.stop();
+});
+
+test('裸环境：战斗外（没有战斗单例 / 该位置没人）一律不加成，宠物也一样（第 106 版防回归）', () => {
+  // 玩家实测踩的坑：角色战斗外是对的（2327），宠物战斗外却还挂着一个"战斗中的数"。
+  // 根因是宠物段有两条注入路径都只看了「有没有战斗单例」/干脆没看（wrapPetMethod 硬编码 slotIndex=1）。
+  // 现在统一用 inBattleFor：战斗单例存在**且**该位置上真的站着单位。
+  const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100) + (Number(t) || 0);
+    },
+    getType() { return 3; }
+  };
+  roleProto.get = function (t) {
+    if (t !== 42) return 0;
+    return this.getPowerValue(60, this.dodge || 0, 55, 25, 0, 0, 0, false);
+  };
+  const petProto = Object.create(roleProto);
+  petProto.getPetBaseValue = function () { return 0; };
+  petProto.getPetPowerValue = function () { return 0; };
+  petProto.getType = function () { return 4; };
+  petProto.get = function (t) {
+    if (this.ownerVo) this.formationSkill = this.ownerVo.formationSkill;
+    return roleProto.get.call(this, t);
+  };
+
+  // 场景一：完全没有战斗单例（角色/宠物面板）
+  let battle = null;
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}, 42: {default: function PetVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  req.c[42].default.prototype = petProto;
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}], pet: {powers: [[25, 30]]}}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+
+  const owner = {formationSkill: origFs, getType() { return 3; }};
+  const pet = Object.create(petProto);
+  pet.position = 24;      // 上一次战斗留下的站位，战斗外不会清
+  pet.dodge = 0;
+  pet.ownerVo = owner;
+  assert.equal(pet.get(42), 70, '战斗外宠物必须是原版 18%（70），不能是阵位 30%（78）');
+
+  // 场景二：战斗单例还在（退出战斗但没清干净），但这个位置上没有单位
+  battle = {getPlayerByPos() { return null; }};
+  assert.equal(pet.get(42), 70, '战斗单例残留但位置上没人 ⇒ 仍然算战斗外，不加成');
+
+  // 场景三：真的打起来了，宠物在 24 号位
+  battle = {getPlayerByPos(p) { return p === 24 ? pet : null; }};
+  assert.equal(pet.get(42), 78, '进了战斗就该吃宠物段 30%（78）');
+  api.stop();
+});
+
+test('裸环境：总开关 enabled:false 时整个补丁退化成原生行为', () => {
+  const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    getPowerValue(base, t, addKey, pctKey) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100) + (Number(t) || 0);
+    },
+    getType() { return 3; }
+  };
+  roleProto.get = function (t) { return t === 42 ? this.getPowerValue(60, 0, 55, 25) : 0; };
+  const unit = Object.assign(Object.create(roleProto), {position: 25, formationSkill: origFs});
+  const battle = {getPlayerByPos(p) { return p === 25 ? unit : null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: {vo: {formationSkill: origFs}}};
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  const host = {worldolFormationSlots: {enabled: false, forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}]}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+  assert.equal(unit.get(42), 70, '总开关关掉 ⇒ 原版 18%（70）');
+  assert.equal(api.peek(7, 1, false), null, '总开关关掉 ⇒ peek 也拿不到配置');
+  assert.equal(api.status.disabled, true, 'status 要如实标出已被总开关关掉');
   api.stop();
 });
 
