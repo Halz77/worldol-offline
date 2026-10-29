@@ -22,7 +22,9 @@ export function diagnosticSettings() {
   cache = {
     revision: typeof raw.revision === 'string' ? raw.revision : 'diagnostics-20261025-v1',
     overlay: raw.overlay !== false,
-    logToConsole: raw.logToConsole !== false
+    logToConsole: raw.logToConsole !== false,
+    // 战斗信息面板里那行长诊断（第 105 版默认关）：排查时打开，平时开着会横向出框。
+    battleDiag: raw.battleDiag === true
   };
   return cache;
 }
@@ -35,7 +37,7 @@ export function diagnosticGlobals() {
 /** 一句话摘要（/api 路由或日志用）。 */
 export function diagnosticSummary() {
   const s = diagnosticSettings();
-  return {revision: s.revision, overlay: s.overlay, logToConsole: s.logToConsole};
+  return {revision: s.revision, overlay: s.overlay, logToConsole: s.logToConsole, battleDiag: s.battleDiag};
 }
 
 /** 测试/热重载：清缓存。 */

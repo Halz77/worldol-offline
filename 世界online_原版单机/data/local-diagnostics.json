@@ -6,5 +6,7 @@
   ],
   "revision": "diagnostics-20261025-v1",
   "overlay": true,
-  "logToConsole": true
+  "logToConsole": true,
+  "battleDiag": false,
+  "_battleDiag_comment": "第 105 版新增。true = 战斗信息面板里额外打一行运行时诊断（有vo/type/pos/formationSkill/注入/躲闪装补丁关掉对比）。排查阵位加成才开，平时关着 —— 那行太长会横向超出边框。"
 }

@@ -124,8 +124,9 @@ export function patchBattleCheckFields(source){
    +'t.append("生命百分比伤害减免："+Math.min(0|(e.get(a.ModelConst.TOUGH)/100),80)+"%\\n"),'
    // 阵位标注（第 99 版）：只给「真的吃到阵位加成」的单位标一行，多人同屏时好分辨谁在第几位。
    // 军团/队友自己没有 formationSkill 也照样能标（补丁里会用玩家当前阵型 + 阵位序号算）。
-   // 第 102 版临时诊断：把面板 e 的运行时结构打出来，用于定位「战斗前后数值不变」的根因。
-   +'t.append((function(){var L=window.__worldolFormationSlotPatch,s=L&&L.slotLabel?L.slotLabel(e):null;var D=L&&L.diag?L.diag(e):"";return (s?"【阵位："+s+"】\\n":"")+D;})())),null!=e.formationSkill&&';
+   // 第 102 版加的运行时诊断：默认关掉了（data/local-diagnostics.json → battleDiag:true 才打），
+   // 因为那一行太长，会横向冲出面板边框（玩家反馈过出框）。
+   +'t.append((function(){var L=window.__worldolFormationSlotPatch,s=L&&L.slotLabel?L.slotLabel(e):null;var C=window.worldolDiagnostics||{},D=(C.battleDiag&&L&&L.diag)?L.diag(e):"";return (s?"【阵位："+s+"】\\n":"")+D;})())),null!=e.formationSkill&&';
   if(source.split(tail).length!==2)throw Error('v305 battle check tail patch mismatch');
   source=source.replace(tail,tailNew);
   return source;
