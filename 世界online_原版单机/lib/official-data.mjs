@@ -32,6 +32,7 @@ import {applyGuardChallenges} from './guard-challenges-data.mjs';
 import {applyItemOverrides,applyIdentifyOverrides,identifyOverrides} from './item-overrides.mjs';
 import {applyFormationBooks} from './formation-data.mjs';
 import {applyMonsterOverrides} from './local-monster-overrides.mjs';
+import {applyMonsterAiOverrides} from './local-monster-ai-overrides.mjs';
 import {applyLocalEncounters} from './local-encounters.mjs';
 
 /**
@@ -197,6 +198,14 @@ fixMidAutumnFinalBoss(official);
  // 第 94 版怪物编辑器：属性覆盖必须在建 Map 之后、任何战斗打包之前套用
  // （会重编码每只被改怪的 wireBase64；提前改会被 captured81 的冲突检查拦下）。
  applyMonsterOverrides(built.officialMonsters);
+ // 第 95 版怪物编辑器：AI / 技能覆盖（「这只怪会放什么技能」）。
+ // 改的是 official.ai 的行，并把 wireBase64 用 lib/ai-wire.mjs 重新编出来 —— 战斗包整段是
+ // rawRecord 原样转发，不改字节等于没改。必须在任何 mapBattleData() 缓存建起来之前，
+ // 也在 captured81 / 守卫挑战那类「逐字节比对 AI 记录」的补丁之后（这里已经是最后一步）。
+ {
+  const aiResult=applyMonsterAiOverrides(official);
+  if(aiResult.warnings.length)console.warn('[monster-ai] '+aiResult.warnings.join('；'));
+ }
  return built;
 }
 
