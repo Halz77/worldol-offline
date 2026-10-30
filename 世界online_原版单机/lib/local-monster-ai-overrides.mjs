@@ -141,6 +141,8 @@ export function applyMonsterAiOverrides(official, overrides) {
     try {
       const wireBase64 = aiWireBytes(next).toString('base64');
       if (existing) {
+        // 留一份原始字节：编辑器重新生成内嵌数据时要用「原版」而不是「已被覆盖过」的 AI
+        if (!existing.__originalWire) existing.__originalWire = existing.wireBase64;
         Object.assign(existing, arrays, {wireBase64});
       } else {
         // 这只怪原来没有 AI 行 ⇒ 补一条（mapBattleData 按怪物 id 过滤 ai，补上就会被发出去）
