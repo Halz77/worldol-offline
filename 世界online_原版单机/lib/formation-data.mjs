@@ -1,4 +1,5 @@
 import {Writer} from './codec.mjs';
+import {formationSlotConfig} from './local-formation-slots.mjs';
 
 /**
  * 阵法（引擎自带的 CG_FORMATION_* 玩法）。
@@ -83,8 +84,29 @@ export function activeFormationId(role){
 export function activeFormation(role){const id=activeFormationId(role);return id?formationInfo(id):null;}
 
 /** 引擎原始 power 对（3/7 仍是基础属性键）。 */
+/**
+ * ★ 第 107 版：这个阵的原版统一加成是不是已经被阵位配置「接管」了？
+ *
+ * 起因（玩家反馈）：改了阵法（阵位加成、replace 模式）之后，原版的 18% 还在生效 ——
+ * 因为原版三条（出手速度/闪避/敏捷）是**服务端下发的阵法本体数据**，阵位配置只是覆盖层。
+ * 之前只在战斗内由客户端补丁临时顶掉，所以面板、阵法说明、战斗外看到的都还是原版。
+ *
+ * 现在改成源头作废：replace 模式 ⇒ 下发时 power1-3 全部写 0，
+ * 服务端自己的属性计算（clientFormationPowers → restoration.powers）也跟着为空。
+ * add 模式仍然保留原版，只是在战斗内再叠加阵位加成。
+ */
+export function replacesFormation(formId){
+ try{
+  const cfg=formationSlotConfig();
+  if(!cfg||cfg.enabled===false)return false;
+  const f=cfg.forms[Number(formId)];
+  return !!(f&&f.mode==='replace');
+ }catch(_){return false;}
+}
+
 export function formationPowers(role){
  const f=activeFormation(role);if(!f)return [];
+ if(replacesFormation(f.id))return [];          // replace 模式：原版统一加成整块作废
  return [[f.power1,f.value1],[f.power2,f.value2],[f.power3,f.value3]].filter(([power,value])=>power>0&&value>0);
 }
 
@@ -187,10 +209,13 @@ export function forgetFormation(role,id){
  */
 export function formationSkillBlock(w,role,f,isDefault=false){
  const level=Math.max(1,formationLevel(role,f.id)||FORMATION_LEVEL);
+ // replace 模式（第 107 版）：原版三条一律写 0 —— 客户端的 isDefault 说明、属性叠加、
+  // 战斗全都不再有原版效果，只剩下战斗内由补丁注入的阵位加成。
+ const off=replacesFormation(f.id);
  w.byte(f.id).int(f.id).byte(f.id).byte(level).string(f.name).byte(0)
-  .short(clientFormationPower(f.power1)).short(f.value1)
-  .short(clientFormationPower(f.power2)).short(f.value2)
-  .short(clientFormationPower(f.power3)).short(f.value3)
+  .short(off?0:clientFormationPower(f.power1)).short(off?0:f.value1)
+  .short(off?0:clientFormationPower(f.power2)).short(off?0:f.value2)
+  .short(off?0:clientFormationPower(f.power3)).short(off?0:f.value3)
   .byte(f.teamcount).bool(isDefault);
  return w;
 }

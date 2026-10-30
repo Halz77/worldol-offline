@@ -686,6 +686,54 @@ test('裸环境：战斗外（没有战斗单例 / 该位置没人）一律不�
   api.stop();
 });
 
+test('裸环境：玩家没启用任何阵法时，军团/宠物不得吃阵位加成（不能因为「只配了一个阵」就硬套）', () => {
+  // 玩家实测：战斗外根本没勾选鸟翔阵，军团和宠物照样吃到加成。
+  // 根因是 activeFormationId() 的兜底「配置里只有一个阵 ⇒ 就用它」，
+  // 把配置里的阵硬套给了所有没有 formationSkill 的单位（军团/克隆宠物本来就没有）。
+  const roleProto = {
+    getSkillPowerValue() { return 0; },
+    // ⚠ 必须是 8 个形参：isRoleProto 用 getPowerValue.length>=8 识别 PlayerVO，少一个就挂不上
+    getPowerValue(base, t, addKey, pctKey, _r, _s, _l, _u) {
+      let add = Number(base) || 0, pct = 0;
+      if (this.formationSkill) {
+        add += this.formationSkill.getPowerValue(addKey);
+        pct += this.formationSkill.getPowerValue(pctKey);
+      }
+      return add + Math.trunc((add * pct) / 100) + (Number(t) || 0);
+    }
+  };
+  roleProto.get = function (t) { return t === 42 ? this.getPowerValue(60, 0, 55, 25) : 0; };
+
+  const me = {position: 25, getType: () => 3, formationSkill: null};   // 玩家：没启用阵法
+  const legion = {position: 27, getType: () => 10};             // 军团：本来就没有 formationSkill
+  const units = new Map([[25, me], [27, legion]]);
+  const battle = {getPlayerByPos(p) { return units.get(p) || null; }};
+  const req = id => {
+    if (id === 5) return {myPlayer: me};                        // 世界单例里也没有 formationSkill
+    if (id === 54) return {default: {ins: {battle}}};
+    return undefined;
+  };
+  req.c = {56: {default: function PlayerVO() {}}};
+  req.c[56].default.prototype = roleProto;
+  // 配置里只有 7 这一个阵（旧代码会在这里兜底成「就用 7」）
+  // 配两个阵位：军团在 27 号位排第 2（只配第 1 位的话第 2 位是空配置 ⇒ 加成为 0）
+  const host = {worldolFormationSlots: {forms: {7: {mode: 'replace', slots: [{powers: [[25, 30]]}, {powers: [[25, 30]]}], pet: {powers: [[25, 30]]}}}}};
+  runBare(installFormationSlots, req, host);
+  const api = host.__worldolFormationSlotPatch;
+
+  Object.setPrototypeOf(legion, roleProto);
+  Object.setPrototypeOf(me, roleProto);
+  me.position = 25;
+  assert.equal(legion.get(42), 60, '没启用阵法 ⇒ 军团必须是原值 60，不能是 60×1.3=78');
+  assert.equal(api.activeFormation(), null, '没启用阵 ⇒ activeFormation 必须返回 null');
+
+  // 玩家真的启用了鸟翔阵之后，军团才该按玩家当前阵吃阵位加成
+  me.formationSkill = {id: 7, getPowerValue: () => 0};
+  assert.equal(api.activeFormation(), 7, '启用后 activeFormation 应为 7');
+  assert.equal(legion.get(42), 78, '启用鸟翔阵 ⇒ 军团按第 2 位吃 30%（78）');
+  api.stop();
+});
+
 test('裸环境：总开关 enabled:false 时整个补丁退化成原生行为', () => {
   const origFs = {id: 7, getPowerValue: k => (k === 25 ? 18 : 0)};
   const roleProto = {

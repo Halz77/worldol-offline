@@ -10,7 +10,8 @@ import {buyItem,attributes,equipment} from '../lib/restoration.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 import {worldData} from '../lib/world.mjs';
 import {nativeCharacterStats} from '../lib/native-character-stats.mjs';
-import {FORMATIONS,FORMATION_BOOKS,FORMATION_SHOP,FORMATION_BOOK_POWER,clientFormationPower,formationInfo,formationWorldPacket,syncFormation} from '../lib/formation-data.mjs';
+import {FORMATIONS,FORMATION_BOOKS,FORMATION_SHOP,FORMATION_BOOK_POWER,clientFormationPower,formationInfo,formationWorldPacket,syncFormation,formationPowers,clientFormationPowers,formationSkill,formationSkillBlock,replacesFormation} from '../lib/formation-data.mjs';
+import {formationSlotConfig} from '../lib/local-formation-slots.mjs';
 
 const d=decoders(fileURLToPath(new URL('..',import.meta.url)));
 
@@ -175,4 +176,34 @@ test('14014 同步：登录后第一次学书/切阵也要推 formationSkill，�
  p.activeFormationId=null;push();
  assert.equal(sent.length,2);assert.equal(new Reader(sent[1].bytes).bool(),false);
  context.role=null;push();assert.equal(context.lastFormationId,undefined);
+});
+
+test('replace 模式的阵：原版统一加成在源头作废（下发与属性计算都为空）',()=>{
+ // 玩家反馈：用阵位配置把鸟翔阵改成 replace 之后，原版 18% 还在生效。
+ // 原版三条是服务端下发的阵法本体数据，阵位配置只是覆盖层 ⇒ 必须在源头清零，
+ // 否则面板、阵法说明、战斗外看到的都还是原版数值。
+ const cfg=formationSlotConfig();
+ const ids=Object.keys(cfg.forms).map(Number);
+ const replaced=ids.filter(id=>cfg.forms[id].mode==='replace');
+ const kept=ids.filter(id=>cfg.forms[id].mode!=='replace');
+
+ for(const id of replaced){
+  const p=role();p.formations={[id]:9};p.activeFormationId=id;
+  assert.deepEqual(formationPowers(p),[],'replace 阵的原版三条必须为空');
+  assert.deepEqual(clientFormationPowers(p),[],'clientFormationPowers 也要为空');
+  assert.equal(formationSkill(p),null,'服务端属性计算用的桩也要为空');
+  const w=formationSkillBlock(new Writer(),p,formationInfo(id),true);
+  const r=new Reader(w.done());
+  assert.equal(r.byte(),id);assert.equal(r.int(),id);assert.equal(r.byte(),id);assert.equal(r.byte(),9);
+  r.string();r.byte();
+  for(let i=0;i<3;i++){assert.equal(r.short(),0,'power 必须写 0');assert.equal(r.short(),0,'value 必须写 0');}
+  assert.equal(r.byte(),formationInfo(id).teamcount);assert.equal(r.bool(),true);
+  assert.equal(r.pos,r.b.length,'替换后不能把包结构写坏');
+ }
+ for(const id of kept){
+  const f=formationInfo(id);
+  const p=role();p.formations={[id]:9};p.activeFormationId=id;
+  assert.deepEqual(clientFormationPowers(p),[[clientFormationPower(f.power1),f.value1],[clientFormationPower(f.power2),f.value2],[clientFormationPower(f.power3),f.value3]],
+   'add 模式的阵必须原样保留原版三条');
+ }
 });

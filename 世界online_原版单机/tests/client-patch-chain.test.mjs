@@ -115,11 +115,11 @@ test('主包全链跑通，产物长度与既有构建指纹一致',skipNoBundle
 //  （攻击力/破甲/劈砍·穿刺·魔法攻击/魔法穿透/致命/命中/魔法命中/强制命中）后 +892。）
  // （第 66 版加 escortBattle 补丁后 +28：另外两条同类条件早已由
   //  client-mission-patch / client-legion-patch 打过，这条补的是漏掉的 isEscortStatus。第 70 版
-  //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。第 92 版加 formationBooks 补丁后 +45：阵法书 type31 的「使用」分支让给 14012，避免落到人物技能书 14007。第 93 版加 skillFxSwitch 补丁后 +14936：把 installSkillFxSwitch.toString() 追加到主包末尾，战斗中按 window.__worldolSkillFx 桥替换技能特效（播放层，不动字节层）。第 93 版 B 层再加 autoSkillChance + randomTarget 两个追加式补丁（+6588）：自动技能按配置概率触发（不中则空过回合）、area 40—59 号段的随机目标。第 106 版阵位补丁 +7580（inBattleFor 判据 + 总开关 + 战斗外还原字段）：新增 get() 层注入（宠物 PetVO.get 的 default 分支会覆盖 this.formationSkill，必须在 get 层连持有人一起换）、固化字段判定（PlayerVO 的 this.dodge 是平加不是总值，不能当固化字段改）、阵位映射缓存、以及可关断的注入开关。）原版换包或补丁增删都会
+  //  加 escortBoard 补丁后 +152：把「打完棋盘战斗把棋盘恢复」塞进 BattleProxy.exitBattle 的 viewData。第 73 版加 promptBriefing 补丁后 +155：战斗提示弹窗单条 2e3→800ms、按队列长度加速、入队带上限 6 条，避免战斗都结束了还在慢慢滚。第 92 版加 formationBooks 补丁后 +45：阵法书 type31 的「使用」分支让给 14012，避免落到人物技能书 14007。第 93 版加 skillFxSwitch 补丁后 +14936：把 installSkillFxSwitch.toString() 追加到主包末尾，战斗中按 window.__worldolSkillFx 桥替换技能特效（播放层，不动字节层）。第 93 版 B 层再加 autoSkillChance + randomTarget 两个追加式补丁（+6588）：自动技能按配置概率触发（不中则空过回合）、area 40—59 号段的随机目标。第 107 版阵位补丁 +7711（删掉「只配一个阵就硬套」的兜底 + 自检面板显示当前阵）：新增 get() 层注入（宠物 PetVO.get 的 default 分支会覆盖 this.formationSkill，必须在 get 层连持有人一起换）、固化字段判定（PlayerVO 的 this.dodge 是平加不是总值，不能当固化字段改）、阵位映射缓存、以及可关断的注入开关。）原版换包或补丁增删都会
  // 让这里失败 —— 那正是需要停下来核对锚点的时刻。
  assert.equal(original.length,4557839,'原版主包长度变了，补丁锚点需要重新核对');
  const patched=patchClientMain(original);
- assert.equal(patched.length,4625234,'补丁链产物长度变了，构建指纹会跟着变');
+ assert.equal(patched.length,4626265,'补丁链产物长度变了，构建指纹会跟着变');
  assert.ok(patched.includes('t.m=e,t.c=i,window.__worldReq=t,'),'离线请求入口没注入成功');
 });
 

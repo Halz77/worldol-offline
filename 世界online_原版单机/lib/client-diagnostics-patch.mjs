@@ -54,7 +54,15 @@ export function installDiagnostics(req, host) {
       + ' Base' + mark(s.baseHooked) + ' 宠物' + mark(s.petHooked)
       + ', 应用 ' + (s.rolePatches || 0) + '/' + (s.petPatches || 0) + ' 回退 ' + (s.fallbacks || 0)
       + ', get ' + (s.getCalls || 0) + ' 宠调 ' + (s.petCalls || 0)
-      + ', 配置阵 ' + (s.configured || 0) + ' 个';
+      + ', 配置阵 ' + (s.configured || 0) + ' 个'
+      // 第 107 版：显示玩家「当前启用的阵」。没启用任何阵时军团/宠物不该吃任何阵位加成，
+      // 这行是玩家自查「我明明没勾选，为什么还有加成」的第一手证据。
+      + ', 当前阵 ' + (function () {
+        try {
+          const id = api.activeFormation && api.activeFormation();
+          return id ? String(id) : '无';
+        } catch (_) { return '?'; }
+      })();
   }
 
   function build() {

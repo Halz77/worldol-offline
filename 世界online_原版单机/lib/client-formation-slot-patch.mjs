@@ -26,7 +26,7 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v6';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v7';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
@@ -71,6 +71,7 @@ export function installFormationSlots(req, host) {
    * 这里在拿不到 formationSkill 时，从世界单例（模块 5 的 myPlayer）取玩家当前阵型 id，
    * 再用配置里的阵位加成顶上。
    */
+  let afCalls = 0, afBattle = null, afCached, afDone = false;
   function activeFormationId() {
     try {
       const world = req(5);
@@ -78,9 +79,26 @@ export function installFormationSlots(req, host) {
       const fs = me && (me.formationSkill || (me.vo && me.vo.formationSkill));
       if (fs && Number(fs.id) > 0) return Number(fs.id);
     } catch (_) { /* 取不到就退化 */ }
-    const conf = cfg();
-    const keys = conf ? Object.keys(conf.forms) : [];
-    return keys.length === 1 ? Number(keys[0]) : null;          // 只配了一个阵 ⇒ 就用它
+    // 兜底：战斗里找带 formationSkill 的单位。DATA_FORMATION 只给「玩家」和「玩家的宠物」挂，
+    // 军团/克隆宠物没有，所以这里找到的就是玩家当前启用的阵。
+    // ★ 第 107 版：**删掉了旧的「只配了一个阵就用它」兜底** ——
+    //   玩家根本没启用任何阵法时，那会把配置里的那个阵硬套给全军团和宠物
+    //   （玩家实测：战斗外没勾选鸟翔阵，军团/宠物照样吃到加成，根因就是它）。
+    const battle = battleRef();
+    if (!battle || typeof battle.getPlayerByPos !== 'function') return null;
+    if (afDone && afBattle === battle && afCalls++ % 64 !== 0) return afCached;
+    afBattle = battle; afCalls = 1;
+    let found = null;
+    for (let p = 0; p < MAX_POS && found === null; p++) {
+      let u;
+      try { u = battle.getPlayerByPos(p); } catch (_) { u = null; }
+      if (!u) continue;
+      const vo = u.vo || u;
+      const fs = vo && vo.formationSkill;
+      if (fs && Number(fs.id) > 0) found = Number(fs.id);
+    }
+    afCached = found; afDone = true;
+    return found;
   }
 
   /**
@@ -789,7 +807,7 @@ export function installFormationSlots(req, host) {
   timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v6',
+    revision: 'formation-slot-patch-20261025-v7',
     get status() {
       return {
         roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base, getHooked: hooked.get,
