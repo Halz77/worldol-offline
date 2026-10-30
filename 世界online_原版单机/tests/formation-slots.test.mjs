@@ -233,7 +233,7 @@ test('补丁入口：幂等 + 锚点校验 + 追加注入 + peek', () => {
  assert.ok(patched.endsWith(')(window.__worldReq,window);\n'));
  assert.throws(() => patchFormationSlots(patched), /already installed/);
  assert.throws(() => patchFormationSlots('nothing here'), /mismatch/);
- assert.equal(formationSlotPatchRevision, 'formation-slot-patch-20261025-v7');
+ assert.equal(formationSlotPatchRevision, 'formation-slot-patch-20261025-v8');
  const { api } = makeEnv(CONF);
  const peek = api.peek(1, 1, false);
  assert.equal(peek.mode, 'add');

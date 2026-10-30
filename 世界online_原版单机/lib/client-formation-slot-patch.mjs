@@ -26,7 +26,7 @@
  * 结构 { revision, mode:'add'|'replace', forms:{ [阵型id]:{mode,slots:[{powers}],pet:{powers}} } }。
  * 读不到配置 ⇒ 一律走原生行为。
  */
-export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v7';
+export const formationSlotPatchRevision = 'formation-slot-patch-20261025-v8';
 
 /** 安装阵位加成层。req = window.__worldReq，host = window。 */
 export function installFormationSlots(req, host) {
@@ -200,15 +200,22 @@ export function installFormationSlots(req, host) {
     // 决定性对比：躲闪(ModelConst.DODGE=42)在「装了补丁」与「关掉补丁」时各是多少。
     // ★ 第 105 版：之前用 `vo.formationSkill=null` 来量「去掉」，但适配器在 fs 为 null 时会退化成
     //   activeFormationId() 照样注入 ⇒ 两个值必然相同，诊断一直是假阴性。改用总开关 noSlot。
-    let withFs = '?', withoutFs = '?';
+    // 第 108 版：一次把「劈砍 / 穿刺 / 躲闪」三项都对比一遍 —— 玩家核对数值时最常问的就是
+    // 「这个数是补丁算出来的还是游戏本来就有的」，三项并排看就不会再误会
+    // （例：人物穿刺 18798 在「装」和「关」两边完全一样 ⇒ 它本来就是 18798，补丁没动它）。
     try {
       if (typeof vo.get === 'function') {
-        noSlot = false; withFs = vo.get(42);
-        noSlot = true;
-        try { withoutFs = vo.get(42); } finally { noSlot = false; }
+        for (const pair of [['劈砍', 36], ['穿刺', 37], ['躲闪', 42]]) {
+          let on = '?', off = '?';
+          noSlot = false;
+          try { on = vo.get(pair[1]); } catch (_) {}
+          noSlot = true;
+          try { off = vo.get(pair[1]); } catch (_) { off = '?'; }
+          noSlot = false;
+          parts.push(pair[0] + '装' + on + '/关' + off);
+        }
       }
     } catch (_) { noSlot = false; }
-    parts.push('躲闪装补丁=' + withFs + '/关掉=' + withoutFs);
     parts.push('dodge字段=' + (vo.dodge === undefined ? '无' : vo.dodge));
     let battle = '无';
     try { battle = battleRef() ? '有' : '无'; } catch (_) {}
@@ -476,7 +483,15 @@ export function installFormationSlots(req, host) {
     if (typeof vo.get !== 'function') return true;              // 没有 get ⇒ 只能靠字段
     if (!(constId > 0)) return false;
     const cur = vo[field];
-    if (typeof cur !== 'number' || !isFinite(cur)) return false;
+    if (typeof cur !== 'number' || !isFinite(cur) || cur === 0) return false;
+    // ★ 第 108 版修正：只看「字段 +1 → get() 是否也 +1」会把**动态**单位误判成固化。
+    // 因为 PlayerVO.getPowerValue 的公式是 `(base…)×(1+总百分比/100) + 平加字段`，
+    // 平加字段在最后一步加，所以给它 +1 时 get() 必然也正好 +1（探测恒真）。
+    // 真·固化（MonsterVO：get(DODGE) 就是 `return this.dodge`）还必须满足
+    // 「get(属性) 的原值就等于字段本身」。动态单位永远不满足（get 里还含 base 与百分比）。
+    let atCur = null;
+    try { atCur = vo.get(constId); } catch (_) { return false; }
+    if (atCur !== cur) return false;
     const probe = cur + 1;
     let same = false;
     try {
@@ -807,7 +822,7 @@ export function installFormationSlots(req, host) {
   timer = setInterval(function () { if (attach() && infoHooked) { clearInterval(timer); timer = null; } }, 1000);
 
   const api = {
-    revision: 'formation-slot-patch-20261025-v7',
+    revision: 'formation-slot-patch-20261025-v8',
     get status() {
       return {
         roleHooked: hooked.role, calHooked: hooked.cal, baseHooked: hooked.base, getHooked: hooked.get,
