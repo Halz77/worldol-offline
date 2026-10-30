@@ -9,7 +9,7 @@ import {supplyShopById,supplyNpc} from '../lib/supply-shops.mjs';
 import {buyItem,attributes,equipment} from '../lib/restoration.mjs';
 import {handleRestoration} from '../lib/restoration-service.mjs';
 import {worldData} from '../lib/world.mjs';
-import {nativeCharacterStats} from '../lib/native-character-stats.mjs';
+import {nativeCharacterStats,nativeCharacterBattleStats} from '../lib/native-character-stats.mjs';
 import {FORMATIONS,FORMATION_BOOKS,FORMATION_SHOP,FORMATION_BOOK_POWER,clientFormationPower,formationInfo,formationWorldPacket,syncFormation,formationPowers,clientFormationPowers,formationSkill,formationSkillBlock,replacesFormation} from '../lib/formation-data.mjs';
 import {formationSlotConfig} from '../lib/local-formation-slots.mjs';
 
@@ -206,4 +206,23 @@ test('replace 模式的阵：原版统一加成在源头作废（下发与属性
   assert.deepEqual(clientFormationPowers(p),[[clientFormationPower(f.power1),f.value1],[clientFormationPower(f.power2),f.value2],[clientFormationPower(f.power3),f.value3]],
    'add 模式的阵必须原样保留原版三条');
  }
+});
+
+test('阵法加的是「百分点」不是最终值的百分比，且阵位加成只影响对应属性',()=>{
+ // 数值核对用：nativeCharacterBattleStats 支持传自定义阵法桩（复算「战斗内阵位加成生效后」）。
+ // 顺便钉住一个容易误解的口径：阵法的 50 = 50 **个百分点**，加在已有总百分比上，
+ // 所以最终值不会变成 ×1.5（空手实测：13013 → 15249，只有 +17.2%）。
+ const p=role();p.formations={8:9};p.activeFormationId=8;
+ const noF=nativeCharacterBattleStats(p,{formationSkill:null}).stats;
+ const stored=nativeCharacterBattleStats(p).stats;
+ // 8 是 replace 配置 ⇒ 原版三条在源头已作废 ⇒ 与完全没有阵法一致
+ assert.equal(stored.ATK_STR,noF.ATK_STR,'replace 阵的原版加成不该再出现');
+ const up=nativeCharacterBattleStats(p,{formationSkill:{getPowerValue:k=>k===28?50:0}}).stats;
+ // 这个测试角色身上没有别的百分比 ⇒ 公式退化成 base + base×50/100，正好能钉住「加的是百分点」
+ assert.ok(noF.ATK_STR>0,'测试角色应该本来就有劈砍攻击力');
+ assert.equal(up.ATK_STR,noF.ATK_STR+Math.trunc(noF.ATK_STR*50/100),'+50 是百分比键上的 50 个百分点');
+ assert.equal(up.DODGE,noF.DODGE,'只配了劈砍攻击力 ⇒ 闪避不受影响');
+ assert.equal(up.SPEED,noF.SPEED,'只配了劈砍攻击力 ⇒ 出手速度不受影响');
+ // 真实角色身上已经有装备/被动的一两百个百分点，同样 +50 点只涨十几个百分点
+ // （空手实测：13013 → 15249，+17.2%），所以绝不能按「最终值 ×1.5」去预期。
 });

@@ -48,7 +48,13 @@ export const battleStatKeys=[
  'KEEPOUT_ATK_TIME'
 ];
 
-function nativePlayer(role){
+/**
+ * @param role 角色存档
+ * @param formationOverride 可选：覆盖 formationSkill 桩（数值核对/测试用）。
+ *   undefined = 按存档里当前启用的阵（原版口径）；null = 完全没有阵法；
+ *   对象 = 自定义 {getPowerValue(key)}，用来复算「战斗内阵位加成生效后」的数字。
+ */
+function nativePlayer(role, formationOverride){
  const bag=Object.assign({store:new Array(160).fill(null)},bagMethods);
  for(const instance of role.inventory||[]){
   if(instance.pet||instance.slot<0||instance.slot>=30)continue;
@@ -67,7 +73,7 @@ function nativePlayer(role){
  // 阵法：客户端 0056 的 getBaseValue / getPowerValue 会直接调用
  // this.formationSkill.getPowerValue(power)。把同一个桩挂到 nativePlayer 上，
  // 面板、战力评分、导入角色与战斗校验就都走原版口径（不再自己写一份公式）。
- player.formationSkill=localFormationSkill(role);
+ player.formationSkill=formationOverride!==undefined?formationOverride:localFormationSkill(role);
  for(const key of importedCombatFields)player[key]=role.importedCombatModifiers?.[key]||0;
  ['str','con','agi','ilt','wis'].forEach((key,i)=>player[key]=role.baseStats?.[i]??10);
  const title=selectedTitle(role);Object.assign(player,{titlePower1:title?.power1||0,titlePowerValue1:title?.value1||0,titlePower2:title?.power2||0,titlePowerValue2:title?.value2||0});
@@ -77,8 +83,8 @@ function nativePlayer(role){
  return player;
 }
 export function nativeCharacterPowers(role){const p=nativePlayer(role);return {equipment:key=>p.getBagEquipPowerValue(key),skill:key=>p.getSkillPowerValue(C.SKILL_TYPE_PASSIVE,key)};}
-export function nativeCharacterStats(role){
- const player=nativePlayer(role),skills=activeSkills(role);
+export function nativeCharacterStats(role,options){
+ const player=nativePlayer(role,options?options.formationSkill:undefined),skills=activeSkills(role);
  const stats=Object.fromEntries(ratingStatKeys.map(key=>{if(!Number.isInteger(M[key]))throw Error('Missing native score attribute '+key);const value=player.get(M[key]);if(!Number.isFinite(value))throw Error('Invalid native score attribute '+key);return [key,Math.max(0,value)];}));
  return {stats,base:['STR','CON','AGI','ILT','WIS'].map(key=>player.get(M[key])),skillLevels:skills.filter(s=>s.type===2||s.type===3).reduce((n,s)=>n+s.level,0)};
 }
@@ -87,8 +93,8 @@ export function nativeCharacterStats(role){
  * 伤害计算器用的完整属性。与 `nativeCharacterStats` 共用同一个 nativePlayer，
  * 只是额外把攻击类型、左右手、命中/致命/减伤等也读出来。
  */
-export function nativeCharacterBattleStats(role){
- const player=nativePlayer(role),stats={};
+export function nativeCharacterBattleStats(role,options){
+ const player=nativePlayer(role,options?options.formationSkill:undefined),stats={};
  for(const key of battleStatKeys){
   if(!Number.isInteger(M[key]))throw Error('Missing native battle attribute '+key);
   const value=player.get(M[key]);

@@ -5,11 +5,9 @@
   "forms[阵型id] = { mode:'add'|'replace', slots:[5 个阵位], pet:{powers} }；",
   "add=在统一加成之上叠加，replace=顶掉统一加成只吃阵位加成。",
   "阵位按战斗中己方角色（不含宠物）站位从前到后排名；非战斗面板按第 1 位。",
-  "由 阵法编辑器.html 生成；读取方 lib/local-formation-slots.mjs。",
-  "enabled:false = 总开关关掉，整个阵位加成退化成游戏原生行为（排查「数值到底是不是补丁改的」时用）。"
+  "由 阵法编辑器.html 生成；读取方 lib/local-formation-slots.mjs。"
  ],
  "revision": "formation-slots-20261025-v1",
- "enabled": true,
  "mode": "add",
  "forms": {
   "7": {
@@ -61,6 +59,59 @@
      [
       25,
       30
+     ]
+    ]
+   }
+  },
+  "8": {
+   "mode": "replace",
+   "slots": [
+    {
+     "powers": [
+      [
+       28,
+       50
+      ]
+     ]
+    },
+    {
+     "powers": [
+      [
+       28,
+       50
+      ]
+     ]
+    },
+    {
+     "powers": [
+      [
+       28,
+       50
+      ]
+     ]
+    },
+    {
+     "powers": [
+      [
+       28,
+       50
+      ]
+     ]
+    },
+    {
+     "powers": [
+      [
+       28,
+       50
+      ]
+     ]
+    }
+   ],
+   "pet": {
+    "powers": [
+     [
+      29,
+      50
      ]
     ]
    }
