@@ -160,6 +160,22 @@ func _initialize() -> void:
 	ck("方向键动作能驱动角色行走", player.position.x > key_before + 0.5,
 		"%.1f → %.1f" % [key_before, player.position.x])
 
+	# 朝向：素材默认朝左，往右走必须镜像（scale.x < 0），往左走不镜像。
+	var sprite: Sprite2D = player.get_node("Sprite")
+	ck("向右走时人物朝右（素材默认朝左，需镜像）", sprite.scale.x < 0.0,
+		"scale.x=%.2f" % sprite.scale.x)
+	var left_before := player.position.x
+	Input.action_press("ui_left")
+	for _f in range(10):
+		await process_frame
+	Input.action_release("ui_left")
+	ck("按左键向左走", player.position.x < left_before - 0.5,
+		"%.1f → %.1f" % [left_before, player.position.x])
+	ck("向左走时人物朝左（不镜像）", sprite.scale.x > 0.0,
+		"scale.x=%.2f" % sprite.scale.x)
+	for _f in range(2):
+		await process_frame
+
 	# 走路动作：必须用正常 model 的 anis id=2（帧 4..9），静止是 id=0 首帧（0）；
 	# 不能拿全帧轮播，也不能跟随角色屏停住的战斗姿势。
 	var walk_frames: Array = player.get("_frames")

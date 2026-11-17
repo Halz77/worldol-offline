@@ -36,25 +36,38 @@ godot-next/
     SpriteComposer.gd    运行时拼角色部件成整图
     Naming.gd            中文标签表
   scenes/                由 tools/build_*.gd 用 PackedScene.pack() 生成，可在编辑器里改
+  docs/
+    待改进方案.md                地图问题清单（玩法/渲染/内容）+ P0–P2 改进路线
+    地图编辑与重命名指南.md      地图增删改、tile/阻挡/物件、三层名字与改名方案
   tools/
     build_scene.gd         生成 CharacterScreen.tscn
     build_world_scene.gd   生成 WorldScreen.tscn
     verify_character_screen.gd   44 项断言
     verify_world_map.gd          地图全量断言
+    verify_map_editor.gd         地图编辑器断言（只在内存里改，不写真实 assets/map）
+    map_editor/
+      MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
+      MapEditor.gd         载入 / tile 与阻挡画笔 / 撤销 / 校验 / 原子保存
+      MapOverlay.gd        阻挡格 / 格线 / 悬停格 / 出生点叠加层
+      README.md            操作、快捷键、保存行为与第一版边界
 ```
 
 ## 运行与验证
 
-本机 Godot 在 `E:\Godot_v4.3-stable_mono_win64\Godot_v4.3-stable_mono_win64\`，
-用 `Godot_v4.3-stable_mono_win64_console.exe`（有 headless）。
+本机 Godot 在 `D:\Godot\`（`Godot_v4.6.3-stable_win64.exe` + `_console.exe`，有 headless）。
+2026-11-17 用 4.6.3 跑过全部自检与三个验收脚本，均通过（`verify-data-compile` 的域数量断言已随阶段 3 更新为 12）。
 
 ```bash
 # 自检（headless）
-Godot_v4.3-stable_mono_win64_console.exe --headless --path godot-next --script res://tools/verify_world_map.gd
-Godot_v4.3-stable_mono_win64_console.exe --headless --path godot-next --script res://tools/verify_character_screen.gd
+Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_world_map.gd
+Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_character_screen.gd
+Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_map_editor.gd
+
+# 地图编辑器（正常窗口；保存直接写 assets/map/<id>.json，F5 生效）
+Godot_v4.6.3-stable_win64_console.exe --path godot-next res://tools/map_editor/MapEditor.tscn
 
 # 实拍截图（必须用正常窗口，headless 是 dummy 渲染驱动，截不了 UI）
-WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.3-stable_mono_win64_console.exe \
+WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.6.3-stable_win64_console.exe \
   --path godot-next res://scenes/WorldScreen.tscn --quit-after 60
 # 产物：godot-next/_out/world_screen.png
 ```

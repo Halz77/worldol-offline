@@ -6,8 +6,8 @@
 | 决策 | **改用 Godot 4 从零重做**，停止一切对旧 JS 引擎的改造 |
 | 核心诉求 | 素材可掌控、引擎里直接看得见改得动；不再要 JS / WebView / Node 运行时 |
 | 工程位置 | 工作区 `godot-next/`（独立于源码仓库） |
-| 本机环境 | `E:\Godot_v4.3-stable_mono_win64\...\Godot_v4.3-stable_mono_win64.exe`（4.3.stable.mono，已实机验证） |
-| 官方当前稳定版 | **4.7.2**（2026-08-18）；4.3 已 EOL，正式开发建议升到 4.7.2 |
+| 本机环境 | `D:\Godot\Godot_v4.6.3-stable_win64.exe`（4.6.3.stable.official，2026-11-17 全量自检 + 三个验收脚本通过） |
+| 官方当前稳定版 | **4.7.2**（2026-08-18）；4.3 已 EOL，当前工程在 4.6.3 上验证通过 |
 | 进度 | 阶段 0 ✅ 素材落地；阶段 1 ✅ 角色屏；阶段 2 ✅ 数据编译；**阶段 3 ✅ 世界地图 + 全部 NPC + 角色行走**，2026-11-16 实机验收，见 §1.1 / §1.2 / §1.3 |
 | 旧 JS 仓库 | 阶段 2 那两批未提交改动已按指示**全部丢弃**；仓库干净，HEAD 停在 `13dc5e8` |
 
@@ -346,8 +346,8 @@ node godot-import.mjs          # 已自动接入 dir* 备用目录补漏
 # 单独补漏（不覆盖已有素材）：清单里 hash 指向 dir<hh> 的 61 个逻辑资源
 node patch-dir-assets.mjs
 
-# headless 自检（本机 4.3）
-"/e/Godot_v4.3-stable_mono_win64/Godot_v4.3-stable_mono_win64/Godot_v4.3-stable_mono_win64_console.exe" \
+# headless 自检（本机 4.6.3）
+"/d/Godot/Godot_v4.6.3-stable_win64_console.exe" \
   --headless --path godot-next --script res://tools/selfcheck.gd
 
 # 资源导入（新增 PNG 后才需要；dir* 补漏图首次必须跑）

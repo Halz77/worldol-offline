@@ -27,6 +27,9 @@ var map_id: int = 0
 var cfg: Dictionary = {}
 var show_names: bool = true
 var show_npcs: bool = false   # 用户要求先把 NPC 从地图上撤掉；数据仍保留，可随时打开
+## 补洞只在「给人看成品」时开。地图编辑器必须关掉：
+## 否则画面上会出现运行时虚构出来的地面，编辑时看到的地面并不是 JSON 里真实的东西。
+var prefill_enabled: bool = true
 
 var _tile_list: Array = []
 var _blocks: Array = []
@@ -135,6 +138,7 @@ func load_map(id: int) -> bool:
 	_opaque_cache.clear()
 	_bright_cache.clear()
 	_solid_cache.clear()
+	_broken_cells.clear()
 	var atlas_path := ATLAS_DIR + str(id) + ".png"
 	if FileAccess.file_exists(atlas_path):
 		_atlas = load(atlas_path) as Texture2D
@@ -322,7 +326,7 @@ func _draw() -> void:
 	var layers: Array = cfg.get("layers", [])
 	# 最先铺一层「兜底地面」：把所有 tile 层都没画过的内圈格子，用最近的真实地面补上。
 	# 必须在所有图层之下，才不会盖住湖面/桥/台阶（它们下层本来有 tile）。
-	if _only_layer < 0:
+	if _only_layer < 0 and prefill_enabled:
 		_prefill_holes(layers)
 	# 单遍倒序，和原版 addChild 顺序完全一致：tile / 物件层之间的前后关系不能打乱。
 	for li in range(layers.size() - 1, -1, -1):

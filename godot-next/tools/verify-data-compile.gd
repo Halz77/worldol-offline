@@ -19,7 +19,8 @@ func _init() -> void:
 	var gd := GameData.new()
 	var ix := gd.compiled_index()
 	ck("分片索引可读且版本为 1", int(ix.get("version", -1)) == 1)
-	ck("10 个数据域", gd.domains().size() == 10, str(gd.domains().size()))
+	# 阶段 3 扩了 mapList / worldMaps / npcs 三个域（原 10 → 12）
+	ck("12 个数据域", gd.domains().size() == 12, str(gd.domains().size()))
 	ck("道具 2505 / 技能 695 / 怪物 404 / 宠物 504",
 		gd.count("items") == 2505 and gd.count("skills") == 695
 		and gd.count("monsters") == 404 and gd.count("petProfiles") == 504,

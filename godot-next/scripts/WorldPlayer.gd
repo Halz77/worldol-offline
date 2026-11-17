@@ -10,6 +10,9 @@ var world_map: Node2D = null
 var screen_state = null
 var speed: float = 132.0
 var walk_fps: float = 7.0
+## 1 = 朝右，-1 = 朝左。★ 原版素材（sprite_model 的站立/行走帧）默认朝左，
+## 所以「朝右」必须水平镜像：sprite.scale.x 取负值。早期实现按「素材朝右」取符号，
+## 结果按左键人物朝右、按右键人物朝左。
 var facing: int = 1
 var _frames: Array = []          # 行走序列（anis id=2），不是全部帧
 var _walk_model_id: int = 300
@@ -122,7 +125,7 @@ func _physics_process(delta: float) -> void:
 	var tex := _texture(frame_no)
 	if tex != null:
 		sprite.texture = tex
-	sprite.scale = Vector2(0.5 * float(facing), 0.5)
+	sprite.scale = Vector2(-0.5 * float(facing), 0.5)
 	sprite.offset = Vector2(-SpriteComposer.CANVAS_W / 2.0, -SpriteComposer.ANCHOR_Y)
 
 

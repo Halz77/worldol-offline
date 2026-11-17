@@ -12,7 +12,7 @@ config_version=5
 
 config/name="世界OL 单机重做"
 run/main_scene="res://scenes/CharacterScreen.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 
 [autoload]
 
@@ -22,10 +22,6 @@ ScreenState="*res://scripts/ScreenState.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=800
-
-[dotnet]
-
-project/assembly_name="世界OL 单机重做"
 
 [rendering]
 
