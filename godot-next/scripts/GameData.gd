@@ -63,8 +63,37 @@ static func baseline() -> Dictionary:
 ## 冲突在编译期抛错，运行时不做合并，也不读 official-v305.json。
 
 const COMPILED = "res://data/compiled/"
+## 地图 override：改名 / 新建地图写在 data/overrides/，不动 index.json 快照。
+## 好处：重跑编译不会被覆盖；删一行即可回滚（见 docs/地图编辑与重命名指南.md §6）。
+const MAP_NAMES_OVERRIDE = "res://data/overrides/map_names.json"
+const MAPS_OVERRIDE = "res://data/overrides/maps.json"
 var _index: Dictionary = {}
 var _cache: Dictionary = {}
+var _map_names_override: Dictionary = {}
+var _maps_override: Dictionary = {}
+var _overrides_loaded: bool = false
+
+
+## 读 override 表（只加载一次；编辑器写完文件后调 reload_overrides() 刷新）。
+func _load_overrides() -> void:
+	if _overrides_loaded:
+		return
+	_overrides_loaded = true
+	var n = _json(MAP_NAMES_OVERRIDE)
+	if n is Dictionary:
+		_map_names_override = n
+	var m = _json(MAPS_OVERRIDE)
+	if m is Dictionary:
+		_maps_override = m
+
+
+func reload_overrides() -> void:
+	_overrides_loaded = false
+	_map_names_override = {}
+	_maps_override = {}
+	# 新建地图前 get_entry(id) 缓存过空数组，不清缓存就永远读不到新登记的条目。
+	_cache.clear()
+	_load_overrides()
 
 
 func compiled_index() -> Dictionary:
@@ -79,10 +108,20 @@ func domains() -> Array:
 
 func ids(domain: String) -> Array:
 	var d: Dictionary = compiled_index().get("domains", {}).get(domain, {})
-	return d.get("ids", [])
+	var out: Array = (d.get("ids", []) as Array).duplicate()
+	if domain == "worldMaps":
+		_load_overrides()
+		for key in _maps_override.keys():
+			var nid := int(key)
+			if not out.has(nid):
+				out.append(nid)
+		out.sort()
+	return out
 
 
 func count(domain: String) -> int:
+	if domain == "worldMaps":
+		return ids(domain).size()
 	var d: Dictionary = compiled_index().get("domains", {}).get(domain, {})
 	return int(d.get("count", 0))
 
@@ -92,6 +131,16 @@ func get_entry(domain: String, id) -> Array:
 	var key := domain + "/" + str(int(id))
 	if _cache.has(key):
 		return _cache[key]
+	if domain == "worldMaps":
+		_load_overrides()
+		var ov = _maps_override.get(str(int(id)), null)
+		if ov is Dictionary:
+			var one: Array = [ov]
+			_cache[key] = one
+			return one
+		if ov is Array and not (ov as Array).is_empty():
+			_cache[key] = ov
+			return ov
 	var v = _json(COMPILED + key + ".json")
 	var out: Array = v if v is Array else []
 	_cache[key] = out
@@ -99,6 +148,15 @@ func get_entry(domain: String, id) -> Array:
 
 
 func name_of(domain: String, id) -> String:
+	if domain == "worldMaps":
+		_load_overrides()
+		var renamed: String = str(_map_names_override.get(str(int(id)), ""))
+		if renamed != "":
+			return renamed
+		# 新建地图的 name 写在 maps override 的元数据里
+		var meta = _maps_override.get(str(int(id)), null)
+		if meta is Dictionary and str((meta as Dictionary).get("name", "")) != "":
+			return str((meta as Dictionary)["name"])
 	var d: Dictionary = compiled_index().get("domains", {}).get(domain, {})
 	var names: Dictionary = d.get("names", {})
 	return str(names.get(str(int(id)), ""))

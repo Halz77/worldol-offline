@@ -64,3 +64,15 @@ func _draw() -> void:
 	if cell.x >= 0 and cell.y >= 0 and cell.x < cols and cell.y < rows:
 		var col := COL_HOVER_ERASE if bool(editor.call("is_erasing")) else COL_HOVER
 		draw_rect(Rect2(cell.x * tw, cell.y * th, tw, th), col, false, 2.0)
+
+	# ---- 选中物件（第二版）：黄色粗框 ----
+	if editor.has_method("selected_obj_rect"):
+		var sel: Rect2 = editor.call("selected_obj_rect")
+		if sel.size.x > 0.0 and sel.size.y > 0.0:
+			draw_rect(sel, Color(1.0, 0.85, 0.2, 0.95), false, 2.5)
+			# 四角小方块，方便看出是「选中」而非悬停
+			for dx in [0.0, sel.size.x]:
+				for dy in [0.0, sel.size.y]:
+					draw_rect(Rect2(sel.position.x + dx - 2.0,
+						sel.position.y + dy - 2.0, 4.0, 4.0),
+						Color(1.0, 0.85, 0.2, 0.95), true)

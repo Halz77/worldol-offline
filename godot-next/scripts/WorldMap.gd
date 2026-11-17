@@ -261,6 +261,34 @@ func set_show_names(value: bool) -> void:
 		_name_root.visible = value
 
 
+## 供地图编辑器调用：cfg 里的 tiles/mW/mH 被原地改过之后，重建派生状态并刷新。
+## 不从磁盘重读（那会覆盖编辑器内存里的修改），只重算 tileList 与格数。
+func rebuild_from_cfg() -> void:
+	_tile_w = maxi(1, int(cfg.get("tW", 24)))
+	_tile_h = maxi(1, int(cfg.get("tH", 24)))
+	_cols = int(cfg.get("mW", 0)) / _tile_w
+	_rows = int(cfg.get("mH", 0)) / _tile_h
+	_blocks = cfg.get("blocks", [])
+	_tile_list.clear()
+	for def in cfg.get("tiles", []):
+		if not (def is Array) or def.size() < 4:
+			continue
+		var name := str(def[0])
+		var transform := int(def[1])
+		var span_x := maxi(1, int(def[2]))
+		var span_y := maxi(1, int(def[3]))
+		for row in range(span_y):
+			for col in range(span_x):
+				_tile_list.append({"src": name, "transform": transform, "col": col, "row": row})
+	_tex_cache.clear()
+	_xform_cache.clear()
+	_opaque_cache.clear()
+	_bright_cache.clear()
+	_solid_cache.clear()
+	_broken_cells.clear()
+	queue_redraw()
+
+
 func map_size() -> Vector2:
 	return Vector2(float(cfg.get("mW", 0)), float(cfg.get("mH", 0)))
 

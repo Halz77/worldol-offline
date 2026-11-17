@@ -67,6 +67,25 @@ var _mode_group: ButtonGroup
 var _palette_group: ButtonGroup
 var _palette_buttons: Array = []
 
+# ---- 第二版：物件编辑 / 地图级操作 ----
+const FRAMES_INDEX := "res://data/compiled/mapFrames.json"
+const OVERRIDE_NAMES := "res://data/overrides/map_names.json"
+const OVERRIDE_MAPS := "res://data/overrides/maps.json"
+const OBJ_SNAP := 8               # 放置/拖动吸附像素
+var frames_index: Dictionary = {}  # mapFrames.json（资源名 → atlas/frame）
+var brush_obj_src: String = ""     # 当前选中的物件资源名
+var obj_search: LineEdit
+var obj_list: ItemList
+var selected_obj_layer: int = -1   # 当前选中物件所在图层
+var selected_obj_index: int = -1   # 当前选中物件在 obj 数组中的下标
+var _obj_dragging: bool = false
+var _obj_drag_start_world: Vector2 = Vector2.ZERO
+var _obj_drag_orig: Array = []     # 拖动开始时的物件坐标副本
+# 地图级操作对话框
+var ops_dialog: AcceptDialog
+var ops_kind: String = ""          # new | copy | resize | rename | replace
+var ops_fields: Dictionary = {}
+
 
 func _ready() -> void:
 	# 编辑器里绝不允许补洞：补出来的是运行时幻觉，不是 JSON 里的真实地面。
@@ -264,7 +283,11 @@ func undo_count() -> int:
 func _record_undo(kind: String, source: Array, layer: int = -1) -> void:
 	if not _stroke.is_empty():
 		return
-	_stroke = {"kind": kind, "layer": layer, "before": source.duplicate()}
+	# 物件数组里嵌套着每个物件的小数组，必须深拷贝，否则撤销时读到的是被改过的值。
+	var snap: Array = []
+	for e in source:
+		snap.append(e.duplicate(true) if e is Array or e is Dictionary else e)
+	_stroke = {"kind": kind, "layer": layer, "before": snap}
 
 
 func _paint_cell(cell: Vector2i, erase: bool) -> void:
@@ -340,7 +363,7 @@ func undo_last() -> void:
 		_set_status("没有可撤销的操作", false)
 		return
 	var entry: Dictionary = _undo.pop_back()
-	var before: Array = entry.get("before", [])
+	var before = entry.get("before", [])
 	var kind := str(entry.get("kind", ""))
 	if kind == "tile":
 		var li := int(entry.get("layer", -1))
@@ -359,6 +382,32 @@ func undo_last() -> void:
 		blocks.clear()
 		blocks.append_array(before)
 		world_map.set("_blocks", blocks)
+	elif kind == "obj":
+		var li := int(entry.get("layer", -1))
+		var layers: Array = cfg.get("layers", [])
+		if li >= 0 and li < layers.size():
+			var arr = layers[li].get("obj", [])
+			if arr is Array:
+				# 原地恢复每个物件的字段（保持元素引用，选中框才不会指向废对象）。
+				# 共有下标逐个同步；多出来的删掉、缺的补上。
+				var common := mini(arr.size(), before.size())
+				for i in range(common):
+					if arr[i] is Array and before[i] is Array:
+						_restore_value_inplace(arr[i], before[i])
+					else:
+						var e = before[i]
+						arr[i] = e.duplicate(true) if e is Array or e is Dictionary else e
+				while arr.size() > before.size():
+					arr.pop_back()
+				while arr.size() < before.size():
+					var e2 = before[arr.size()]
+					arr.append(e2.duplicate(true) if e2 is Array or e2 is Dictionary else e2)
+				# 选中下标可能已越界
+				if selected_obj_layer == li and selected_obj_index >= arr.size():
+					_clear_obj_selection()
+	elif kind == "struct":
+		# 结构变化（图层增删/改尺寸/批量替换/物件层整体）用整 cfg 快照原地恢复。
+		_restore_cfg_snapshot(before)
 	dirty = true
 	world_map.queue_redraw()
 	overlay.queue_redraw()
@@ -512,17 +561,22 @@ func _build_ui() -> void:
 		margin.add_theme_constant_override("margin_" + side, 10)
 	panel.add_child(margin)
 
+	# 整栏可滚动：第二版加了物件浏览器和地图操作区，内容超过一屏，不能让调色板吃满高度。
+	var panel_scroll := ScrollContainer.new()
+	panel_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	margin.add_child(panel_scroll)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
-	margin.add_child(box)
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel_scroll.add_child(box)
 
 	var title := Label.new()
-	title.text = "地图编辑器 · 第一版"
+	title.text = "地图编辑器 · 第二版"
 	title.add_theme_font_size_override("font_size", 17)
 	box.add_child(title)
 
 	var hint := Label.new()
-	hint.text = "中键平移 · 滚轮缩放 · F 适配\n左键画 / 右键擦 · Ctrl+Z 撤销 · Ctrl+S 保存"
+	hint.text = "中键平移 · 滚轮缩放 · F 适配 · 左侧栏可滚动\nT/B/O 切换地块/阻挡/物件 · Ctrl+Z 撤销 · Ctrl+S 保存"
 	hint.add_theme_font_size_override("font_size", 11)
 	hint.add_theme_color_override("font_color", Color(0.68, 0.72, 0.78))
 	box.add_child(hint)
@@ -571,10 +625,21 @@ func _build_ui() -> void:
 	mode_block_btn.focus_mode = Control.FOCUS_NONE
 	mode_block_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mode_block_btn.pressed.connect(func(): set_brush_mode("block"))
+	var mode_obj_btn := Button.new()
+	mode_obj_btn.text = "物件 (O)"
+	mode_obj_btn.toggle_mode = true
+	mode_obj_btn.button_group = _mode_group
+	mode_obj_btn.focus_mode = Control.FOCUS_NONE
+	mode_obj_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mode_obj_btn.pressed.connect(func():
+		brush_mode = "object"
+		_refresh_brush_label()
+		overlay.queue_redraw())
 	var mode_row := HBoxContainer.new()
 	mode_row.add_theme_constant_override("separation", 6)
 	mode_row.add_child(mode_tile_btn)
 	mode_row.add_child(mode_block_btn)
+	mode_row.add_child(mode_obj_btn)
 	box.add_child(mode_row)
 
 	var check_row := HBoxContainer.new()
@@ -599,8 +664,7 @@ func _build_ui() -> void:
 	box.add_child(brush_label)
 
 	palette_scroll = ScrollContainer.new()
-	palette_scroll.custom_minimum_size = Vector2(0, 250)
-	palette_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	palette_scroll.custom_minimum_size = Vector2(0, 170)
 	palette_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(palette_scroll)
 
@@ -642,7 +706,103 @@ func _build_ui() -> void:
 	confirm_dialog.confirmed.connect(_on_confirm_discard)
 	ui.add_child(confirm_dialog)
 
+	# ---- 第二版 UI：物件资源浏览器 + 地图级操作按钮 ----
+	_build_v2_ui(box)
+
 	_ui_ready = true
+	if OS.has_environment("WORLDOL_CAPTURE"):
+		_maybe_capture()
+
+
+func _maybe_capture() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	# 自动截图模式：可选放置一个物件、再截，便于实测第二版 UI 与物件渲染
+	if OS.has_environment("WORLDOL_AUTOSHOT"):
+		var src := OS.get_environment("WORLDOL_AUTOSHOT")
+		if not src.is_empty() and frames_index.has(src):
+			_place_obj(src, Vector2(500, 400))
+			await get_tree().process_frame
+	var tex := get_viewport().get_texture()
+	if tex == null:
+		print("[capture] 编辑器 headless 下跳过截图")
+		return
+	var img := tex.get_image()
+	if img == null:
+		return
+	var out := ProjectSettings.globalize_path("res://_out")
+	DirAccess.make_dir_recursive_absolute(out)
+	var err := img.save_png(out + "/map_editor_screen.png")
+	print("[capture] 编辑器截图 ", out + "/map_editor_screen.png", " err=", err)
+	# WORLDOL_QUITAFTER=n：截图后自动退出，便于无人值守实测
+	if OS.has_environment("WORLDOL_QUITAFTER"):
+		await get_tree().create_timer(float(OS.get_environment("WORLDOL_QUITAFTER"))).timeout
+		get_tree().quit(0)
+
+
+func _build_v2_ui(box: VBoxContainer) -> void:
+	box.add_child(HSeparator.new())
+	var obj_title := Label.new()
+	obj_title.text = "物件资源（第二版）"
+	obj_title.add_theme_font_size_override("font_size", 12)
+	box.add_child(obj_title)
+
+	obj_search = LineEdit.new()
+	obj_search.placeholder_text = "搜索物件资源名（如 541 / 树 / rock）"
+	obj_search.text_changed.connect(_on_obj_search_changed)
+	box.add_child(obj_search)
+
+	obj_list = ItemList.new()
+	obj_list.custom_minimum_size = Vector2(0, 92)
+	obj_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	obj_list.select_mode = ItemList.SELECT_SINGLE
+	obj_list.item_selected.connect(_on_obj_selected)
+	box.add_child(obj_list)
+	_reload_frames_index()
+	_fill_obj_list("")
+
+	var sel_hint := Label.new()
+	sel_hint.text = "点资源→物件图层放 · 点已放物件选中 · 拖动移动 · R 旋转 · Del 删"
+	sel_hint.add_theme_font_size_override("font_size", 10)
+	sel_hint.add_theme_color_override("font_color", Color(0.68, 0.72, 0.78))
+	box.add_child(sel_hint)
+
+	box.add_child(HSeparator.new())
+	var mapops_title := Label.new()
+	mapops_title.text = "地图操作（第二版）"
+	mapops_title.add_theme_font_size_override("font_size", 12)
+	box.add_child(mapops_title)
+
+	var row1 := HBoxContainer.new()
+	row1.add_theme_constant_override("separation", 6)
+	for spec in [["+图层", "add_layer"], ["-图层", "remove_layer"],
+			["新建图", "new"], ["复制图", "copy"]]:
+		var b := Button.new()
+		b.text = spec[0]
+		b.focus_mode = Control.FOCUS_NONE
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.pressed.connect(_on_map_op.bind(spec[1]))
+		row1.add_child(b)
+	box.add_child(row1)
+
+	var row2 := HBoxContainer.new()
+	row2.add_theme_constant_override("separation", 6)
+	for spec in [["改尺寸", "resize"], ["改名", "rename"],
+			["批量换资源", "replace"], ["校验", "validate"]]:
+		var b := Button.new()
+		b.text = spec[0]
+		b.focus_mode = Control.FOCUS_NONE
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.pressed.connect(_on_map_op.bind(spec[1]))
+		row2.add_child(b)
+	box.add_child(row2)
+
+	ops_dialog = AcceptDialog.new()
+	ops_dialog.title = "地图操作"
+	ops_dialog.ok_button_text = "执行"
+	ops_dialog.confirmed.connect(_on_ops_confirmed)
+	ui.add_child(ops_dialog)
 
 
 func _fill_map_list(keyword: String) -> void:
@@ -817,6 +977,10 @@ func _refresh_mode_buttons() -> void:
 func _refresh_brush_label() -> void:
 	if brush_label == null:
 		return
+	if brush_mode == "object":
+		brush_label.text = "物件：%s（左键放置/选中拖动 · R 旋转 · Del 删）" % (
+			brush_obj_src if not brush_obj_src.is_empty() else "未选资源")
+		return
 	if brush_mode == "block":
 		brush_label.text = "当前画笔：阻挡（左键 = 不可走，右键 = 可走）"
 		return
@@ -895,12 +1059,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			_panning = mb.pressed
 			get_viewport().set_input_as_handled()
 		elif mb.button_index == MOUSE_BUTTON_LEFT or mb.button_index == MOUSE_BUTTON_RIGHT:
-			if mb.pressed:
-				begin_stroke(mb.button_index == MOUSE_BUTTON_RIGHT)
-				_refresh_hover(mb.position)
-				_paint_at_mouse()
+			if brush_mode == "object":
+				_handle_obj_mouse(mb)
 			else:
-				end_stroke()
+				if mb.pressed:
+					begin_stroke(mb.button_index == MOUSE_BUTTON_RIGHT)
+					_refresh_hover(mb.position)
+					_paint_at_mouse()
+				else:
+					end_stroke()
 			get_viewport().set_input_as_handled()
 	elif event is InputEventMouseMotion:
 		var mm := event as InputEventMouseMotion
@@ -909,8 +1076,49 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 		else:
 			_refresh_hover(mm.position)
-			if _painting:
+			if brush_mode == "object":
+				if _obj_dragging:
+					var world := _screen_to_world(mm.position)
+					_move_selected_obj(world - _obj_drag_start_world)
+					_obj_drag_start_world = world
+					get_viewport().set_input_as_handled()
+			elif _painting:
 				_paint_at_mouse()
+
+
+func _handle_obj_mouse(mb: InputEventMouseButton) -> void:
+	var world := _screen_to_world(mb.position)
+	if not mb.pressed:
+		# 拖动结束：落一步撤销
+		if _obj_dragging:
+			_obj_dragging = false
+			end_stroke()
+			_refresh_undo_button()
+		return
+	# 右键 = 删除命中的物件
+	if mb.button_index == MOUSE_BUTTON_RIGHT:
+		var hit_r := _hit_obj(world)
+		if not hit_r.is_empty():
+			selected_obj_layer = int(hit_r[0])
+			selected_obj_index = int(hit_r[1])
+			_delete_selected_obj()
+		return
+	# 左键：先命中已有物件 → 选中并准备拖动；否则放新物件
+	var hit := _hit_obj(world)
+	if not hit.is_empty():
+		selected_obj_layer = int(hit[0])
+		selected_obj_index = int(hit[1])
+		var obj = _obj_at(selected_obj_layer, selected_obj_index)
+		_obj_drag_start_world = world
+		_obj_dragging = true
+		begin_stroke(false)
+		var layers: Array = cfg.get("layers", [])
+		var arr: Array = layers[selected_obj_layer]["obj"]
+		_record_undo("obj", arr, selected_obj_layer)
+		_set_status("选中物件 %s（拖动移动 · R 旋转 · Del 删）" % str((obj as Array)[1]), false)
+		overlay.queue_redraw()
+	else:
+		_place_obj(brush_obj_src, world)
 
 
 func _shortcut_input(event: InputEvent) -> void:
@@ -939,9 +1147,669 @@ func _shortcut_input(event: InputEvent) -> void:
 			set_brush_mode("tile")
 		KEY_B:
 			set_brush_mode("block")
+		KEY_O:
+			brush_mode = "object"
+			_refresh_mode_buttons()
+			_refresh_brush_label()
+			_set_status("物件模式：先在右侧资源列表选一个资源", false)
+		KEY_R:
+			if brush_mode == "object":
+				_rotate_selected_obj()
+		KEY_DELETE:
+			if brush_mode == "object":
+				_delete_selected_obj()
+		KEY_BACKSPACE:
+			if brush_mode == "object":
+				_delete_selected_obj()
 		KEY_ESCAPE:
+			_clear_obj_selection()
 			hover_cell = Vector2i(-1, -1)
 			overlay.queue_redraw()
 		_:
 			return
 	get_viewport().set_input_as_handled()
+
+
+# ================================================================ 第二版：物件资源浏览器
+
+func _reload_frames_index() -> void:
+	var v = GameData._json(FRAMES_INDEX)
+	frames_index = v if v is Dictionary else {}
+
+
+func _fill_obj_list(keyword: String) -> void:
+	if obj_list == null:
+		return
+	obj_list.clear()
+	var kw := keyword.strip_edges().to_lower()
+	var keys: Array = frames_index.keys()
+	keys.sort()
+	# 有搜索词时最多列 200 条，避免 2485 条一次铺满卡界面
+	var limit := 200 if not kw.is_empty() else 400
+	for key in keys:
+		if not kw.is_empty() and str(key).to_lower().find(kw) < 0:
+			continue
+		obj_list.add_item(str(key))
+		if obj_list.item_count >= limit:
+			break
+
+
+func _on_obj_search_changed(text: String) -> void:
+	_fill_obj_list(text)
+
+
+func _on_obj_selected(index: int) -> void:
+	if index < 0 or index >= obj_list.item_count:
+		return
+	brush_obj_src = obj_list.get_item_text(index)
+	brush_mode = "object"
+	_refresh_mode_buttons()
+	_clear_obj_selection()
+	_set_status("物件画笔：%s　（在物件图层左键放置）" % brush_obj_src, false)
+	overlay.queue_redraw()
+
+
+## 物件资源在场景里的显示尺寸：优先帧的 sourceW/sourceH（逻辑尺寸），
+## 没有则退回 w/h；和 WorldMap._resolve 的 logical frame 一致。
+func _obj_src_size(src: String) -> Vector2:
+	var res: Dictionary = world_map.call("_resolve", src)
+	if not res.is_empty() and bool(res.get("logical", false)):
+		return (res.get("region") as Rect2).size
+	if frames_index.has(src):
+		var f: Dictionary = (frames_index[src] as Dictionary).get("frame", {})
+		var sw := int(f.get("sourceW", f.get("w", 24)))
+		var sh := int(f.get("sourceH", f.get("h", 24)))
+		return Vector2(maxi(1, sw), maxi(1, sh))
+	# 没帧表的资源（如纯切片）：直接读图片尺寸
+	var res2: Dictionary = world_map.call("_resolve", src, true)
+	if not res2.is_empty():
+		return (res2.get("region") as Rect2).size
+	return Vector2(24, 24)
+
+
+func _first_obj_layer() -> int:
+	var layers: Array = cfg.get("layers", [])
+	# 物件层优先 type==3；找不到就取任意有 obj 键的层
+	for want_type in [3, -1]:
+		for i in range(layers.size()):
+			var layer = layers[i]
+			if not (layer is Dictionary):
+				continue
+			if want_type == 3 and int(layer.get("type", 0)) != 3:
+				continue
+			if layer.get("obj") is Array:
+				return i
+	return -1
+
+
+# ================================================================ 第二版：物件编辑
+
+func _clear_obj_selection() -> void:
+	selected_obj_layer = -1
+	selected_obj_index = -1
+	overlay.queue_redraw()
+
+
+func selected_obj_rect() -> Rect2:
+	if selected_obj_layer < 0 or selected_obj_index < 0:
+		return Rect2()
+	var obj = _obj_at(selected_obj_layer, selected_obj_index)
+	return _obj_rect(obj)
+
+
+func _obj_at(li: int, oi: int):
+	var layers: Array = cfg.get("layers", [])
+	if li < 0 or li >= layers.size():
+		return null
+	var layer = layers[li]
+	if not (layer is Dictionary) or not (layer.get("obj") is Array):
+		return null
+	var arr: Array = layer["obj"]
+	if oi < 0 or oi >= arr.size():
+		return null
+	return arr[oi]
+
+
+func _obj_rect(obj) -> Rect2:
+	if not (obj is Array) or (obj as Array).size() < 6:
+		return Rect2()
+	var arr: Array = obj
+	var x := float(arr[2])
+	var y := float(arr[3])
+	var w := maxf(1.0, float(arr[4]))
+	var h := maxf(1.0, float(arr[5]))
+	var tr := int(arr[6]) if arr.size() > 6 else 0
+	# 90/270 度旋转后包围盒宽高交换（变换 4/5/6/7）
+	if tr == 4 or tr == 5 or tr == 6 or tr == 7:
+		return Rect2(x, y, h, w)
+	return Rect2(x, y, w, h)
+
+
+## 命中检测：从最上层（layers[0]，倒序绘制里最后画）往下找，
+## 同层内从后往前（后画的在上）。返回 [layer, index] 或空。
+func _hit_obj(world: Vector2) -> Array:
+	var layers: Array = cfg.get("layers", [])
+	for li in range(layers.size()):
+		var layer = layers[li]
+		if not (layer is Dictionary) or not (layer.get("obj") is Array):
+			continue
+		var arr: Array = layer["obj"]
+		for oi in range(arr.size() - 1, -1, -1):
+			var obj = arr[oi]
+			if not (obj is Array):
+				continue
+			# kind 3/4 是 NPC/模型，编辑器不选中（它们由 npcs 数据驱动）
+			if int((obj as Array)[0]) != 2:
+				continue
+			if _obj_rect(obj).has_point(world):
+				return [li, oi]
+	return []
+
+
+func _place_obj(src: String, world: Vector2) -> void:
+	if src.is_empty():
+		_set_status("请先选一个物件资源", true)
+		return
+	if bool(cfg.get("__synthetic", false)):
+		_set_status("合成网格图不支持编辑物件", true)
+		return
+	var li := _first_obj_layer()
+	if li < 0:
+		_set_status("本图没有物件图层（layers 里没有带 obj 的层）", true)
+		return
+	var layers: Array = cfg.get("layers", [])
+	var arr: Array = layers[li]["obj"]
+	var sz := _obj_src_size(src)
+	var x := snappedf(world.x - sz.x * 0.5, float(OBJ_SNAP))
+	var y := snappedf(world.y - sz.y * 0.5, float(OBJ_SNAP))
+	var obj: Array = [2, src, x, y, int(sz.x), int(sz.y), 0]
+	begin_stroke(false)
+	_record_undo("obj", arr, li)
+	arr.append(obj)
+	selected_obj_layer = li
+	selected_obj_index = arr.size() - 1
+	end_stroke()
+	dirty = true
+	_refresh_title()
+	_refresh_undo_button()
+	world_map.queue_redraw()
+	overlay.queue_redraw()
+	_set_status("放置物件 %s @ (%.0f,%.0f)" % [src, x, y], false)
+
+
+func _delete_selected_obj() -> void:
+	if selected_obj_layer < 0 or selected_obj_index < 0:
+		_set_status("没有选中的物件", false)
+		return
+	var obj = _obj_at(selected_obj_layer, selected_obj_index)
+	var layers: Array = cfg.get("layers", [])
+	var arr: Array = layers[selected_obj_layer]["obj"]
+	begin_stroke(false)
+	_record_undo("obj", arr, selected_obj_layer)
+	arr.remove_at(selected_obj_index)
+	end_stroke()
+	_clear_obj_selection()
+	dirty = true
+	_refresh_title()
+	_refresh_undo_button()
+	world_map.queue_redraw()
+	_set_status("已删除物件 %s" % (str((obj as Array)[1]) if obj is Array else "?"), false)
+
+
+func _rotate_selected_obj() -> void:
+	var obj = _obj_at(selected_obj_layer, selected_obj_index)
+	if not (obj is Array):
+		_set_status("没有选中的物件", false)
+		return
+	var layers: Array = cfg.get("layers", [])
+	var arr: Array = layers[selected_obj_layer]["obj"]
+	begin_stroke(false)
+	_record_undo("obj", arr, selected_obj_layer)
+	var oa: Array = obj
+	var tr := int(oa[6]) if oa.size() > 6 else 0
+	if oa.size() > 6:
+		oa[6] = (tr + 1) % 8
+	else:
+		oa.append(1)
+	end_stroke()
+	dirty = true
+	_refresh_title()
+	_refresh_undo_button()
+	world_map.queue_redraw()
+	overlay.queue_redraw()
+	_set_status("物件 %s 变换 %d → %d" % [str(oa[1]), tr, int(oa[6])], false)
+
+
+func _move_selected_obj(delta: Vector2) -> void:
+	var obj = _obj_at(selected_obj_layer, selected_obj_index)
+	if not (obj is Array):
+		return
+	var arr: Array = obj
+	arr[2] = snappedf(float(arr[2]) + delta.x, float(OBJ_SNAP))
+	arr[3] = snappedf(float(arr[3]) + delta.y, float(OBJ_SNAP))
+	world_map.queue_redraw()
+	overlay.queue_redraw()
+
+
+# ================================================================ 第二版：结构快照 / 图层 / 地图操作
+
+## 结构操作前调用：记一步整 cfg 快照（原地恢复用）。
+func _record_struct_undo() -> void:
+	if not _stroke.is_empty():
+		return
+	_stroke = {"kind": "struct", "layer": -1,
+		"before": cfg.duplicate(true)}
+
+
+## 递归原地恢复：把 src 的内容写回 dst，保持所有嵌套 Array/Dictionary 的引用不变。
+## ★ 必须原地：WorldMap 持有 cfg 和 layers[i].data 的引用，整体替换会让它们失效，
+##   后续 queue_redraw 画的还是旧数据（这正是第一版 tile/block 撤销强调的原则）。
+func _restore_value_inplace(dst, src) -> void:
+	if dst is Array and src is Array:
+		dst.clear()
+		for e in src:
+			if e is Array or e is Dictionary:
+				var copy = e.duplicate(true)
+				dst.append(copy)
+			else:
+				dst.append(e)
+	elif dst is Dictionary and src is Dictionary:
+		for k in dst.keys():
+			if not src.has(k):
+				dst.erase(k)
+		for k in src.keys():
+			if dst.has(k) and (dst[k] is Array or dst[k] is Dictionary) \
+					and (src[k] is Array or src[k] is Dictionary):
+				_restore_value_inplace(dst[k], src[k])
+			else:
+				var v = src[k]
+				dst[k] = v.duplicate(true) if v is Array or v is Dictionary else v
+
+
+## 整 cfg 快照原地恢复（不换 cfg 引用，WorldMap 持有同一个 Dictionary）。
+func _restore_cfg_snapshot(snap: Dictionary) -> void:
+	for k in cfg.keys():
+		if not snap.has(k):
+			cfg.erase(k)
+	for k in snap.keys():
+		if cfg.has(k) and (cfg[k] is Array or cfg[k] is Dictionary) \
+				and (snap[k] is Array or snap[k] is Dictionary):
+			_restore_value_inplace(cfg[k], snap[k])
+		else:
+			var v = snap[k]
+			cfg[k] = v.duplicate(true) if v is Array or v is Dictionary else v
+	# 层数变了，当前图层下标可能越界
+	var layers_now: Array = cfg.get("layers", [])
+	layer_index = clampi(layer_index, -1, layers_now.size() - 1)
+	world_map.call("rebuild_from_cfg")
+	_rebuild_layers()
+	_rebuild_palette()
+	_clear_obj_selection()
+	_refresh_info()
+	zoom_to_fit()
+
+
+func _finish_struct_edit(msg: String, is_error: bool = false) -> void:
+	end_stroke()
+	dirty = true
+	world_map.call("rebuild_from_cfg")
+	_rebuild_layers()
+	_rebuild_palette()
+	_refresh_info()
+	_refresh_title()
+	_set_status(msg, is_error)
+
+
+# ---- 图层增删 ----
+
+func add_tile_layer() -> void:
+	var layers: Array = cfg.get("layers", [])
+	var tw := maxi(1, int(cfg.get("tW", 24)))
+	var th := maxi(1, int(cfg.get("tH", 24)))
+	var cells := (int(cfg.get("mW", 0)) / tw) * (int(cfg.get("mH", 0)) / th)
+	if cells <= 0:
+		_set_status("地图尺寸无效，无法加图层", true)
+		return
+	_record_struct_undo()
+	var data_arr: Array = []
+	data_arr.resize(cells)
+	data_arr.fill(EMPTY_TILE)
+	# layers[0] 在最上层；append 到末尾 = 新层在最底层（地面层的正确位置）
+	layers.append({"type": 2, "data": data_arr})
+	layer_index = layers.size() - 1
+	_finish_struct_edit("新增地块图层 %d（最底层，%d 格全空）" % [layer_index, cells])
+
+
+func remove_current_layer() -> void:
+	var layers: Array = cfg.get("layers", [])
+	if layers.size() <= 1:
+		_set_status("只剩一个图层，不能删除", true)
+		return
+	if layer_index < 0 or layer_index >= layers.size():
+		_set_status("请先选中要删除的图层", true)
+		return
+	_record_struct_undo()
+	layers.remove_at(layer_index)
+	layer_index = clampi(layer_index, 0, layers.size() - 1)
+	_finish_struct_edit("已删除图层，现在共 %d 层" % layers.size())
+
+
+# ---- 地图级操作对话框 ----
+
+func _on_map_op(kind: String) -> void:
+	if kind == "add_layer":
+		add_tile_layer()
+		return
+	if kind == "remove_layer":
+		remove_current_layer()
+		return
+	if kind == "validate":
+		var problems := validate_cfg(cfg)
+		if problems.is_empty():
+			_set_status("校验通过：%d 项约束全部满足" % 8, false)
+		else:
+			_set_status("校验失败（%d 项）：\n%s" % [problems.size(), "\n".join(problems)], true)
+		return
+	ops_kind = kind
+	ops_fields.clear()
+	ops_dialog.dialog_text = ""
+	# 用 VBoxContainer 承载输入控件
+	for c in ops_dialog.get_children():
+		if c is Control:
+			ops_dialog.remove_child(c)
+			c.queue_free()
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 8)
+	ops_dialog.add_child(vb)
+
+	match kind:
+		"new", "copy":
+			var lbl := Label.new()
+			lbl.text = "从当前地图复制一份（%d），填写新 id：" % map_id if kind == "copy" else \
+				"从当前地图复制一份作为模板，填写新 id："
+			vb.add_child(lbl)
+			_add_field(vb, "id", "新地图 id（建议 10001+）", str(_suggest_new_id()))
+			var nm := Label.new()
+			nm.text = "创建后可在 override 里改名；接通传送需另配 NPC。"
+			vb.add_child(nm)
+		"resize":
+			var tw := maxi(1, int(cfg.get("tW", 24)))
+			var th := maxi(1, int(cfg.get("tH", 24)))
+			_add_field(vb, "cols", "新宽度（格，原 %d）" % (int(cfg.get("mW", 0)) / tw),
+				str(int(cfg.get("mW", 0)) / tw))
+			_add_field(vb, "rows", "新高度（格，原 %d）" % (int(cfg.get("mH", 0)) / th),
+				str(int(cfg.get("mH", 0)) / th))
+			_add_field(vb, "strategy", "策略：keep=留左上 / center=居中 / edge=扩边", "center")
+		"rename":
+			_add_field(vb, "name", "新名字", data.name_of("worldMaps", map_id))
+		"replace":
+			_add_field(vb, "from", "原资源名", "106_1")
+			_add_field(vb, "to", "新资源名", "304")
+	ops_dialog.popup_centered()
+
+
+func _add_field(parent: VBoxContainer, key: String, label: String, default: String) -> void:
+	var l := Label.new()
+	l.text = label
+	parent.add_child(l)
+	var e := LineEdit.new()
+	e.text = default
+	parent.add_child(e)
+	ops_fields[key] = e
+
+
+func _suggest_new_id() -> int:
+	var ids: Array = data.ids("worldMaps")
+	var m := 10000
+	for id in ids:
+		m = maxi(m, int(id))
+	return m + 1
+
+
+func _on_ops_confirmed() -> void:
+	var kind := ops_kind
+	match kind:
+		"new", "copy":
+			_do_copy_map(int(str(ops_fields["id"].text).strip_edges()))
+		"resize":
+			_do_resize(int(str(ops_fields["cols"].text).strip_edges()),
+				int(str(ops_fields["rows"].text).strip_edges()),
+				str(ops_fields["strategy"].text).strip_edges().to_lower())
+		"rename":
+			_do_rename(str(ops_fields["name"].text).strip_edges())
+		"replace":
+			_do_replace(str(ops_fields["from"].text).strip_edges(),
+				str(ops_fields["to"].text).strip_edges())
+	ops_kind = ""
+
+
+func _copy_map_cfg() -> Dictionary:
+	return cfg.duplicate(true)
+
+
+func _do_copy_map(new_id: int) -> void:
+	if new_id <= 0:
+		_set_status("新 id 必须为正整数", true)
+		return
+	if data.get_entry("worldMaps", new_id) is Array and not (data.get_entry("worldMaps", new_id) as Array).is_empty():
+		_set_status("地图 %d 已存在，换一个 id" % new_id, true)
+		return
+	if FileAccess.file_exists(MAP_DIR + str(new_id) + ".json"):
+		_set_status("assets/map/%d.json 已存在，换一个 id" % new_id, true)
+		return
+	var new_cfg := _copy_map_cfg()
+	new_cfg.erase("__synthetic")
+	var err := _write_map_file(new_id, new_cfg)
+	if err != OK:
+		_set_status("复制地图失败：写文件出错（%d）" % err, true)
+		return
+	# 登记 override（不动 index.json 快照）
+	var ov = GameData._json(OVERRIDE_MAPS)
+	if not (ov is Dictionary):
+		ov = {}
+	var meta: Dictionary = {}
+	var src_meta: Array = data.get_entry("worldMaps", map_id)
+	if not src_meta.is_empty() and src_meta[0] is Dictionary:
+		meta = (src_meta[0] as Dictionary).duplicate(true)
+	meta["id"] = new_id
+	meta["name"] = data.name_of("worldMaps", map_id) + "（副本）"
+	meta["npc_count"] = 0
+	meta["has_config"] = true
+	meta["has_atlas"] = FileAccess.file_exists("res://assets/map_merged/%d.png" % new_id)
+	ov[str(new_id)] = meta
+	var werr := _write_text(ProjectSettings.globalize_path(OVERRIDE_MAPS),
+		JSON.stringify(normalize_value(ov), "", false))
+	if werr != OK:
+		_set_status("地图文件已建，但登记 override 失败（%d）：新图可能不出现在列表" % werr, true)
+		return
+	data.reload_overrides()
+	_fill_map_list(search_edit.text)
+	_set_status("已复制地图 %d → %d（含地形/物件/阻挡；NPC 分片未复制）" % [map_id, new_id], false)
+
+
+func _write_map_file(id: int, cfg_write: Dictionary) -> int:
+	var abs_path := ProjectSettings.globalize_path(MAP_DIR + str(id) + ".json")
+	return _write_text(abs_path, JSON.stringify(normalize_value(cfg_write), "", false))
+
+
+func _do_resize(new_cols: int, new_rows: int, strategy: String) -> void:
+	if new_cols <= 0 or new_rows <= 0:
+		_set_status("尺寸必须为正", true)
+		return
+	if strategy != "keep" and strategy != "center" and strategy != "edge":
+		strategy = "center"
+	var tw := maxi(1, int(cfg.get("tW", 24)))
+	var th := maxi(1, int(cfg.get("tH", 24)))
+	var old_cols := int(cfg.get("mW", 0)) / tw
+	var old_rows := int(cfg.get("mH", 0)) / th
+	var new_cells := new_cols * new_rows
+	if new_cells > 100000:
+		_set_status("目标格数 %d 过大，拒绝" % new_cells, true)
+		return
+	_record_struct_undo()
+	# 计算旧格到新格的偏移
+	var off_c := 0
+	var off_r := 0
+	if strategy == "center":
+		off_c = (new_cols - old_cols) / 2
+		off_r = (new_rows - old_rows) / 2
+	# keep / edge：旧格落在左上角（edge 的扩边就是右侧/下侧补空）
+	var layers: Array = cfg.get("layers", [])
+	for layer in layers:
+		if not (layer is Dictionary):
+			continue
+		if layer.get("data") is Array:
+			var old_data: Array = layer["data"]
+			var nd: Array = []
+			nd.resize(new_cells)
+			nd.fill(EMPTY_TILE)
+			for r in range(old_rows):
+				for c in range(old_cols):
+					var nc := c + off_c
+					var nr := r + off_r
+					if nc < 0 or nc >= new_cols or nr < 0 or nr >= new_rows:
+						continue
+					var oi := r * old_cols + c
+					if oi >= old_data.size():
+						continue
+					nd[nr * new_cols + nc] = old_data[oi]
+			layer["data"] = nd
+	# blocks 同步
+	var blocks = cfg.get("blocks", null)
+	if blocks is Array:
+		var old_blocks: Array = blocks
+		var nb: Array = []
+		nb.resize(new_cells)
+		nb.fill(0)
+		for r in range(old_rows):
+			for c in range(old_cols):
+				var nc := c + off_c
+				var nr := r + off_r
+				if nc < 0 or nc >= new_cols or nr < 0 or nr >= new_rows:
+					continue
+				var oi := r * old_cols + c
+				if oi >= old_blocks.size():
+					continue
+				nb[nr * new_cols + nc] = old_blocks[oi]
+		cfg["blocks"] = nb
+	# 物件坐标：center 策略整体平移，keep/edge 不动
+	if strategy == "center":
+		var dx := float(-off_c * tw)
+		var dy := float(-off_r * th)
+		for layer in layers:
+			if layer is Dictionary and layer.get("obj") is Array:
+				for obj in layer["obj"]:
+					if obj is Array and (obj as Array).size() >= 4:
+						(obj as Array)[2] = float((obj as Array)[2]) + dx
+						(obj as Array)[3] = float((obj as Array)[3]) + dy
+	cfg["mW"] = new_cols * tw
+	cfg["mH"] = new_rows * th
+	_finish_struct_edit("改尺寸：%dx%d → %dx%d 格（%s）" % [
+		old_cols, old_rows, new_cols, new_rows, strategy])
+
+
+func _do_rename(new_name: String) -> void:
+	if new_name.is_empty():
+		_set_status("名字不能为空", true)
+		return
+	var ov = GameData._json(OVERRIDE_NAMES)
+	if not (ov is Dictionary):
+		ov = {}
+	ov[str(map_id)] = new_name
+	var err := _write_text(ProjectSettings.globalize_path(OVERRIDE_NAMES),
+		JSON.stringify(normalize_value(ov), "", false))
+	if err != OK:
+		_set_status("改名失败：写 override 出错（%d）" % err, true)
+		return
+	data.reload_overrides()
+	_fill_map_list(search_edit.text)
+	_refresh_title()
+	_refresh_info()
+	_set_status("已改名：%d → %s（写在 override，不动 index.json）" % [map_id, new_name], false)
+
+
+func _do_replace(from: String, to: String) -> void:
+	if from.is_empty() or to.is_empty() or from == to:
+		_set_status("原资源名和新资源名不能为空且不能相同", true)
+		return
+	var count := 0
+	_record_struct_undo()
+	var tiles: Array = cfg.get("tiles", [])
+	for def in tiles:
+		if def is Array and (def as Array).size() > 0 and str((def as Array)[0]) == from:
+			(def as Array)[0] = to
+			count += 1
+	var layers: Array = cfg.get("layers", [])
+	for layer in layers:
+		if layer is Dictionary and layer.get("obj") is Array:
+			for obj in layer["obj"]:
+				if obj is Array and (obj as Array).size() > 1 and str((obj as Array)[1]) == from:
+					(obj as Array)[1] = to
+					count += 1
+	_finish_struct_edit("批量替换 %s → %s：%d 处" % [from, to, count])
+
+
+# ---- 保存前校验（§4 硬约束 + 索引上限 + 物件不越界 + 引用完整） ----
+
+func validate_cfg(check_cfg: Dictionary) -> Array:
+	var problems: Array = []
+	var tw := maxi(1, int(check_cfg.get("tW", 24)))
+	var th := maxi(1, int(check_cfg.get("tH", 24)))
+	var mw := int(check_cfg.get("mW", 0))
+	var mh := int(check_cfg.get("mH", 0))
+	if mw <= 0 or mh <= 0 or mw % tw != 0 or mh % th != 0:
+		problems.append("mW/mH 必须是 tW/tH 的整数倍")
+	var cols := mw / tw
+	var rows := mh / th
+	var cells := cols * rows
+	var tile_list: Array = []
+	for def in check_cfg.get("tiles", []):
+		if not (def is Array) or (def as Array).size() < 4:
+			continue
+		for _r in range(maxi(1, int((def as Array)[3]))):
+			for _c in range(maxi(1, int((def as Array)[2]))):
+				tile_list.append(def)
+	if tile_list.size() > 255:
+		problems.append("tileList=%d > 255" % tile_list.size())
+	var layers: Array = check_cfg.get("layers", [])
+	for i in range(layers.size()):
+		var layer = layers[i]
+		if not (layer is Dictionary):
+			problems.append("图层 %d 不是对象" % i)
+			continue
+		if int(layer.get("type", 0)) == 2:
+			var arr = layer.get("data", [])
+			if not (arr is Array) or (arr as Array).size() != cells:
+				problems.append("图层 %d data 长度 %d ≠ %d" % [
+					i, (arr as Array).size() if arr is Array else -1, cells])
+		if layer.get("obj") is Array:
+			for obj in layer["obj"]:
+				if not (obj is Array) or (obj as Array).size() < 6:
+					continue
+				var oa: Array = obj
+				if int(oa[0]) == 2:
+					var tr := int(oa[6]) if oa.size() > 6 else 0
+					var ww := float(oa[4]); var hh := float(oa[5])
+					if tr == 4 or tr == 5 or tr == 6 or tr == 7:
+						var t := ww; ww = hh; hh = t
+					var x := float(oa[2]); var y := float(oa[3])
+					if x < -ww or y < -hh or x > mw + ww or y > mh + hh:
+						problems.append("物件 %s 越界 @(%d,%d)" % [str(oa[1]), int(x), int(y)])
+	var blocks = check_cfg.get("blocks", null)
+	if blocks is Array and (blocks as Array).size() > cells:
+		problems.append("blocks 长度 %d > %d" % [(blocks as Array).size(), cells])
+	# 传送 / 编队引用（数据链完整性，白名单忽略历史缺口）
+	var npc_path := "res://data/compiled/npcs/%d.json" % map_id
+	if FileAccess.file_exists(npc_path):
+		var npcs = GameData._json(npc_path)
+		if npcs is Array:
+			for npc in npcs:
+				if not (npc is Dictionary):
+					continue
+				var jumps = npc.get("jumpMapID", [])
+				if jumps is Array:
+					for jid in jumps:
+						if data.get_entry("worldMaps", int(jid)).is_empty():
+							problems.append("NPC %s 传送目标 %d 不存在" % [
+								str(npc.get("name", "?")), int(jid)])
+	return problems

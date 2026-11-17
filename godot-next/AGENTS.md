@@ -47,9 +47,13 @@ godot-next/
     verify_map_editor.gd         地图编辑器断言（只在内存里改，不写真实 assets/map）
     map_editor/
       MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
-      MapEditor.gd         载入 / tile 与阻挡画笔 / 撤销 / 校验 / 原子保存
-      MapOverlay.gd        阻挡格 / 格线 / 悬停格 / 出生点叠加层
-      README.md            操作、快捷键、保存行为与第一版边界
+      MapEditor.gd         载入 / tile·阻挡·物件三种画笔 / 图层增删 / 新建复制图 / 改尺寸 /
+                            改名 / 批量换资源 / 校验 / 撤销 / 原子保存（第二版全实现）
+      MapOverlay.gd        阻挡格 / 格线 / 悬停格 / 出生点 / 选中物件黄框
+      README.md            操作、快捷键、保存行为与第二版边界
+  data/overrides/
+      map_names.json       地图改名 override（name_of 优先读它）
+      maps.json            新建地图的元数据 override（ids/get_entry/name_of 三处都读）
 ```
 
 ## 运行与验证
@@ -183,6 +187,29 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 | `WORLDOL_NOTRANS=1` | 忽略旋转变换 |
 | `WORLDOL_DEBUG_PREFILL=1` | 打印补洞格坐标与数量 |
 | `WORLDOL_DEBUG_SKIP=1` | 打印资源缺失被跳过的格 |
+
+地图编辑器专用（都不是正常游玩会触发的）：
+
+| 变量 | 作用 |
+|---|---|
+| `WORLDOL_AUTOSHOT=<资源名>` | 截图前自动在地图上放一个该资源的物件（实测物件渲染） |
+| `WORLDOL_QUITAFTER=<秒>` | 截图后自动退出（无人值守实测） |
+
+编辑器的截图产物是 `_out/map_editor_screen.png`（游戏世界是 `_out/world_screen.png`）。
+
+## 地图编辑器第二版要点（2026-11-17 补完）
+
+- 原作者只做了第一版（tile/阻挡画笔 + 撤销 + 保存），第二版缺口已补：
+  **物件编辑**（放置/拖动/旋转/删除）、**图层增删**、**新建/复制地图**、
+  **改尺寸**（keep/center/edge）、**批量换资源**、**改名**（写 override）、**保存前校验**。
+- ★ 结构操作的撤销用「整 cfg 快照 + 递归原地恢复」（`_restore_value_inplace`）：
+  必须原地改，不能整体替换 `cfg["layers"]`，否则 WorldMap 持有的数组引用会失效、
+  撤销后画的还是旧数据。物件撤销同理（保持每个物件元素的引用）。
+- ★ 新建/复制地图、改名都写 `data/overrides/`，**不碰 index.json 快照**；
+  `GameData.reload_overrides()` 会清 `_cache`——不清的话新建图前那次 `get_entry(id)`
+  缓存的空数组会让新图永远读不到元数据。
+- 编辑器左侧面板内容多，套了 `ScrollContainer`；调色板固定 170px，
+  **不要**改回 `SIZE_EXPAND_FILL`，否则会把第二版控件挤出可视区。
 
 排查套路：先用 `FIT + GRID` 截图读格子坐标 → 用 node 读 `assets/map/<id>.json` 查该格各层
 tile 与附近物件 → 用 `SKIP` / `NOOBJ` / `ONLYLAYER` 逐项排除 → 确认是「资源缺失」「变换错」

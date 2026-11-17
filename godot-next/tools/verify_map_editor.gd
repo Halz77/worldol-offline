@@ -220,6 +220,152 @@ func _initialize() -> void:
 	ck("290 张图序列化后没有小数", bad_decimal.is_empty(),
 		str(bad_decimal).substr(0, 160))
 
+	# ---------- 第二版：物件 / 图层 / 结构操作 ----------
+	print("[verify] 7/10 物件编辑（放置 / 选中 / 旋转 / 删除 / 撤销）")
+	# 先验证第二版 UI 控件存在且交互路径通（资源列表 → 物件模式）
+	var obj_list_ui: ItemList = editor.get("obj_list")
+	ck("物件资源列表有条目", obj_list_ui != null and obj_list_ui.item_count > 0,
+		str(obj_list_ui.item_count) if obj_list_ui != null else "null")
+	if obj_list_ui != null and obj_list_ui.item_count > 0:
+		editor.call("_on_obj_selected", 0)
+		ck("点资源切到物件模式", editor.get("brush_mode") == "object",
+			str(editor.get("brush_mode")))
+		ck("画笔资源名已设置", not str(editor.get("brush_obj_src")).is_empty(),
+			str(editor.get("brush_obj_src")))
+	ck("地图操作对话框已建", editor.get("ops_dialog") != null)
+	editor.call("load_map", 4)
+	var cfg2: Dictionary = editor.call("current_cfg")
+	var layers2: Array = cfg2.get("layers", [])
+	var obj_layer := -1
+	for i in range(layers2.size()):
+		if layers2[i] is Dictionary and int(layers2[i].get("type", 0)) == 3 \
+				and layers2[i].get("obj") is Array:
+			obj_layer = i
+			break
+	ck("地图 4 有物件图层", obj_layer >= 0, str(obj_layer))
+	if obj_layer >= 0:
+		var obj_arr: Array = layers2[obj_layer]["obj"]
+		var before_n: int = obj_arr.size()
+		# 选一个存在的资源名做画笔
+		var fi = GameData._json("res://data/compiled/mapFrames.json")
+		var names = fi.keys()
+		editor.set("brush_obj_src", str(names[0]))
+		editor.call("_place_obj", str(names[0]), Vector2(100, 100))
+		ck("放置物件后 obj 数 +1", obj_arr.size() == before_n + 1,
+			"%d → %d" % [before_n, obj_arr.size()])
+		var placed: Array = obj_arr[obj_arr.size() - 1]
+		ck("物件格式 [2,src,x,y,w,h,tr]", placed.size() == 7 and int(placed[0]) == 2,
+			str(placed))
+		ck("放置坐标吸附 8px", int(placed[2]) % 8 == 0 and int(placed[3]) % 8 == 0,
+			str(placed))
+		ck("放置后自动选中", int(editor.get("selected_obj_index")) == obj_arr.size() - 1)
+		# 旋转
+		editor.call("_rotate_selected_obj")
+		ck("R 旋转 transform +1", int(placed[6]) == 1, str(placed[6]))
+		editor.call("_rotate_selected_obj")
+		ck("旋转到 2", int(placed[6]) == 2)
+		# 拖动（走真实笔画流程：begin → record → move → end）
+		var ox := float(placed[2])
+		editor.set("selected_obj_layer", obj_layer)
+		editor.set("selected_obj_index", obj_arr.size() - 1)
+		editor.call("begin_stroke", false)
+		editor.call("_record_undo", "obj", obj_arr, obj_layer)
+		editor.call("_move_selected_obj", Vector2(16, 24))
+		editor.call("end_stroke")
+		ck("拖动改 x/y", int(placed[2]) == int(ox) + 16, str(placed[2]))
+		# 撤销拖动
+		editor.call("undo_last")
+		ck("撤销拖动还原坐标", int(placed[2]) == int(ox), str(placed[2]))
+		# 删除
+		editor.call("_delete_selected_obj")
+		ck("删除后 obj 数还原", obj_arr.size() == before_n,
+			"%d" % obj_arr.size())
+
+	print("[verify] 8/10 图层增删")
+	editor.call("load_map", 4)
+	var cfg3: Dictionary = editor.call("current_cfg")
+	var layers3: Array = cfg3.get("layers", [])
+	var n_layer0: int = layers3.size()
+	editor.call("add_tile_layer")
+	ck("加图层后层数 +1", (editor.call("current_cfg") as Dictionary)["layers"].size() == n_layer0 + 1)
+	ck("新图层是最底层（末尾）", int((layers3[layers3.size() - 1] as Dictionary).get("type", 0)) == 2)
+	editor.call("undo_last")
+	ck("撤销加图层后层数还原", layers3.size() == n_layer0, str(layers3.size()))
+	var n_layer1: int = layers3.size()
+	editor.call("remove_current_layer")
+	ck("删图层后层数 -1", layers3.size() == n_layer1 - 1)
+	editor.call("undo_last")
+	ck("撤销删图层后层数还原", layers3.size() == n_layer1)
+
+	print("[verify] 9/10 改尺寸 / 批量替换 / 校验")
+	editor.call("load_map", 4)
+	var cfg4: Dictionary = editor.call("current_cfg")
+	var tw4 := maxi(1, int(cfg4.get("tW", 24)))
+	var th4 := maxi(1, int(cfg4.get("tH", 24)))
+	var oc: int = int(cfg4.get("mW", 0)) / tw4
+	var orr: int = int(cfg4.get("mH", 0)) / th4
+	editor.call("_do_resize", oc + 2, orr + 2, "center")
+	ck("改尺寸 mW/mH 正确", int(cfg4.get("mW", 0)) == (oc + 2) * tw4
+		and int(cfg4.get("mH", 0)) == (orr + 2) * th4,
+		"%dx%d" % [int(cfg4.get("mW", 0)), int(cfg4.get("mH", 0))])
+	var lay4: Array = cfg4.get("layers", [])
+	var data_ok := true
+	for layer in lay4:
+		if layer is Dictionary and int(layer.get("type", 0)) == 2:
+			if (layer.get("data", []) as Array).size() != (oc + 2) * (orr + 2):
+				data_ok = false
+	ck("改尺寸后每层 data 长度同步", data_ok)
+	var blk4 = cfg4.get("blocks", null)
+	ck("改尺寸后 blocks 长度同步", not (blk4 is Array) or (blk4 as Array).size() == (oc + 2) * (orr + 2))
+	editor.call("undo_last")
+	ck("撤销改尺寸还原来 mW", int(cfg4.get("mW", 0)) == oc * tw4)
+
+	editor.call("load_map", 4)
+	var cfg5: Dictionary = editor.call("current_cfg")
+	# 取地图 4 里真实存在的一个 tile 资源名来替换
+	var first_src := ""
+	for def in cfg5.get("tiles", []):
+		if def is Array and (def as Array).size() > 0:
+			first_src = str((def as Array)[0])
+			break
+	var to_src := first_src + "_renamed_test"
+	editor.call("_do_replace", first_src, to_src)
+	var replace_hits := 0
+	for def in cfg5.get("tiles", []):
+		if def is Array and str((def as Array)[0]) == to_src:
+			replace_hits += 1
+	ck("批量替换 tiles 里的资源名", replace_hits > 0, "%s → %s (%d)" % [first_src, to_src, replace_hits])
+	editor.call("undo_last")
+	var still_old := 0
+	for def in cfg5.get("tiles", []):
+		if def is Array and str((def as Array)[0]) == first_src:
+			still_old += 1
+	ck("撤销批量替换还原资源名", still_old > 0, str(still_old))
+
+	ck("校验地图 4 无硬错误", (editor.call("validate_cfg", cfg5) as Array).is_empty(),
+		str(editor.call("validate_cfg", cfg5)).substr(0, 120))
+
+	print("[verify] 10/10 改名 override（内存 + 文件往返）")
+	editor.call("load_map", 4)
+	editor.call("_do_rename", "太阳城_测试改名")
+	data.reload_overrides()
+	ck("改名后 name_of 命中 override",
+		data.name_of("worldMaps", 4) == "太阳城_测试改名",
+		data.name_of("worldMaps", 4))
+	# 还原：删掉测试改名，避免污染工作区
+	var name_path := "res://data/overrides/map_names.json"
+	var ovn = GameData._json(name_path)
+	if ovn is Dictionary:
+		ovn.erase("4")
+		var f := FileAccess.open(ProjectSettings.globalize_path(name_path),
+			FileAccess.WRITE)
+		if f != null:
+			f.store_string(JSON.stringify(ovn, "", false))
+			f.close()
+	data.reload_overrides()
+	ck("还原后名字回到原名", data.name_of("worldMaps", 4).find("太阳城") >= 0,
+		data.name_of("worldMaps", 4))
+
 	editor.queue_free()
 	print("[verify] 失败项 ", failures)
 	quit(1 if failures > 0 else 0)
