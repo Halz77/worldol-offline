@@ -1,0 +1,320 @@
+{
+ "generated": "2026-11-15T15:23:05.201Z",
+ "source": "<源码仓库>/data/*.json（只读）",
+ "note": "运行时按 id 分片懒加载，禁止一次性 parse 全量。冲突必须抛错，不静默取一边。",
+ "totalBytes": 151288493,
+ "files": [
+  {
+   "file": "official-v305.json",
+   "bytes": 34852283,
+   "shape": "object{schema,clientVersion,sourceCapture,sourceTime,importedAt,clientHashes,…}",
+   "authority": "权威基线：原版 v305 抓包"
+  },
+  {
+   "file": "content-library.json",
+   "bytes": 29878499,
+   "shape": "object{schema,generatedAt,counts,catalog,equipmentCatalog,itemDetails,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "recorded-content.json",
+   "bytes": 18004261,
+   "shape": "object{schema,clientVersion,revision,generatedAt,captures,id,…}",
+   "authority": "录制补缺：仅补权威缺失"
+  },
+  {
+   "file": "skill-progression.json",
+   "bytes": 15387888,
+   "shape": "object{schema,modelVersion,generatedAt,scope,counts,professions,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "recorded-expansion-20260922.json",
+   "bytes": 13028883,
+   "shape": "object{schema,revision,captures,id,audit,schema,…}",
+   "authority": "录制补缺：仅补权威缺失"
+  },
+  {
+   "file": "career-skill-directory.json",
+   "bytes": 11170785,
+   "shape": "object{version,effectRevision,learningMode,maxLearned,teachers,name,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "career-skills.json",
+   "bytes": 8486589,
+   "shape": "object{schema,version,effectRevision,generatedAt,learningMode,maxLearned,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "pet-catalog.json",
+   "bytes": 7120546,
+   "shape": "object{revision,sources,commit,repository,growth,statuses,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "catalog-skills.json",
+   "bytes": 2443451,
+   "shape": "array",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "offline-update.json",
+   "bytes": 2127403,
+   "shape": "object{id,createdAt,type,source,clientVersion,containsPlayerSaves,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "item-affix-layouts.json",
+   "bytes": 1869280,
+   "shape": "object{schema,clientVersion,items,25,name,definitionSHA256,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "equipment-skill-levels.json",
+   "bytes": 1155801,
+   "shape": "object{version,maxLevel,source,file,commit,sha256,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "official-guides.json",
+   "bytes": 1147022,
+   "shape": "object{schema,clientVersion,generatedAt,sourceKind,snapshots,capture,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "drop-catalog.json",
+   "bytes": 934209,
+   "shape": "object{revision,generatedAt,summary,savedCaptures,validSavedCaptures,snapshots,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "home-features-v1.json",
+   "bytes": 874723,
+   "shape": "object{revision,capture,sourceAudit,schema,snapshot,checkedAt,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "restored-v03.json",
+   "bytes": 703802,
+   "shape": "object{schema,client,source,sourceURL,snapshots,file,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "captured81-20260926.json",
+   "bytes": 299195,
+   "shape": "object{schema,source,capture,clientVersion,actualClientVersion,indexSha256,…}",
+   "authority": "录制补缺：仅补权威缺失"
+  },
+  {
+   "file": "pet-equipment-skills32.json",
+   "bytes": 279300,
+   "shape": "object{revision,maxLevel,maxEquipped,maxPerItem,skills,id,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "city-character-v1.json",
+   "bytes": 193797,
+   "shape": "object{revision,talents,rankId,rankLevel,unlockLevel,type,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "native-commerce.json",
+   "bytes": 189658,
+   "shape": "object{revision,sourceAudit,schema,snapshot,checkedAt,cutoffSeq,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "spirit-seals.json",
+   "bytes": 187479,
+   "shape": "object{revision,source,capture,seq,ref,file,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "yunruo-temple-v1.json",
+   "bytes": 164830,
+   "shape": "object{schema,revision,capture,id,audit,schema,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "equipment-sets.json",
+   "bytes": 125530,
+   "shape": "object{schema,clientVersion,generatedAt,responsePackets,sets,id,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "daily-activity-v1.json",
+   "bytes": 122082,
+   "shape": "object{revision,resetPolicy,zone,hour,scope,activeMissions,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-career-skills.json",
+   "bytes": 121862,
+   "shape": "object{schema,revision,note,levelCap,skills,id,…}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "solar-challenge-monsters.json",
+   "bytes": 103443,
+   "shape": "object{schema,_comment,revision,source,monsters,id,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "boss-challenges-v1.json",
+   "bytes": 55216,
+   "shape": "object{schema,revision,captures,id,audit,schema,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "team-dungeon-capture-20261001.json",
+   "bytes": 55033,
+   "shape": "object{capture,route,points,id,conn,id,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "community-growth.json",
+   "bytes": 48856,
+   "shape": "object{provenance,repository,commit,files,talent.json,artifact.json,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "player-experience.json",
+   "bytes": 30265,
+   "shape": "object{version,maxLevel,revision,source,title,url,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "skill-effect-pool.json",
+   "bytes": 24434,
+   "shape": "object{generated,total,effects,id,files,n,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "native-map-slices.json",
+   "bytes": 20542,
+   "shape": "object{revision,officialManifestSHA256,restored,logical,md5,path,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "fashion-icons.json",
+   "bytes": 17801,
+   "shape": "object{revision,sheet,url,avatar,genderFrames,avatarFace,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "achievements.json",
+   "bytes": 15591,
+   "shape": "object{schema,revision,notes,bigTypes,1,2,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "legion-v1.json",
+   "bytes": 8159,
+   "shape": "object{schema,revision,formations,id,slots,index,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "spirit-seal-schemas.json",
+   "bytes": 7471,
+   "shape": "object{s2c_SealInfo,1,name,type,message,repeated,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-skill-overrides.json",
+   "bytes": 5564,
+   "shape": "object{_readme,revision,skills,129,levels,set,…}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "replayable-chains.json",
+   "bytes": 3519,
+   "shape": "object{revision,note,chains,id,name,root,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "home-feature-catalogs.json",
+   "bytes": 2727,
+   "shape": "object{revision,lottery,source,capture,seq,protocol,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-item-overrides.json",
+   "bytes": 2691,
+   "shape": "object{_readme,revision,items,747,grade,def_str,…}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "pet-import-20260923.json",
+   "bytes": 2260,
+   "shape": "object{revision,generatedAt,captures,id,events,integrityPassed,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "drop-web-references.json",
+   "bytes": 1917,
+   "shape": "object{checkedAt,sources,id,title,url,publishedAt,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "manual-item-grants.json",
+   "bytes": 1900,
+   "shape": "object{schema,enchantments,illusion,type,handBookItem,id,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "world-travel-links.json",
+   "bytes": 1883,
+   "shape": "object{revision,capture,audit,schema,snapshot,checkedAt,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "equipment-skill-levels-extra.json",
+   "bytes": 1753,
+   "shape": "object{schema,revision,note,source,file,sha256,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-formation-slots.json",
+   "bytes": 1672,
+   "shape": "object{_readme,revision,mode,forms,7,mode,…}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "local-monster-overrides.json",
+   "bytes": 1630,
+   "shape": "object{_readme,revision,monsters}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "equipment-upgrade-rules.json",
+   "bytes": 1360,
+   "shape": "object{version,mode,identify,scrolls,distribution,fields,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-encounters.json",
+   "bytes": 1216,
+   "shape": "object{_readme,revision,encounters}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "tower-shop.json",
+   "bytes": 847,
+   "shape": "object{revision,note,shopId,items,itemId,name,…}",
+   "authority": "派生目录 / 工具产物"
+  },
+  {
+   "file": "local-auto-skill-chance.json",
+   "bytes": 839,
+   "shape": "object{_readme,revision,infoMode,chance,4848}",
+   "authority": "本地覆盖层：最高优先级"
+  },
+  {
+   "file": "local-diagnostics.json",
+   "bytes": 746,
+   "shape": "object{_comment,revision,overlay,logToConsole,battleDiag,_battleDiag_comment,…}",
+   "authority": "本地覆盖层：最高优先级"
+  }
+ ]
+}
