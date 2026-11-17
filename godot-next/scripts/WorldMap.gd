@@ -52,6 +52,8 @@ var _ignore_transform: bool = false
 var _no_objects: bool = false
 ## 排查用：WORLDOL_ONLYLAYER=3 只画指定层索引，用来定位某块画面属于哪一层。
 var _only_layer: int = -1
+## 排查用：WORLDOL_SKIPTILE="106_1,304" 临时不画这些资源名的 tile，定位地面色块来源。
+var _skip_tiles: Array = []
 var _name_root: Node2D
 var npcs: Array = []
 
@@ -62,6 +64,9 @@ func _ready() -> void:
 			_skip_srcs.append(s.strip_edges())
 	_ignore_transform = OS.has_environment("WORLDOL_NOTRANS")
 	_no_objects = OS.has_environment("WORLDOL_NOOBJ")
+	if OS.has_environment("WORLDOL_SKIPTILE"):
+		for s in OS.get_environment("WORLDOL_SKIPTILE").split(",", false):
+			_skip_tiles.append(s.strip_edges())
 	if OS.has_environment("WORLDOL_ONLYLAYER"):
 		_only_layer = int(OS.get_environment("WORLDOL_ONLYLAYER"))
 	var index_path := "res://data/compiled/mapFrames.json"
@@ -129,6 +134,7 @@ func load_map(id: int) -> bool:
 	_xform_cache.clear() # 变换后的子图同样不能跨图复用
 	_opaque_cache.clear()
 	_bright_cache.clear()
+	_solid_cache.clear()
 	var atlas_path := ATLAS_DIR + str(id) + ".png"
 	if FileAccess.file_exists(atlas_path):
 		_atlas = load(atlas_path) as Texture2D
@@ -335,12 +341,19 @@ func _draw() -> void:
 			info.resize(count)
 			painted.fill(false)
 			for i in range(count):
+				# 引用坏资源的格子：整格不画 tile，只留底下补出来的地面
+				# （否则 layer5 的淡色 106_1 会把补好的地面又盖回去）。
+				if not _broken_cells.is_empty() and i < _broken_cells.size() \
+						and _broken_cells[i]:
+					continue
 				# 原版 sliceLayer.loadSlice 是 `cfg.data[i] & 255`：负数不是空格，
 				# 而是按字节解码的 tileList 索引（约 1.8 万个格子），-1 解码后正好是 255 空。
 				var idx := int(cells[i]) & 255
 				if idx == 255 or idx >= _tile_list.size():
 					continue
 				var t: Dictionary = _tile_list[idx]
+				if not _skip_tiles.is_empty() and _skip_tiles.has(str(t.get("src", ""))):
+					continue
 				var res = _resolve(str(t.get("src", "")), true)
 				if res.is_empty():
 					if OS.has_environment("WORLDOL_DEBUG_SKIP"):
@@ -359,6 +372,11 @@ func _draw() -> void:
 				var transform := int(t.get("transform", 0))
 				var dest := Rect2(i % _cols * _tile_w, i / _cols * _tile_h, _tile_w, _tile_h)
 				_draw_tex(res.get("texture"), dest, region, transform)
+				# 100 号中下部那块地面（106_1）原版素材本身偏亮（亮度≈0.60，周围草地≈0.45），
+				# 上层本该盖住它的 182/183 在原版资源表里根本不存在，于是整片发白很突兀。
+				# 这里只做「轻微压暗」，不换铺装、不改其他地图。
+				if map_id == _tone_down_map and _tone_down_srcs.has(str(t.get("src", ""))):
+					draw_rect(dest, Color(0, 0, 0, _tone_down_alpha), true)
 				painted[i] = true
 				info[i] = {"texture": res.get("texture"), "region": region,
 					"transform": transform}
@@ -432,6 +450,17 @@ func _prefill_holes(layers: Array) -> void:
 	var final_info: Array = []
 	final_info.resize(cell_total)
 	final_info.fill({})
+	# ★ 100 号这类地图：靠上的 tile 层引用了「资源表里根本不存在」的图
+	#   （182/183/136/138 —— 原版 gd 资源表里没有这几个键，客户端也取不到），
+	#   于是那一层画不出来，盖不住底下 layer5 的淡色 106_1，整片就露出浅白色块。
+	#   处理：把「引用了坏资源的格子」当作空洞交给补洞，用周围真实地面填上。
+	#   ★ 只对白名单地图生效：275/276 的缺图格另有成因（黑色阴影层），
+	#     用户明确要求先别动，绝不能因为这条改动被动到。
+	var track_broken := _fill_broken_maps.has(map_id)
+	_broken_cells.clear()
+	if track_broken:
+		_broken_cells.resize(cell_total)
+		_broken_cells.fill(false)
 	# 倒序 = 底 → 顶，后写覆盖先写，得到每格最终可见的地面。
 	for li in range(layers.size() - 1, -1, -1):
 		var layer = layers[li]
@@ -446,8 +475,12 @@ func _prefill_holes(layers: Array) -> void:
 			if idx == 255 or idx >= _tile_list.size():
 				continue
 			var t: Dictionary = _tile_list[idx]
+			if not _skip_tiles.is_empty() and _skip_tiles.has(str(t.get("src", ""))):
+				continue
 			var res = _resolve(str(t.get("src", "")), true)
 			if res.is_empty():
+				if track_broken:
+					_broken_cells[i] = true
 				continue
 			var region: Rect2 = res.get("region")
 			var crop_x := region.size.x > _tile_w
@@ -458,51 +491,297 @@ func _prefill_holes(layers: Array) -> void:
 				_tile_w if crop_x else region.size.x,
 				_tile_h if crop_y else region.size.y)
 			# 全透明的 tile 等于没画，不能算「这一格有地面」。
-			# 纯黑 tile（91.png 这类全黑阴影，RGB 全 0）同样不能算地面：
-			# 它铺在草上只是暗部，单独铺出来就是一块黑方块（276 的零散黑点）。
-			if not _region_has_pixels(res.get("texture"), region):
+			# ★ 还要排除「只有半透明层」的格子：137（石路 0.4）、91（阴影 0.4）、
+			#   135/184/255（光照蒙版 0.4）这些本来就是「叠在别的地面上」的叠加层。
+			#   如果它们下面没有实心地面，叠出来就是一条条半透明白斑——
+			#   260 号圆盘周围那片「地形不对」就是这么来的。
+			if not _region_is_solid(res.get("texture"), region):
 				continue
 			if _region_brightness(res.get("texture"), region) < 0.12:
 				continue
 			final_info[i] = {"texture": res.get("texture"), "region": region,
-				"transform": int(t.get("transform", 0))}
-	# 补洞：内圈、且三邻以上有地面，避免把地图外框的空旷区涂成一整片。
-	var filled := 0
-	for i in range(cell_total):
-		if not (final_info[i] as Dictionary).is_empty():
-			continue
-		var col := i % _cols
-		var row := i / _cols
-		# ★ 用「四邻至少 2 格有地面」代替「内圈 N 格」：
-		#   地图边缘/浮空岛外框四周都是空，不会被误填成直角草地；
-		#   而散落在草地中间的洞（276 的零散黑点）四邻是实的，会被补上。
-		var neighbors := 0
-		for dv in [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]:
-			var nc: int = col + dv.x
-			var nr: int = row + dv.y
-			if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+				"transform": int(t.get("transform", 0)), "src": str(t.get("src", ""))}
+	# 白名单地图里：最终可见地面是「过亮的浅色地面」的格子，也当空洞重填。
+	# 100 号中下部整片是 106_1（原版就是这张淡色图，亮度≈0.60），
+	# 上层本该盖住它的 182/183 在资源表里不存在，于是整片发白、边缘是直角阶梯。
+	# 只靠「坏格」修不动：相邻的格子照样显示 106_1，最后一半白一半草，更花。
+	if track_broken:
+		for i in range(cell_total):
+			var fi: Dictionary = final_info[i]
+			if fi.is_empty():
 				continue
-			if not (final_info[nr * _cols + nc] as Dictionary).is_empty():
-				neighbors += 1
-		if neighbors < 1:
-			continue
-		var from := _nearest_bright_info(i, final_info)
-		if from < 0:
-			continue
-		var d: Dictionary = final_info[from]
-		_draw_tex(d.get("texture"), Rect2(i % _cols * _tile_w,
-			i / _cols * _tile_h, _tile_w, _tile_h), d.get("region"),
-			int(d.get("transform", 0)))
-		# 补出来的地面只是垫底，不参与任何阴影判断。
-		
-		filled += 1
-		var _dbg := OS.has_environment("WORLDOL_DEBUG_PREFILL")
-		if _dbg and filled <= 30:
-			print("[prefill] 填 col=", i % _cols, " row=", i / _cols,
-				" 来自 col=", from % _cols, " row=", from / _cols,
-				" 资源区=", d.get("region"))
+			if _replace_srcs.has(str(fi.get("src", ""))):
+				final_info[i] = {}
+				_broken_cells[i] = true
+	# ★ 补洞按「空连通区」整块处理，不再给每个洞孤立地就近取一块地面。
+	#   孤立取色的后果：100 号中下部那片大空洞，中心取到了远处的浅色石板，
+	#   整片填成一块突兀的浅白（用户点名）。现在改成：
+	#     1) 找出一片连通的空格区；
+	#     2) 若它碰到地图边界 → 那是地图外框/水域外围，一律不填；
+	#     3) 否则从区域边缘逐圈向内扩散，每格取「周围已确定地面里出现最多的那种」，
+	#        材质沿边界自然延伸，不会在洞中间蹦出一块异色。
+	var filled := _fill_enclosed_holes(final_info)
 	if OS.has_environment("WORLDOL_DEBUG_PREFILL"):
-		print("[prefill] map=", map_id, " 总格=", cell_total, " 填充=", filled)
+		print("[prefill] map=", map_id, " 总格=", cell_total, " 填充=", filled,
+			" 坏格=", _broken_cells.size(), " 样本=", _dbg_sample)
+
+
+## 引用「资源表里不存在的图」的地图（只对它们把坏格子当空洞补）。
+## 100：layer3 用的 182/183/136/138 在原版资源表里没有，盖不住 layer5 的淡色 106_1，
+##      导致中下部整片浅白。275/276 有同类现象但成因不同，用户要求先不动，别加进来。
+const _fill_broken_maps := []
+## 白名单地图里：最终可见地面是这些资源名的格子，一律当空洞重填（换成周围正常草地）。
+var _replace_srcs: Array = ["106_1"]
+## 白名单地图 → 替代地面资源名（坏格与该替换格统一铺这一种）。
+## 100：正常草地就是 304；靠自动挑邻居会挑到 203_5 水域，整片发花。
+const _replace_ground := {100: "304"}
+## 压暗处理：只对这张地图、这些资源名的 tile 轻微叠一层暗色。
+const _tone_down_map := 100
+var _tone_down_srcs: Array = ["106_1"]
+const _tone_down_alpha := 0.16
+## 这些格子（下标记）在 _draw 里整格跳过 tile 绘制，只显示补出来的兜底地面。
+var _broken_cells: Array = []
+var _dbg_sample: String = ""
+
+
+## 对每个「完全被地面包围」的空连通区做逐圈填充，返回填充格数。
+func _fill_enclosed_holes(final_info: Array) -> int:
+	var cell_total := _cols * _rows
+	# 引用坏资源的格子：先丢掉它低层画出来的淡色地面，当空洞处理。
+	if not _broken_cells.is_empty():
+		for i in range(mini(_broken_cells.size(), cell_total)):
+			if _broken_cells[i]:
+				final_info[i] = {}
+	if OS.has_environment("WORLDOL_NOFILL"):
+		return 0
+	var visited: Array = []
+	visited.resize(cell_total)
+	visited.fill(false)
+	var filled := 0
+	var dirs: Array = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
+	# 坏格区的统一填充样本：所有坏格共用同一块地面，整片材质一致。
+	# 若按每小块各取样本，304 的 6 个不同亮度子格会随机混进来，整片变成马赛克棋盘。
+	var broken_fill: Dictionary = {}
+	if _replace_ground.has(map_id):
+		# 白名单地图直接指定替代地面：自动挑邻居会挑到 203_5（水域）这类不合适的东西。
+		var rr = _resolve(str(_replace_ground[map_id]), true)
+		if not rr.is_empty():
+			var reg0: Rect2 = rr.get("region")
+			if reg0.size.x > _tile_w or reg0.size.y > _tile_h:
+				# 取图集里偏暗的那一格当草地主体（304 的 (0,1) 亮度≈0.45）。
+				reg0 = Rect2(reg0.position.x, reg0.position.y + _tile_h, _tile_w, _tile_h)
+			broken_fill = {"texture": rr.get("texture"), "region": reg0,
+				"transform": 0, "src": str(_replace_ground[map_id])}
+	if broken_fill.is_empty() and not _broken_cells.is_empty():
+		for i in range(cell_total):
+			if i >= _broken_cells.size() or not bool(_broken_cells[i]):
+				continue
+			if not (final_info[i] as Dictionary).is_empty():
+				continue
+			var s := _find_normal_ground(i, final_info, dirs)
+			if not s.is_empty():
+				broken_fill = s
+				_dbg_sample = str(s.get("src", "")) + " " + str(s.get("region"))
+				break
+	for seed in range(cell_total):
+		if visited[seed] or not (final_info[seed] as Dictionary).is_empty():
+			continue
+		var seed_broken := (not _broken_cells.is_empty() and seed < _broken_cells.size()
+			and bool(_broken_cells[seed]))
+		# ---- 收集这一片连通空格 ----
+		var region_cells: Array = []
+		var touches_edge := false
+		var stack: Array = [seed]
+		visited[seed] = true
+		while not stack.is_empty():
+			var cur: int = stack.pop_back()
+			region_cells.append(cur)
+			var cc: int = cur % _cols
+			var cr: int = cur / _cols
+			# 只有「本来就是空格」的格子在边缘才判成地图外框；
+			# 「引用坏资源的格子」是已知该有地面、只是取不到图，必须补，不能因贴边被豁免。
+			var is_broken := (not _broken_cells.is_empty() and cur < _broken_cells.size()
+				and bool(_broken_cells[cur]))
+			if not is_broken and (cc == 0 or cr == 0 or cc == _cols - 1 or cr == _rows - 1):
+				touches_edge = true
+			for dv in dirs:
+				var d: Vector2i = dv
+				var nc: int = cc + d.x
+				var nr: int = cr + d.y
+				if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+					continue
+				var ni: int = nr * _cols + nc
+				if visited[ni] or not (final_info[ni] as Dictionary).is_empty():
+					continue
+				# 坏格与「本来就空」的格子分成两个独立连通区，
+				# 否则坏格会顺着外部空旷区一路连到地图边缘，被 touches_edge 整片豁免。
+				var nb_broken := (not _broken_cells.is_empty() and ni < _broken_cells.size()
+					and bool(_broken_cells[ni]))
+				if nb_broken != is_broken:
+					continue
+				visited[ni] = true
+				stack.append(ni)
+		if touches_edge:
+			continue
+		# 坏格区（整片地面图取不到）：整片统一用同一个地面样本。
+		var uniform: Dictionary = {}
+		if seed_broken and not broken_fill.is_empty():
+			uniform = broken_fill
+		# ---- 逐圈向内扩散填充 ----
+		var queued: Array = []
+		queued.resize(cell_total)
+		queued.fill(false)
+		var queue: Array = []
+		for cell in region_cells:
+			if _has_ground_neighbor(cell, final_info, dirs):
+				queue.append(cell)
+				queued[cell] = true
+		var head := 0
+		while head < queue.size():
+			var cur2: int = queue[head]
+			head += 1
+			if not (final_info[cur2] as Dictionary).is_empty():
+				continue
+			var d2: Dictionary
+			if not uniform.is_empty():
+				d2 = uniform
+			else:
+				var pick := _pick_mode_neighbor(cur2, final_info, dirs)
+				if pick < 0:
+					continue
+				d2 = final_info[pick]
+			_draw_tex(d2.get("texture"), Rect2(cur2 % _cols * _tile_w,
+				cur2 / _cols * _tile_h, _tile_w, _tile_h), d2.get("region"),
+				int(d2.get("transform", 0)))
+			final_info[cur2] = {
+				"texture": d2.get("texture"), "region": d2.get("region"),
+				"transform": int(d2.get("transform", 0)), "src": str(d2.get("src", ""))}
+			filled += 1
+			var c2: int = cur2 % _cols
+			var r2: int = cur2 / _cols
+			for dv2 in dirs:
+				var d3: Vector2i = dv2
+				var nc2: int = c2 + d3.x
+				var nr2: int = r2 + d3.y
+				if nc2 < 0 or nr2 < 0 or nc2 >= _cols or nr2 >= _rows:
+					continue
+				var ni2: int = nr2 * _cols + nc2
+				if queued[ni2] or not (final_info[ni2] as Dictionary).is_empty():
+					continue
+				queued[ni2] = true
+				queue.append(ni2)
+	return filled
+
+
+## 找一块「正常亮度」的地面当坏格填充样本。
+## 为什么要限亮度：坏格旁边往往就是那片过亮的浅色地面（100 号是 106_1，亮度≈0.60），
+## 直接取邻居众数等于原样不动；取回来还是浅白，等于没修。
+## 这里只接受亮度 0.25–0.55 的地面（草地/泥地/石板路都在这个区间）。
+func _find_normal_ground(index: int, final_info: Array, dirs: Array) -> Dictionary:
+	var col := index % _cols
+	var row := index / _cols
+	for radius in range(1, 6):
+		for dr in range(-radius, radius + 1):
+			for dc in range(-radius, radius + 1):
+				if maxi(absi(dr), absi(dc)) != radius:
+					continue
+				var nc: int = col + dc
+				var nr: int = row + dr
+				if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+					continue
+				var info: Dictionary = final_info[nr * _cols + nc]
+				if info.is_empty():
+					continue
+				var b := _region_brightness(info.get("texture"), info.get("region"))
+				if b >= 0.25 and b <= 0.55:
+					return info
+	return {}
+
+
+func _has_ground_neighbor(index: int, final_info: Array, dirs: Array) -> bool:
+	var col := index % _cols
+	var row := index / _cols
+	for dv in dirs:
+		var d: Vector2i = dv
+		var nc: int = col + d.x
+		var nr: int = row + d.y
+		if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+			continue
+		if not (final_info[nr * _cols + nc] as Dictionary).is_empty():
+			return true
+	return false
+
+
+## 四邻里出现次数最多的地面材质；平票时取更亮的那块（避免挑中阴影）。
+func _pick_mode_neighbor(index: int, final_info: Array, dirs: Array) -> int:
+	var col := index % _cols
+	var row := index / _cols
+	var counts := {}
+	var best_of := {}
+	var best := -1
+	for dv in dirs:
+		var d: Vector2i = dv
+		var nc: int = col + d.x
+		var nr: int = row + d.y
+		if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+			continue
+		var ni: int = nr * _cols + nc
+		var info: Dictionary = final_info[ni]
+		if info.is_empty():
+			continue
+		var key := str(info.get("src", ""))
+		counts[key] = int(counts.get(key, 0)) + 1
+		if not best_of.has(key):
+			best_of[key] = {"idx": ni, "bright": _region_brightness(info.get("texture"), info.get("region"))}
+		elif float(best_of[key]["bright"]) < _region_brightness(info.get("texture"), info.get("region")):
+			best_of[key] = {"idx": ni, "bright": _region_brightness(info.get("texture"), info.get("region"))}
+	if counts.is_empty():
+		return -1
+	var best_key := ""
+	var best_count := -1
+	var best_bright := -1.0
+	for k in counts.keys():
+		var c := int(counts[k])
+		var b := float(best_of[k]["bright"])
+		if c > best_count or (c == best_count and b > best_bright):
+			best_key = str(k)
+			best_count = c
+			best_bright = b
+	best = int(best_of[best_key]["idx"])
+	return best
+
+
+## 这一格是否铺了「实心地面」：不透明像素要占到一半以上。
+## 用来把「纯叠加层」排除在地面之外——137/91/135/184/255 这些图整体 alpha≈0.4，
+## 本来就是叠在别的地面上的（石路纹理 / 阴影 / 光照），单独存在就只剩半透明白斑。
+var _solid_cache: Dictionary = {}
+
+func _region_is_solid(tex: Texture2D, region: Rect2) -> bool:
+	if tex == null:
+		return false
+	var key := "%d|%d,%d,%d,%d" % [tex.get_instance_id(),
+		int(region.position.x), int(region.position.y),
+		int(region.size.x), int(region.size.y)]
+	if _solid_cache.has(key):
+		return bool(_solid_cache[key])
+	var img := tex.get_image()
+	var solid := false
+	if img != null:
+		var r := Rect2i(int(region.position.x), int(region.position.y),
+			int(region.size.x), int(region.size.y))
+		r = r.intersection(Rect2i(0, 0, img.get_width(), img.get_height()))
+		if r.size.x > 0 and r.size.y > 0:
+			var total := 0
+			var opaque := 0
+			var step := maxi(1, mini(r.size.x, r.size.y) / 10)
+			for y in range(r.position.y, r.position.y + r.size.y, step):
+				for x in range(r.position.x, r.position.x + r.size.x, step):
+					total += 1
+					if img.get_pixel(x, y).a >= 0.85:
+						opaque += 1
+			solid = total > 0 and float(opaque) / float(total) >= 0.5
+	_solid_cache[key] = solid
+	return solid
 
 
 ## 判断一段纹理区域里有没有不透明像素（缓存）。全透明 = 这一格实际没画出东西。
