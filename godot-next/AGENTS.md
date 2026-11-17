@@ -54,20 +54,22 @@ godot-next/
 
 ## 运行与验证
 
-本机 Godot 在 `D:\Godot\`（`Godot_v4.6.3-stable_win64.exe` + `_console.exe`，有 headless）。
-2026-11-17 用 4.6.3 跑过全部自检与三个验收脚本，均通过（`verify-data-compile` 的域数量断言已随阶段 3 更新为 12）。
+本机 Godot 在 `E:\Godot_v4.7.2-stable_win64\`（`Godot_v4.7.2-stable_win64.exe` + `_console.exe`，有 headless，非 mono 版）。
+2026-11-17 用 4.7.2 跑过全部自检与三个验收脚本，均通过（`verify-data-compile` 的域数量断言已随阶段 3 更新为 12）。
+⚠ 非 mono 版：工程里 `[dotnet]` 段已删、`project.godot` 的 `config/features` 写 `"4.7"`；
+不要用旧 4.3 mono 版打开（会重写 project.godot 并加回 dotnet 段，features 打回 4.3）。
 
 ```bash
 # 自检（headless）
-Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_world_map.gd
-Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_character_screen.gd
-Godot_v4.6.3-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_map_editor.gd
+Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_world_map.gd
+Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_character_screen.gd
+Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_map_editor.gd
 
 # 地图编辑器（正常窗口；保存直接写 assets/map/<id>.json，F5 生效）
-Godot_v4.6.3-stable_win64_console.exe --path godot-next res://tools/map_editor/MapEditor.tscn
+Godot_v4.7.2-stable_win64_console.exe --path godot-next res://tools/map_editor/MapEditor.tscn
 
 # 实拍截图（必须用正常窗口，headless 是 dummy 渲染驱动，截不了 UI）
-WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.6.3-stable_win64_console.exe \
+WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   --path godot-next res://scenes/WorldScreen.tscn --quit-after 60
 # 产物：godot-next/_out/world_screen.png
 ```
@@ -208,5 +210,5 @@ tile 与附近物件 → 用 `SKIP` / `NOOBJ` / `ONLYLAYER` 逐项排除 → 确
 
 - `--script` 模式下必须在 `_initialize()` 里实例化场景，`_init()` 里节点的 `_ready` 不会触发。
 - headless 是 dummy 渲染驱动，**截不了 UI**，截图必须开正常窗口。
-- 429 行以上不要写 `Vector2i` 数组字面量直接 `for d in [...]` 再取 `d.x`，
-  Godot 4.3 会推断失败报解析错，要显式 `var dirs: Array = [...]` + `var dv: Vector2i = d`。
+- 不要写 `Vector2i` 数组字面量直接 `for d in [...]` 再取 `d.x`（旧 4.3 推断失败报解析错；
+  4.7 已放宽，但显式写法仍最稳）：`var dirs: Array = [...]` + `var dv: Vector2i = d`。
