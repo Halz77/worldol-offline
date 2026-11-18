@@ -100,6 +100,14 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 `verify_character_screen.gd` 现在会**先备份、跑完还原** `user://character_screen.json`
 （以前跑到一半被打断就把 `sex=男` 留在档里，下次「默认女」直接挂；顺手归一化到女/正常再验）。
 
+**★ 新检出一份工程（或换机器 / 刚 git clone）后，第一次跑验收前必须先 `--import`**：
+```bash
+Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --import
+```
+否则 `.godot/imported` 是空的，`load("res://assets/map_merged/100.png")` 返回 null，
+`verify_world_map` 会出现两条**假失败**（`带偏移帧用 sourceW/H 逻辑包围盒 (0.0, 0.0)`、
+`本图缺帧时从别的图集补回`）——不是代码问题，是纹理没导入。导入后两条立刻转绿。
+
 导出的 JSON/PNG 改动后如果 `load()` 报 "No loader found"，跑一次
 `--headless --path godot-next --import` 生成 `.import`，不要把图当坏图。
 
