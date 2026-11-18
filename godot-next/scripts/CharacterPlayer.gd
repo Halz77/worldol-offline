@@ -56,7 +56,7 @@ func refresh() -> void:
 	var equipped: Dictionary = state.get("equipped") if state.get("equipped") is Dictionary else {}
 	var look := Equipment.appearance(game_data, mid, equipped)
 	var tex := SpriteComposer.render_frame_equipped(int(look.model_id), fno, 1,
-		look.part_replace, look.single_use, look.add_parts)
+		look.part_replace, look.single_use, look.add_parts, int(look.cloak_model))
 	figure.texture = tex
 	var z := view_scale_override if view_scale_override > 0 else int(state.get("view_scale"))
 	figure.scale = Vector2(z, z)

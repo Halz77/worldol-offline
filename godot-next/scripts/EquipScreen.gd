@@ -159,13 +159,10 @@ func _refresh() -> void:
 	var look_text := " + ".join(look.detail) if not (look.detail as Array).is_empty() else "基础造型"
 	look_label.text = "造型：" + look_text
 
-	# 底部提示：背部/坐骑需整套造型系统，当前只加属性不换外观
-	var pending: Array = []
-	if eq.has("back"): pending.append("背部")
-	if eq.has("transport"): pending.append("坐骑")
+	# 底部提示：背/坐骑已按原版「换整 model」实现（披风独立层、坐骑含骑手）
 	footer.text = "点击部位 → 选装备穿上；再点已穿装备卸下。无穿戴限制 · 属性与外观实时变化"
-	if not pending.is_empty():
-		footer.text += "    ⚠ " + "/".join(pending) + "外观暂未实现（需整套造型系统），仅属性生效"
+	if eq.has("back") or eq.has("transport"):
+		footer.text += "    · 背部披风与坐骑造型按原版整幅 model 渲染"
 
 	_refresh_stats(eq)
 	_refreshing = false

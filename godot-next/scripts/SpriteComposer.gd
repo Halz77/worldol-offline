@@ -7,6 +7,9 @@ extends RefCounted
 ##   2. 子帧表的键不一定从 0 连续（如 3001.json 是 1~14），要按键名取；
 ##   3. offX/offY/sourceW/sourceH 重建包围盒，不能直接用图集上的 w/h；
 ##   4. flip 3/5 是 90/270 度旋转，定位要用「变换后」的宽高居中。
+##   5. ★ 部件图按 4 个色号一组导出，同组只有部分色号带 .json 帧表（4081 有、4082~4084 没有）。
+##      缺表时必须借同组同尺寸色号的帧表（见 fragment_frames），否则整张多片图集会被当
+##      一帧画出来 —— 护肩「朱红支配衬肩 / 星月冥肩」错位就是这个原因。
 ##
 ## 素材：res://assets/sprite_model/<id>.json（组装表）
 ##       res://assets/sprite_fragment/<id>.png + .json（图集与子帧表）
@@ -26,6 +29,66 @@ static func _read_json(file_path: String):
 	if text.is_empty():
 		return null
 	return JSON.parse_string(text)
+
+
+## 部件图按 4 个色号一组导出（组首 ≡ 1 mod 4），但只有部分色号带 .json 帧表。
+static func _frag_group_base(frag_id: int) -> int:
+	return frag_id - ((frag_id - 1) % 4)
+
+
+static func _png_size(frag_id: int) -> Vector2i:
+	var png := FRAG_DIR + str(frag_id) + ".png"
+	if not FileAccess.file_exists(png):
+		return Vector2i(-1, -1)
+	var bytes := FileAccess.get_file_as_bytes(png)
+	if bytes.is_empty():
+		return Vector2i(-1, -1)
+	var img := Image.new()
+	if img.load_png_from_buffer(bytes) != OK:
+		return Vector2i(-1, -1)
+	return Vector2i(img.get_width(), img.get_height())
+
+
+## 取部件图的子帧表（{帧号: {x,y,w,h,sourceW,sourceH,offX,offY}}）。
+## ★ 色号变体（同款 4 色一组，如护肩 4081/4082/4083/4084）只有组首带 .json，
+##   其余色号 PNG 是同布局、换颜色的图集。缺自己帧表时借用「同组且画布尺寸一致」
+##   的色号帧表；否则整张 PNG 会被当成一帧画出来（4084 会变成 37x21 双片挤一起）。
+## 返回空字典 = 这张 PNG 本身就是完整一帧。
+static func fragment_frames(frag_id: int, atlas: Image = null) -> Dictionary:
+	if frag_id <= 0:
+		return {}
+	var own = _read_json(FRAG_DIR + str(frag_id) + ".json")
+	if own is Dictionary:
+		var f = own.get("frames", {})
+		return f if f is Dictionary else {}
+	var size := Vector2i(-1, -1)
+	if atlas != null:
+		size = Vector2i(atlas.get_width(), atlas.get_height())
+	else:
+		size = _png_size(frag_id)
+	if size.x <= 0:
+		return {}
+	var base := _frag_group_base(frag_id)
+	for i in range(4):
+		var cand := base + i
+		if cand == frag_id:
+			continue
+		var other = _read_json(FRAG_DIR + str(cand) + ".json")
+		if not (other is Dictionary):
+			continue
+		var of = other.get("frames", {})
+		if not (of is Dictionary) or of.is_empty():
+			continue
+		# 画布尺寸必须一致，避免借到同段内尺寸不同的图（如 11001 脚底阴影）
+		if _png_size(cand) != size:
+			continue
+		return of
+	return {}
+
+
+## 这张部件图是否多帧图集（决定替换后是否会被同款的两个图层各画一次）。
+static func is_multi_frame_fragment(frag_id: int) -> bool:
+	return fragment_frames(frag_id).size() > 1
 
 
 ## 该 Model 有哪些帧（升序，供播放与下拉选择）。
@@ -50,11 +113,74 @@ static func render_frame_image(model_id: int, frame_no: int = 0) -> Image:
 ## 带装备外观的渲染：part_replace 是 {基础部件 id: 装备 icon 部件 id}。
 ## single_use 是"只能画一次"的基础部件 id 列表——单帧大图替换多帧槽位时（如星月冥肩
 ## 替换 4013 的两片），整图会被两个 layer 画两遍，标记后只画第一次。
-## add_parts 是追加图层 [{frag, sub, dx, dy, behind}]：背部/坐骑等独立精灵（原版不在 model files 里）。
-static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = []) -> Image:
+## add_parts 是追加图层 [{frag, sub, dx, dy, behind}]（保留能力）。
+## cloak_model 是背部披风 model（1100+backStyle），原版是独立精灵、z 序在角色后面。
+static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0) -> Image:
+	var canvas = Image.create(CANVAS_W, CANVAS_H, false, Image.FORMAT_RGBA8)
+	canvas.fill(Color(0, 0, 0, 0))
+	# 披风先画（最底层），角色覆盖其上 —— 与原版 cloakSprite 在容器 index 0 一致。
+	# ★ 披风不是直接按画布脚点定位：原版 FrameBmp.draw 会把「衣服层」的 dx/dy 记成 coatPt，
+	#   再让 cloakSprite 平移到 coatPt，披风自己的 dx/dy 相对该点。少了这一步披风会掉到脚底。
+	if cloak_model > 0 and cloak_model != model_id:
+		var coat := _frame_coat_point(model_id, frame_no, part_replace)
+		_blit_model(canvas, cloak_model, _cloak_frame_index(cloak_model, frame_no), {}, [], coat)
+	# 追加图层中 behind=true 的先画，作为背景被角色覆盖
+	for p in add_parts:
+		if p is Dictionary and bool(p.get("behind", false)):
+			_draw_add_part(canvas, p)
+	if not _blit_model(canvas, model_id, frame_no, part_replace, single_use):
+		return null
+	# 追加图层中 behind=false 的（放在角色身前的部分）后画
+	for p in add_parts:
+		if p is Dictionary and not bool(p.get("behind", false)):
+			_draw_add_part(canvas, p)
+	return canvas
+
+
+## 该帧的 coatPt：原版在 FrameBmp.draw 里取第一条「衣服层」（frag/1000 == 6）的 dx/dy。
+## 披风 / 内层精灵都以它为原点，所以必须先算出来。没有衣服层时退回 (0,0)。
+static func _frame_coat_point(model_id: int, frame_no: int, part_replace: Dictionary = {}) -> Vector2i:
 	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
 	if not (model is Dictionary):
-		return null
+		return Vector2i.ZERO
+	var src = model.get("files", [])
+	if not (src is Array):
+		return Vector2i.ZERO
+	var files: Array = src.duplicate()
+	if not part_replace.is_empty():
+		for i in range(files.size()):
+			var old_id := int(files[i])
+			if part_replace.has(old_id):
+				files[i] = int(part_replace[old_id])
+	var frames = model.get("frames", {})
+	if not (frames is Dictionary):
+		return Vector2i.ZERO
+	var wanted := str(frame_no)
+	if not frames.has(wanted):
+		var all_frames = frame_numbers(model_id)
+		if all_frames.is_empty():
+			return Vector2i.ZERO
+		wanted = str(all_frames[0])
+	var layers = frames.get(wanted, null)
+	if not (layers is Array):
+		return Vector2i.ZERO
+	for layer in layers:
+		if not (layer is Array) or layer.size() < 4:
+			continue
+		var fi := int(layer[0])
+		if fi < 0 or fi >= files.size():
+			continue
+		if int(files[fi]) / 1000 == 6:
+			return Vector2i(int(layer[2]), int(layer[3]))
+	return Vector2i.ZERO
+
+
+## 把某个 model 的某一帧逐层画到画布上。返回 false = model/帧不可用。
+## offset 是整层额外平移（披风用 coatPt）。
+static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replace: Dictionary, single_use: Array, offset: Vector2i = Vector2i.ZERO) -> bool:
+	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
+	if not (model is Dictionary):
+		return false
 	var files = model.get("files", [])
 	# 单帧图去重：记录哪些 file_idx 替换后只允许画一次
 	var once_idx: Dictionary = {}
@@ -71,22 +197,14 @@ static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_r
 		files = replaced
 	var frames = model.get("frames", {})
 	if not (frames is Dictionary):
-		return null
+		return false
 	var all_frames = frame_numbers(model_id)
 	var wanted = str(frame_no)
 	if not frames.has(wanted) and not all_frames.is_empty():
 		wanted = str(all_frames[0])
 	var layers = frames.get(wanted, null)
 	if not (layers is Array):
-		return null
-
-	var canvas = Image.create(CANVAS_W, CANVAS_H, false, Image.FORMAT_RGBA8)
-	canvas.fill(Color(0, 0, 0, 0))
-	# 追加图层中 behind=true 的（坐骑/背部）先画，作为背景被角色覆盖
-	for p in add_parts:
-		if not (p is Dictionary) or not bool(p.get("behind", false)):
-			continue
-		_draw_add_part(canvas, p)
+		return false
 	# 单帧大图定位：原多帧部件的两片各有 dx/dy，单帧完整图应居中在它们中点。
 	# 预扫描每个 single_use file_idx 的所有引用，求平均 dx/dy。
 	var avg_pos: Dictionary = {}
@@ -122,13 +240,15 @@ static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_r
 		if avg_pos.has(file_idx):
 			var ap: Array = avg_pos[file_idx]
 			dx = roundi(ap[0]); dy = roundi(ap[1])   # 用两片中点，居中
+		dx += offset.x
+		dy += offset.y
 		var flip = int(layer[4]) if layer.size() > 4 else 0
 		var box = _sub_frame(frag_id, sub)
 		if box == null:
 			continue
-		# ★ 单帧大图替换多帧小槽位（如星月冥肩 58x29 替换 19x8）：
-		#   原图是高清整对肩甲，按原尺寸画会撑出角色很多。限制最大宽度约 34px（角色肩宽约 20px），
-		#   近似基础部件的尺寸，位置和大小才协调。接近基础尺寸的图（如 4080 23x9）不受影响。
+		# ★ 真·单帧整图替换多帧小槽位（组内没有 json，如 4185）：
+		#   原图可能是整对肩甲，按原尺寸画会撑出角色。限制最大宽度约 34px（角色肩宽约 20px），
+		#   位置取两片中点，近似基础部件的尺寸才协调。有帧表的图集（4084/4136）不走这里。
 		if once_idx.has(file_idx) and box.get_width() > 34:
 			var ratio := 34.0 / float(box.get_width())
 			box.resize(maxi(1, int(box.get_width() * ratio)),
@@ -137,12 +257,42 @@ static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_r
 		var px = roundi(float(CANVAS_W) / 2.0 + float(dx) - float(transformed.get_width()) / 2.0)
 		var py = roundi(float(ANCHOR_Y) + float(dy) - float(transformed.get_height()) / 2.0)
 		_blend(canvas, transformed, px, py)
-	# 追加图层中 behind=false 的（放在角色身前的部分）后画
-	for p in add_parts:
-		if not (p is Dictionary) or bool(p.get("behind", false)):
+	return true
+
+
+## 展开 model 的 0 号动作（ani id 0）成逐帧序列：[帧, 重复次数] → [帧,帧,...]。
+static func _animation_sequence(model_id: int) -> Array:
+	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
+	if not (model is Dictionary):
+		return []
+	var anis = model.get("anis", [])
+	if not (anis is Array):
+		return []
+	for a in anis:
+		if not (a is Dictionary) or int(a.get("id", 0)) != 0:
 			continue
-		_draw_add_part(canvas, p)
-	return canvas
+		var out: Array = []
+		var gesture = a.get("gesture", [])
+		if gesture is Array:
+			for g in gesture:
+				if not (g is Array) or g.size() < 2:
+					continue
+				var fno := int(g[0])
+				var rep := maxi(1, int(g[1]))
+				for i in range(rep):
+					out.append(fno)
+		if not out.is_empty():
+			return out
+	return []
+
+
+## 披风有自己的一套循环（1101 是 0/1/2/1 各 3 拍的 12 拍序列）；
+## 角色当前帧号直接当拍号取，两者循环长度接近，播放时不会明显错拍。
+static func _cloak_frame_index(model_id: int, frame_no: int) -> int:
+	var seq := _animation_sequence(model_id)
+	if seq.is_empty():
+		return frame_no
+	return int(seq[posmod(frame_no, seq.size())])
 
 
 ## 画一个追加部件（背部/坐骑）。dx/dy 是相对画布中心/脚点的偏移，图以中心定位。
@@ -170,8 +320,8 @@ static func render_frame(model_id: int, frame_no: int = 0, scale: int = 3) -> Im
 	return render_frame_equipped(model_id, frame_no, scale, {})
 
 
-static func render_frame_equipped(model_id: int, frame_no: int = 0, scale: int = 3, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = []) -> ImageTexture:
-	var img = render_frame_image_equipped(model_id, frame_no, part_replace, single_use, add_parts)
+static func render_frame_equipped(model_id: int, frame_no: int = 0, scale: int = 3, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0) -> ImageTexture:
+	var img = render_frame_image_equipped(model_id, frame_no, part_replace, single_use, add_parts, cloak_model)
 	if img == null:
 		return null
 	if scale > 1:
@@ -191,16 +341,14 @@ static func _sub_frame(frag_id: int, sub: int) -> Image:
 		atlas.convert(Image.FORMAT_RGBA8)
 
 	var f = {}
-	var table = _read_json(FRAG_DIR + str(frag_id) + ".json")
-	if table is Dictionary:
-		var subs = table.get("frames", {})
-		if subs is Dictionary:
-			if subs.has(str(sub)):
-				f = subs[str(sub)]
-			elif not subs.is_empty():
-				f = subs[subs.keys()[0]]
+	var subs := fragment_frames(frag_id, atlas)
+	if not subs.is_empty():
+		if subs.has(str(sub)):
+			f = subs[str(sub)]
+		else:
+			f = subs[subs.keys()[0]]
 	if f.is_empty():
-		return atlas
+		return atlas   # 没有帧表：整张 PNG 就是一帧
 
 	var cw = int(f.get("w", 0))
 	var ch = int(f.get("h", 0))

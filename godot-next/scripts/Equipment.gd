@@ -12,6 +12,7 @@ extends RefCounted
 ## 所有函数是 static，不需要实例；不依赖 Autoload，headless 自检可直接调用。
 
 const GameData = preload("res://scripts/GameData.gd")
+const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 
 # ---- 部位 ----------------------------------------------------------------
 # type → {slot, label}。slot 是装备字典的键。武器按 type 归到"武器"槽（单手/双手/法器都算）。
@@ -61,6 +62,25 @@ const ARMOR_SLOT: Dictionary = {
 const HELMET_SLOT: Dictionary = {"male": 10021, "female": 10021}   # ★ at=10 头饰槽
 
 const PART_STEP8: Dictionary = {1: 6000, 2: 7000, 3: 4000}   # type → START（8 步长：4 男 + 4 女）
+
+# ---- 背部 / 坐骑（0055.js / 0056.js / 0012.js）----------------------------
+# ★ 这两类在原版里不是「换某个部件图」，而是换整幅 model：
+#   背部 = 独立 cloak 精灵，model = SPR_INDEX_CLOAK_START(1100) + backStyle，叠在角色图层后面；
+#   坐骑 = 「人 + 坐骑 + 武器」整幅 model，model = 2000 + 100*(style-1) [+26000] [+50 女] + 武器偏移。
+#   把它们硬贴成 add_parts 会错位（背 5001 是 9 块碎片、坐骑 14017 是含骑手的整图集）。
+const START_CLOTHES := 6000
+const START_BACK := 5000
+const START_TRANSPORT := 14000
+const SPR_INDEX_CLOAK_START := 1100
+const SPR_INDEX_WEAPON_HOUSE_START := 2000
+const SPR_INDEX_WEAPON_HOUSE_END := 4000
+const SPR_INDEX_WEAPON_HOUSE_ADD_DIS := 26000
+const SPR_INDEX_MAN_HOUSE_WORLD_START := 700
+const SPR_INDEX_WOMAN_HOUSE_WORLD_START := 900
+## 0055.js isTwoPeopleStyle：11 / 54 是双人坐骑，固定用 700+style / 900+style。
+const TWO_PEOPLE_TRANSPORT: Array = [11, 54]
+## 0055.js transportStyleNotBack：这几个坐骑把披风藏起来。
+const TRANSPORT_NO_BACK: Array = [36, 42, 43, 48]
 
 
 static func slot_defs() -> Array:
@@ -203,43 +223,189 @@ static func weapon_fragment_id(icon: int) -> int:
 
 
 ## 判断一张部件图是单帧还是多帧图集（决定替换后是否会被画两次）。
+## ★ 色号变体自己没有 .json，帧表在同组组首上，统一交给 SpriteComposer 解析；
+##   之前只看自己的 json 会把 4084/4136 这类图集误判成单帧。
 static func is_multi_frame(frag_id: int) -> bool:
-	var path := "res://assets/sprite_fragment/%d.json" % frag_id
-	if not FileAccess.file_exists(path):
-		return false
-	var t = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if not (t is Dictionary):
-		return false
-	var frames = t.get("frames", {})
-	return frames is Dictionary and frames.size() > 1
+	return SpriteComposer.is_multi_frame_fragment(frag_id)
 
 
-## 计算外观：返回 {model_id, part_replace:{基础部件id:图号}, detail:[]}。
-## base_model: 当前性别/姿势的基础 model（300/400/100/200）。sex 可显式传入（女=1）。
+## 基础姿势 model：100/200/300/400。传进来的可能是「已带武器姿势」的 313/321 等，
+## 先归一化再加偏移，避免重复相加（原版 getSpriteNameIDByWeapon 也是从裸基础 model 起算）。
+static func bare_model(base_model: int) -> int:
+	if base_model >= 100 and base_model < 200:
+		return 100
+	if base_model >= 200 and base_model < 300:
+		return 200
+	if base_model >= 300 and base_model < 400:
+		return 300
+	if base_model >= 400 and base_model < 500:
+		return 400
+	return base_model
+
+
+## 世界图（100/300）才会显示坐骑；战斗图（200/400）原版不骑马（getSpriteIdByIcon 的 0==n 分支）。
+static func is_world_model(base_model: int) -> bool:
+	return (base_model >= 100 and base_model < 200) or (base_model >= 300 and base_model < 400)
+
+
+static func model_exists(model_id: int) -> bool:
+	if model_id <= 0:
+		return false
+	return FileAccess.file_exists("res://assets/sprite_model/%d.json" % model_id)
+
+
+## 武器 item.type → 世界图姿势偏移（0055.js getSpriteNameIDByWeapon）。
+## 0 / 重武(17) / 空手(24) 保持基础姿势；枪 35→24、双手枪 36→73、单手锤 37→44、
+## 双手锤 38→36、扇 39→37；其余（刀/双手剑/刃/杖/枪矛/弩/弓/法器…）偏移 = type 本身。
+static func weapon_pose_offset(type: int) -> int:
+	match type:
+		0, 17, 24:
+			return 0
+		35:
+			return 24
+		36:
+			return 73
+		37:
+			return 44
+		38:
+			return 36
+		39:
+			return 37
+		_:
+			return type
+
+
+## 武器 item.type → 骑马 model 偏移（0055.js getHorseSpriteNameIDByWeapon）。
+## 和世界图不同：单手枪 35→42、双手枪 36→43、单手锤 37→24；重武/空手返回 -1（用无武器坐骑姿势）。
+static func horse_pose_offset(type: int) -> int:
+	match type:
+		0, 17, 24:
+			return -1
+		35:
+			return 42
+		36:
+			return 43
+		37:
+			return 24
+		38:
+			return 36
+		39:
+			return 37
+		_:
+			return type
+
+
+static func house_model_id(transport_style: int, gender: int) -> int:
+	if transport_style <= 0:
+		return 0
+	var start := SPR_INDEX_WOMAN_HOUSE_WORLD_START if gender == 1 else SPR_INDEX_MAN_HOUSE_WORLD_START
+	return start + transport_style
+
+
+## 坐骑 model：style 1..N。双人坐骑 / 无武器 → 700+style（901+style 女）；
+## 其余 → 2000+100*(style-1)，≥4000 加 26000，女 +50，再加武器偏移。
+static func mount_model_id(base_model: int, transport_style: int, wtype: int, gender: int) -> int:
+	if transport_style <= 0:
+		return 0
+	var house := house_model_id(transport_style, gender)
+	if TWO_PEOPLE_TRANSPORT.has(transport_style):
+		return house
+	var off := horse_pose_offset(wtype)
+	if off < 0:
+		return house
+	var mid := SPR_INDEX_WEAPON_HOUSE_START + 100 * (transport_style - 1)
+	if mid >= SPR_INDEX_WEAPON_HOUSE_END:
+		mid += SPR_INDEX_WEAPON_HOUSE_ADD_DIS
+	if gender == 1:
+		mid += 50
+	return mid + off
+
+
+## icon 位域解码：START + (style-1)*step + color  ⇒  style = 1 + (t-1)/step。
+static func style_from_icon(icon: int, start: int, step: int) -> int:
+	if icon <= start or step <= 0:
+		return 0
+	var t := icon - start
+	return 1 + (t - 1) / step
+
+
+static func back_style_of_item(item: Dictionary) -> int:
+	return style_from_icon(int(item.get("icon", 0)), START_BACK, 4)
+
+
+static func transport_style_of_item(item: Dictionary) -> int:
+	return style_from_icon(int(item.get("icon", 0)), START_TRANSPORT, 4)
+
+
+static func clothes_style_of_item(item: Dictionary) -> int:
+	return style_from_icon(int(item.get("icon", 0)), START_CLOTHES, 8)
+
+
+## 背部 cloak model：1100 + backStyle。原版隐藏规则：
+##   backStyle 31 → 不显示；坐骑 style 36/42/43/48 → 不显示；
+##   衣服 style 51 时强制用 cloak 32（changeBackStyle，现有道具里没有 style 51，保留规则）。
+## 返回 0 = 不画披风。
+static func cloak_model_for(back_style: int, clothes_style: int, transport_style: int) -> int:
+	if back_style <= 0 or back_style == 31:
+		return 0
+	if TRANSPORT_NO_BACK.has(transport_style):
+		return 0
+	var st := back_style
+	if clothes_style == 51:
+		st = 32
+	return SPR_INDEX_CLOAK_START + st
+
+
+## 计算外观：返回 {model_id, part_replace:{基础部件id:图号}, single_use, add_parts, cloak_model, detail}
+## base_model: 当前性别/姿势的基础 model（100/200/300/400，可带武器姿势）。sex 可显式传入（女=1）。
 static func appearance(game_data, base_model: int, equipped: Dictionary, sex: int = -1) -> Dictionary:
 	var gender := gender_of_model(base_model) if sex < 0 else sex
 	var detail: Array = []
 	var single_use: Array = []   # 替换成单帧图的槽位：多 layer 引用只画第一次，避免重复
-	var add_parts: Array = []    # 追加图层：背部/坐骑（独立精灵，不在 model files 里）
+	var add_parts: Array = []    # 追加图层（保留能力；背/坐骑已改为换整 model，不再走这里）
 	var result := {"model_id": base_model, "part_replace": {}, "single_use": single_use,
-		"add_parts": add_parts, "detail": detail}
+		"add_parts": add_parts, "cloak_model": 0, "detail": detail}
 	var final_model := base_model
 
-	# ---- 武器：先按 type 选现成 model（姿态），再把武器部件换成该装备的具体图 ----
-	var weapon_part := 0   # 武器在 model files 里 at==8 的部件 id
+	# ---- 1. 先定 model：坐骑整幅替换，否则 基础姿势 + 武器姿势偏移 ----
+	var base_pose := bare_model(base_model)
+	var wtype := 0
 	if equipped.has("weapon"):
-		var w = item_data(game_data, int(equipped["weapon"]))
-		var wtype := int(w.get("type", 0))
-		if WEAPON_TYPES.has(wtype):
-			var candidate := base_model + wtype
-			if FileAccess.file_exists("res://assets/sprite_model/%d.json" % candidate):
-				final_model = candidate
-				detail.append("武器→Model %d" % candidate)
+		wtype = int(item_data(game_data, int(equipped["weapon"])).get("type", 0))
+	var transport_style := 0
+	if equipped.has("transport"):
+		transport_style = transport_style_of_item(item_data(game_data, int(equipped["transport"])))
+
+	var mount_used := false
+	if transport_style > 0:
+		if is_world_model(base_model):
+			var mount_id := mount_model_id(base_pose, transport_style, wtype, gender)
+			if model_exists(mount_id):
+				final_model = mount_id
+				mount_used = true
+				detail.append("坐骑→Model %d(style %d)" % [mount_id, transport_style])
+			else:
+				var house_id := house_model_id(transport_style, gender)
+				if house_id != mount_id and model_exists(house_id):
+					final_model = house_id
+					mount_used = true
+					detail.append("坐骑→Model %d(style %d, 无武器姿势)" % [house_id, transport_style])
+				else:
+					detail.append("坐骑:缺 Model %d(style %d)，保持基础造型" % [mount_id, transport_style])
+		else:
+			detail.append("坐骑:战斗造型不显示")
+	if not mount_used:
+		var pose := base_pose + weapon_pose_offset(wtype)
+		if model_exists(pose):
+			final_model = pose
+			if wtype > 0:
+				detail.append("武器→Model %d" % pose)
 	# 读最终 model 的 files，找 at==8(武器)/at==10(头饰)/at==4(肩) 的实际部件 id
 	var model_json = JSON.parse_string(FileAccess.get_file_as_string(
 		"res://assets/sprite_model/%d.json" % final_model))
 	var model_files: Array = []
 	var model_file_ints: Array = []   # int 化，JSON 解析出的整数是 float，直接用 has(int) 匹配不上
+	var weapon_part := 0
 	if model_json is Dictionary:
 		model_files = model_json.get("files", [])
 	for f in model_files:
@@ -272,7 +438,7 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		elif ARMOR_SLOT.has(type):
 			slot_pair = ARMOR_SLOT[type]
 		else:
-			continue   # 背(type5)/坐骑(type11) 等单独处理或暂无外观层
+			continue   # 背(type5)/坐骑(type11) 单独处理
 		var frag := part_fragment_id(icon, type, gender)
 		if frag < 0:
 			continue
@@ -287,7 +453,7 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		if not model_file_ints.has(base_part):
 			continue
 		result.part_replace[base_part] = frag
-		# ★ 单帧图替换多帧槽位：会被画多次 → 标记 single_use 去重
+		# ★ 真·单帧整图（组内无帧表）替换多帧槽位：会被画多次 → 标记 single_use 去重
 		if type == 3 and not is_multi_frame(frag):
 			single_use.append(base_part)
 		var note := "%s:%d→%d" % [str(d.label), base_part, frag]
@@ -296,16 +462,27 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 			print("[equip-debug] %s item=%d icon=%d gender=%d → %s" % [
 				str(d.label), int(equipped[slot]), icon, gender, note])
 
-	# ---- 背部 / 坐骑：原版是独立多部件精灵，基础 model 里没有槽位和偏移数据 ----
-	# ★ 不在这里硬贴：坐骑 icon 是"人+坐骑整幅战斗帧"（如 14017 白狼含角色+光效），
-	#   背部 icon 是多块子帧拼的动画图集（如 5001 每 sub 只是 25x14 小碎片），
-	#   没有原版那套逐部件 dx/dy 就无法正确定位，硬贴只会得到扭曲/错位的画面。
-	#   这属于"整套造型系统"（类似时装 15xxx/20xxx），等单独做，不在基础版范围。
-	for slot in ["back", "transport"]:
-		if equipped.has(slot):
-			detail.append("%s:外观未实现" % slot)
-			if OS.has_environment("WORLDOL_EQUIP_DEBUG"):
-				print("[equip-debug] %s 外观未实现（需整套造型系统）" % slot)
+	# ---- 背部：独立 cloak model（1100+backStyle），SpriteComposer 把它画在角色图层后面 ----
+	if equipped.has("back"):
+		var bstyle := back_style_of_item(item_data(game_data, int(equipped["back"])))
+		var cstyle := 0
+		if equipped.has("clothes"):
+			cstyle = clothes_style_of_item(item_data(game_data, int(equipped["clothes"])))
+		var cloak_id := cloak_model_for(bstyle, cstyle, transport_style)
+		if cloak_id > 0 and model_exists(cloak_id):
+			result.cloak_model = cloak_id
+			detail.append("背部→Cloak %d(style %d)" % [cloak_id, bstyle])
+		elif bstyle <= 0:
+			detail.append("背部:图标无外观编码")
+		elif bstyle == 31:
+			detail.append("背部:style 31 原版不显示")
+		elif TRANSPORT_NO_BACK.has(transport_style):
+			detail.append("背部:坐骑 style %d 不显示披风" % transport_style)
+		else:
+			detail.append("背部:缺 Cloak Model %d" % cloak_id)
+		if OS.has_environment("WORLDOL_EQUIP_DEBUG"):
+			print("[equip-debug] 背部 style=%d clothes=%d transport=%d → cloak=%d" % [
+				bstyle, cstyle, transport_style, int(result.cloak_model)])
 	return result
 
 

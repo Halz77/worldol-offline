@@ -214,8 +214,10 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 - **属性公式**：`Stats.gd` 的 20 角色基线是静态快照（已含 inventory 装备），**不能改**。
   装备屏显示的是「装备加成汇总」——`Equipment.aggregate_stats()` 把当前穿戴的加成算出来，
   界面标注"在所选角色基线之上叠加"，不重写基线、不追求逐字段对拍。
-- **★ 外观两条路径（实测可用，别推倒重来）**：
-  1. **武器 → 换整 model**：现成 `sprite_model/<base+武器type>.json`（女正常 300 + 青铜剑 type13 = 313，
+- **★ 外观三条路径（实测可用，别推倒重来）**：
+  1. **武器 → 换整 model**：`sprite_model/<基础姿势 + 武器姿势偏移>.json`。偏移照
+     `0055.js getSpriteNameIDByWeapon`：空手 24 / 重武 17 不加偏移（保持 100/300），
+     单手锤 37→+44、双手枪 36→+73、扇 39→+37，其余 = type 本身（女正常 300 + 青铜剑 type13 = 313、
      法杖 type19 = 319；男 100+13=113）。基础 model 见 `ScreenState.MODEL_TABLE`。
      帧号校验：正常 model（100/300）与武器 model 帧号完全一致；战斗 model（200/400）武器 model 少 2-4 帧，
      `render_frame_image_equipped` 有 fallback 取首帧，不崩但个别战斗帧姿势会跳。
@@ -237,17 +239,31 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
      头盔 4 步长、无性别位，icon 直接用。槽位 key 按 model 性别选：
      男 100/200 = 衣6001/裤7001/肩4001；女 300/400 = 衣6005/裤7005/肩4013（见 `Equipment.ARMOR_SLOT`）。
      鞋/护手/首饰 icon 多为 0、原版不改外观，跳过。
-     **★ 护肩单帧图去重**：基础肩 4013 是 2 帧图集（左右两片），model frame 引用两次。
-     若装备是单帧大图（如星月冥肩 4132→女款 4136，58x29），两 layer 会画两遍→重复。
-     `Equipment.is_multi_frame()` 判定后在 detail 标记 `single_use`，`SpriteComposer` 只画第一次。
-     **★ 单帧大图还要缩放**：位置取多片中点（平均 dx/dy），且图宽 >34px 时等比缩到 34px
-     （星月冥肩 4136 是 58x29，原尺寸会撑出角色很远，缩到 34 宽才协调；4080 是 23x9 不受影响）。
-  3. **背部 / 坐骑 → 暂不实现（2026-11-18 取证后决定，别硬贴）**：
-     坐骑 icon（如 14017 白狼）是**人+坐骑整幅战斗帧**（含角色、光效），不是纯坐骑部件；
-     背部 icon（如 5001）是**多块子帧拼的动画图集**（每 sub 只是 25x14 小碎片，偏移烘焙在原版 frame 里）。
-     基础 model 无这些槽位/偏移，硬贴就是扭曲错位画面。现只在 detail 标 `外观未实现`、界面提示，
-     属性照常加。要做需整套造型系统（类似时装 15xxx/20xxx），是独立功能、不在基础版范围。
-     `SpriteComposer` 保留了 `add_parts` 追加图层能力供将来用，但 appearance 不再生成它。
+     **★ 护肩图集帧表要借色号**：基础肩 4013 是 2 帧图集（左右两片），model frame 引用两次。
+     装备图（朱红支配衬肩 icon 4084→女款 4088、星月冥肩 4132→女款 4136）本身也是 2 帧图集，
+     但**同款 4 个色号只有组首带 `.json` 帧表**（4081 有、4082~4084 没有）。
+     缺表时会把整张双片图集当「一帧」画 → 两片被挤在一起/位置错位。
+     `SpriteComposer.fragment_frames()` 缺表时借用「同组（4 色一组）、同画布尺寸」色号的帧表；
+     `Equipment.is_multi_frame()` 走同一套判定，多帧就按 model 的两个 layer 各画一片。
+     只有组内确实没有 json 的真·单帧整图（如 4185）才标 `single_use` 让 `SpriteComposer` 只画一次，
+     且这种图宽 >34px 时等比缩到 34px、位置取多片中点（兜底机制，普通肩甲用不到）。
+  3. **★ 背部 / 坐骑 → 换整幅 model（2026-11-18 落地，别硬贴）**：
+     原版这两类都不是「换某个部件图」，而是换 model id（`0055.js getSpriteIdByIcon`）：
+     - **坐骑**：style = `1+((icon-14000-1)/4)`（14017 白狼 → style 5）。
+       双人坐骑 11/54、以及无武器 / 重武(17) / 空手(24) → `700+style`（女 `900+style`）；
+       其余 → `2000+100*(style-1)`，`>=4000` 再 +26000，女 +50，最后加**骑马**武器偏移
+       （单手枪 35→42、双手枪 36→43、单手锤 37→24、双手锤 38→36、扇 39→37，其余 = type）。
+       实例：男/s5/刀 = 2413、女 = 2463；无武器 男/s5 = 705、女 = 905。
+       骑马 model 的 files 里已经含「坐骑片段 140xx + 角色部件 + 武器」，所以防具/武器替换照旧走 `part_replace`。
+       ★ 只在世界图（100/300）显示坐骑；战斗图（200/400）原版不骑马（`getSpriteIdByIcon` 的 `0==n` 分支）。
+     - **背部**：backStyle = `1+((icon-5000-1)/4)`；cloak model = `1100+backStyle`。
+       style 31 不显示；坐骑 style 36/42/43/48 时藏披风；衣服 style 51 强制 cloak 32（现有道具没有 51）。
+     - **★ 披风定位 = coatPt（最容易错的一步）**：原版 `0365.js FrameBmp.draw` 会把该帧
+       「衣服层」（`frag/1000==6`）的 `(dx,dy)` 记成 coatPt，`0364.js drawTo` 再把 cloakSprite
+       整体平移到 coatPt，披风自己的 dx/dy 相对该点。少了这步披风会掉到脚底
+       （model 100 帧 0 的 coatPt = `(-2,-35)`）。`SpriteComposer._frame_coat_point()` 取点，
+       `_cloak_frame_index()` 让披风走自己的 0/1/2/1 循环。
+     - `SpriteComposer` 仍保留 `add_parts` 追加图层能力（自检里有断言），但 `appearance` 不再生成它。
 - **穿戴状态**：`ScreenState.equipped`（{slot:itemId}），单独存 `user://equipment.json`，
   **不碰 `character_screen.json`**（角色屏 44 项自检依赖其 version=1 结构）。`equip/unequip/clear_equipment` 广播 `state_changed("equip")`。
 - **调试 / 截图**：
@@ -255,13 +271,19 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
     `部位 item=id icon=n gender=n → 槽位:旧图→新图`，用来定位某件装备的换算是否正确。
   - `WORLDOL_CAPTURE=1 WORLDOL_EQUIP=weapon:20300,clothes:10032,head:100664` → `_out/equip_screen.png`。
   - `--script res://tools/equip_compare.gd` → `_out/equip_compare.png`（左男款错图 / 右女款修复对比）。
+  - `--script res://tools/equip_looks.gd` → `_out/equip_looks.png`（4×2 对照：裸/披风/黑翼/尾巴/
+    白狼男/白狼女/狮鹫/凤凰，用来目视确认背/坐骑落点，headless 可跑）。
 - 验收 `verify_equipment.gd` 全过：属性解析 / 鉴定忽略 / 叠加 / 武器换 model + 换武器图 /
   **性别半区换算（6075→6079、7089→7093、4145→4149）** / **头盔槽 10021（非 11001）** /
-  **护肩单帧去重** / 男女款渲染差异 / 背坐骑标注未实现 / UI 穿脱链路。
+  **护肩帧表借用色号（4084/4088/4136）** / **武器姿势偏移表（不是直接 type）** /
+  **背部 cloak 1101 + coatPt(-2,-35) + 画在角色后面** /
+  **坐骑 705/905/2413/2463 + 战斗造型不骑马** / single_use 兜底 / 男女款渲染差异 / UI 穿脱链路。
 - **自己改贴图**：图内容错→换同名 `sprite_fragment/<图号>.png` 立即生效；引用错→改
   `items/<id>.json` 的 `icon`（改前备份）；位置错→先开 `WORLDOL_EQUIP_DEBUG` 看换算，
   多数是性别半区/图号编码问题而非单张图坏。普通防具没有整套 model，别找映射表
   （300 段仅 22 个 model 全是武器偏移；7089/10101/4145 不在任何 model files 里）。
+  护肩这类 2 帧图集：若换了新色号 PNG，注意同组只有组首有 `.json` 帧表，
+  `SpriteComposer.fragment_frames()` 会自动借同组同尺寸色号的表，别手动复制错布局的 json。
   只有 type 12 时装走 15xxx/20xxx 整套 model，是独立分支。
 
 ## 地图编辑器第二版要点（2026-11-17 补完）

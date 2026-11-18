@@ -114,9 +114,18 @@ func _initialize() -> void:
 	ck("★法术书 icon8769→8769（不与法杖8385混）", Equipment.weapon_fragment_id(8769) == 8769,
 		str(Equipment.weapon_fragment_id(8769)))
 	# ---- 单帧/多帧判定（护肩去重依据）----
+	# ★ 色号变体（4084/4088/4136…）自己没有 json，帧表在同组组首上（4081/4085/4133…），
+	#   必须借用，否则整张双片图集会被当成「一帧」画出来 → 贴图挤压错位。
 	ck("基础肩 4013 是多帧图集", Equipment.is_multi_frame(4013))
-	ck("星月冥肩 4132 是单帧图", not Equipment.is_multi_frame(4132))
-	ck("星月冥肩女款 4136 是单帧图", not Equipment.is_multi_frame(4136))
+	var f4084 := SpriteComposer.fragment_frames(4084)
+	ck("★朱红支配衬肩 4084 借用同组帧表（2 帧）", f4084.size() == 2, str(f4084.keys()))
+	ck("★4084 帧尺寸 15x14 + 22x21", int(f4084.get("0", {}).get("w", 0)) == 15 and
+		int(f4084.get("1", {}).get("h", 0)) == 21, str(f4084))
+	var f4088 := SpriteComposer.fragment_frames(4088)
+	ck("★朱红支配衬肩女款 4088 借用同组帧表（2 帧）", f4088.size() == 2, str(f4088.keys()))
+	ck("★星月冥肩 4136 借用同组帧表（不再当单帧整图）", Equipment.is_multi_frame(4136),
+		str(SpriteComposer.fragment_frames(4136).keys()))
+	ck("真·单帧图 4185 仍判单帧（组内无 json）", not Equipment.is_multi_frame(4185))
 
 	# ---- 外观：防具按性别替换正确的槽位与图号 ----
 	var look_robe_f := Equipment.appearance(gd, 300, {"clothes": 10032})  # 女 model，icon 6075
@@ -133,12 +142,23 @@ func _initialize() -> void:
 		str(look_helm.part_replace))
 	ck("头饰没有错换到阴影槽11001", not look_helm.part_replace.has(11001),
 		str(look_helm.part_replace))
-	# ★ 星月冥肩：单帧大图替换多帧肩槽 → 必须标记 single_use 防止画两遍
+	# ★ 星月冥肩：4136 现在能借到 4133 的帧表 → 按两片画，不再需要 single_use 兜底
 	var look_shoulder := Equipment.appearance(gd, 300, {"shoulder": 11242})  # icon 4132
 	ck("星月冥肩替换肩槽 4013→4136", int(look_shoulder.part_replace.get(4013, 0)) == 4136,
 		str(look_shoulder.part_replace))
-	ck("★星月冥肩标记 single_use 防重复", (look_shoulder.single_use as Array).has(4013),
-		str(look_shoulder.single_use))
+	ck("★星月冥肩有帧表 → 不标记 single_use（两片各画一次）",
+		not (look_shoulder.single_use as Array).has(4013), str(look_shoulder.single_use))
+	# ★ 朱红支配衬肩（item 11015，icon 4084）：本次修复的核心回归
+	var look_red_f := Equipment.appearance(gd, 300, {"shoulder": 11015})
+	ck("★朱红支配衬肩（女）替换肩槽 4013→4088",
+		int(look_red_f.part_replace.get(4013, 0)) == 4088, str(look_red_f.part_replace))
+	ck("★朱红支配衬肩（女）不标记 single_use",
+		not (look_red_f.single_use as Array).has(4013), str(look_red_f.single_use))
+	var look_red_m := Equipment.appearance(gd, 100, {"shoulder": 11015})
+	ck("★朱红支配衬肩（男）替换肩槽 4001→4084",
+		int(look_red_m.part_replace.get(4001, 0)) == 4084, str(look_red_m.part_replace))
+	ck("★朱红支配衬肩（男）不标记 single_use",
+		not (look_red_m.single_use as Array).has(4001), str(look_red_m.single_use))
 	# 多帧肩饰不该标记 single_use（原版就是两片拼的）
 	var look_shoulder2 := Equipment.appearance(gd, 300, {"shoulder": 100660})  # icon 4145 多帧
 	ck("多帧肩饰不标记 single_use", not (look_shoulder2.single_use as Array).has(4013),
@@ -160,13 +180,40 @@ func _initialize() -> void:
 		var lb_look := Equipment.appearance(gd, 321, {"weapon": lb_id})
 		ck("★轻弩用自身icon而非共用图", lb_look.part_replace.values().has(int(lb.get("icon", 0))),
 			str(lb_look.part_replace))
-	# ★ 背部/坐骑：整套造型系统未实现，明确标注且不硬贴错误画面
+	# ---- 背部：独立 cloak model（1100+backStyle），不再硬贴部件 ----
+	ck("icon5001 → 背部 style 1", Equipment.back_style_of_item({"icon": 5001}) == 1)
+	ck("icon14017 → 坐骑 style 5", Equipment.transport_style_of_item({"icon": 14017}) == 5)
 	var look_back := Equipment.appearance(gd, 300, {"back": 13510})  # 侠义披风 icon5001
-	ck("★背部标注外观未实现且不硬贴", (look_back.add_parts as Array).is_empty() and
-		(look_back.detail as Array).has("back:外观未实现"), str(look_back.detail))
-	var look_mount := Equipment.appearance(gd, 300, {"transport": 31000})  # 白狼 icon14017
-	ck("★坐骑标注外观未实现且不硬贴", (look_mount.add_parts as Array).is_empty() and
-		(look_mount.detail as Array).has("transport:外观未实现"), str(look_mount.detail))
+	ck("★背部→Cloak Model 1101", int(look_back.cloak_model) == 1101, str(look_back.cloak_model))
+	ck("★披风不再伪装成 add_parts 硬贴", (look_back.add_parts as Array).is_empty())
+	ck("背部 style31 原版不显示", Equipment.cloak_model_for(31, 0, 0) == 0)
+	ck("坐骑 style36 藏披风", Equipment.cloak_model_for(1, 0, 36) == 0)
+	ck("衣服 style51 → cloak 32（规则保留）", Equipment.cloak_model_for(1, 51, 0) == 1132)
+
+	# ---- 坐骑：换整幅「人+坐骑」model（0055.js getHorseSpriteNameIDByWeapon）----
+	var look_mount_m := Equipment.appearance(gd, 100, {"transport": 31000})  # 白狼 icon14017
+	ck("★男号无武器坐骑 style5 → Model 705", int(look_mount_m.model_id) == 705,
+		str(look_mount_m.model_id))
+	var look_mount_f := Equipment.appearance(gd, 300, {"transport": 31000})
+	ck("★女号无武器坐骑 → Model 905", int(look_mount_f.model_id) == 905,
+		str(look_mount_f.model_id))
+	var look_mount_sword_m := Equipment.appearance(gd, 100, {"transport": 31000, "weapon": 20300})
+	ck("★男号坐骑+刀 → Model 2413", int(look_mount_sword_m.model_id) == 2413,
+		str(look_mount_sword_m.model_id))
+	var look_mount_sword_f := Equipment.appearance(gd, 300, {"transport": 31000, "weapon": 20300})
+	ck("★女号坐骑+刀 → Model 2463", int(look_mount_sword_f.model_id) == 2463,
+		str(look_mount_sword_f.model_id))
+	ck("★坐骑 model 里仍替换武器图", int(look_mount_sword_m.part_replace.get(8001, 0)) == 8001,
+		str(look_mount_sword_m.part_replace))
+	var look_mount_battle := Equipment.appearance(gd, 200, {"transport": 31000})
+	ck("★战斗造型不骑马（原版 0==n 分支）", int(look_mount_battle.model_id) == 200,
+		str(look_mount_battle.model_id))
+	# 武器姿势偏移照 0055.js，不是直接把 item.type 加到 model 上
+	ck("武器姿势：空手 type24 不换姿势", Equipment.weapon_pose_offset(24) == 0)
+	ck("武器姿势：单手锤 type37 +44", Equipment.weapon_pose_offset(37) == 44)
+	ck("武器姿势：双手枪 type36 +73", Equipment.weapon_pose_offset(36) == 73)
+	ck("坐骑武器偏移：单手枪 type35 +42", Equipment.horse_pose_offset(35) == 42)
+	ck("坐骑武器偏移：空手 -1（走 700+style）", Equipment.horse_pose_offset(24) == -1)
 	# 项链 icon=0，不该产生替换
 	var look_neck := Equipment.appearance(gd, 300, {"necklace": 14001})
 	ck("无外观编码装备不替换部件", look_neck.part_replace.is_empty(),
@@ -187,10 +234,20 @@ func _initialize() -> void:
 	var robe_female_img := SpriteComposer.render_frame_image_equipped(300, 0, {6005: 6079})
 	ck("男款衣/女款衣渲染确实不同", _diff(robe_male_img, robe_female_img) > 10,
 		"差异像素 " + str(_diff(robe_male_img, robe_female_img)))
-	# ★ 护肩单帧图去重：4013 被两层引用，标记 single_use 后只画一次，画面应与不去重不同
+	# ★ 护肩 two-frame 替换：4084/4088 借到帧表后应按两片分别画，
+	#   渲染结果必须与「去掉肩部替换」不同，且与「强制只画一次」不同。
+	var shoulder_red := SpriteComposer.render_frame_image_equipped(
+		int(look_red_f.model_id), 0, look_red_f.part_replace, look_red_f.single_use)
+	ck("★朱红支配衬肩渲染改变画面", _diff(base_img, shoulder_red) > 20,
+		"差异像素 " + str(_diff(base_img, shoulder_red)))
+	var shoulder_red_forced := SpriteComposer.render_frame_image_equipped(
+		int(look_red_f.model_id), 0, look_red_f.part_replace, [4013])
+	ck("★朱红支配衬肩按两片画（≠强制单次）", _diff(shoulder_red, shoulder_red_forced) > 5,
+		"差异像素 " + str(_diff(shoulder_red, shoulder_red_forced)))
+	# single_use 兜底机制仍在（真·单帧整图替换双片槽时用）
 	var shoulder_raw := SpriteComposer.render_frame_image_equipped(300, 0, {4013: 4136}, [])
 	var shoulder_dedup := SpriteComposer.render_frame_image_equipped(300, 0, {4013: 4136}, [4013])
-	ck("★护肩单帧去重确实改变画面", _diff(shoulder_raw, shoulder_dedup) > 5,
+	ck("single_use 强制只画一次仍生效", _diff(shoulder_raw, shoulder_dedup) > 5,
 		"差异像素 " + str(_diff(shoulder_raw, shoulder_dedup)))
 	# ★ add_parts 追加图层机制本身可用（保留能力，供以后整套造型系统用）
 	var no_extra := SpriteComposer.render_frame_image_equipped(300, 0, {}, [], [])
@@ -198,6 +255,26 @@ func _initialize() -> void:
 		[{"frag": 5001, "sub": 6, "dx": 0, "dy": -40, "behind": true, "scale": 1.0}])
 	ck("add_parts 追加图层机制可用", _diff(no_extra, with_extra) > 10,
 		"差异像素 " + str(_diff(no_extra, with_extra)))
+
+	# ---- 披风层：coatPt 对齐（原版取衣服层 dx/dy）+ 画在角色后面 ----
+	var base_m := SpriteComposer.render_frame_image_equipped(100, 0, {})
+	ck("coatPt 取衣服层 dx/dy(-2,-35)",
+		SpriteComposer._frame_coat_point(100, 0) == Vector2i(-2, -35),
+		str(SpriteComposer._frame_coat_point(100, 0)))
+	var with_cloak := SpriteComposer.render_frame_image_equipped(100, 0, {}, [], [], 1101)
+	ck("★披风渲染增加像素", _opaque(with_cloak) > _opaque(base_m),
+		"%d > %d" % [_opaque(with_cloak), _opaque(base_m)])
+	var cloak_behind := true
+	for y in range(base_m.get_height()):
+		for x in range(base_m.get_width()):
+			if base_m.get_pixel(x, y).a >= 1.0 and not with_cloak.get_pixel(x, y).is_equal_approx(base_m.get_pixel(x, y)):
+				cloak_behind = false
+	ck("★披风画在角色后面（不覆盖不透明像素）", cloak_behind)
+	var mount_img := SpriteComposer.render_frame_image_equipped(705, 0, {})
+	ck("★坐骑整幅 model 可渲染（像素多于站立）", _opaque(mount_img) > _opaque(base_m),
+		"%d > %d" % [_opaque(mount_img), _opaque(base_m)])
+	ck("★坐骑画面与站立明显不同", _diff(base_m, mount_img) > 500,
+		"差异像素 " + str(_diff(base_m, mount_img)))
 
 	# ---- 装备屏场景可加载 ----
 	var scene = load("res://scenes/EquipScreen.tscn")
