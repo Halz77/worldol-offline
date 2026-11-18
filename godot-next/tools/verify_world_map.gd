@@ -249,6 +249,15 @@ func _initialize() -> void:
 		var wings_tex = player.call("_texture", int(player.get("_stand_frame")))
 		ck("★恶魔之翼地图画面确实换了", _tex_diff(idle_tex, wings_tex) > 500,
 			"差异像素 " + str(_tex_diff(idle_tex, wings_tex)))
+		# 时装：只换部件图，不改 model
+		state.call("unequip", "transport")
+		state.call("equip", "fashion", 15030)   # 恶魔时装
+		await process_frame
+		ck("★地图穿时装不改 model", int(player.get("_walk_model_id")) == base_mid,
+			str(player.get("_walk_model_id")))
+		var fash_tex = player.call("_texture", int(player.get("_stand_frame")))
+		ck("★地图穿时装画面有变化", _tex_diff(idle_tex, fash_tex) > 500,
+			"差异像素 " + str(_tex_diff(idle_tex, fash_tex)))
 		# 还原装备（含写回 user://equipment.json，别污染玩家存档）
 		state.set("equipped", saved_equip)
 		state.emit_signal("state_changed", "equip")

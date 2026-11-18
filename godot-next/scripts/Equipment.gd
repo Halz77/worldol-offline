@@ -1,7 +1,7 @@
 extends RefCounted
 ## 装备系统规则层（初步版，2026-11-18）。
 ##
-## 范围：基础属性 + 外观。强化 / 鉴定 / 套装 / 绑定 / 时装一律不参与。
+## 范围：基础属性 + 外观。强化 / 鉴定 / 套装 / 绑定 不参与；时装(type 12)按原版位域做「整套部件覆盖」。
 ## 三件事：
 ##   1. 部位定义与装备列表：按道具 type 归类（type 是唯一部位字段，见 0004.js:2983）。
 ##   2. 属性加成：def_str/def_agi/def_mag + powerN/powerValueN → 属性键字典。
@@ -103,7 +103,9 @@ static func label_of_slot(slot: String) -> String:
 	return ""
 
 
-## 该部位的装备 id 列表（按 index 里的 name 排序）。默认上限 200，避免一次填几千项。
+## 该部位的装备 id 列表（按 id 排序）。默认上限 200，避免一次填几千项。
+## ★ 腰带/鞋/护手/项链/戒指/护符在原版数据里 icon 全是 0（不改外观），
+##   不能再用 icon>0 过滤，否则这些槽位一件都列不出来。
 static func items_for_slot(game_data, slot: String, limit: int = 200) -> Array:
 	var wanted_types: Array = []
 	for d in SLOT_DEFS:
@@ -119,7 +121,7 @@ static func items_for_slot(game_data, slot: String, limit: int = 200) -> Array:
 		var it = entries[0]
 		if not (it is Dictionary):
 			continue
-		if wanted_types.has(int(it.get("type", -1))) and int(it.get("icon", 0)) > 0:
+		if wanted_types.has(int(it.get("type", -1))):
 			out.append(int(id))
 	out.sort()
 	if out.size() > limit:
@@ -366,6 +368,139 @@ static func cloak_model_for(back_style: int, clothes_style: int, transport_style
 	return SPR_INDEX_CLOAK_START + st
 
 
+# ---- 时装（type 12）--------------------------------------------------------
+# 原版 0056.js `updateIconByFashion()`：时装不带外观 icon，而是带一套
+# `fashIcon1/2/3` 位域（另一套角色 icon）。它会把这些位覆盖到角色 icon 上，
+# 再走 `doChangeSpriteIcon` 换部件图 —— 所以时装本质是**同时换掉一身部件图**，
+# 不换 model。也正因为它不写 transport 位，穿时装不会顶掉坐骑（用户要求）。
+# 位域常量见 0012.js ModelConst（OFFSET_*/LEN_*）。
+const OFFSET_HAIR_STYLE := 7
+const LEN_HAIR_STYLE := 4
+const OFFSET_HAIR_COLOR := 11
+const LEN_HAIR_COLOR := 2
+const OFFSET_HAIR_ADD := 0
+const LEN_HAIR_ADD := 3
+const OFFSET_FACE_STYLE := 13
+const LEN_FACE_STYLE := 4
+const OFFSET_FACE_ADD := 3
+const LEN_FACE_ADD := 1
+const OFFSET_HAND_STYLE := 17
+const LEN_HAND_STYLE := 2
+const OFFSET_HAND_COLOR := 19
+const LEN_HAND_COLOR := 2
+const OFFSET_HAND_ADD := 4
+const LEN_HAND_ADD := 4
+const OFFSET_FEET_STYLE := 21
+const LEN_FEET_STYLE := 2
+const OFFSET_FEET_COLOR := 23
+const LEN_FEET_COLOR := 2
+const OFFSET_FEET_ADD := 8
+const LEN_FEET_ADD := 4
+const OFFSET_HELMET_STYLE := 25
+const LEN_HELMET_STYLE := 5
+const OFFSET_HELMET_COLOR := 30
+const LEN_HELMET_COLOR := 2
+const OFFSET_HELMET_ADD := 12
+const LEN_HELMET_ADD := 2
+const OFFSET_SHOULDER_STYLE := 0
+const LEN_SHOULDER_STYLE := 4
+const OFFSET_SHOULDER_COLOR := 4
+const LEN_SHOULDER_COLOR := 2
+const OFFSET_CLOTHES_STYLE := 6
+const LEN_CLOTHES_STYLE := 6
+const OFFSET_CLOTHES_COLOR := 12
+const LEN_CLOTHES_COLOR := 2
+const OFFSET_CLOTHES_ADD := 2
+const LEN_CLOTHES_ADD := 1
+const OFFSET_TROUSERS_STYLE := 14
+const LEN_TROUSERS_STYLE := 6
+const OFFSET_TROUSERS_COLOR := 20
+const LEN_TROUSERS_COLOR := 2
+const OFFSET_TROUSERS_ADD := 3
+const LEN_TROUSERS_ADD := 1
+const OFFSET_BACK_STYLE := 0
+const LEN_BACK_STYLE := 4
+const OFFSET_BACK_COLOR := 4
+const LEN_BACK_COLOR := 2
+const OFFSET_BACK_ADD := 28
+const LEN_BACK_ADD := 1
+const OFFSET_BACK_ADD_2 := 0
+const LEN_BACK_ADD_2 := 2
+
+
+static func _fash_bits(value: int, off: int, len: int) -> int:
+	return (value >> off) & ((1 << len) - 1)
+
+
+## 取 64 位 fashIcon 的低/高 32 位（原版是 (low, high) 两个 number）。
+static func _fash_halves(value: int) -> Array:
+	return [value & 0xFFFFFFFF, (value >> 32) & 0xFFFFFFFF]
+
+
+## 时装 → {at: 图号}。at 与模型 files 的 floor(id/1000) 对应：
+##   0 头发 / 1 脸 / 2 手 / 3 脚 / 4 肩 / 6 衣服 / 7 裤 / 10 头盔。
+## 只有「style>0」的字段才算时装定义了这一层（原版判断 style||add）。
+static func fashion_parts(item: Dictionary, gender: int) -> Dictionary:
+	var out: Dictionary = {}
+	var i1 := _fash_halves(int(item.get("fashIcon1", 0)))
+	var i2 := _fash_halves(int(item.get("fashIcon2", 0)))
+	var i3 := _fash_halves(int(item.get("fashIcon3", 0)))
+	var l1: int = i1[0]
+	var h1: int = i1[1]
+	var l2: int = i2[0]
+	var l3: int = i3[0]
+	var h3: int = i3[1]
+	var gender_off := gender << 2
+
+	# 头发（START_HAIR=0）：style = low[7..10] + add<<4
+	var style := _fash_bits(l1, OFFSET_HAIR_STYLE, LEN_HAIR_STYLE) | \
+		(_fash_bits(h1, OFFSET_HAIR_ADD, LEN_HAIR_ADD) << 4)
+	if style > 0:
+		out[0] = style * 8 - 7 + gender_off + _fash_bits(l1, OFFSET_HAIR_COLOR, LEN_HAIR_COLOR)
+	# 脸（1000 起，无颜色位）
+	style = _fash_bits(l1, OFFSET_FACE_STYLE, LEN_FACE_STYLE) | \
+		(_fash_bits(h1, OFFSET_FACE_ADD, LEN_FACE_ADD) << 4)
+	if style > 0:
+		out[1] = 1000 + (style << 3) - 7 + gender_off
+	# 手 / 脚（2 位 style + 4 位 add）
+	style = _fash_bits(l1, OFFSET_HAND_STYLE, LEN_HAND_STYLE) | \
+		(_fash_bits(h1, OFFSET_HAND_ADD, LEN_HAND_ADD) << 2)
+	if style > 0:
+		out[2] = 2000 + (style << 3) - 7 + gender_off + _fash_bits(l1, OFFSET_HAND_COLOR, LEN_HAND_COLOR)
+	style = _fash_bits(l1, OFFSET_FEET_STYLE, LEN_FEET_STYLE) | \
+		(_fash_bits(h1, OFFSET_FEET_ADD, LEN_FEET_ADD) << 2)
+	if style > 0:
+		out[3] = 3000 + (style << 3) - 7 + gender_off + _fash_bits(l1, OFFSET_FEET_COLOR, LEN_FEET_COLOR)
+	# 肩（fashIcon2.low）
+	style = _fash_bits(l2, OFFSET_SHOULDER_STYLE, LEN_SHOULDER_STYLE)
+	if style > 0:
+		out[4] = 4000 + (style << 3) - 7 + gender_off + _fash_bits(l2, OFFSET_SHOULDER_COLOR, LEN_SHOULDER_COLOR)
+	# 衣 / 裤（fashIcon3.low 6..11 / 14..19，add 在 high）
+	style = _fash_bits(l3, OFFSET_CLOTHES_STYLE, LEN_CLOTHES_STYLE) | \
+		(_fash_bits(h3, OFFSET_CLOTHES_ADD, LEN_CLOTHES_ADD) << 6)
+	if style > 0:
+		out[6] = 6000 + (style << 3) - 7 + gender_off + _fash_bits(l3, OFFSET_CLOTHES_COLOR, LEN_CLOTHES_COLOR)
+	style = _fash_bits(l3, OFFSET_TROUSERS_STYLE, LEN_TROUSERS_STYLE) | \
+		(_fash_bits(h3, OFFSET_TROUSERS_ADD, LEN_TROUSERS_ADD) << 6)
+	if style > 0:
+		out[7] = 7000 + (style << 3) - 7 + gender_off + _fash_bits(l3, OFFSET_TROUSERS_COLOR, LEN_TROUSERS_COLOR)
+	# 头盔（10000 起，4 步长、无性别位）
+	style = _fash_bits(l1, OFFSET_HELMET_STYLE, LEN_HELMET_STYLE) | \
+		(_fash_bits(h1, OFFSET_HELMET_ADD, LEN_HELMET_ADD) << 5)
+	if style > 0:
+		out[10] = 10000 + (style << 2) - 3 + _fash_bits(l1, OFFSET_HELMET_COLOR, LEN_HELMET_COLOR)
+	return out
+
+
+## 时装的披风 style（fashIcon3.low 0..3 + add）。0 = 时装不带披风。
+static func fashion_back_style(item: Dictionary) -> int:
+	var i3 := _fash_halves(int(item.get("fashIcon3", 0)))
+	var l3: int = i3[0]
+	var h3: int = i3[1]
+	return _fash_bits(l3, OFFSET_BACK_STYLE, LEN_BACK_STYLE) | \
+		(_fash_bits(h3, OFFSET_BACK_ADD_2, LEN_BACK_ADD_2) << 4)
+
+
 ## 计算外观：返回 {model_id, part_replace:{基础部件id:图号}, single_use, add_parts, cloak_model, detail}
 ## base_model: 当前性别/姿势的基础 model（100/200/300/400，可带武器姿势）。sex 可显式传入（女=1）。
 static func appearance(game_data, base_model: int, equipped: Dictionary, sex: int = -1) -> Dictionary:
@@ -388,6 +523,13 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		var t_item := item_data(game_data, int(equipped["transport"]))
 		transport_style = transport_style_of_item(t_item)
 		transport_color = transport_color_of_item(t_item)
+	# 时装：整套部件覆盖 + 可选披风。原版不写 transport 位，所以不会顶掉坐骑。
+	var fash_parts: Dictionary = {}
+	var fash_back := 0
+	if equipped.has("fashion"):
+		var f_item := item_data(game_data, int(equipped["fashion"]))
+		fash_parts = fashion_parts(f_item, gender)
+		fash_back = fashion_back_style(f_item)
 
 	var mount_used := false
 	if transport_style > 0:
@@ -492,6 +634,25 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 			print("[equip-debug] %s item=%d icon=%d gender=%d → %s" % [
 				str(d.label), int(equipped[slot]), icon, gender, note])
 
+	# ---- 时装：一套部件图整体覆盖（原版 updateIconByFashion 在装备之后覆盖）----
+	# 只替换当前 model 里实际存在的同 at 图层，所以「时装 + 坐骑」时坐骑整幅
+	# model 里的身体部件也会一起换，坐骑本体不受影响。
+	if not fash_parts.is_empty():
+		for at in fash_parts.keys():
+			var want := int(fash_parts[at])
+			if want <= 0 or not FileAccess.file_exists(
+					"res://assets/sprite_fragment/%d.png" % want):
+				continue
+			var hit := 0
+			for fid in model_file_ints:
+				if fid / 1000 == int(at) and fid != want:
+					result.part_replace[fid] = want
+					if not is_multi_frame(want) and not single_use.has(fid):
+						single_use.append(fid)
+					hit += 1
+			if hit > 0:
+				detail.append("时装:at%d→%d" % [int(at), want])
+
 	# ---- 背部：独立 cloak model（1100+backStyle），SpriteComposer 把它画在角色图层后面 ----
 	if equipped.has("back"):
 		var bstyle := back_style_of_item(item_data(game_data, int(equipped["back"])))
@@ -513,6 +674,21 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		if OS.has_environment("WORLDOL_EQUIP_DEBUG"):
 			print("[equip-debug] 背部 style=%d clothes=%d transport=%d → cloak=%d" % [
 				bstyle, cstyle, transport_style, int(result.cloak_model)])
+
+	# 时装的披风覆盖背部装备（原版时装写的是 icon3 的 back 位）
+	if fash_back > 0:
+		var fst := fash_back
+		var fhide := fst == 31 or TRANSPORT_NO_BACK.has(transport_style)
+		if not fhide and equipped.has("clothes"):
+			if clothes_style_of_item(item_data(game_data, int(equipped["clothes"]))) == 51:
+				fst = 32
+		var fcloak := 0 if fhide else SPR_INDEX_CLOAK_START + fst
+		if fcloak > 0 and model_exists(fcloak):
+			result.cloak_model = fcloak
+			detail.append("时装披风→Cloak %d(style %d)" % [fcloak, fst])
+		else:
+			result.cloak_model = 0
+			detail.append("时装披风:style %d 不显示" % fst)
 	return result
 
 

@@ -292,6 +292,26 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
       `SpriteComposer.draw_weapon_flash = false`，`_blit_model()` 直接跳过 at=15。
       需要复现原版特效时把它置 true（自检里就是这么对比的）。注意：武器贴图本身那条青色光刃
       属于 `8001` 武器图，不是这一层，去掉特效不会消失。
+   5. **★ 无外观编码的槽位也要能选**：腰带(4)/鞋(6)/护手(7)/项链(8)/戒指(9)/护符(10)
+      在原版道具表里 **icon 恒为 0**（本来就不改外观，只加属性）。
+      `items_for_slot()` 以前要求 `icon>0`，结果这些槽位一件都列不出来；
+      现在只按 type 过滤，穿上后走 `aggregate_stats()` 加属性，外观保持基础造型。
+   6. **★ 时装（type 12）= 一整套部件覆盖，不是换 model**：道具不带外观 icon，
+      而是带 `fashIcon1/2/3` 三段 64 位位域（另一套角色 icon）。原版
+      `0056.js updateIconByFashion()` 在装备之后把它们覆盖到角色 icon 上，
+      再走 `doChangeSpriteIcon` 换部件图。所以：
+      - `Equipment.fashion_parts()` 解码 → `{at: 图号}`（0 发/1 脸/2 手/3 脚/4 肩/
+        6 衣/7 裤/10 头），`appearance()` 把当前 model 里同 at 的图层整体替掉；
+      - **不改 model id**，也不写 transport 位 → 穿时装不会顶掉坐骑（用户明确要求）；
+        骑马 model 里有身体部件，时装照样生效；恶魔之翼这种「整个身体被翅膀替掉」的
+        model 没有衣服槽，时装自然不显示，这是原版行为；
+      - 时装披风来自 `fashIcon3` 的 back 位（`fashion_back_style()` → Cloak `1100+style`），
+        会覆盖背部装备；坐骑 36/42/43/48 仍然藏披风。
+      - ★ **源码里的 `LEN_*` 是掩码不是位数**（0012.js `LEN_HAIR_STYLE = BIT_4 = 15`）。
+        移植时要么 `& LEN_*`（掩码语义），要么像我们一样换成位数再用
+        `(1<<len)-1`；混用会把 `3044618` 解出 `style=29962` 这种鬼值。
+      - 模型 `15000~15186` 是原版预拼好的整套造型，但**原版时装走的是零件覆盖**，
+        别直接把 model 切成 15xxx（那样会顶掉坐骑、也接不上装备槽）。
 - **穿戴状态**：`ScreenState.equipped`（{slot:itemId}），单独存 `user://equipment.json`，
   **不碰 `character_screen.json`**（角色屏 44 项自检依赖其 version=1 结构）。`equip/unequip/clear_equipment` 广播 `state_changed("equip")`。
 - **调试 / 截图**：
@@ -308,7 +328,9 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   **坐骑 705/905/2413/2463 + 战斗造型不骑马** / single_use 兜底 / 男女款渲染差异 / UI 穿脱链路 /
   **武器特效默认关闭（15001 像素对比）** / **14169 原版帧表已补齐（7 帧、与 14165 同表、子帧被裁切）** /
   **恶魔之翼/天使之翼无武器款 743/943/742/942** / **151 件坐骑 × 男女 × 空手/刀 不回退** /
-  **坐骑色号（飞龙/蓝幼龙同 model 不同色）**。
+  **坐骑色号（飞龙/蓝幼龙同 model 不同色）** /
+  **腰/鞋/手/链/戒/护符 槽位有可选项（icon=0 也列）** /
+  **时装 98 件不改 model、全身部件覆盖、披风 1110、时装+坐骑不顶掉坐骑**。
   装备验收会临时改 `user://equipment.json`（ScreenState 内部会写盘），开跑前备份、结束还原。
 - **自己改贴图**：图内容错→换同名 `sprite_fragment/<图号>.png` 立即生效；引用错→改
   `items/<id>.json` 的 `icon`（改前备份）；位置错→先开 `WORLDOL_EQUIP_DEBUG` 看换算，

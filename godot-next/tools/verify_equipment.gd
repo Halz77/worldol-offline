@@ -65,6 +65,12 @@ func _initialize() -> void:
 	ck("武器 20300 名为青铜剑", Equipment.item_name(gd, 20300) == "青铜剑",
 		Equipment.item_name(gd, 20300))
 
+	# ---- 无外观编码的槽位（腰带/鞋/护手/项链/戒指/护符）也要能选 ----
+	# 原版这些道具 icon=0，只影响属性、不改外观；以前被 icon>0 过滤掉了。
+	for slot in ["waist", "shoes", "hand", "necklace", "ring", "amulet"]:
+		var n := Equipment.items_for_slot(gd, slot, 100000).size()
+		ck("★%s 槽位有可选项" % Equipment.label_of_slot(slot), n > 0, str(n))
+
 	# ---- 属性加成解析 ----
 	var robe := Equipment.item_data(gd, 10032)   # 地狱炎纹法袍
 	var robe_stats := Equipment.stats_of_item(robe)
@@ -328,6 +334,64 @@ func _initialize() -> void:
 		int(Equipment.appearance(gd, 100, {"transport": 31046}).model_id) ==
 		int(Equipment.appearance(gd, 100, {"transport": 31120}).model_id) and
 		_diff(dragon0, dragon2) > 500, "差异像素 " + str(_diff(dragon0, dragon2)))
+
+	# ---- 时装（type 12）：fashIcon 位域 → 整套部件覆盖，且不顶掉坐骑 ----
+	var fash_item := Equipment.item_data(gd, 15030)   # 恶魔时装
+	var parts_m := Equipment.fashion_parts(fash_item, 0)
+	var parts_f := Equipment.fashion_parts(fash_item, 1)
+	ck("★时装 15030 男款解出 衣/裤/头（6156/7451/10055）",
+		int(parts_m.get(6, 0)) == 6156 and int(parts_m.get(7, 0)) == 7451
+		and int(parts_m.get(10, 0)) == 10055, str(parts_m))
+	ck("★时装女款图号 +4（6160/7455）",
+		int(parts_f.get(6, 0)) == 6160 and int(parts_f.get(7, 0)) == 7455, str(parts_f))
+	ck("★时装披风 style=10 → Cloak 1110",
+		Equipment.fashion_back_style(fash_item) == 10)
+	var fash_look := Equipment.appearance(gd, 100, {"fashion": 15030})
+	ck("★时装不改基础 model", int(fash_look.model_id) == 100, str(fash_look.model_id))
+	ck("★时装替换衣服图 6001→6156", int(fash_look.part_replace.get(6001, 0)) == 6156,
+		str(fash_look.part_replace))
+	ck("★时装披风叠上 Cloak 1110", int(fash_look.cloak_model) == 1110,
+		str(fash_look.cloak_model))
+	var fash_img := SpriteComposer.render_frame_image_equipped(100, 0,
+		fash_look.part_replace, fash_look.single_use, fash_look.add_parts,
+		int(fash_look.cloak_model))
+	ck("★时装画面与裸装明显不同", _diff(base_m, fash_img) > 500,
+		"差异像素 " + str(_diff(base_m, fash_img)))
+
+	# 时装 + 坐骑：坐骑 model 不能被顶掉，时装部件要作用在坐骑 model 的身体槽上
+	var fash_mount := Equipment.appearance(gd, 100,
+		{"fashion": 15030, "transport": 31000})
+	ck("★时装+坐骑：仍是坐骑 model 705", int(fash_mount.model_id) == 705,
+		str(fash_mount.model_id))
+	ck("★时装+坐骑：衣服仍被时装替换", int(fash_mount.part_replace.get(6001, 0)) == 6156,
+		str(fash_mount.part_replace))
+	var mount_plain := SpriteComposer.render_frame_image_equipped(705, 0, {})
+	var fash_mount_img := SpriteComposer.render_frame_image_equipped(705, 0,
+		fash_mount.part_replace, fash_mount.single_use, fash_mount.add_parts,
+		int(fash_mount.cloak_model))
+	ck("★时装+坐骑画面有变化", _diff(mount_plain, fash_mount_img) > 500,
+		"差异像素 " + str(_diff(mount_plain, fash_mount_img)))
+	# 恶魔之翼这种「替代整个人物」的坐骑 model 没有衣服槽，时装不生效但坐骑仍正常
+	var fash_wings := Equipment.appearance(gd, 100,
+		{"fashion": 15030, "transport": 31164})
+	ck("★时装+恶魔之翼：坐骑 model 仍是 743", int(fash_wings.model_id) == 743,
+		str(fash_wings.model_id))
+
+	# 全量：98 件时装都不能改 model / 不能带 transport 位
+	var fash_bad: Array = []
+	var fash_empty: Array = []
+	for id in Equipment.items_for_slot(gd, "fashion", 100000):
+		var it := Equipment.item_data(gd, int(id))
+		for base in [100, 300]:
+			var look := Equipment.appearance(gd, base, {"fashion": int(id)})
+			if int(look.model_id) != base:
+				fash_bad.append([int(id), base, int(look.model_id)])
+			if (look.part_replace as Dictionary).is_empty():
+				fash_empty.append(int(id))
+	ck("★98 件时装都不改 model（只换部件）", fash_bad.is_empty(), str(fash_bad.slice(0, 5)))
+	ck("★98 件时装都能换到部件（无空覆盖）", fash_empty.is_empty(),
+		"空覆盖 %d 件，例：%s" % [fash_empty.size(), str(fash_empty.slice(0, 8))])
+
 
 	# ---- 武器特效层（at=15，15001）：默认不画 ----
 	ck("15001 是武器特效层（at=15）", SpriteComposer.is_effect_layer(15001))

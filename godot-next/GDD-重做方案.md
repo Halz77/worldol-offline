@@ -293,9 +293,19 @@ NPC 模型；变换 0–7 与原版 `MapTransform` 一致。
      原版按 `PNG_TRANSPORT` 公式 `nt = ot-((ot-1)&3)+Z` 用 icon 低两位换同组图。
      `transport_color_of_item()` + `appearance()` 现在会换：飞龙/白幼龙/蓝幼龙/幼龙
      同 model 但躯体颜色不同。空手时还会把 model 里的 at=8 武器层隐藏（`part_replace=-1`）。
+  ⑨ 无外观编码槽位（2026-11-18）：腰带/鞋/护手/项链/戒指/护符在原版道具表里 icon 恒为 0
+     （只加属性不改外观）。`items_for_slot()` 以前按 `icon>0` 过滤，导致这些槽位没有可选项；
+     现在只按 type 过滤，穿上照常叠加属性。
+  ⑩ 时装（2026-11-18）：type 12 携带 `fashIcon1/2/3` 位域，原版 `updateIconByFashion()`
+     把它们覆盖到角色 icon 上再换部件图。实现为 `fashion_parts()` → `{at:图号}`，
+     `appearance()` 把当前 model 同 at 的图层整体替换（衣/裤/头/肩/手/脚 + 时装披风），
+     **不改 model、不写 transport 位**，所以「时装 + 坐骑」两不误；恶魔之翼这类
+     整身替换的 model 没有衣服槽，时装不显示（原版同样如此）。
+     源码里 `LEN_*` 是掩码（15/63），移植时别当位数用，否则会解出 style=29962 这类鬼值。
 - **已知边界**：战斗 model 的武器版少 2–4 帧，个别帧姿势跳回（有 fallback 不崩）；
-  鞋/护手/首饰原版无外观编码，穿上不加外观；装备列表按部位最多显示 200 件（全库 2505）。
-  普通防具没有整套 model（300 段仅 22 个全是武器偏移），只有 type12 时装走 15xxx/20xxx 整套。
+  鞋/护手/首饰已能装备并加属性，但原版无外观编码、穿上不改外观；
+  装备列表按部位最多显示 200 件（全库 2505）。
+  普通防具没有整套 model（300 段仅 22 个全是武器偏移）；时装走零件覆盖，不用 15xxx 模型。
 - **地图行走小人接外观（2026-11-18）**：`WorldPlayer` 不再固定基础 model，而是走
   `Equipment.appearance(gd, 正常 model, equipped)` + `render_frame_equipped()`，
   武器姿势 / 换部件 / 披风 / 坐骑整幅全部跟随装备；`state_changed` 触发重建，换装即时生效。
