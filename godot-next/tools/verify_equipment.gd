@@ -377,6 +377,22 @@ func _initialize() -> void:
 	ck("★时装+恶魔之翼：坐骑 model 仍是 743", int(fash_wings.model_id) == 743,
 		str(fash_wings.model_id))
 
+	# 时装披风不能无条件覆盖玩家自己的背部/翅膀（否则换时装=随机换翅膀）
+	var fash_keep := Equipment.appearance(gd, 300,
+		{"fashion": 15183, "back": 13596})   # 天魔惊神之翼 style 28
+	ck("★已穿翅膀优先，时装不覆盖背部", int(fash_keep.cloak_model) == 1128,
+		str(fash_keep.cloak_model))
+
+	# 时装部件不能套用「单帧大图缩到 34px」的护肩兜底：
+	# 勇气使徒头盔 10213 是 42x35 单帧图，之前被压成 34px 宽。
+	var fash_brave := Equipment.appearance(gd, 100, {"fashion": 28100})
+	ck("★时装单帧部件不缩到 34px（勇气使徒头盔）",
+		(fash_brave.single_use as Array).is_empty(),
+		str(fash_brave.single_use))
+	ck("★勇气使徒头盔 10213 已换上", int(fash_brave.part_replace.get(10021, 0)) == 10213,
+		str(fash_brave.part_replace))
+
+
 	# 全量：98 件时装都不能改 model / 不能带 transport 位
 	var fash_bad: Array = []
 	var fash_empty: Array = []

@@ -647,7 +647,9 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 			for fid in model_file_ints:
 				if fid / 1000 == int(at) and fid != want:
 					result.part_replace[fid] = want
-					if not is_multi_frame(want) and not single_use.has(fid):
+					# 只有护肩（at=4，左右两片）需要单帧去重；其它部位套用
+					# 「单帧大图缩到 34px」的兜底会把头盔/衣服压扁（勇气使徒 10213 就是这样坏的）。
+					if int(at) == 4 and not is_multi_frame(want) and not single_use.has(fid):
 						single_use.append(fid)
 					hit += 1
 			if hit > 0:
@@ -675,8 +677,10 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 			print("[equip-debug] 背部 style=%d clothes=%d transport=%d → cloak=%d" % [
 				bstyle, cstyle, transport_style, int(result.cloak_model)])
 
-	# 时装的披风覆盖背部装备（原版时装写的是 icon3 的 back 位）
-	if fash_back > 0:
+	# 时装的披风覆盖背部装备：只在玩家没有可见披风/翅膀时生效。
+	# ★ 不能无条件覆盖 —— 否则换一件时装就把玩家自己的翅膀（如天魔惊神之翼）
+	#   顶成时装自带的那套，看起来像「随机变成别的翅膀」。
+	if fash_back > 0 and int(result.cloak_model) == 0:
 		var fst := fash_back
 		var fhide := fst == 31 or TRANSPORT_NO_BACK.has(transport_style)
 		if not fhide and equipped.has("clothes"):
@@ -686,9 +690,8 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		if fcloak > 0 and model_exists(fcloak):
 			result.cloak_model = fcloak
 			detail.append("时装披风→Cloak %d(style %d)" % [fcloak, fst])
-		else:
-			result.cloak_model = 0
-			detail.append("时装披风:style %d 不显示" % fst)
+	elif fash_back > 0:
+		detail.append("时装披风:保留已穿背部")
 	return result
 
 
