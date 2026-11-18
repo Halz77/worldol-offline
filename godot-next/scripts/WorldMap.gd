@@ -161,6 +161,32 @@ func set_show_npcs(value: bool) -> void:
 	queue_redraw()
 
 
+## 强制按当前数据重建 NPC 实体（编辑器改完内存数据后调用，值没变也要重建）。
+func rebuild_npcs() -> void:
+	if not cfg.is_empty():
+		_build_npcs(map_id)
+
+
+## 供 NPC 编辑器复用：icon1 走整套 model 还是退化成单张部件图。
+## 两者的绘制矩形/缩放完全不同，必须和 _draw_npc_sprite 保持同一套判断。
+func npc_uses_model(icon: String) -> bool:
+	if icon.is_empty() or icon == "0":
+		return false
+	return FileAccess.file_exists("res://assets/sprite_model/" + icon + ".json")
+
+
+## 只在「没有 model、但有同名部件图」时才算部件图（兜底路径）。
+func npc_is_fragment(icon: String) -> bool:
+	if icon.is_empty() or icon == "0" or npc_uses_model(icon):
+		return false
+	return FileAccess.file_exists(FRAG_DIR + icon + ".png")
+
+
+## 供 NPC 编辑器复用：解析 icon1 → 贴图（部件图优先，其次 sprite_model 站立帧）。
+func npc_texture_for(icon: String) -> Texture2D:
+	return _npc_texture(icon)
+
+
 func _build_npcs(id: int) -> void:
 	for c in _npc_root.get_children():
 		c.free()
@@ -192,13 +218,18 @@ func _build_npcs(id: int) -> void:
 		npcs.append({"data": n, "pos": pos, "sprite": sprite, "label": label})
 
 
+## ★ NPC 的 icon1 是「整套造型 model 编号」，不是部件图编号（2026-11-18 更正）。
+## 1939 个 NPC 的 icon1 全部能在 assets/sprite_model/ 找到对应 model；
+## 其中 578 个编号在 sprite_fragment/ 里**也**存在同名图（护肩、翅膀、武器特效碎片），
+## 早先按「fragment 优先」取值，结果这批 NPC 被画成翅膀、光效、图集碎片。
+## 顺序必须是 model 优先，fragment 只做兜底。
 func _npc_texture(icon: String) -> Texture2D:
 	if icon.is_empty() or icon == "0":
 		return null
-	if FileAccess.file_exists(FRAG_DIR + icon + ".png"):
-		return load(FRAG_DIR + icon + ".png") as Texture2D
 	if FileAccess.file_exists("res://assets/sprite_model/" + icon + ".json"):
 		return _model_texture(int(icon))
+	if FileAccess.file_exists(FRAG_DIR + icon + ".png"):
+		return load(FRAG_DIR + icon + ".png") as Texture2D
 	return null
 
 
@@ -211,13 +242,13 @@ func _draw_npc_sprite(sprite: Sprite2D, pos: Vector2, icon: String) -> void:
 		sprite.position = pos - Vector2(6, 12)
 		sprite.scale = Vector2(1, 1)
 		return
-	if FileAccess.file_exists(FRAG_DIR + icon + ".png"):
-		sprite.position = pos + Vector2(-tex.get_width() / 2.0, -tex.get_height() + 8)
-		sprite.scale = Vector2(1, 1)
-	else:
+	if npc_uses_model(icon):
 		sprite.position = pos
 		sprite.scale = Vector2(0.45, 0.45)
 		sprite.offset = Vector2(-SpriteComposer.CANVAS_W / 2.0, -SpriteComposer.ANCHOR_Y)
+	else:
+		sprite.position = pos + Vector2(-tex.get_width() / 2.0, -tex.get_height() + 8)
+		sprite.scale = Vector2(1, 1)
 
 
 ## 模型 frame 0 不一定是站立帧（如 15113 的 0 属于「行走」，站立是 3）。

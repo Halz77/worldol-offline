@@ -1,1 +1,20 @@
-{}
+{
+  "9901": {
+    "h": 1800,
+    "has_atlas": false,
+    "has_bg": false,
+    "has_config": false,
+    "id": 9901,
+    "name": "NPC 展厅 1/1",
+    "npc_count": 282,
+    "objects": 0,
+    "spawn": [
+      2,
+      2
+    ],
+    "tile_h": 24,
+    "tile_w": 24,
+    "tiles": 0,
+    "w": 2400
+  }
+}

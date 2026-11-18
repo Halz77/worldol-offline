@@ -113,7 +113,7 @@ text = "显示 NPC 名字"
 
 [node name="NpcCheck" type="CheckBox" parent="UI/Margin/Root/Body/LeftPanel/Left"]
 layout_mode = 2
-text = "显示 NPC（默认关闭）"
+text = "显示 NPC（展厅页默认开）"
 
 [node name="InfoLabel" type="Label" parent="UI/Margin/Root/Body/LeftPanel/Left"]
 custom_minimum_size = Vector2(0, 70)

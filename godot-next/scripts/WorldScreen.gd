@@ -102,6 +102,10 @@ func _load_map(id: int) -> void:
 	if sel >= 0:
 		map_option.select(sel)
 	player.call("set_pixel", world_map.call("spawn_pixel"))
+	# NPC 默认只在「NPC 展厅」页显示；普通地图保持原版数据但不上屏（交互逻辑待设计）。
+	var want_npcs := bool(data.call("is_npc_page", id))
+	npc_check.set_pressed_no_signal(want_npcs)
+	world_map.call("set_show_npcs", want_npcs)
 	var meta: Array = data.get_entry("worldMaps", id)
 	var nm := data.name_of("worldMaps", id)
 	var npc_count := int(meta[0].get("npc_count", 0)) if not meta.is_empty() else 0

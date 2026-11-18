@@ -1,0 +1,37 @@
+{
+  "cell_h_tiles": 5,
+  "cell_w_tiles": 5,
+  "cols": 20,
+  "compiled_total": 1939,
+  "dedup_rule": "name+icon1",
+  "deduped": true,
+  "dropped_duplicates": 1657,
+  "generated": "2026-11-18T23:36:27",
+  "h": 1800,
+  "offset_x_tiles": 2,
+  "offset_y_tiles": 3,
+  "page_count": 1,
+  "pages": [
+    {
+      "cell_h_tiles": 5,
+      "cell_w_tiles": 5,
+      "cols": 20,
+      "count": 282,
+      "first": 0,
+      "h": 1800,
+      "id": 9901,
+      "last": 281,
+      "name": "NPC 展厅 1/1",
+      "offset_x_tiles": 2,
+      "offset_y_tiles": 3,
+      "rows": 15,
+      "w": 2400
+    }
+  ],
+  "per_page": 300,
+  "rows": 15,
+  "tile": 24,
+  "total": 282,
+  "version": 2,
+  "w": 2400
+}

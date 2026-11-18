@@ -67,10 +67,17 @@ const COMPILED = "res://data/compiled/"
 ## 好处：重跑编译不会被覆盖；删一行即可回滚（见 docs/地图编辑与重命名指南.md §6）。
 const MAP_NAMES_OVERRIDE = "res://data/overrides/map_names.json"
 const MAPS_OVERRIDE = "res://data/overrides/maps.json"
+## NPC override：NPC 不再散在各张地图上，而是集中放进「展厅」分页。
+## 每页一个文件 data/overrides/npcs/<页id>.json（数组，结构同 data/compiled/npcs），
+## index.json 记录页清单；compiled 快照一个字节都不动，删掉目录即回滚到原版分布。
+const NPCS_OVERRIDE_DIR = "res://data/overrides/npcs/"
+const NPCS_OVERRIDE_INDEX = NPCS_OVERRIDE_DIR + "index.json"
 var _index: Dictionary = {}
 var _cache: Dictionary = {}
 var _map_names_override: Dictionary = {}
 var _maps_override: Dictionary = {}
+var _npc_pages: Array = []
+var _npc_pages_loaded: bool = false
 var _overrides_loaded: bool = false
 
 
@@ -91,9 +98,39 @@ func reload_overrides() -> void:
 	_overrides_loaded = false
 	_map_names_override = {}
 	_maps_override = {}
+	_npc_pages = []
+	_npc_pages_loaded = false
 	# 新建地图前 get_entry(id) 缓存过空数组，不清缓存就永远读不到新登记的条目。
 	_cache.clear()
 	_load_overrides()
+
+
+## NPC 展厅分页清单（data/overrides/npcs/index.json 的 pages）。
+## 没有 override 时返回空数组，游戏就还是原版分布。
+func npc_pages() -> Array:
+	if _npc_pages_loaded:
+		return _npc_pages
+	_npc_pages_loaded = true
+	var idx = _json(NPCS_OVERRIDE_INDEX)
+	if idx is Dictionary and idx.get("pages") is Array:
+		_npc_pages = idx["pages"]
+	return _npc_pages
+
+
+## 该地图是不是 NPC 展厅页（决定默认是否渲染 NPC）。
+func is_npc_page(id) -> bool:
+	for p in npc_pages():
+		if p is Dictionary and int(p.get("id", -1)) == int(id):
+			return true
+	return false
+
+
+func npc_page_ids() -> Array:
+	var out: Array = []
+	for p in npc_pages():
+		if p is Dictionary:
+			out.append(int(p.get("id", 0)))
+	return out
 
 
 func compiled_index() -> Dictionary:
@@ -131,6 +168,12 @@ func get_entry(domain: String, id) -> Array:
 	var key := domain + "/" + str(int(id))
 	if _cache.has(key):
 		return _cache[key]
+	# NPC 展厅页：override 命中就整页替换（编译快照里没有这些页 id）
+	if domain == "npcs" and is_npc_page(id):
+		var page = _json(NPCS_OVERRIDE_DIR + str(int(id)) + ".json")
+		if page is Array:
+			_cache[key] = page
+			return page
 	if domain == "worldMaps":
 		_load_overrides()
 		var ov = _maps_override.get(str(int(id)), null)

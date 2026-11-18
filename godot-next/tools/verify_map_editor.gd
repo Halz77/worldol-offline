@@ -196,6 +196,9 @@ func _initialize() -> void:
 	var bad_decimal := []
 	var missing := 0
 	for id in data.ids("worldMaps"):
+		# NPC 展厅页（9901+）故意没有视觉 JSON：走合成网格当展厅地面，不算缺图
+		if bool(data.call("is_npc_page", int(id))):
+			continue
 		var path := "res://assets/map/%d.json" % int(id)
 		if not FileAccess.file_exists(path):
 			missing += 1
@@ -214,7 +217,7 @@ func _initialize() -> void:
 		var back = JSON.parse_string(text)
 		if not _same(norm, editor.call("normalize_value", back)):
 			bad_round.append(str(id))
-	ck("294 张图里 290 张有视觉 JSON", missing == 4, str(missing))
+	ck("294 张原版图里 290 张有视觉 JSON", missing == 4, str(missing))
 	ck("290 张图序列化往返不丢信息", bad_round.is_empty(),
 		str(bad_round).substr(0, 160))
 	ck("290 张图序列化后没有小数", bad_decimal.is_empty(),

@@ -53,7 +53,7 @@ func _initialize() -> void:
 	await process_frame
 
 	# ---------- 数据编译 ----------
-	ck("地图目录 294 张（290 视觉 + 4 兜底）", data.count("worldMaps") == 294,
+	ck("地图目录 295 张（290 视觉 + 4 兜底 + 1 NPC 展厅页）", data.count("worldMaps") == 295,
 		str(data.count("worldMaps")))
 	ck("NPC 按地图分 63 组", data.count("npcs") == 63, str(data.count("npcs")))
 	var npc_total := 0
@@ -268,8 +268,11 @@ func _initialize() -> void:
 			"%d / 原 %d" % [int(player.get("_walk_model_id")), original_model])
 
 	# ---------- 全量切图 ----------
+	# NPC 展厅页（9901+）是「把 1939 个 NPC 复制一份集中摆放」的分页，
+	# 不能算进原版分布的总数里，否则总数会翻倍。
 	var bad := []
 	var total_npcs := 0
+	var showcase_npcs := 0
 	for id in data.ids("worldMaps"):
 		if not world_map.call("load_map", int(id)):
 			bad.append(str(id) + ":load")
@@ -279,10 +282,14 @@ func _initialize() -> void:
 		if c.is_empty() or (tl.is_empty() and not bool(c.get("__synthetic", false))):
 			bad.append(str(id) + ":empty")
 		var actual: Array = world_map.get("npcs")
-		total_npcs += actual.size()
+		if bool(data.call("is_npc_page", int(id))):
+			showcase_npcs += actual.size()
+		else:
+			total_npcs += actual.size()
 		ck_meta(int(id), data.get_entry("npcs", int(id)).size(), actual.size(), bad)
 	ck("全部地图逐张可加载", bad.is_empty(), "异常 " + str(bad) + " / " + str(bad.size()))
-	ck("切图过程中 NPC 实体总数一致", total_npcs == 1939, str(total_npcs))
+	ck("原版地图 NPC 实体总数 1939", total_npcs == 1939, str(total_npcs))
+	ck("展厅页 NPC 实体总数 282（同 icon1 去重后）", showcase_npcs == 282, str(showcase_npcs))
 
 	# 停在城市场景，方便后续人工看画面
 	world_map.call("load_map", 4)
