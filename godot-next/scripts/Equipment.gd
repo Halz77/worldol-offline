@@ -665,10 +665,18 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 	# 时装：整套部件覆盖 + 可选披风。原版不写 transport 位，所以不会顶掉坐骑。
 	var fash_parts: Dictionary = {}
 	var fash_back := 0
+	var fash_full_head := false
 	if equipped.has("fashion"):
 		var f_item := item_data(game_data, int(equipped["fashion"]))
 		fash_parts = fashion_parts(f_item, gender)
 		fash_back = fashion_back_style(f_item)
+		# 只有「整颗头」才需要隐藏基础头发：脸层定义了（电玩英雄 1213），
+		# 或头盔足够宽（>=38px，包住整颗头，如勇气使徒 10213、白羊座 10129）。
+		# 小头盔/头饰的时装必须保留头发，否则会变光头。
+		var fstyles := _fash_styles(f_item, gender)
+		var helm_frag := int(fash_parts.get(10, 0))
+		var helm_sz := SpriteComposer._png_size(helm_frag) if helm_frag > 0 else Vector2i.ZERO
+		fash_full_head = int(fstyles.face) > 0 or helm_sz.x >= 38
 
 	var mount_used := false
 	if transport_style > 0:
@@ -796,11 +804,10 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 				fash_applied = true
 				detail.append("时装:at%d→%d" % [int(at), want])
 
-	# 时装生效时隐藏基础头发：模型里「脸层先画、头发层后画」，头发会盖在
-	# 时装头盔/整颗脸上（电玩英雄、勇气使徒最明显）。98 件时装都带头盔 style，
-	# 但「整个身体被翅膀替掉」的坐骑 model 没有衣服槽 → fash_applied=false，
-	# 不会误伤坐骑上的小人。
-	if fash_applied:
+	# 时装里有「整颗头」部件时才隐藏基础头发（脸层在头发层之前绘制，头发会盖住它）。
+	# 小头盔/头饰的时装保留头发，别让玩家变光头。
+	# 整身坐骑 model 没有衣服槽 → fash_applied=false，不误伤坐骑上的小人。
+	if fash_applied and fash_full_head:
 		for fid in model_file_ints:
 			if fid / 1000 == 0 and fid > 0:
 				result.part_replace[fid] = -1

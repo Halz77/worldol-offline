@@ -446,6 +446,16 @@ func _initialize() -> void:
 		{"fashion": 28100, "transport": 31164})
 	ck("★整身坐骑不受时装头发规则影响", not wing_fash.part_replace.has(1),
 		str(wing_fash.part_replace))
+	# 小头盔时装不能变光头（只给整颗头的时装隐藏头发）
+	var small_helm := Equipment.appearance(gd, 300, {"fashion": 15030})
+	ck("★恶魔时装保留头发（10055 是小头盔，不是整颗头）",
+		not small_helm.part_replace.has(5), str(small_helm.part_replace))
+	var keep_count := 0
+	for id in Equipment.items_for_slot(gd, "fashion", 100000):
+		var look := Equipment.appearance(gd, 300, {"fashion": int(id)})
+		if not (look.part_replace as Dictionary).has(5):
+			keep_count += 1
+	ck("★大部分时装保留头发（≥80 件）", keep_count >= 80, str(keep_count))
 
 
 	# ---- 武器特效层（at=15，15001）：默认不画 ----
