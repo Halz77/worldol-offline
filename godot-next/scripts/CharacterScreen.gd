@@ -11,6 +11,7 @@ const Stats = preload("res://scripts/Stats.gd")
 @onready var title: Label = $Margin/Root/Header/Title
 @onready var hint: Label = $Margin/Root/Header/Hint
 @onready var world_button: Button = $Margin/Root/Header/WorldButton
+@onready var equip_button: Button = $Margin/Root/Header/EquipButton
 @onready var sex_option: OptionButton = $Margin/Root/Body/PlayerSide/Controls/SexOption
 @onready var pose_option: OptionButton = $Margin/Root/Body/PlayerSide/Controls/PoseOption
 @onready var anim_option: OptionButton = $Margin/Root/Body/PlayerSide/Controls/AnimOption
@@ -88,6 +89,7 @@ func _wire() -> void:
 	reset_button.pressed.connect(func(): screen_state.call("reset"))
 	frame_slider.value_changed.connect(_on_frame_slider)
 	world_button.pressed.connect(_on_world)
+	equip_button.pressed.connect(_on_equip)
 
 
 func _on_sex(idx: int) -> void:
@@ -111,6 +113,10 @@ func _on_frame_slider(v: float) -> void:
 
 func _on_world() -> void:
 	get_tree().change_scene_to_file("res://scenes/WorldScreen.tscn")
+
+
+func _on_equip() -> void:
+	get_tree().change_scene_to_file("res://scenes/EquipScreen.tscn")
 
 
 func _on_state(field: String) -> void:
@@ -196,6 +202,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_3: screen_state.call("set_pose", "正常")
 		KEY_4: screen_state.call("set_pose", "战斗")
 		KEY_R: screen_state.call("reload_assets")
+		KEY_E: _on_equip()
 		KEY_M: _on_world()
 		_: return
 	get_viewport().set_input_as_handled()

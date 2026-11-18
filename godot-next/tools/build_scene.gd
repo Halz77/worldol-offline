@@ -57,6 +57,8 @@ func _init() -> void:
 	title.add_theme_font_size_override("font_size", 20)
 	var spacer := _add(header, "Control", "Spacer") as Control
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var equip_button := _add(header, "Button", "EquipButton") as Button
+	equip_button.text = "装备 →"
 	var world_button := _add(header, "Button", "WorldButton") as Button
 	world_button.text = "进入地图 →"
 	var hint := _add(header, "Label", "Hint") as Label

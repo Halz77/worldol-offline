@@ -27,9 +27,11 @@ godot-next/
     npcs/<mapId>.json                  该地图 NPC
   scripts/
     ScreenState.gd       Autoload，全局状态 + 信号
-    CharacterScreen.gd   角色屏
-    CharacterPlayer.gd   角色屏立绘（SpriteComposer）
+    CharacterScreen.gd   角色屏（含"装备→"入口按钮，快捷键 E）
+    CharacterPlayer.gd   角色屏/装备屏共用的立绘（SpriteComposer；装备时切 model + 换部件）
     StatsPanel.gd        属性面板
+    Equipment.gd         装备规则层：部位/属性加成/外观（武器切 model、防具换部件）
+    EquipScreen.gd       装备屏：造型预览 + 部位槽 + 候选装备 + 属性变化
     WorldScreen.gd       世界地图屏（相机、输入、切图）
     WorldMap.gd          地图渲染核心（tile 层 / 物件层 / 变换 / 补洞）
     WorldPlayer.gd       地图上的角色（行走动画）
@@ -42,9 +44,11 @@ godot-next/
   tools/
     build_scene.gd         生成 CharacterScreen.tscn
     build_world_scene.gd   生成 WorldScreen.tscn
+    build_equip_scene.gd   生成 EquipScreen.tscn
     verify_character_screen.gd   44 项断言
     verify_world_map.gd          地图全量断言
     verify_map_editor.gd         地图编辑器断言（只在内存里改，不写真实 assets/map）
+    verify_equipment.gd          装备系统断言（属性/外观/UI 穿脱链路）
     map_editor/
       MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
       MapEditor.gd         载入 / tile·阻挡·物件三种画笔 / 图层增删 / 新建复制图 / 改尺寸 /
@@ -196,6 +200,69 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 | `WORLDOL_QUITAFTER=<秒>` | 截图后自动退出（无人值守实测） |
 
 编辑器的截图产物是 `_out/map_editor_screen.png`（游戏世界是 `_out/world_screen.png`）。
+
+## 装备系统（基础版，2026-11-18 落地）
+
+- **范围**：只做基础属性 + 外观；强化 / 鉴定 / 套装 / 绑定 / 时装全部不参与。无穿戴限制。
+  入口：角色屏「装备 →」按钮或快捷键 `E`；装备屏 `Esc` / 返回按钮回角色屏。
+- **数据真身**：`data/compiled/items/<id>.json`，2505 件。三个关键字段：
+  `type`=部位（0头/1衣/2裤/3肩/4腰/5背/6鞋/7手/8链/9戒/10护符/11坐骑/12时装/13-24+34-39武器）；
+  `def_str/def_agi/def_mag`+`powerN/powerValueN`=属性加成；**`icon` 是外观编码（部件图编号），不是背包图标**（`bagIcon` 才是图标）。
+- **power id → 属性键**：常量表在 `analysis/modules/0004.js:2545+`；映射写在 `Equipment.gd:POWER_TO_STAT`。
+  ⚠ `POWER_IDENTIFY=121` 是鉴定占位（高档装备大量出现），必须忽略；百分比类/技能类/宠物类本阶段不映射。
+  注意 `def_str` 在道具表里是**装备提供的防御值**，映射到 `DEF_STR`（不是需求属性 `reqStr`）。
+- **属性公式**：`Stats.gd` 的 20 角色基线是静态快照（已含 inventory 装备），**不能改**。
+  装备屏显示的是「装备加成汇总」——`Equipment.aggregate_stats()` 把当前穿戴的加成算出来，
+  界面标注"在所选角色基线之上叠加"，不重写基线、不追求逐字段对拍。
+- **★ 外观两条路径（实测可用，别推倒重来）**：
+  1. **武器 → 换整 model**：现成 `sprite_model/<base+武器type>.json`（女正常 300 + 青铜剑 type13 = 313，
+     法杖 type19 = 319；男 100+13=113）。基础 model 见 `ScreenState.MODEL_TABLE`。
+     帧号校验：正常 model（100/300）与武器 model 帧号完全一致；战斗 model（200/400）武器 model 少 2-4 帧，
+     `render_frame_image_equipped` 有 fallback 取首帧，不崩但个别战斗帧姿势会跳。
+  1.5 **★ 槽位归属铁律（2026-11-18 三轮踩坑）**：`at = floor(部件id/1000)`，
+     部位常量 `0055.js:19-35`：`PNG_SHOULDER=4 / BACK=5 / CLOTHES=6 / TROUSERS=7 / WEAPON=8 / HELMET=10 / TRANSPORT=14`。
+     **头盔槽是 10021（at=10），绝不是 11001（at=11=EQUIP_OTHER=灰色脚底阴影）**——
+     换错槽头盔就掉到脚底。武器部件是 model files 里 at=8 的项（313 的 8001 / 319 的 8385），
+     换 model 后还要把它换成装备的具体武器图。
+     **★ 武器图号 = icon 本身**：`0056.js:3574` 解码 `/4`、`0055.js:793 getWeaponIcon` 编码 `*4`，互逆。
+     曾用 `/8` 解码导致法杖 8392→算成 8200（刀区间）、轻弩 8517 与重弩 8581 都回退共用图。
+     直接 `weapon_fragment_id(icon)=icon` 才对，每件武器/每种弩各用各的图。
+  2. **防具 → 换部件图（★ 2026-11-18 重做，别退回旧做法）**：
+     原版 `0055.js doChangeSpriteIcon` 是「静态 model + 运行时按 icon 位域换 files 槽位图」，
+     定位靠 `frame` 里烘焙的中心 (dx,dy) + 实际图尺寸/2 做锚点（`0366.js`，`SpriteComposer` 的
+     `px=中心+dx-w/2` 已正确，不要改锚点公式）。**关键坑：性别半区**——
+     衣/裤/肩每 style 占 8 个图号（4 男 + 4 女），装备表 `icon` 是男款号，女角色必须 +4 换女款图
+     （`Equipment.part_fragment_id(icon,type,gender)` 忠实移植 `START+(style<<3)-7+(gender<<2)+color`）。
+     实例：衣 6075→女款 6079、裤 7089→7093、肩 4145→4149（尺寸都不同，直接用 icon 就是让女角色穿男款图而错位）。
+     头盔 4 步长、无性别位，icon 直接用。槽位 key 按 model 性别选：
+     男 100/200 = 衣6001/裤7001/肩4001；女 300/400 = 衣6005/裤7005/肩4013（见 `Equipment.ARMOR_SLOT`）。
+     鞋/护手/首饰 icon 多为 0、原版不改外观，跳过。
+     **★ 护肩单帧图去重**：基础肩 4013 是 2 帧图集（左右两片），model frame 引用两次。
+     若装备是单帧大图（如星月冥肩 4132→女款 4136，58x29），两 layer 会画两遍→重复。
+     `Equipment.is_multi_frame()` 判定后在 detail 标记 `single_use`，`SpriteComposer` 只画第一次。
+     **★ 单帧大图还要缩放**：位置取多片中点（平均 dx/dy），且图宽 >34px 时等比缩到 34px
+     （星月冥肩 4136 是 58x29，原尺寸会撑出角色很远，缩到 34 宽才协调；4080 是 23x9 不受影响）。
+  3. **背部 / 坐骑 → 暂不实现（2026-11-18 取证后决定，别硬贴）**：
+     坐骑 icon（如 14017 白狼）是**人+坐骑整幅战斗帧**（含角色、光效），不是纯坐骑部件；
+     背部 icon（如 5001）是**多块子帧拼的动画图集**（每 sub 只是 25x14 小碎片，偏移烘焙在原版 frame 里）。
+     基础 model 无这些槽位/偏移，硬贴就是扭曲错位画面。现只在 detail 标 `外观未实现`、界面提示，
+     属性照常加。要做需整套造型系统（类似时装 15xxx/20xxx），是独立功能、不在基础版范围。
+     `SpriteComposer` 保留了 `add_parts` 追加图层能力供将来用，但 appearance 不再生成它。
+- **穿戴状态**：`ScreenState.equipped`（{slot:itemId}），单独存 `user://equipment.json`，
+  **不碰 `character_screen.json`**（角色屏 44 项自检依赖其 version=1 结构）。`equip/unequip/clear_equipment` 广播 `state_changed("equip")`。
+- **调试 / 截图**：
+  - `WORLDOL_EQUIP_DEBUG=1` 正常窗口跑 EquipScreen，控制台打印每件装备的
+    `部位 item=id icon=n gender=n → 槽位:旧图→新图`，用来定位某件装备的换算是否正确。
+  - `WORLDOL_CAPTURE=1 WORLDOL_EQUIP=weapon:20300,clothes:10032,head:100664` → `_out/equip_screen.png`。
+  - `--script res://tools/equip_compare.gd` → `_out/equip_compare.png`（左男款错图 / 右女款修复对比）。
+- 验收 `verify_equipment.gd` 全过：属性解析 / 鉴定忽略 / 叠加 / 武器换 model + 换武器图 /
+  **性别半区换算（6075→6079、7089→7093、4145→4149）** / **头盔槽 10021（非 11001）** /
+  **护肩单帧去重** / 男女款渲染差异 / 背坐骑标注未实现 / UI 穿脱链路。
+- **自己改贴图**：图内容错→换同名 `sprite_fragment/<图号>.png` 立即生效；引用错→改
+  `items/<id>.json` 的 `icon`（改前备份）；位置错→先开 `WORLDOL_EQUIP_DEBUG` 看换算，
+  多数是性别半区/图号编码问题而非单张图坏。普通防具没有整套 model，别找映射表
+  （300 段仅 22 个 model 全是武器偏移；7089/10101/4145 不在任何 model files 里）。
+  只有 type 12 时装走 15xxx/20xxx 整套 model，是独立分支。
 
 ## 地图编辑器第二版要点（2026-11-17 补完）
 

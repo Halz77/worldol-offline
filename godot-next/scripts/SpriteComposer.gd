@@ -44,10 +44,31 @@ static func frame_numbers(model_id: int) -> Array:
 
 
 static func render_frame_image(model_id: int, frame_no: int = 0) -> Image:
+	return render_frame_image_equipped(model_id, frame_no, {})
+
+
+## 带装备外观的渲染：part_replace 是 {基础部件 id: 装备 icon 部件 id}。
+## single_use 是"只能画一次"的基础部件 id 列表——单帧大图替换多帧槽位时（如星月冥肩
+## 替换 4013 的两片），整图会被两个 layer 画两遍，标记后只画第一次。
+## add_parts 是追加图层 [{frag, sub, dx, dy, behind}]：背部/坐骑等独立精灵（原版不在 model files 里）。
+static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = []) -> Image:
 	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
 	if not (model is Dictionary):
 		return null
 	var files = model.get("files", [])
+	# 单帧图去重：记录哪些 file_idx 替换后只允许画一次
+	var once_idx: Dictionary = {}
+	if not part_replace.is_empty() and files is Array:
+		var replaced: Array = files.duplicate()
+		for i in range(replaced.size()):
+			var fid := int(replaced[i])
+			if part_replace.has(fid):
+				var new_id := int(part_replace[fid])
+				if FileAccess.file_exists(FRAG_DIR + str(new_id) + ".png"):
+					replaced[i] = new_id
+					if single_use.has(fid):
+						once_idx[i] = true
+		files = replaced
 	var frames = model.get("frames", {})
 	if not (frames is Dictionary):
 		return null
@@ -61,29 +82,96 @@ static func render_frame_image(model_id: int, frame_no: int = 0) -> Image:
 
 	var canvas = Image.create(CANVAS_W, CANVAS_H, false, Image.FORMAT_RGBA8)
 	canvas.fill(Color(0, 0, 0, 0))
+	# 追加图层中 behind=true 的（坐骑/背部）先画，作为背景被角色覆盖
+	for p in add_parts:
+		if not (p is Dictionary) or not bool(p.get("behind", false)):
+			continue
+		_draw_add_part(canvas, p)
+	# 单帧大图定位：原多帧部件的两片各有 dx/dy，单帧完整图应居中在它们中点。
+	# 预扫描每个 single_use file_idx 的所有引用，求平均 dx/dy。
+	var avg_pos: Dictionary = {}
+	if not once_idx.is_empty():
+		var sums: Dictionary = {}
+		for layer in layers:
+			if not (layer is Array) or layer.size() < 4:
+				continue
+			var fi := int(layer[0])
+			if not once_idx.has(fi):
+				continue
+			var s: Array = sums.get(fi, [0, 0, 0])
+			s[0] += int(layer[2]); s[1] += int(layer[3]); s[2] += 1
+			sums[fi] = s
+		for fi in sums.keys():
+			var s: Array = sums[fi]
+			avg_pos[fi] = [float(s[0]) / float(s[2]), float(s[1]) / float(s[2])]
+	var drawn_once: Dictionary = {}
 	for layer in layers:
 		if not (layer is Array) or layer.size() < 4:
 			continue
 		var file_idx = int(layer[0])
 		if file_idx < 0 or file_idx >= files.size():
 			continue
+		if once_idx.has(file_idx):
+			if drawn_once.has(file_idx):
+				continue   # 单帧大图，同一部件已被画过一次，跳过第二次
+			drawn_once[file_idx] = true
 		var frag_id = int(files[file_idx])
 		var sub = int(layer[1])
 		var dx = int(layer[2])
 		var dy = int(layer[3])
+		if avg_pos.has(file_idx):
+			var ap: Array = avg_pos[file_idx]
+			dx = roundi(ap[0]); dy = roundi(ap[1])   # 用两片中点，居中
 		var flip = int(layer[4]) if layer.size() > 4 else 0
 		var box = _sub_frame(frag_id, sub)
 		if box == null:
 			continue
+		# ★ 单帧大图替换多帧小槽位（如星月冥肩 58x29 替换 19x8）：
+		#   原图是高清整对肩甲，按原尺寸画会撑出角色很多。限制最大宽度约 34px（角色肩宽约 20px），
+		#   近似基础部件的尺寸，位置和大小才协调。接近基础尺寸的图（如 4080 23x9）不受影响。
+		if once_idx.has(file_idx) and box.get_width() > 34:
+			var ratio := 34.0 / float(box.get_width())
+			box.resize(maxi(1, int(box.get_width() * ratio)),
+				maxi(1, int(box.get_height() * ratio)), Image.INTERPOLATE_NEAREST)
 		var transformed = _transform(box, flip)
 		var px = roundi(float(CANVAS_W) / 2.0 + float(dx) - float(transformed.get_width()) / 2.0)
 		var py = roundi(float(ANCHOR_Y) + float(dy) - float(transformed.get_height()) / 2.0)
 		_blend(canvas, transformed, px, py)
+	# 追加图层中 behind=false 的（放在角色身前的部分）后画
+	for p in add_parts:
+		if not (p is Dictionary) or bool(p.get("behind", false)):
+			continue
+		_draw_add_part(canvas, p)
 	return canvas
 
 
+## 画一个追加部件（背部/坐骑）。dx/dy 是相对画布中心/脚点的偏移，图以中心定位。
+static func _draw_add_part(canvas: Image, p: Dictionary) -> void:
+	var frag := int(p.get("frag", 0))
+	if frag <= 0:
+		return
+	var sub := int(p.get("sub", 0))
+	var box := _sub_frame(frag, sub)
+	if box == null:
+		return
+	var dx := int(p.get("dx", 0))
+	var dy := int(p.get("dy", 0))
+	var scale := float(p.get("scale", 1.0))
+	if scale != 1.0 and scale > 0:
+		var nw := maxi(1, int(box.get_width() * scale))
+		var nh := maxi(1, int(box.get_height() * scale))
+		box.resize(nw, nh, Image.INTERPOLATE_NEAREST)
+	var px := roundi(float(CANVAS_W) / 2.0 + float(dx) - float(box.get_width()) / 2.0)
+	var py := roundi(float(ANCHOR_Y) + float(dy) - float(box.get_height()) / 2.0)
+	_blend(canvas, box, px, py)
+
+
 static func render_frame(model_id: int, frame_no: int = 0, scale: int = 3) -> ImageTexture:
-	var img = render_frame_image(model_id, frame_no)
+	return render_frame_equipped(model_id, frame_no, scale, {})
+
+
+static func render_frame_equipped(model_id: int, frame_no: int = 0, scale: int = 3, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = []) -> ImageTexture:
+	var img = render_frame_image_equipped(model_id, frame_no, part_replace, single_use, add_parts)
 	if img == null:
 		return null
 	if scale > 1:

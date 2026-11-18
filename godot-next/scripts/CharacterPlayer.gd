@@ -6,6 +6,10 @@ extends Control
 ## 因为不经过 ResourceLoader 的纹理缓存，改 PNG 后下一帧就生效。
 
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
+const Equipment = preload("res://scripts/Equipment.gd")
+const GameData = preload("res://scripts/GameData.gd")
+
+var game_data = GameData.new()
 
 @onready var bg_color: ColorRect = $BgColor
 @onready var bg_checker: TextureRect = $BgChecker
@@ -13,6 +17,8 @@ const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 
 var state
 var elapsed := 0.0
+## 预览缩放覆盖：装备屏设为 2，避免 3x 的角色超出预览框被裁切；不影响 ScreenState 里的角色屏存档。
+var view_scale_override: int = 0
 
 
 func _ready() -> void:
@@ -47,9 +53,12 @@ func refresh() -> void:
 		_: bg_color.color = Color(0.0, 0.0, 0.0, 0.0)
 	var mid := int(state.call("model_id"))
 	var fno := int(state.call("current_frame_no"))
-	var tex := SpriteComposer.render_frame(mid, fno, 1)
+	var equipped: Dictionary = state.get("equipped") if state.get("equipped") is Dictionary else {}
+	var look := Equipment.appearance(game_data, mid, equipped)
+	var tex := SpriteComposer.render_frame_equipped(int(look.model_id), fno, 1,
+		look.part_replace, look.single_use, look.add_parts)
 	figure.texture = tex
-	var z := int(state.get("view_scale"))
+	var z := view_scale_override if view_scale_override > 0 else int(state.get("view_scale"))
 	figure.scale = Vector2(z, z)
 
 

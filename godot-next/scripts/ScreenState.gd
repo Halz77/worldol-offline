@@ -14,6 +14,8 @@ const Naming = preload("res://scripts/Naming.gd")
 
 const SAVE_PATH = "user://character_screen.json"
 const SAVE_VERSION = 1
+## 装备单独存，不碰 character_screen.json 的 version=1 结构（角色屏 44 项自检依赖它）。
+const EQUIP_PATH = "user://equipment.json"
 
 const SEXES = ["女", "男"]
 const POSES = ["正常", "战斗"]
@@ -35,12 +37,15 @@ var view_scale: int = 3
 var bg_index: int = 0          # 0 棋盘 / 1 纯白 / 2 纯黑
 var case_index: int = 0        # 20 个基准角色
 var mode_index: int = 0        # 0 战力评分 / 1 战斗面板
+## 穿戴中的装备：{部位 slot: 道具 id}。无穿戴限制，穿脱只改这张表并广播。
+var equipped: Dictionary = {}
 
 var _anim_cache: Dictionary = {}
 
 
 func _ready() -> void:
 	load_selection()
+	load_equipment()
 
 
 # ---------------------------------------------------------------- 查询
@@ -185,6 +190,50 @@ func set_mode(idx: int) -> void:
 	_commit("mode")
 
 
+# ---------------------------------------------------------------- 装备（无穿戴限制）
+
+## 穿上/替换某部位装备。item_id<=0 视为卸下。不检查等级/属性需求。
+func equip(slot: String, item_id: int) -> void:
+	if slot.is_empty():
+		return
+	if item_id <= 0:
+		equipped.erase(slot)
+	else:
+		equipped[slot] = item_id
+	state_changed.emit("equip")
+	save_equipment()
+
+
+func unequip(slot: String) -> void:
+	equip(slot, 0)
+
+
+func clear_equipment() -> void:
+	equipped.clear()
+	state_changed.emit("equip")
+	save_equipment()
+
+
+func save_equipment() -> void:
+	var data := {"version": 1, "equipped": equipped}
+	var f := FileAccess.open(EQUIP_PATH, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string(JSON.stringify(data, "\t"))
+	f.close()
+
+
+func load_equipment() -> void:
+	if not FileAccess.file_exists(EQUIP_PATH):
+		return
+	var raw = JSON.parse_string(FileAccess.get_file_as_string(EQUIP_PATH))
+	if not (raw is Dictionary) or int(raw.get("version", -1)) != 1:
+		return
+	var e = raw.get("equipped", {})
+	if e is Dictionary:
+		equipped = e.duplicate()
+
+
 ## 改过 sprite_model/*.json 后点「重新载入」：清动作缓存，重读帧表。
 ## PNG 本来就是每帧从磁盘读，不需要额外处理。
 func reload_assets() -> void:
@@ -204,8 +253,10 @@ func reset() -> void:
 	bg_index = 0
 	case_index = 0
 	mode_index = 0
+	equipped.clear()
 	_anim_cache.clear()
 	_commit("reset")
+	save_equipment()
 
 
 # ---------------------------------------------------------------- 选择持久化（P8）

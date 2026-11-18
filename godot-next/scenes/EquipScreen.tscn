@@ -1,0 +1,164 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/EquipScreen.gd" id="1_k1dfd"]
+[ext_resource type="Script" path="res://scripts/CharacterPlayer.gd" id="2_lqa13"]
+
+[node name="EquipScreen" type="Panel" unique_id=1505853111]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_k1dfd")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=212099570]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="Root" type="VBoxContainer" parent="Margin" unique_id=1388867150]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="Margin/Root" unique_id=220121071]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="Margin/Root/Header" unique_id=1191042898]
+layout_mode = 2
+text = "← 返回角色屏"
+
+[node name="Title" type="Label" parent="Margin/Root/Header" unique_id=1878952238]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "世界OL · 装备（基础版）"
+
+[node name="Spacer" type="Control" parent="Margin/Root/Header" unique_id=1394644342]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Body" type="HBoxContainer" parent="Margin/Root" unique_id=615368394]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Preview" type="VBoxContainer" parent="Margin/Root/Body" unique_id=1144759861]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Stage" type="PanelContainer" parent="Margin/Root/Body/Preview" unique_id=1572969034]
+custom_minimum_size = Vector2(0, 380)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Player" type="Control" parent="Margin/Root/Body/Preview/Stage" unique_id=1077126892]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("2_lqa13")
+
+[node name="BgColor" type="ColorRect" parent="Margin/Root/Body/Preview/Stage/Player" unique_id=1842652994]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="BgChecker" type="TextureRect" parent="Margin/Root/Body/Preview/Stage/Player" unique_id=1942314187]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="Margin/Root/Body/Preview/Stage/Player" unique_id=1209661103]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Figure" type="TextureRect" parent="Margin/Root/Body/Preview/Stage/Player/Center" unique_id=1879806445]
+texture_filter = 1
+custom_minimum_size = Vector2(180, 200)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LookLabel" type="Label" parent="Margin/Root/Body/Preview" unique_id=514092322]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "造型：无（基础造型）"
+autowrap_mode = 3
+
+[node name="Slots" type="VBoxContainer" parent="Margin/Root/Body" unique_id=268611413]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SlotScroll" type="ScrollContainer" parent="Margin/Root/Body/Slots" unique_id=1357359406]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SlotList" type="ItemList" parent="Margin/Root/Body/Slots/SlotScroll" unique_id=1066114075]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Items" type="VBoxContainer" parent="Margin/Root/Body" unique_id=540224197]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="ItemTitle" type="Label" parent="Margin/Root/Body/Items" unique_id=724862425]
+layout_mode = 2
+text = "可选装备"
+autowrap_mode = 3
+
+[node name="ItemScroll" type="ScrollContainer" parent="Margin/Root/Body/Items" unique_id=1344272682]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemList" type="ItemList" parent="Margin/Root/Body/Items/ItemScroll" unique_id=1731108552]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Stats" type="VBoxContainer" parent="Margin/Root/Body" unique_id=470042231]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Meta" type="Label" parent="Margin/Root/Body/Stats" unique_id=1480203460]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "属性变化"
+autowrap_mode = 3
+
+[node name="StatScroll" type="ScrollContainer" parent="Margin/Root/Body/Stats" unique_id=186430397]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="StatGrid" type="GridContainer" parent="Margin/Root/Body/Stats/StatScroll" unique_id=1221497360]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="Footer" type="Label" parent="Margin/Root" unique_id=1216781569]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "点击部位 → 选装备穿上；再点已穿装备卸下。无穿戴限制 · 属性与外观实时变化"
+autowrap_mode = 3
