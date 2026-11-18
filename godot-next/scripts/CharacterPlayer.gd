@@ -8,6 +8,7 @@ extends Control
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 const Equipment = preload("res://scripts/Equipment.gd")
 const GameData = preload("res://scripts/GameData.gd")
+const Appearance = preload("res://scripts/Appearance.gd")
 
 var game_data = GameData.new()
 
@@ -55,8 +56,21 @@ func refresh() -> void:
 	var fno := int(state.call("current_frame_no"))
 	var equipped: Dictionary = state.get("equipped") if state.get("equipped") is Dictionary else {}
 	var look := Equipment.appearance(game_data, mid, equipped)
+	var replace: Dictionary = look.part_replace
+	# 外观（发型/脸型/手/脚）在装备外观之上再叠一层：只动 at=0/1/2/3 四个槽，
+	# 与装备的衣/裤/肩/头/武器槽（at=4/5/6/7/8/10）互不冲突。
+	var look_state: Dictionary = state.get("appearance") if state.get("appearance") is Dictionary else {}
+	var tints: Dictionary = {}
+	if not look_state.is_empty():
+		var gender := int(state.call("gender"))
+		var model_files: Array = SpriteComposer.model_files(int(look.model_id))
+		var app: Dictionary = Appearance.apply(model_files, look_state, gender)
+		var app_replace: Dictionary = app["replace"]
+		for k in app_replace.keys():
+			replace[k] = app_replace[k]
+		tints = app["tints"]
 	var tex := SpriteComposer.render_frame_equipped(int(look.model_id), fno, 1,
-		look.part_replace, look.single_use, look.add_parts, int(look.cloak_model))
+		replace, look.single_use, look.add_parts, int(look.cloak_model), tints)
 	figure.texture = tex
 	var z := view_scale_override if view_scale_override > 0 else int(state.get("view_scale"))
 	figure.scale = Vector2(z, z)

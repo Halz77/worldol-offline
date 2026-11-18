@@ -59,6 +59,8 @@ func _init() -> void:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var equip_button := _add(header, "Button", "EquipButton") as Button
 	equip_button.text = "装备 →"
+	var look_button := _add(header, "Button", "LookButton") as Button
+	look_button.text = "外观 →"
 	var world_button := _add(header, "Button", "WorldButton") as Button
 	world_button.text = "进入地图 →"
 	var hint := _add(header, "Label", "Hint") as Label

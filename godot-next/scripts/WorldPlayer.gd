@@ -9,6 +9,7 @@ extends Node2D
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 const Equipment = preload("res://scripts/Equipment.gd")
 const GameData = preload("res://scripts/GameData.gd")
+const Appearance = preload("res://scripts/Appearance.gd")
 
 @onready var sprite: Sprite2D = get_node_or_null("Sprite")
 
@@ -30,6 +31,9 @@ var _timer: float = 0.0
 var _moving: bool = false
 ## 当前外观：Equipment.appearance() 的返回值（含 model_id / part_replace / cloak_model）
 var _look: Dictionary = {}
+## 合并后的部件替换表 + 自由调色表（装备 + 外观，与角色屏同一套规则）
+var _replace: Dictionary = {}
+var _tints: Dictionary = {}
 
 
 func bind(map_node: Node2D, state) -> void:
@@ -90,6 +94,20 @@ func _rebuild_frames() -> void:
 	var base_mid := _normal_model_id()
 	_look = Equipment.appearance(game_data, base_mid, _equipped())
 	_walk_model_id = int(_look.get("model_id", base_mid))
+	# 外观（发型/脸/手/脚 + 自由调色）叠在装备之上 —— 与角色屏同一套规则，
+	# 否则地图里的小人会跟角色屏长得不一样。
+	var replace: Dictionary = _look.get("part_replace", {}).duplicate()
+	_tints = {}
+	var look_state = screen_state.get("appearance") if screen_state != null else null
+	if look_state is Dictionary and not (look_state as Dictionary).is_empty():
+		var gender := int(screen_state.call("gender"))
+		var app: Dictionary = Appearance.apply(
+			SpriteComposer.model_files(_walk_model_id), look_state, gender)
+		var app_replace: Dictionary = app["replace"]
+		for k in app_replace.keys():
+			replace[k] = app_replace[k]
+		_tints = app["tints"]
+	_replace = replace
 	# 原版地图：id 0 = 站立/待机，id 2 = 行走。全帧里混着站立帧，
 	# 战斗 model 更全是战斗动作，所以两者都不能直接用。
 	_frames = _gesture(_walk_model_id, 2)
@@ -121,9 +139,10 @@ func _texture(frame_no: int) -> ImageTexture:
 		return _textures[frame_no]
 	if _look.is_empty():
 		_look = Equipment.appearance(game_data, _normal_model_id(), _equipped())
+		_replace = _look.get("part_replace", {})
 	var tex := SpriteComposer.render_frame_equipped(_walk_model_id, frame_no, 1,
-		_look.get("part_replace", {}), _look.get("single_use", []),
-		_look.get("add_parts", []), int(_look.get("cloak_model", 0)))
+		_replace, _look.get("single_use", []),
+		_look.get("add_parts", []), int(_look.get("cloak_model", 0)), _tints)
 	_textures[frame_no] = tex
 	return tex
 

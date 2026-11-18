@@ -11,11 +11,14 @@ extends Node
 
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 const Naming = preload("res://scripts/Naming.gd")
+const Appearance = preload("res://scripts/Appearance.gd")
 
 const SAVE_PATH = "user://character_screen.json"
 const SAVE_VERSION = 1
 ## 装备单独存，不碰 character_screen.json 的 version=1 结构（角色屏 44 项自检依赖它）。
 const EQUIP_PATH = "user://equipment.json"
+## 外观（发型/脸型/手/脚）也单独存，理由同上。
+const LOOK_PATH = "user://appearance.json"
 
 const SEXES = ["女", "男"]
 const POSES = ["正常", "战斗"]
@@ -39,6 +42,8 @@ var case_index: int = 0        # 20 个基准角色
 var mode_index: int = 0        # 0 战力评分 / 1 战斗面板
 ## 穿戴中的装备：{部位 slot: 道具 id}。无穿戴限制，穿脱只改这张表并广播。
 var equipped: Dictionary = {}
+## 外观：发型/脸型/手部/脚部的档位（见 Appearance.gd）。性别不在这里，跟随 sex。
+var appearance: Dictionary = {}
 
 var _anim_cache: Dictionary = {}
 
@@ -46,12 +51,18 @@ var _anim_cache: Dictionary = {}
 func _ready() -> void:
 	load_selection()
 	load_equipment()
+	load_appearance()
 
 
 # ---------------------------------------------------------------- 查询
 
 func model_id() -> int:
 	return int(MODEL_TABLE.get(sex + "|" + pose, 300))
+
+
+## 性别位：女=1、男=0（原版位域 OFFSET_SEX + LEN_SEX=1，女 1 男 0）。
+func gender() -> int:
+	return 1 if sex == "女" else 0
 
 
 ## 当前 Model 的全部动作：[{id, name, frames:[帧号…], loops}]
@@ -241,6 +252,110 @@ func reload_assets() -> void:
 	state_changed.emit("assets")
 
 
+# ---------------------------------------------------------------- 外观（发型/脸型/手/脚）
+
+## 改单个外观字段（hair_style / hair_color / face_style / hand_style / hand_color /
+## feet_style / feet_color，以及自由调色用的 *_rgb）。非法值静默忽略。
+## save=false 时只广播不落盘（拖拾色器时避免每动一下就写文件）。
+func set_look(field: String, value: int, save: bool = true) -> void:
+	var is_color := false
+	var known := false
+	for part in [0, 1, 2, 3]:
+		var f: Dictionary = Appearance.FIELDS[part]
+		if str(f["style"]) == field or (not str(f["color"]).is_empty() and str(f["color"]) == field):
+			known = true
+			break
+		if str(f["rgb"]) == field:
+			known = true
+			is_color = true
+			break
+	if not known:
+		return
+	if is_color and (value < -1 or value > 0xFFFFFF):
+		return
+	if int(appearance.get(field, -999)) == value:
+		return
+	appearance[field] = value
+	state_changed.emit("look")
+	if save:
+		save_appearance()
+
+
+## 自由调色：给某部位设任意颜色（Color 版）。
+func set_look_color(field: String, color: Color, save: bool = true) -> void:
+	set_look(field, Appearance.color_to_int(color), save)
+
+
+## 关掉某部位的自由调色，回到原版 4 档配色。
+func clear_look_color(field: String) -> void:
+	set_look(field, -1)
+
+
+## 整体替换（预设 / 随机 / 截图注入）。
+func set_look_all(look: Dictionary) -> void:
+	for k in look.keys():
+		appearance[str(k)] = int(look[k])
+	state_changed.emit("look")
+	save_appearance()
+
+
+func randomize_appearance() -> void:
+	set_look_all(Appearance.random_look(gender()))
+
+
+func reset_appearance() -> void:
+	set_look_all(Appearance.defaults(gender()))
+
+
+## 当前实际使用的四个部件图号（给调试/验收用）。
+func resolved_parts() -> Dictionary:
+	return Appearance.resolve(appearance, gender())
+
+
+func save_appearance() -> void:
+	var data := {"version": 1, "look": appearance}
+	var f := FileAccess.open(LOOK_PATH, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string(JSON.stringify(data, "\t"))
+	f.close()
+
+
+func load_appearance() -> void:
+	var base := Appearance.defaults(gender())
+	if FileAccess.file_exists(LOOK_PATH):
+		var raw = JSON.parse_string(FileAccess.get_file_as_string(LOOK_PATH))
+		if raw is Dictionary and int(raw.get("version", -1)) == 1:
+			var look = raw.get("look", {})
+			if look is Dictionary:
+				for k in base.keys():
+					if look.has(k):
+						base[k] = int(look[k])
+	appearance = base
+	_apply_look_env()
+
+
+## 截图 / 演示用：WORLDOL_LOOK="hair_style:5,hair_color:2,hair_rgb:#ff8800"
+## （rgb 收 #RRGGBB / 0xRRGGBB / 十进制；写 -1 关掉）
+## ★ 只改内存、不写盘，且必须放在 load_appearance 末尾 —— 否则会被存档覆盖回去。
+func _apply_look_env() -> void:
+	var spec := OS.get_environment("WORLDOL_LOOK")
+	if spec.is_empty():
+		return
+	for pair in spec.split(","):
+		var kv := pair.split(":")
+		if kv.size() < 2:
+			continue
+		var key := kv[0].strip_edges()
+		var raw := kv[1].strip_edges()
+		if raw.begins_with("#"):
+			appearance[key] = Appearance.color_to_int(Color.from_string(raw, Color.WHITE))
+		elif raw.begins_with("0x"):
+			appearance[key] = raw.substr(2).hex_to_int()
+		else:
+			appearance[key] = int(raw)
+
+
 func reset() -> void:
 	sex = "女"
 	pose = "正常"
@@ -254,9 +369,11 @@ func reset() -> void:
 	case_index = 0
 	mode_index = 0
 	equipped.clear()
+	appearance = Appearance.defaults(gender())
 	_anim_cache.clear()
 	_commit("reset")
 	save_equipment()
+	save_appearance()
 
 
 # ---------------------------------------------------------------- 选择持久化（P8）

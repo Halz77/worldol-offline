@@ -15,6 +15,8 @@ extends RefCounted
 ##       res://assets/sprite_fragment/<id>.png + .json（图集与子帧表）
 ## 改图：在 Godot 编辑器里直接替换对应 PNG，不需要重新导入、不需要 Node。
 
+const Recolor = preload("res://scripts/Recolor.gd")
+
 const CANVAS_W = 180
 const CANVAS_H = 200
 const ANCHOR_Y = 170
@@ -93,6 +95,46 @@ static func is_multi_frame_fragment(frag_id: int) -> bool:
 	return fragment_frames(frag_id).size() > 1
 
 
+## model 的 files 数组（部件图号序列）。外观替换要按它判断 at=0/1/2/3 是哪些部件。
+static func model_files(model_id: int) -> Array:
+	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
+	if not (model is Dictionary):
+		return []
+	var files = model.get("files", [])
+	return files if files is Array else []
+
+
+## 取部件子帧的原始 Image（未缩放、未调色），给取色 / 调色工具用。
+static func part_image(frag_id: int, sub: int) -> Image:
+	return _sub_frame(frag_id, sub)
+
+
+## 单个部件的缩略图（外观界面用）：取指定子帧，等比缩放进 box×box 透明画布并居中。
+## 小图会被放大（最近邻），保证 17×23 的脸在图格里也看得清。
+## tint/mode 非空时先做自由调色，缩略图就显示「当前调色后的样子」。
+static func part_thumbnail(frag_id: int, sub: int, box: int = 64, tint: Color = Color(0, 0, 0, 0), mode: String = "full") -> ImageTexture:
+	var img := _sub_frame(frag_id, sub)
+	if img == null:
+		return null
+	if Recolor.enabled(tint):
+		img = Recolor.tint(img, tint, mode)
+	var w := img.get_width()
+	var h := img.get_height()
+	if w <= 0 or h <= 0:
+		return null
+	var canvas := Image.create(box, box, false, Image.FORMAT_RGBA8)
+	canvas.fill(Color(0, 0, 0, 0))
+	var k := minf(float(box) / float(w), float(box) / float(h))
+	var tw := maxi(1, int(round(w * k)))
+	var th := maxi(1, int(round(h * k)))
+	var scaled := img.duplicate()
+	if tw != w or th != h:
+		scaled.resize(tw, th, Image.INTERPOLATE_NEAREST)
+	canvas.blit_rect(scaled, Rect2i(0, 0, tw, th),
+		Vector2i(int((box - tw) / 2.0), int((box - th) / 2.0)))
+	return ImageTexture.create_from_image(canvas)
+
+
 ## 该 Model 有哪些帧（升序，供播放与下拉选择）。
 static func frame_numbers(model_id: int) -> Array:
 	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
@@ -117,7 +159,9 @@ static func render_frame_image(model_id: int, frame_no: int = 0) -> Image:
 ## 替换 4013 的两片），整图会被两个 layer 画两遍，标记后只画第一次。
 ## add_parts 是追加图层 [{frag, sub, dx, dy, behind}]（保留能力）。
 ## cloak_model 是背部披风 model（1100+backStyle），原版是独立精灵、z 序在角色后面。
-static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0) -> Image:
+## tints 是自由调色表 {部件图号: {"color": Color, "mode": "full"/"skin"}}，
+## 只对命中的图层生效（外观系统给发型/脸/手/脚用，见 Recolor.gd）。
+static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0, tints: Dictionary = {}) -> Image:
 	var canvas = Image.create(CANVAS_W, CANVAS_H, false, Image.FORMAT_RGBA8)
 	canvas.fill(Color(0, 0, 0, 0))
 	# 披风先画（最底层），角色覆盖其上 —— 与原版 cloakSprite 在容器 index 0 一致。
@@ -130,7 +174,7 @@ static func render_frame_image_equipped(model_id: int, frame_no: int = 0, part_r
 	for p in add_parts:
 		if p is Dictionary and bool(p.get("behind", false)):
 			_draw_add_part(canvas, p)
-	if not _blit_model(canvas, model_id, frame_no, part_replace, single_use):
+	if not _blit_model(canvas, model_id, frame_no, part_replace, single_use, Vector2i.ZERO, tints):
 		return null
 	# 追加图层中 behind=false 的（放在角色身前的部分）后画
 	for p in add_parts:
@@ -179,7 +223,7 @@ static func _frame_coat_point(model_id: int, frame_no: int, part_replace: Dictio
 
 ## 把某个 model 的某一帧逐层画到画布上。返回 false = model/帧不可用。
 ## offset 是整层额外平移（披风用 coatPt）。
-static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replace: Dictionary, single_use: Array, offset: Vector2i = Vector2i.ZERO) -> bool:
+static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replace: Dictionary, single_use: Array, offset: Vector2i = Vector2i.ZERO, tints: Dictionary = {}) -> bool:
 	var model = _read_json(MODEL_DIR + str(model_id) + ".json")
 	if not (model is Dictionary):
 		return false
@@ -255,6 +299,10 @@ static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replac
 		var box = _sub_frame(frag_id, sub)
 		if box == null:
 			continue
+		# 自由调色：命中该部件图号就按目标色重映射（在缩放前做，保住原画像素细节）
+		if tints.has(frag_id):
+			var t: Dictionary = tints[frag_id]
+			box = Recolor.tint(box, t.get("color", Recolor.NONE), str(t.get("mode", "full")))
 		# ★ 真·单帧整图替换多帧小槽位（组内没有 json，如 4185）：
 		#   原图可能是整对肩甲，按原尺寸画会撑出角色。限制最大宽度约 34px（角色肩宽约 20px），
 		#   位置取两片中点，近似基础部件的尺寸才协调。有帧表的图集（4084/4136）不走这里。
@@ -329,8 +377,8 @@ static func render_frame(model_id: int, frame_no: int = 0, scale: int = 3) -> Im
 	return render_frame_equipped(model_id, frame_no, scale, {})
 
 
-static func render_frame_equipped(model_id: int, frame_no: int = 0, scale: int = 3, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0) -> ImageTexture:
-	var img = render_frame_image_equipped(model_id, frame_no, part_replace, single_use, add_parts, cloak_model)
+static func render_frame_equipped(model_id: int, frame_no: int = 0, scale: int = 3, part_replace: Dictionary = {}, single_use: Array = [], add_parts: Array = [], cloak_model: int = 0, tints: Dictionary = {}) -> ImageTexture:
+	var img = render_frame_image_equipped(model_id, frame_no, part_replace, single_use, add_parts, cloak_model, tints)
 	if img == null:
 		return null
 	if scale > 1:

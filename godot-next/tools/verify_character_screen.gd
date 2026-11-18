@@ -10,6 +10,11 @@ const Naming = preload("res://scripts/Naming.gd")
 const Stats = preload("res://scripts/Stats.gd")
 
 var failures := 0
+## 玩家真实存档：验收会改性别/姿势/选项并落盘，跑完必须原样还回去。
+## （之前没有备份，跑到一半被打断就会把 sex=男 留在档里，下次「默认女」直接挂。）
+const SAVE_PATH := "user://character_screen.json"
+var _save_bak: PackedByteArray = []
+var _save_had := false
 
 
 func ck(label: String, ok: bool, detail: String = "") -> void:
@@ -46,6 +51,9 @@ func _same(a: Image, b: Image) -> bool:
 ## 必须在 _initialize（而非 _init）里做：--script 模式下 _init 时场景树还没初始化，
 ## 那时 add_child 不会触发节点 _ready，控件下拉与首帧纹理都还是空的。
 func _initialize() -> void:
+	_save_had = FileAccess.file_exists(SAVE_PATH)
+	if _save_had:
+		_save_bak = FileAccess.get_file_as_bytes(SAVE_PATH)
 	var scene = load("res://scenes/CharacterScreen.tscn")
 	ck("场景文件可加载", scene is PackedScene)
 	if not (scene is PackedScene):
@@ -86,7 +94,10 @@ func _initialize() -> void:
 	ck("默认棋盘背景可见", bg_checker != null and bg_checker.visible)
 
 	# ---- 性别 / 姿势 / 动作 / 帧 ------------------------------------------
-	ck("默认女 · 正常 → Model 300", int(state.call("model_id")) == 300)
+	# 存档里可能是「男」（玩家上次选的），先归一到女/正常再验 model 映射。
+	state.call("set_sex", "女")
+	state.call("set_pose", "正常")
+	ck("女 · 正常 → Model 300", int(state.call("model_id")) == 300)
 	state.call("set_pose", "战斗")
 	ck("女 · 战斗 → Model 400", int(state.call("model_id")) == 400)
 	state.call("set_sex", "男")
@@ -223,6 +234,18 @@ func _initialize() -> void:
 	state.call("reset")
 	ck("重置恢复默认", int(state.get("case_index")) == 0
 		and int(state.call("model_id")) == 300 and int(state.get("view_scale")) == 3)
+
+	# ---- 还原玩家存档（验收期间改过性别/选项，不能留在玩家档里）----
+	if _save_had:
+		var rf := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+		if rf != null:
+			rf.store_buffer(_save_bak)
+			rf.close()
+	elif FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+	ck("验收后已还原玩家选择存档",
+		FileAccess.get_file_as_bytes(SAVE_PATH) == _save_bak if _save_had
+		else not FileAccess.file_exists(SAVE_PATH))
 
 	if failures == 0:
 		print("[verify] 全部通过")

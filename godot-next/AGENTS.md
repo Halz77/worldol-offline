@@ -26,16 +26,20 @@ godot-next/
     mapFrames.json                     全局跨图集帧索引（name → atlas + frame）
     npcs/<mapId>.json                  该地图 NPC
   scripts/
-    ScreenState.gd       Autoload，全局状态 + 信号
-    CharacterScreen.gd   角色屏（含"装备→"入口按钮，快捷键 E）
-    CharacterPlayer.gd   角色屏/装备屏共用的立绘（SpriteComposer；装备时切 model + 换部件）
+    ScreenState.gd       Autoload，全局状态 + 信号（含 equipped / appearance 两份独立存档）
+    CharacterScreen.gd   角色屏（含"装备→"/"外观→"入口，快捷键 E / L）
+    CharacterPlayer.gd   各屏共用立绘（SpriteComposer；装备切 model + 换部件，外观再叠一层）
     StatsPanel.gd        属性面板
     Equipment.gd         装备规则层：部位/属性加成/外观（武器切 model、防具换部件）
     EquipScreen.gd       装备屏：造型预览 + 部位槽 + 候选装备 + 属性变化
+    Appearance.gd        外观规则层：发型/脸型/手/脚图号公式、可用档位、随机、自由调色表
+    AppearanceScreen.gd  外观屏：缩略图选档 + 拾色器调色 + 实时预览 + 配色预设
+    Recolor.gd           自由调色引擎：相对明度重映射（full 整层 / skin 只染肤色）
     WorldScreen.gd       世界地图屏（相机、输入、切图）
     WorldMap.gd          地图渲染核心（tile 层 / 物件层 / 变换 / 补洞）
     WorldPlayer.gd       地图上的角色（行走动画）
     SpriteComposer.gd    运行时拼角色部件成整图
+    NpcInfo.gd           NPC 战斗信息聚合（npcType 语义 + battleID→group→monster 数值）
     Naming.gd            中文标签表
   scenes/                由 tools/build_*.gd 用 PackedScene.pack() 生成，可在编辑器里改
   docs/
@@ -49,15 +53,25 @@ godot-next/
     verify_world_map.gd          地图全量断言
     verify_map_editor.gd         地图编辑器断言（只在内存里改，不写真实 assets/map）
     verify_equipment.gd          装备系统断言（属性/外观/UI 穿脱链路）
+    verify_appearance.gd         外观系统断言（图号公式/档位/渲染差异/存档往返/与装备共存）
+    verify_npc_showcase.gd       NPC 展厅 + 编辑器断言（分页/不重叠/存储往返）
+    build_npc_showcase.gd        把 1939 个 NPC 排进展厅分页（一次性生成 override）
     map_editor/
       MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
       MapEditor.gd         载入 / tile·阻挡·物件三种画笔 / 图层增删 / 新建复制图 / 改尺寸 /
                             改名 / 批量换资源 / 校验 / 撤销 / 原子保存（第二版全实现）
       MapOverlay.gd        阻挡格 / 格线 / 悬停格 / 出生点 / 选中物件黄框
       README.md            操作、快捷键、保存行为与第二版边界
+    npc_editor/
+      NPCEditor.tscn       NPC 编辑器入口（正常窗口跑）
+      NPCEditor.gd         分页/列表/全库搜索/点选拖动/属性编辑/新增复制删除/撤销/校验/保存
+      NpcOverlay.gd        画 NPC 造型、名字、选中框、悬停框（定位公式与 WorldMap 一致）
+      README.md            操作、数据落在哪、与游戏内渲染的关系
   data/overrides/
       map_names.json       地图改名 override（name_of 优先读它）
       maps.json            新建地图的元数据 override（ids/get_entry/name_of 三处都读）
+      npcs/index.json      NPC 展厅页清单（页 id / 数量 / 排布参数）
+      npcs/<页id>.json     NPC 展厅每页数据（结构同 data/compiled/npcs/<mapId>.json）
 ```
 
 ## 运行与验证
@@ -83,6 +97,8 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 ```
 
 两套自检**不要并行跑**，会抢同一个存档文件导致偶发失败。
+`verify_character_screen.gd` 现在会**先备份、跑完还原** `user://character_screen.json`
+（以前跑到一半被打断就把 `sex=男` 留在档里，下次「默认女」直接挂；顺手归一化到女/正常再验）。
 
 导出的 JSON/PNG 改动后如果 `load()` 报 "No loader found"，跑一次
 `--headless --path godot-next --import` 生成 `.import`，不要把图当坏图。
@@ -365,6 +381,165 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   护肩这类 2 帧图集：若换了新色号 PNG，注意同组只有组首有 `.json` 帧表，
   `SpriteComposer.fragment_frames()` 会自动借同组同尺寸色号的表，别手动复制错布局的 json。
   只有 type 12 时装走 15xxx/20xxx 整套 model，是独立分支。
+
+## 角色外观系统（2026-11-18，阶段 3.7）
+
+**能力**：发型 / 脸型 / 手部 / 脚部自由搭配，手和脚各有 4 档肤色；改动实时预览并自动存盘。
+入口：角色屏「外观 →」或快捷键 `L`；场景 `res://scenes/AppearanceScreen.tscn`。
+
+- **★ 图号公式（原版位域，别自己推）**
+  - 常量 `0012.js:169-250`：`START_HAIR=0 / FACE=1000 / HAND=2000 / FEET=3000`；
+    位偏移+长度：`HAIR_STYLE@7(4bit) / HAIR_COLOR@11(2bit) / FACE_STYLE@13(4bit) /
+    HAND_STYLE@17 / HAND_COLOR@19 / FEET_STYLE@21 / FEET_COLOR@23`。
+  - 换部件公式 `0055.js:405-530 doChangeSpriteIcon`：
+    `id = START + (style<<3) - 7 + (gender<<2) + color`（**脸没有 color 项**）。
+  - 每个 style 占 8 个连续图号：**前 4 男、后 4 女**；`color` 0-3 是组内偏移。
+  - 自校验：model 300（女）`files=[1005,5,2005,3005,…]` = style1/color0/gender1；
+    model 100（男）`[1001,1,2001,3001,…]` = style1/color0/gender0。两套都能被公式反推。
+- **实测可用档位**（全量扫 `sprite_fragment`，不是猜的）
+  - 发型 **14 档**（1-11、13-15；**12 缺图**，原版素材就没有）× 4 色号
+  - 脸型 **15 档**，无颜色位 —— 肤色与五官跟着档位走，所以 14/15 是面具/兽脸类，
+    13 是红面具；这是原版素材本身，不是错位
+  - 手部 **3 档** × 4 色号、脚部 **3 档** × 4 色号。同 style 换色号是**纯换图**
+    （尺寸一致），位置零风险
+- **替换机制**：复用 `SpriteComposer.render_frame_image_equipped` 的 `part_replace`。
+  `Appearance.part_replace(model_files, look, gender)` 只产 at=0/1/2/3 的键，与装备的
+  衣/裤/肩/头/武器（at=4/5/6/7/8/10）**不重叠**；`CharacterPlayer.refresh()` 先取装备外观、
+  再把外观键合并进去。**键必须是 int**（JSON 的 files 是 float，混用会匹配不上）。
+- **状态**：`ScreenState.appearance`（7 字段）+ `gender()`（女=1/男=0），
+  单独存 `user://appearance.json`（version=1），不碰 `character_screen.json`。
+  `set_look(field, value)` 校验字段名、忽略未知键、值没变就不广播也不写盘。
+- **界面要点**
+  - **必须用缩略图选档**，不能只显示编号：14 档发型光看数字无法判断。
+    `SpriteComposer.part_thumbnail(frag_id, sub, box)` 取子帧、等比放大、居中贴透明画布。
+  - 缩略图子帧号：发型 0 / 脸 0 / 手 3 / 脚 0（`Appearance.PREVIEW_SUB`，沿用 model frame0
+    首次引用该部件时的 sub）。头发是单帧整图，脸 sub[0..2]，手 28 帧、脚 14 帧。
+  - 缩略图缓存 key = `部位|档位|色号|性别`；切性别必须 `clear()` 整套重算。
+  - 发型/脸型放 `GridContainer(columns=7)`，否则 14 个一排会横向溢出屏幕。
+  - 预览里的 Figure 必须用中心锚点（anchors 0.5 + offset ±90/±100），
+    因为 CharacterPlayer 用 `pivot_offset=(90,100)` 做整数倍缩放。
+- **截图**：`WORLDOL_CAPTURE=1 WORLDOL_LOOK="hair_style:5,hair_color:2,face_style:9,hair_rgb:#ff8800"`
+  `WORLDOL_LOOK` 在 `ScreenState.load_appearance()` 末尾解析（只改内存、**不写盘**），
+  所以**任何场景**都能带着指定外观截图，不会污染玩家存档；产物 `_out/appearance_screen.png`。
+- **验收**：`verify_appearance.gd` **56 项**（图号公式 8 项 / 档位与 PNG 存在性 /
+  替换只落 at0-3 / 换发型·脸·肤色各有像素差异 / 男款 model 同样能换 / 越界回退 /
+  与装备替换键不重叠 / 存档往返 / 随机组合全部有图 / 场景可加载 / 自由调色 11 项）。
+
+### 自由调色（任意 RGB，2026-11-19 追加）
+
+用户明确要「任意 RGB」，原先「预渲染位图做不了」的结论作废。实现 `scripts/Recolor.gd`。
+
+- **★ 算法 = 相对明度重映射，不是 modulate 也不是色相旋转**：
+  `t = (V − 本层5%分位)/(95%分位 − 5%分位)` →
+  `新 = HSV(目标H, 目标S×lerp(s_hi,0.70,t), 目标V×lerp(0.50,v_top,t))`。
+  描边仍是最暗、高光仍是最亮，只换色族。
+- **★ 必须用分位数、`s_hi/v_top` 必须夹紧**（两个都踩过）：
+  ① 用中位数做除法则黑发（V 0.02~0.35）染白发时中间调过曝、暗部纯黑 → 一块块黑斑；
+  ② 目标色 v=1.0 时 `×1.4` 削平高光 → 明暗排序塌掉（验收里 `_order_preserved` 抓的就是这个）。
+  `s_hi = min(1.05, 1/目标S)`、`v_top = min(1.40, 1/目标V)`。
+- **两种范围**：`full` 整层（头发）；`skin` 只染肤色（脸/手/脚），
+  眼睛嘴唇指甲描边不动。肤色遮罩 = 色相距离众数 `smoothstep(0.040,0.075)` ×
+  明度 `smoothstep(0.16,0.30)` × 饱和度 `1-smoothstep(0.58,0.82)`。
+- **链路**：`Appearance.resolve_tints()` → `{部件图号:int → {color, mode}}` →
+  `SpriteComposer.render_frame_*_equipped(..., tints)` 第 7 参；`Appearance.apply()` 同时给
+  `{replace, tints}`，`CharacterPlayer` 与 `WorldPlayer` 共用（三处颜色必然一致，别再各写一遍）。
+- **数据**：`hair_rgb/face_rgb/hand_rgb/feet_rgb`，`0xRRGGBB`，`-1` = 关；
+  与档位字段同存 `user://appearance.json`（version 仍是 1，别升版本否则老档全丢）。
+- **界面**：每部位一行「自由调色」= `ColorPickerButton` + `自定义 #hex` + `回到档位色`；
+  顶栏 6 套配色预设 + 随机发色 + 取消全部调色。
+  **色号那 4 个缩略图保持原版配色**（否则看不出预设会变成什么），启用自定义时全部取消选中；
+  档位缩略图跟着调色走。拖拾色器时 `set_look(..., save=false)` 只广播不写盘，弹窗关闭才落盘。
+- **性能**：180×200 单帧 5.5ms → 带 4 处调色 6.4ms，8fps 播放无压力（别为它上 shader）。
+
+## NPC 展厅 + NPC 编辑器（2026-11-18 落地）
+
+**背景**：NPC 先不散落到各自的原地图上（用户要求，NPC 交互逻辑等他自己设计）。
+1939 条 NPC 按造型去重成 **282 个造型**，集中排进「展厅」地图，用专用编辑器摆位/改名/换图标/改台词。
+
+- **★★ icon1 是「整套造型 model 编号」，不是部件图编号（2026-11-18 更正，代价最大的一条）**：
+  1939 个 NPC 的 `icon1` **全部**能在 `assets/sprite_model/` 找到对应 model；
+  其中 489 个编号在 `sprite_fragment/` 里**也**存在同名图（护肩、翅膀、武器光效碎片）。
+  早先按「fragment 优先」取图，这批 NPC 全被画成翅膀/光效/图集碎片 —— 用户一眼看出「怎么都是特效图」。
+  现在 `WorldMap._npc_texture()` **model 优先、fragment 只兜底**，
+  `npc_uses_model()` / `npc_is_fragment()` 两个判定同步改过，`_draw_npc_sprite()` 的分支也跟着对调
+  （model 走 0.45 缩放 + `offset(-90,-170)`，fragment 才 1:1 贴）。
+  反编译依据：`0055.js getSpriteIdByIcon` 里 NPC 造型也是 `getDefaultSprNameID(sex)` 取基础 model，
+  再 `doChangeSpriteIcon` 按 icon 位域换部件；`icon1` 的位域定义在 `0012.js:169-250`。
+- **★★ 去重规则 = 只看 icon1（2026-11-18 用户定稿，别再改回按名字去重）**：
+  展厅是**美术素材库**，同一套造型只留一个模板。原版会把同一个怪摆到多张图甚至同一张图的
+  多个格子（922 图有 8 个「大剑食人魔」，npcId 2..9 不同但造型都是 15045），
+  也会让**不同名字共用一套造型**（414 = 月狼宗剑手/刀手/族人，318 = 暴力女/中级护送/轩姐，
+  15045 一条就合并了妖帅/天王屠夫/绿魔/食人魔/大剑食人魔…共 40 条）。
+  用户 2026-11-18 明确：**同造型即使名字不同也可以删**，所以：
+  - 分组键 = `icon1`，1939 条 → **282 个造型**（合并掉 1657 条）；
+  - 同组保留 **信息最全** 的一条（有名字 +3 / 有台词 +3 / 有任务组 +2 / 有商店 +2 / npcType≠0 +1），
+    不是盲目留第一条 —— 否则可能留下空壳；
+  - 保留条带 `mergedCount` / `mergedFromMaps` / `mergedNames`（被合并掉的其它名字，最多 20 个），
+    编辑器右栏会显示「合并 N 条 · 原名：…」，方便日后查「这个造型原本还叫过什么」；
+  - `icon1` 为空或 0 的条目直接丢（没有美术，画不出来）；原版 31 条 `name` 是空串，
+    生成时补占位名 `未命名-<icon1>` + `placeholderName=true`，列表里才认得出。
+  - ⚠ 曾短暂用过「同名 + 同 npcId」和「同名 + 同 icon1」两版，都被用户否掉（列表里还是重复）。
+- **数据落点（★ 不要改 `data/compiled/npcs`）**：
+  - `data/overrides/npcs/index.json`：页清单 + 排布参数（cols/rows/cell/offset/w/h）+ 去重统计。
+  - `data/overrides/npcs/<页id>.json`：该页 NPC 数组，结构与编译分片完全一致，
+    额外带 `sourceMapId` / `sourceIndex` / `showcasePage` / `showcaseSlot`（溯源用）。
+  - `data/overrides/maps.json`：追加 1 个展厅页的地图元数据（`has_config=false` →
+    WorldMap 走「合成网格」兜底，正好当展厅地面）。
+  - `GameData.get_entry("npcs", id)` 命中页 id 时整页读 override；`is_npc_page(id)`
+    判断是否展厅页；`npc_pages()` 读清单。删掉 `data/overrides/npcs/` 即回滚。
+- **生成**：`godot --headless --path godot-next --script res://tools/build_npc_showcase.gd`
+  - 页 id 段 **9901 起**（真实地图最大 964，留足空间）；每页 20 列 × 15 行 = 300 个，
+    282 个造型 → **1 页**（9901）。地图 2400×1800，tile 24。（造型再涨到 >300 会自动分页，
+    页数不是写死的。）
+  - **格子 5×5 格 = 120×120px**：icon1 是 model，0.45 缩放后 81×90，120 格正好留出名字与间距。
+    （中间折腾过 96×120、216×144 两个版本，都是误以为 icon1 是部件图导致的，别照抄旧值。）
+  - 落点 `x = 列*5+2`、`y = 行*5+3` → 像素 (120c+60, 120r+84)，x 正好是格心，脚底 97.5 不出格。
+  - 已有 index 时脚本会跳过（保护手工改动）；要重排加 `WORLDOL_NPC_REBUILD=1`（会覆盖）。
+    重排时会把「页数变少后多出来的旧页文件 + maps override 键」一并清掉。
+- **渲染口径**：`WorldMap.show_npcs` 默认 **false**（普通地图一个 NPC 都不画，数据仍在）；
+  `WorldScreen._load_map()` 里按 `is_npc_page(id)` 自动开关，复选框同步反映当前状态。
+- **编辑器**：`godot --path godot-next res://tools/npc_editor/NPCEditor.tscn`
+  - 左栏：页选择 / 搜索（可选「全库搜索」跨页）/ 本页列表 / 保存·撤销·校验 / 新增·复制·删除。
+  - **搜索会命中 `mergedNames`**：按 icon1 合并后「大剑食人魔」这类旧名不在主字段里，
+    搜它仍能定位到 icon1=15045 那条造型（`_match_merged()`）；列表项后缀 `+N`
+    表示这条造型合并了 N 条同造型 NPC（`_merge_suffix()`）。
+  - 右栏「来源」显示 `合并 N 条（造型同源，来自地图 …）` + `原名：…`（最多 8 个 + 总数），
+    便于判断这个造型原本扮演过谁；地图号已转 int，不会显示成 `4.0`。
+  - **★ 战斗数据（2026-11-18 加，`scripts/NpcInfo.gd`）**：预览图下面直接显示
+    `类型：怪物(1)` + `战斗：N 只 · 最高 Lv X · 总血 Y · 攻 a-b · 防 d` + `单位：名字(LvN), …`。
+    链路是 `NPC.battleID → groups/<id>.json（monsters 是 10 个槽位，同一 id 占 2 格就算 2 只）
+    → monsters/<mid>.json（level/hpMax/atkMin/atkMax/def_str）`。
+    展厅 282 条里 **92 条有 battleID**（75 个不同编队），其余是纯对话 NPC，显示「无战斗编队」。
+    `npcType` 用原版语义（`0074.js:930-943`）：0 任务 / 1 怪物 / 2 商店 / 3 传送点 / 4 告示牌 /
+    5 战力 / 6 礼品 / 7 教师 / 8 区域传送 / 9 交易 / 10 帮会 / 11 建筑 / 12 宠物恢复。
+  - **类型筛选（左栏搜索框下方）**：全部 / 任务(0) / 怪物(1) / 商店(2) / 传送点(3) / 战力(5) /
+    交易(9) / 有战斗编队 / 无战斗编队；与搜索是「与」关系（`_pass_filter()`）。
+  - 中栏：点选、拖动移动（吸附到格）、中键平移、滚轮缩放、`F` 整图适配。
+  - 右栏：名字、icon1（带预览与「整套造型 model / 部件图兜底 / 不存在」判定）、npcType、
+    missionGroupID、businessIcon、direction、x、y、talkDetail（多行）、welcome、来源信息。
+  - 保存只写 override 并把原文件备份到 `_out/npc_backups/<页id>.json.bak`；
+    页内新增/删除会同步 index 里的 count。**`data/compiled` 一个字节都不动**。
+  - 每页一份内存副本，切页不丢未保存改动；撤销 40 步（Ctrl+Z）。
+- **踩过的坑**：
+  1. **面板必须显式设 `ui.layer = 10` + 不透明 StyleBox**：NPC 是世界坐标里 Node2D 画的，
+     第一版右栏没有底色，300 个 NPC 从面板缝里透出来，看着像"面板坏了"。
+  2. **编辑器里的定位必须和 `WorldMap._draw_npc_sprite` 同一套公式**：
+     model 走 `centered=false` + `offset(-90,-170)` + `scale .45` → 实际矩形
+     `pos + (-40.5,-76.5)`、尺寸 81×90；部件图才是 `pos + (-w/2, -h+8)` 1:1。
+     两处不一致就会"编辑器对了进游戏错"。
+  3. **默认视角别 fit 整图**：`focus_default()` 只保证看清约 5 列 × 3 行，整图留给 `F`。
+  4. 名字标签只在 `zoom >= 0.42` 时画，几百个标签在缩略视图里只会糊成一片；
+     超过 9 个字截断加省略号（否则相邻格的标签会横向挤在一起）。
+  5. **改完编辑器别只看界面**：验收里「搜旧名」「类型筛选」「编队数值」都是拿真实条目
+     对真实怪物表比出来的。曾经因为断言里的 282 写死，数据被一次异常保存写成 281 才发现——
+     现在断言仍是 282，但每次跑完会顺带核对 `9901.json` 条数与 `index.pages[0].count` 一致。
+- **调试开关**：`WORLDOL_NPC_PAGE=9901` 直接进某页；`WORLDOL_NPC_SELECT=<名字片段>`
+  启动后自动选中第一个命中的条目（只选中，不改数据），截图或排查战斗数值时用。
+- **验收**：`godot --headless --path godot-next --script res://tools/verify_npc_showcase.gd`
+  （**50 项**：分页 1 页/总数 282/同 icon1 无重复/每个造型都有 Model/不重不漏/坐标界内/
+  格点对齐/普通地图 0 个实体/展厅页 282/搜旧名命中/编队聚合 2 只·Lv3·160 血·攻 1-5/
+  无 battleID 返回 0/类型筛选只剩怪物/编辑器载入·命中·改名·新增·撤销·存盘往返）。
+  同时 `verify_world_map.gd` 已按「295 张图 + 原版 1939 / 展厅 282 分开统计」更新口径。
 
 ## 地图编辑器第二版要点（2026-11-17 补完）
 
