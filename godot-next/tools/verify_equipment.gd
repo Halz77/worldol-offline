@@ -408,6 +408,30 @@ func _initialize() -> void:
 	ck("★98 件时装都能换到部件（无空覆盖）", fash_empty.is_empty(),
 		"空覆盖 %d 件，例：%s" % [fash_empty.size(), str(fash_empty.slice(0, 8))])
 
+	# ★ 0055.js:265-460 的 switch(F) 强制配件规则（开拓者/电玩英雄/射手座都靠它）
+	var pioneer_f := Equipment.appearance(gd, 300, {"fashion": 15301})
+	ck("★开拓者 15301 按衣服 style46 配齐手/脚/肩/头（2079/3087/4375/10183）",
+		int(pioneer_f.part_replace.get(2005, 0)) == 2079 and
+		int(pioneer_f.part_replace.get(3005, 0)) == 3087 and
+		int(pioneer_f.part_replace.get(4013, 0)) == 4375 and
+		int(pioneer_f.part_replace.get(10021, 0)) == 10183,
+		str(pioneer_f.part_replace))
+	ck("★开拓者披风 style = 14 + BACK_ADD(bit28)<<4 = 30 → Cloak 1130",
+		Equipment.fashion_back_style(Equipment.item_data(gd, 15301)) == 30 and
+		int(pioneer_f.cloak_model) == 1130, str(pioneer_f.cloak_model))
+	var game_hero := Equipment.appearance(gd, 300, {"fashion": 15188})
+	ck("★电玩英雄 15188 按 switch(F44) 换脸/手/脚/肩（1213/2061/3069/4357）",
+		int(game_hero.part_replace.get(1005, 0)) == 1213 and
+		int(game_hero.part_replace.get(2005, 0)) == 2061 and
+		int(game_hero.part_replace.get(3005, 0)) == 3069 and
+		int(game_hero.part_replace.get(4013, 0)) == 4357,
+		str(game_hero.part_replace))
+	ck("★电玩英雄披风 style = 13 + 16 = 29 → Cloak 1129",
+		int(game_hero.cloak_model) == 1129, str(game_hero.cloak_model))
+	ck("★射手座披风 style = 7 + 16 = 23 → Cloak 1123",
+		Equipment.fashion_back_style(Equipment.item_data(gd, 15183)) == 23 and
+		int(Equipment.appearance(gd, 300, {"fashion": 15183}).cloak_model) == 1123)
+
 
 	# ---- 武器特效层（at=15，15001）：默认不画 ----
 	ck("15001 是武器特效层（at=15）", SpriteComposer.is_effect_layer(15001))

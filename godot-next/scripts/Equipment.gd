@@ -406,6 +406,10 @@ const OFFSET_SHOULDER_STYLE := 0
 const LEN_SHOULDER_STYLE := 4
 const OFFSET_SHOULDER_COLOR := 4
 const LEN_SHOULDER_COLOR := 2
+const OFFSET_SHOULDER_ADD := 31
+const LEN_SHOULDER_ADD := 1
+const OFFSET_SHOULDER_ADD_2 := 4
+const LEN_SHOULDER_ADD_2 := 2
 const OFFSET_CLOTHES_STYLE := 6
 const LEN_CLOTHES_STYLE := 6
 const OFFSET_CLOTHES_COLOR := 12
@@ -437,68 +441,202 @@ static func _fash_halves(value: int) -> Array:
 	return [value & 0xFFFFFFFF, (value >> 32) & 0xFFFFFFFF]
 
 
-## 时装 → {at: 图号}。at 与模型 files 的 floor(id/1000) 对应：
-##   0 头发 / 1 脸 / 2 手 / 3 脚 / 4 肩 / 6 衣服 / 7 裤 / 10 头盔。
-## 只有「style>0」的字段才算时装定义了这一层（原版判断 style||add）。
-static func fashion_parts(item: Dictionary, gender: int) -> Dictionary:
-	var out: Dictionary = {}
+## 解出时装的全部 style/color 变量。★ 关键：0055.js doChangeSpriteIcon 在
+## `et = icon3.low >> OFFSET_FASH_ADD & 1`（穿上时装必置 1）时，会按衣服 style
+## 走一段 switch，强制改手/脚/头/肩/背的 style（0055.js:265-460）。
+## 开拓者/电玩英雄等大号 style 全靠这段才有正确外观，不能只按位域直接换图。
+static func _fash_styles(item: Dictionary, gender: int) -> Dictionary:
 	var i1 := _fash_halves(int(item.get("fashIcon1", 0)))
 	var i2 := _fash_halves(int(item.get("fashIcon2", 0)))
 	var i3 := _fash_halves(int(item.get("fashIcon3", 0)))
 	var l1: int = i1[0]
 	var h1: int = i1[1]
 	var l2: int = i2[0]
+	var h2: int = i2[1]
 	var l3: int = i3[0]
 	var h3: int = i3[1]
-	var gender_off := gender << 2
 
-	# 头发（START_HAIR=0）：style = low[7..10] + add<<4
-	var style := _fash_bits(l1, OFFSET_HAIR_STYLE, LEN_HAIR_STYLE) | \
+	var hair := _fash_bits(l1, OFFSET_HAIR_STYLE, LEN_HAIR_STYLE) + \
 		(_fash_bits(h1, OFFSET_HAIR_ADD, LEN_HAIR_ADD) << 4)
-	if style > 0:
-		out[0] = style * 8 - 7 + gender_off + _fash_bits(l1, OFFSET_HAIR_COLOR, LEN_HAIR_COLOR)
-	# 脸（1000 起，无颜色位）
-	style = _fash_bits(l1, OFFSET_FACE_STYLE, LEN_FACE_STYLE) | \
+	var hair_c := _fash_bits(l1, OFFSET_HAIR_COLOR, LEN_HAIR_COLOR)
+	var face := _fash_bits(l1, OFFSET_FACE_STYLE, LEN_FACE_STYLE) + \
 		(_fash_bits(h1, OFFSET_FACE_ADD, LEN_FACE_ADD) << 4)
-	if style > 0:
-		out[1] = 1000 + (style << 3) - 7 + gender_off
-	# 手 / 脚（2 位 style + 4 位 add）
-	style = _fash_bits(l1, OFFSET_HAND_STYLE, LEN_HAND_STYLE) | \
+	var hand := _fash_bits(l1, OFFSET_HAND_STYLE, LEN_HAND_STYLE) + \
 		(_fash_bits(h1, OFFSET_HAND_ADD, LEN_HAND_ADD) << 2)
-	if style > 0:
-		out[2] = 2000 + (style << 3) - 7 + gender_off + _fash_bits(l1, OFFSET_HAND_COLOR, LEN_HAND_COLOR)
-	style = _fash_bits(l1, OFFSET_FEET_STYLE, LEN_FEET_STYLE) | \
+	var hand_c := _fash_bits(l1, OFFSET_HAND_COLOR, LEN_HAND_COLOR)
+	var feet := _fash_bits(l1, OFFSET_FEET_STYLE, LEN_FEET_STYLE) + \
 		(_fash_bits(h1, OFFSET_FEET_ADD, LEN_FEET_ADD) << 2)
-	if style > 0:
-		out[3] = 3000 + (style << 3) - 7 + gender_off + _fash_bits(l1, OFFSET_FEET_COLOR, LEN_FEET_COLOR)
-	# 肩（fashIcon2.low）
-	style = _fash_bits(l2, OFFSET_SHOULDER_STYLE, LEN_SHOULDER_STYLE)
-	if style > 0:
-		out[4] = 4000 + (style << 3) - 7 + gender_off + _fash_bits(l2, OFFSET_SHOULDER_COLOR, LEN_SHOULDER_COLOR)
-	# 衣 / 裤（fashIcon3.low 6..11 / 14..19，add 在 high）
-	style = _fash_bits(l3, OFFSET_CLOTHES_STYLE, LEN_CLOTHES_STYLE) | \
-		(_fash_bits(h3, OFFSET_CLOTHES_ADD, LEN_CLOTHES_ADD) << 6)
-	if style > 0:
-		out[6] = 6000 + (style << 3) - 7 + gender_off + _fash_bits(l3, OFFSET_CLOTHES_COLOR, LEN_CLOTHES_COLOR)
-	style = _fash_bits(l3, OFFSET_TROUSERS_STYLE, LEN_TROUSERS_STYLE) | \
-		(_fash_bits(h3, OFFSET_TROUSERS_ADD, LEN_TROUSERS_ADD) << 6)
-	if style > 0:
-		out[7] = 7000 + (style << 3) - 7 + gender_off + _fash_bits(l3, OFFSET_TROUSERS_COLOR, LEN_TROUSERS_COLOR)
-	# 头盔（10000 起，4 步长、无性别位）
-	style = _fash_bits(l1, OFFSET_HELMET_STYLE, LEN_HELMET_STYLE) | \
+	var feet_c := _fash_bits(l1, OFFSET_FEET_COLOR, LEN_FEET_COLOR)
+	var helm := _fash_bits(l1, OFFSET_HELMET_STYLE, LEN_HELMET_STYLE) + \
 		(_fash_bits(h1, OFFSET_HELMET_ADD, LEN_HELMET_ADD) << 5)
-	if style > 0:
-		out[10] = 10000 + (style << 2) - 3 + _fash_bits(l1, OFFSET_HELMET_COLOR, LEN_HELMET_COLOR)
+	var helm_c := _fash_bits(l1, OFFSET_HELMET_COLOR, LEN_HELMET_COLOR)
+	var shoulder := _fash_bits(l2, OFFSET_SHOULDER_STYLE, LEN_SHOULDER_STYLE) + \
+		(_fash_bits(l2, OFFSET_SHOULDER_ADD, LEN_SHOULDER_ADD) << 4) + \
+		(_fash_bits(h2, OFFSET_SHOULDER_ADD_2, LEN_SHOULDER_ADD_2) << 5)
+	var shoulder_c := _fash_bits(l2, OFFSET_SHOULDER_COLOR, LEN_SHOULDER_COLOR)
+	var clothes := _fash_bits(l3, OFFSET_CLOTHES_STYLE, LEN_CLOTHES_STYLE) + \
+		(_fash_bits(h3, OFFSET_CLOTHES_ADD, LEN_CLOTHES_ADD) << 6)
+	var clothes_c := _fash_bits(l3, OFFSET_CLOTHES_COLOR, LEN_CLOTHES_COLOR)
+	var trousers := _fash_bits(l3, OFFSET_TROUSERS_STYLE, LEN_TROUSERS_STYLE) + \
+		(_fash_bits(h3, OFFSET_TROUSERS_ADD, LEN_TROUSERS_ADD) << 6)
+	var trousers_c := _fash_bits(l3, OFFSET_TROUSERS_COLOR, LEN_TROUSERS_COLOR)
+	# 披风 style = low[0..3] + BACK_ADD(bit28)<<4 + BACK_ADD_2(high[0..1])<<5
+	var back := _fash_bits(l3, OFFSET_BACK_STYLE, LEN_BACK_STYLE) + \
+		(_fash_bits(l3, OFFSET_BACK_ADD, LEN_BACK_ADD) << 4) + \
+		(_fash_bits(h3, OFFSET_BACK_ADD_2, LEN_BACK_ADD_2) << 5)
+
+	# 0055.js:229 —— 手 style=3 时脚强制 4（switch 之前）
+	if hand == 3:
+		feet = 4
+
+	# 0055.js:267-460 —— 时装标志置位后的「按衣服 style 强制整套配件」规则
+	if clothes == 23 or clothes == 24:
+		hand = 4
+		feet = 5
+	elif clothes == 26:
+		shoulder_c = clothes_c
+		hand = 5
+		hand_c = clothes_c
+		feet = 6
+		feet_c = clothes_c
+	match clothes:
+		29, 30:
+			helm = 43 if clothes == 29 else 32
+			helm_c = clothes_c
+			if gender == 1:
+				feet = 5
+		31, 32, 33, 34, 35, 36, 37, 38, 39, 40:
+			helm = clothes + 14
+			helm_c = clothes_c
+			shoulder = clothes + 1
+			shoulder_c = clothes_c
+			if gender == 1:
+				feet = 5
+		41:
+			shoulder = 42
+			shoulder_c = clothes_c
+			face = 16 + clothes_c
+			hand = 6
+			hand_c = clothes_c
+			feet = 7
+			feet_c = clothes_c
+		42:
+			shoulder = 43
+			shoulder_c = clothes_c
+			face = 20 + clothes_c
+			hand = 6
+			hand_c = clothes_c
+			feet = 7
+			feet_c = clothes_c
+		43:
+			shoulder = 44
+			shoulder_c = clothes_c
+			face = 24 + clothes_c
+			hand = 7
+			hand_c = clothes_c
+			feet = 8
+			feet_c = clothes_c
+		44:
+			shoulder = 45
+			shoulder_c = clothes_c
+			face = 27 + clothes_c
+			hand = 8
+			hand_c = clothes_c
+			feet = 9
+			feet_c = clothes_c
+		45:
+			helm = 45 if gender == 1 else 44
+			helm_c = clothes_c
+			shoulder = 46
+			shoulder_c = clothes_c
+			hand = 9
+			hand_c = clothes_c
+			feet = 10
+			feet_c = clothes_c
+		46:
+			helm = 46
+			helm_c = clothes_c
+			shoulder = 47
+			shoulder_c = clothes_c
+			hand = 10
+			hand_c = clothes_c
+			feet = 11
+			feet_c = clothes_c
+		47:
+			helm = 48 if gender == 1 else 47
+			helm_c = clothes_c
+			shoulder = 31
+			shoulder_c = clothes_c
+			hand = 11
+			hand_c = clothes_c
+			feet = 12
+			feet_c = clothes_c
+		48:
+			helm = 49
+			helm_c = clothes_c
+			shoulder = 48
+			shoulder_c = clothes_c
+			hand = 12
+			hand_c = clothes_c
+			feet = 8
+			feet_c = clothes_c
+		49:
+			helm = 51 if gender == 1 else 50
+			helm_c = clothes_c
+			shoulder = 49
+			shoulder_c = clothes_c
+			hand = 13
+			hand_c = clothes_c
+			feet = 14
+			feet_c = clothes_c
+		50:
+			helm = 52
+			helm_c = clothes_c
+			shoulder = 50
+			shoulder_c = clothes_c
+			hand = 14
+			hand_c = clothes_c
+			feet = 13
+			feet_c = clothes_c
+		51:
+			back = 32
+
+	return {"hair": hair, "hair_c": hair_c, "face": face,
+		"hand": hand, "hand_c": hand_c, "feet": feet, "feet_c": feet_c,
+		"helm": helm, "helm_c": helm_c,
+		"shoulder": shoulder, "shoulder_c": shoulder_c,
+		"clothes": clothes, "clothes_c": clothes_c, "trousers": trousers,
+		"trousers_c": trousers_c, "back": back}
+
+
+## 时装 → {at: 图号}。at 与模型 files 的 floor(id/1000) 对应：
+##   0 头发 / 1 脸 / 2 手 / 3 脚 / 4 肩 / 6 衣服 / 7 裤 / 10 头盔。
+static func fashion_parts(item: Dictionary, gender: int) -> Dictionary:
+	var s := _fash_styles(item, gender)
+	var gender_off := gender << 2
+	var out: Dictionary = {}
+	if int(s.hair) > 0:
+		out[0] = (int(s.hair) << 3) - 7 + gender_off + int(s.hair_c)
+	if int(s.face) > 0:
+		out[1] = 1000 + (int(s.face) << 3) - 7 + gender_off
+	if int(s.hand) > 0:
+		out[2] = 2000 + (int(s.hand) << 3) - 7 + gender_off + int(s.hand_c)
+	if int(s.feet) > 0:
+		out[3] = 3000 + (int(s.feet) << 3) - 7 + gender_off + int(s.feet_c)
+	if int(s.shoulder) > 0:
+		out[4] = 4000 + (int(s.shoulder) << 3) - 7 + gender_off + int(s.shoulder_c)
+	if int(s.clothes) > 0:
+		out[6] = 6000 + (int(s.clothes) << 3) - 7 + gender_off + int(s.clothes_c)
+	if int(s.trousers) > 0:
+		out[7] = 7000 + (int(s.trousers) << 3) - 7 + gender_off + int(s.trousers_c)
+	if int(s.helm) > 0:
+		out[10] = 10000 + (int(s.helm) << 2) - 3 + int(s.helm_c)
 	return out
 
 
-## 时装的披风 style（fashIcon3.low 0..3 + add）。0 = 时装不带披风。
+## 时装的披风 style（含 switch(F) 的 51→32 规则与 add 位）。
 static func fashion_back_style(item: Dictionary) -> int:
-	var i3 := _fash_halves(int(item.get("fashIcon3", 0)))
-	var l3: int = i3[0]
-	var h3: int = i3[1]
-	return _fash_bits(l3, OFFSET_BACK_STYLE, LEN_BACK_STYLE) | \
-		(_fash_bits(h3, OFFSET_BACK_ADD_2, LEN_BACK_ADD_2) << 4)
+	return int(_fash_styles(item, 0).back)
 
 
 ## 计算外观：返回 {model_id, part_replace:{基础部件id:图号}, single_use, add_parts, cloak_model, detail}
