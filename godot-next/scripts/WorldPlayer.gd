@@ -1,11 +1,18 @@
 extends Node2D
 ## 地图里的玩家：WASD / 方向键走动，逐格判定障碍，动画帧复用角色屏的拼装器。
 ## 只改本脚本就能换手感；素材仍然直接来自 assets/sprite_model 与 sprite_fragment。
+##
+## 外观与角色屏/装备屏同源：Equipment.appearance() 先定 model（武器姿势 / 坐骑整幅），
+## 再由 SpriteComposer.render_frame_equipped() 换部件图、叠披风。换装后由
+## ScreenState.state_changed 信号触发重建，不需要重启场景。
 
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
+const Equipment = preload("res://scripts/Equipment.gd")
+const GameData = preload("res://scripts/GameData.gd")
 
 @onready var sprite: Sprite2D = get_node_or_null("Sprite")
 
+var game_data = GameData.new()
 var world_map: Node2D = null
 var screen_state = null
 var speed: float = 132.0
@@ -21,12 +28,29 @@ var _textures: Dictionary = {}
 var _frame_index: int = 0
 var _timer: float = 0.0
 var _moving: bool = false
+## 当前外观：Equipment.appearance() 的返回值（含 model_id / part_replace / cloak_model）
+var _look: Dictionary = {}
 
 
 func bind(map_node: Node2D, state) -> void:
 	world_map = map_node
 	screen_state = state
+	# 换装后立即刷新造型（装备屏是独立场景，靠全局状态信号联动）
+	if screen_state != null and screen_state.has_signal("state_changed"):
+		var cb := Callable(self, "_on_state_changed")
+		if not screen_state.is_connected("state_changed", cb):
+			screen_state.connect("state_changed", cb)
 	_rebuild_frames()
+
+
+func _on_state_changed(_field: String) -> void:
+	_rebuild_frames()
+
+
+func _equipped() -> Dictionary:
+	if screen_state != null and screen_state.get("equipped") is Dictionary:
+		return screen_state.get("equipped")
+	return {}
 
 
 ## 地图里的人物固定用「正常」姿势（女 300 / 男 100）。
@@ -62,7 +86,10 @@ func _gesture(model_id: int, anis_id: int) -> Array:
 
 
 func _rebuild_frames() -> void:
-	_walk_model_id = _normal_model_id()
+	# 外观：基础正常 model（100/300）→ 装备规则算出最终 model（武器姿势 / 坐骑整幅）
+	var base_mid := _normal_model_id()
+	_look = Equipment.appearance(game_data, base_mid, _equipped())
+	_walk_model_id = int(_look.get("model_id", base_mid))
 	# 原版地图：id 0 = 站立/待机，id 2 = 行走。全帧里混着站立帧，
 	# 战斗 model 更全是战斗动作，所以两者都不能直接用。
 	_frames = _gesture(_walk_model_id, 2)
@@ -92,7 +119,11 @@ func set_pixel(p: Vector2) -> void:
 func _texture(frame_no: int) -> ImageTexture:
 	if _textures.has(frame_no):
 		return _textures[frame_no]
-	var tex := SpriteComposer.render_frame(_walk_model_id, frame_no, 1)
+	if _look.is_empty():
+		_look = Equipment.appearance(game_data, _normal_model_id(), _equipped())
+	var tex := SpriteComposer.render_frame_equipped(_walk_model_id, frame_no, 1,
+		_look.get("part_replace", {}), _look.get("single_use", []),
+		_look.get("add_parts", []), int(_look.get("cloak_model", 0)))
 	_textures[frame_no] = tex
 	return tex
 

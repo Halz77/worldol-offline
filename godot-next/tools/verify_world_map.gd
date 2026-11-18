@@ -25,6 +25,22 @@ func _cell(cfg: Dictionary, blocks: Array, index: int) -> bool:
 	return (int(blocks[index]) & 1) == 0
 
 
+## 两张 ImageTexture 的像素差异数（用于「换装后画面确实变了」）。
+func _tex_diff(a, b) -> int:
+	if a == null or b == null:
+		return -1
+	var ia: Image = (a as Texture2D).get_image()
+	var ib: Image = (b as Texture2D).get_image()
+	if ia == null or ib == null or ia.get_size() != ib.get_size():
+		return -1
+	var n := 0
+	for y in range(ia.get_height()):
+		for x in range(ia.get_width()):
+			if not ia.get_pixel(x, y).is_equal_approx(ib.get_pixel(x, y)):
+				n += 1
+	return n
+
+
 func _initialize() -> void:
 	var scene = load("res://scenes/WorldScreen.tscn")
 	ck("世界场景可加载", scene is PackedScene)
@@ -178,6 +194,15 @@ func _initialize() -> void:
 
 	# 走路动作：必须用正常 model 的 anis id=2（帧 4..9），静止是 id=0 首帧（0）；
 	# 不能拿全帧轮播，也不能跟随角色屏停住的战斗姿势。
+	# ★ 装备会改 model（武器姿势 / 坐骑整幅），先清空装备取基线，测完再还原。
+	var state = player.get("screen_state")
+	var original_model := int(player.get("_walk_model_id"))
+	var saved_equip: Dictionary = {}
+	if state != null:
+		saved_equip = state.get("equipped").duplicate(true)
+		state.set("equipped", {})
+		state.emit_signal("state_changed", "equip")
+		await process_frame
 	var walk_frames: Array = player.get("_frames")
 	ck("行走帧序列是地图行走动作", walk_frames == [4, 5, 6, 7, 8, 9], str(walk_frames))
 	ck("静止帧是站立首帧", int(player.get("_stand_frame")) == 0,
@@ -185,6 +210,36 @@ func _initialize() -> void:
 	var walk_model := int(player.get("_walk_model_id"))
 	ck("地图角色使用正常姿势模型（不受战斗姿势影响）",
 		walk_model == 100 or walk_model == 300, str(walk_model))
+
+	# ---------- 地图小人接装备外观 ----------
+	if state != null:
+		var base_mid := walk_model
+		var is_female := base_mid == 300
+		var idle_tex = player.call("_texture", int(player.get("_stand_frame")))
+		state.call("equip", "weapon", 20300)          # 刀 type13 → base+13
+		await process_frame
+		ck("地图换武器后立刻换 model（+13 姿势）",
+			int(player.get("_walk_model_id")) == base_mid + 13,
+			str(player.get("_walk_model_id")))
+		var sword_tex = player.call("_texture", int(player.get("_stand_frame")))
+		ck("地图角色外观像素随装备变化", _tex_diff(idle_tex, sword_tex) > 100,
+			"差异像素 " + str(_tex_diff(idle_tex, sword_tex)))
+		state.call("equip", "transport", 31000)       # 白狼 style5
+		await process_frame
+		var mount_mid := 2463 if is_female else 2413
+		ck("骑坐骑后地图角色换整幅马 model", int(player.get("_walk_model_id")) == mount_mid,
+			str(player.get("_walk_model_id")))
+		var ride_tex = player.call("_texture", int(player.get("_stand_frame")))
+		ck("坐骑造型与站姿明显不同", _tex_diff(sword_tex, ride_tex) > 500,
+			"差异像素 " + str(_tex_diff(sword_tex, ride_tex)))
+		# 还原装备（含写回 user://equipment.json，别污染玩家存档）
+		state.set("equipped", saved_equip)
+		state.emit_signal("state_changed", "equip")
+		state.call("save_equipment")
+		await process_frame
+		ck("还原装备后地图 model 回到原样",
+			int(player.get("_walk_model_id")) == original_model,
+			"%d / 原 %d" % [int(player.get("_walk_model_id")), original_model])
 
 	# ---------- 全量切图 ----------
 	var bad := []

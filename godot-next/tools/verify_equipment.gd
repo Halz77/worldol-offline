@@ -8,6 +8,11 @@ const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 
 var failures := 0
 var gd = GameData.new()
+## 测试会调用 ScreenState.equip()/clear_equipment()（内部会写 user://equipment.json），
+## 跑完必须把玩家的存档原样写回，否则一次验收就清空了玩家的装备。
+const EQUIP_PATH = "user://equipment.json"
+var _equip_backup: PackedByteArray = []
+var _equip_had_file := false
 
 
 func ck(label: String, ok: bool, detail: String = "") -> void:
@@ -41,6 +46,10 @@ func _diff(a, b) -> int:
 
 
 func _initialize() -> void:
+	_equip_had_file = FileAccess.file_exists(EQUIP_PATH)
+	if _equip_had_file:
+		_equip_backup = FileAccess.get_file_as_bytes(EQUIP_PATH)
+
 	# ---- 部位定义 ----
 	ck("部位槽共 14 个", Equipment.slot_defs().size() == 14,
 		str(Equipment.slot_defs().size()))
@@ -276,6 +285,30 @@ func _initialize() -> void:
 	ck("★坐骑画面与站立明显不同", _diff(base_m, mount_img) > 500,
 		"差异像素 " + str(_diff(base_m, mount_img)))
 
+	# ---- 武器特效层（at=15，15001）：默认不画 ----
+	ck("15001 是武器特效层（at=15）", SpriteComposer.is_effect_layer(15001))
+	ck("普通武器图 8001 不是特效层", not SpriteComposer.is_effect_layer(8001))
+	var no_flash := SpriteComposer.render_frame_image_equipped(113, 0, {})
+	SpriteComposer.draw_weapon_flash = true
+	var with_flash := SpriteComposer.render_frame_image_equipped(113, 0, {})
+	SpriteComposer.draw_weapon_flash = false
+	ck("★武器特效默认关闭（像素更少）", _opaque(no_flash) < _opaque(with_flash),
+		"%d < %d" % [_opaque(no_flash), _opaque(with_flash)])
+
+	# ---- 恶魔之翼：14169 整组缺帧表，借同段同尺寸（14165 天使之翼）的 7 帧表 ----
+	var subs_14169 := SpriteComposer.fragment_frames(14169)
+	ck("★14169 缺帧表 → 借到 7 帧表", subs_14169.size() == 7, str(subs_14169.size()))
+	var sub0 = SpriteComposer._sub_frame(14169, 0)
+	ck("★14169 子帧是裁切后的翅膀（不是整张 224x212 图集）",
+		sub0 != null and (sub0.get_width() < 224 or sub0.get_height() < 212),
+		("%dx%d" % [sub0.get_width(), sub0.get_height()]) if sub0 != null else "null")
+	var atlas := Image.new()
+	atlas.load_png_from_buffer(FileAccess.get_file_as_bytes(
+		"res://assets/sprite_fragment/14169.png"))
+	var demon := SpriteComposer.render_frame_image_equipped(32213, 0, {})
+	ck("★恶魔之翼不再整张图集重画（像素少于整张图集）",
+		_opaque(demon) < _opaque(atlas), "%d < %d" % [_opaque(demon), _opaque(atlas)])
+
 	# ---- 装备屏场景可加载 ----
 	var scene = load("res://scenes/EquipScreen.tscn")
 	ck("装备屏场景可加载", scene is PackedScene)
@@ -296,6 +329,9 @@ func _initialize() -> void:
 		await process_frame
 		await process_frame
 		ck("装备屏已绑定全局状态", inst.get("state") != null)
+		# _ready 会读玩家存档（可能已经穿着白狼/武器），先清成空列表再断言，
+		# 而且直接改字段不落盘 —— 不能用 clear_equipment()，那会覆盖玩家存档。
+		st2.set("equipped", {})
 		st2.call("set_sex", "女")   # 固定基准，避免存档里的男号污染断言
 		st2.call("set_pose", "正常")
 		# 穿上青铜剑（item id 20300）后，外观 model 应为 313
@@ -320,6 +356,15 @@ func _initialize() -> void:
 	st.equip("head", 100664)
 	st.clear_equipment()
 	ck("clear_equipment 清空全部", st.equipped.is_empty())
+
+	# 还原玩家存档（上面几个 ScreenState 实例会写盘）
+	if _equip_had_file:
+		var f_out := FileAccess.open(EQUIP_PATH, FileAccess.WRITE)
+		if f_out != null:
+			f_out.store_buffer(_equip_backup)
+			f_out.close()
+	else:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(EQUIP_PATH))
 
 	if failures == 0:
 		print("[verify] 装备系统全部通过")

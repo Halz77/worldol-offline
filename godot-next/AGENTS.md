@@ -167,9 +167,13 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 把 106_1 压到接近周围草地，只调色不换铺装。
 
 ### 8. 角色行走
-`WorldPlayer` 固定用正常造型（女 300 / 男 100），行走只播 `anis[2]` 的 `[4,5,6,7,8,9]`，
-静止显示 `anis[0]` 首帧 0。**不要**取 `frame_numbers()` 全帧、也不要跟随角色屏的战斗姿势
-（会混入战斗动作帧）。地图角色与角色屏姿势完全解耦。
+`WorldPlayer` 用正常造型底盘（女 300 / 男 100），但**再走一遍装备外观**：
+`Equipment.appearance(gd, 正常 model, equipped)` 决定最终 model（武器姿势 → +type；坐骑 → 整幅马 model），
+再由 `SpriteComposer.render_frame_equipped()` 换部件图 / 叠披风，跟角色屏、装备屏同一条路径。
+换装靠 `ScreenState.state_changed` 触发 `_rebuild_frames()`，不用重进场景。
+
+行走只播 `anis[2]` 的 `[4,5,6,7,8,9]`，静止显示 `anis[0]` 首帧 0。**不要**取 `frame_numbers()` 全帧、
+也不要跟随角色屏的战斗姿势（会混入战斗动作帧）。地图角色与角色屏**姿势**解耦，但**装备**同源。
 
 ### 9. NPC
 默认不渲染（`WorldMap.show_npcs = false`），左侧勾选恢复；数据全量保留。
@@ -191,6 +195,7 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
 | `WORLDOL_NOTRANS=1` | 忽略旋转变换 |
 | `WORLDOL_DEBUG_PREFILL=1` | 打印补洞格坐标与数量 |
 | `WORLDOL_DEBUG_SKIP=1` | 打印资源缺失被跳过的格 |
+| `WORLDOL_SPRITE_DEBUG=1` | 打印部件图集「跨组借帧表」日志（恶魔之翼/坐骑缺表排查） |
 
 地图编辑器专用（都不是正常游玩会触发的）：
 
@@ -247,6 +252,11 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
      `Equipment.is_multi_frame()` 走同一套判定，多帧就按 model 的两个 layer 各画一片。
      只有组内确实没有 json 的真·单帧整图（如 4185）才标 `single_use` 让 `SpriteComposer` 只画一次，
      且这种图宽 >34px 时等比缩到 34px、位置取多片中点（兜底机制，普通肩甲用不到）。
+     **★ 整组缺表 → 跨组借同尺寸邻居（恶魔之翼 14169）**：坐骑图 `14169~14172` 四个色号全没有 `.json`，
+     整张 224×212 图集会被当一帧画出 9 个格子（"好几对翅膀"）。`fragment_frames()` 在组内借不到时，
+     再在**同一 1000 号段、距离 ≤64、画布尺寸完全一致**的邻居里找有表的（14169 ↔ 天使之翼 14165，
+     同为 224×212，子帧 0~6 一一对应）。注意**只在「同组还有同尺寸 PNG」时才跨组借**——
+     否则 4185（59×27 真·单帧图）会误借 4137 的表被拆成多帧。`WORLDOL_SPRITE_DEBUG=1` 会打印借表日志。
   3. **★ 背部 / 坐骑 → 换整幅 model（2026-11-18 落地，别硬贴）**：
      原版这两类都不是「换某个部件图」，而是换 model id（`0055.js getSpriteIdByIcon`）：
      - **坐骑**：style = `1+((icon-14000-1)/4)`（14017 白狼 → style 5）。
@@ -264,6 +274,13 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
        （model 100 帧 0 的 coatPt = `(-2,-35)`）。`SpriteComposer._frame_coat_point()` 取点，
        `_cloak_frame_index()` 让披风走自己的 0/1/2/1 循环。
      - `SpriteComposer` 仍保留 `add_parts` 追加图层能力（自检里有断言），但 `appearance` 不再生成它。
+   4. **★ 武器特效层默认不画（at=15）**：每把武器的 model 都带一层 `15001`
+      （`PNG_WEAPON_FLASH`，原版那圈绿色光效）。原版只在武器 icon 带 flash 样式时才画，
+      普通武器会把这一层整个丢掉（`0055.js doChangeSpriteIcon` 把文件 id 置 null，
+      `0365.js FrameBmp.draw` 的 `l && t.push(s)` 跳过）。我们暂不解析 flash 样式 →
+      `SpriteComposer.draw_weapon_flash = false`，`_blit_model()` 直接跳过 at=15。
+      需要复现原版特效时把它置 true（自检里就是这么对比的）。注意：武器贴图本身那条青色光刃
+      属于 `8001` 武器图，不是这一层，去掉特效不会消失。
 - **穿戴状态**：`ScreenState.equipped`（{slot:itemId}），单独存 `user://equipment.json`，
   **不碰 `character_screen.json`**（角色屏 44 项自检依赖其 version=1 结构）。`equip/unequip/clear_equipment` 广播 `state_changed("equip")`。
 - **调试 / 截图**：
@@ -277,7 +294,9 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   **性别半区换算（6075→6079、7089→7093、4145→4149）** / **头盔槽 10021（非 11001）** /
   **护肩帧表借用色号（4084/4088/4136）** / **武器姿势偏移表（不是直接 type）** /
   **背部 cloak 1101 + coatPt(-2,-35) + 画在角色后面** /
-  **坐骑 705/905/2413/2463 + 战斗造型不骑马** / single_use 兜底 / 男女款渲染差异 / UI 穿脱链路。
+  **坐骑 705/905/2413/2463 + 战斗造型不骑马** / single_use 兜底 / 男女款渲染差异 / UI 穿脱链路 /
+  **武器特效默认关闭（15001 像素对比）** / **恶魔之翼 14169 借到 7 帧表且子帧被裁切**。
+  装备验收会临时改 `user://equipment.json`（ScreenState 内部会写盘），开跑前备份、结束还原。
 - **自己改贴图**：图内容错→换同名 `sprite_fragment/<图号>.png` 立即生效；引用错→改
   `items/<id>.json` 的 `icon`（改前备份）；位置错→先开 `WORLDOL_EQUIP_DEBUG` 看换算，
   多数是性别半区/图号编码问题而非单张图坏。普通防具没有整套 model，别找映射表
