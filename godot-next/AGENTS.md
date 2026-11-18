@@ -252,12 +252,15 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
      只有组内确实没有 json 的整图（如头发 1）才标 `single_use` 让 `SpriteComposer` 只画一次，
      且这种图宽 >34px 时等比缩到 34px、位置取多片中点（兜底机制，普通肩甲用不到）。
      **★ 不要靠「借邻居表」猜布局（2026-11-18 教训）**：恶魔之翼 `14169~14172` 当初看起来
-     「整组缺表」，其实是**导出素材时漏了 1025 个帧表**（原版每个部件都有）。如果运行时按
-     「同段 + 同尺寸」去借表，会误伤大量其他坐骑图集（同尺寸不等于同布局）。
-     现在缺表一律**从原版补数据**：`python tools/restore_fragment_tables.py`
-     （读原版 `client/v/gd/305.json` 的 `assets/sprite/fragment/<id>.json -> hash` 映射，
-     只补「已有同名 PNG 但缺 json」的，可加 `--dry` 预览）。补完 14169 是 7 帧、
-     14229 是 16 帧、4185 是 2 帧，整类「整张图集当一帧」的错位一起消失。
+     「整组缺表」，其实是**导出素材时漏了 1025 个部件帧表 + 417 个 model 表**（原版都有）。
+     如果运行时按「同段 + 同尺寸」去借表，会误伤大量其他坐骑图集（同尺寸不等于同布局）。
+     现在缺表一律**从原版补数据**：`python tools/restore_sprite_tables.py`
+     （读原版 `client/v/gd/305.json` 的 `assets/sprite/{fragment,model}/<id>.json -> hash` 映射，
+     部件只补「已有同名 PNG 但缺 json」的、model 缺表就补，可加 `--dry` 预览）。
+     补完 14169 是 7 帧、14229 是 16 帧、4185 是 2 帧，整类「整张图集当一帧」的错位一起消失。
+     ★ **缺 model 表的后果更隐蔽**：`Equipment.appearance()` 查不到 `743/943`（恶魔之翼无武器款）
+     就直接保持基础造型，表现为「装备了坐骑但人物完全没变」；摩托 `758` 恰好存在所以看着正常。
+     新增坐骑后先跑 `verify_equipment` 的「151 件坐骑 × 男女 × 空手/刀」断言，别让它静默回退。
   3. **★ 背部 / 坐骑 → 换整幅 model（2026-11-18 落地，别硬贴）**：
      原版这两类都不是「换某个部件图」，而是换 model id（`0055.js getSpriteIdByIcon`）：
      - **坐骑**：style = `1+((icon-14000-1)/4)`（14017 白狼 → style 5）。
@@ -266,6 +269,13 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
        （单手枪 35→42、双手枪 36→43、单手锤 37→24、双手锤 38→36、扇 39→37，其余 = type）。
        实例：男/s5/刀 = 2413、女 = 2463；无武器 男/s5 = 705、女 = 905。
        骑马 model 的 files 里已经含「坐骑片段 140xx + 角色部件 + 武器」，所以防具/武器替换照旧走 `part_replace`。
+       ★ **坐骑颜色 = icon 低两位**（`0055.js` PNG_TRANSPORT 分支：`nt = ot-((ot-1)&3)+Z`）：
+       icon `14025..14028` 是 style 7 的 4 个色号（飞龙/白幼龙/蓝幼龙/幼龙），
+       `Equipment.transport_color_of_item()` 算出 0..3，`appearance()` 把 model 里的
+       `14xxx` 图层换成同组对应色号。只按 style 取 model 会让 4 条龙全是一个颜色。
+       ★ **空手要去掉武器层**：坐骑的无武器 model（743/943 等）与带武器款共用同一份 json，
+       模型里可能带 at=8 图层；原版 `doChangeSpriteIcon` 在没装备武器时把它置 null。
+       我们用 `part_replace[frag] = -1` 表示隐藏，`_blit_model()` 跳过该层。
        ★ 只在世界图（100/300）显示坐骑；战斗图（200/400）原版不骑马（`getSpriteIdByIcon` 的 `0==n` 分支）。
      - **背部**：backStyle = `1+((icon-5000-1)/4)`；cloak model = `1100+backStyle`。
        style 31 不显示；坐骑 style 36/42/43/48 时藏披风；衣服 style 51 强制 cloak 32（现有道具没有 51）。
@@ -296,7 +306,9 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   **护肩帧表借用色号（4084/4088/4136）** / **武器姿势偏移表（不是直接 type）** /
   **背部 cloak 1101 + coatPt(-2,-35) + 画在角色后面** /
   **坐骑 705/905/2413/2463 + 战斗造型不骑马** / single_use 兜底 / 男女款渲染差异 / UI 穿脱链路 /
-  **武器特效默认关闭（15001 像素对比）** / **14169 原版帧表已补齐（7 帧、与 14165 同表、子帧被裁切）**。
+  **武器特效默认关闭（15001 像素对比）** / **14169 原版帧表已补齐（7 帧、与 14165 同表、子帧被裁切）** /
+  **恶魔之翼/天使之翼无武器款 743/943/742/942** / **151 件坐骑 × 男女 × 空手/刀 不回退** /
+  **坐骑色号（飞龙/蓝幼龙同 model 不同色）**。
   装备验收会临时改 `user://equipment.json`（ScreenState 内部会写盘），开跑前备份、结束还原。
 - **自己改贴图**：图内容错→换同名 `sprite_fragment/<图号>.png` 立即生效；引用错→改
   `items/<id>.json` 的 `icon`（改前备份）；位置错→先开 `WORLDOL_EQUIP_DEBUG` 看换算，
@@ -340,7 +352,7 @@ tile 与附近物件 → 用 `SKIP` / `NOOBJ` / `ONLYLAYER` 逐项排除 → 确
 - 964 的锁链是原数据里 50 个 `541`（39×42）密集铺出来的，叠成网状，素材本身偏亮；
   没有做改动——不确定原版期望效果，乱改风险大。
 - `SpriteComposer` 直读 `res://` 原始 PNG，导出 exe 时要在导出预设里包含 `*.png` / `*.json`。
-- 部件帧表曾漏导出 1025 个，已用 `tools/restore_fragment_tables.py` 从原版补齐；
+- 部件帧表曾漏导出 1025 个、model 表漏 417 个，已用 `tools/restore_sprite_tables.py` 从原版补齐；
   另有 23 个碎片原版就没有 PNG（补了表也用不上），少量部件（头发/身体）本来就是整图无表。
 - 4 张地图（814/821/908/914）没有视觉 JSON，只有 NPC/名字，用合成网格兜底。
 

@@ -192,7 +192,9 @@ static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replac
 			var fid := int(replaced[i])
 			if part_replace.has(fid):
 				var new_id := int(part_replace[fid])
-				if FileAccess.file_exists(FRAG_DIR + str(new_id) + ".png"):
+				if new_id <= 0:
+					replaced[i] = -1   # 显式隐藏该层（空手时去掉武器层）
+				elif FileAccess.file_exists(FRAG_DIR + str(new_id) + ".png"):
 					replaced[i] = new_id
 					if single_use.has(fid):
 						once_idx[i] = true
@@ -236,6 +238,8 @@ static func _blit_model(canvas: Image, model_id: int, frame_no: int, part_replac
 				continue   # 单帧大图，同一部件已被画过一次，跳过第二次
 			drawn_once[file_idx] = true
 		var frag_id = int(files[file_idx])
+		if frag_id <= 0:
+			continue   # 被 part_replace 隐藏的层（如空手的武器层）
 		# 武器特效层默认不画（见 draw_weapon_flash 注释）
 		if not draw_weapon_flash and is_effect_layer(frag_id):
 			continue

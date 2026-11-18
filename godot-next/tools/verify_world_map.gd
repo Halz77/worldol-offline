@@ -232,6 +232,23 @@ func _initialize() -> void:
 		var ride_tex = player.call("_texture", int(player.get("_stand_frame")))
 		ck("坐骑造型与站姿明显不同", _tex_diff(sword_tex, ride_tex) > 500,
 			"差异像素 " + str(_tex_diff(sword_tex, ride_tex)))
+		# 空手 + 坐骑：必须用「无武器坐骑 model」，不能静默回退基础造型
+		state.call("unequip", "weapon")
+		await process_frame
+		var bare_mount := 905 if is_female else 705
+		ck("★空手骑坐骑仍是整幅坐骑 model（不静默回退）",
+			int(player.get("_walk_model_id")) == bare_mount,
+			"%d / 期望 %d" % [int(player.get("_walk_model_id")), bare_mount])
+		# 恶魔之翼（无武器款 743/943）：正是「装备后人物没变化」的事故点
+		state.call("equip", "transport", 31164)
+		await process_frame
+		var wings_mid := 943 if is_female else 743
+		ck("★空手装备恶魔之翼 → 743/943",
+			int(player.get("_walk_model_id")) == wings_mid,
+			"%d / 期望 %d" % [int(player.get("_walk_model_id")), wings_mid])
+		var wings_tex = player.call("_texture", int(player.get("_stand_frame")))
+		ck("★恶魔之翼地图画面确实换了", _tex_diff(idle_tex, wings_tex) > 500,
+			"差异像素 " + str(_tex_diff(idle_tex, wings_tex)))
 		# 还原装备（含写回 user://equipment.json，别污染玩家存档）
 		state.set("equipped", saved_equip)
 		state.emit_signal("state_changed", "equip")

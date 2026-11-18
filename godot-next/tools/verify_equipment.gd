@@ -287,6 +287,48 @@ func _initialize() -> void:
 	ck("★坐骑画面与站立明显不同", _diff(base_m, mount_img) > 500,
 		"差异像素 " + str(_diff(base_m, mount_img)))
 
+	# ---- 坐骑：装备后必须换整幅 model（不能静默回退基础造型）----
+	# 2026-11-18 事故：743/943 等无武器款 model 漏导出 → 装备恶魔之翼毫无变化。
+	var wings_m := Equipment.appearance(gd, 100, {"transport": 31164})   # 恶魔之翼
+	var wings_f := Equipment.appearance(gd, 300, {"transport": 31164})
+	ck("★恶魔之翼 男/无武器 → 743", int(wings_m.model_id) == 743, str(wings_m.model_id))
+	ck("★恶魔之翼 女/无武器 → 943", int(wings_f.model_id) == 943, str(wings_f.model_id))
+	ck("★天使之翼 无武器 → 742/942",
+		int(Equipment.appearance(gd, 100, {"transport": 31162}).model_id) == 742 and
+		int(Equipment.appearance(gd, 300, {"transport": 31162}).model_id) == 942)
+	# 全量：151 件坐骑 × 男女 × 空手/刀，都不能保持基础 model
+	var fallback: Array = []
+	for id in gd.ids("items"):
+		var entries = gd.get_entry("items", id)
+		if entries.is_empty() or not (entries[0] is Dictionary):
+			continue
+		var it = entries[0]
+		if int(it.get("type", -1)) != 11 or int(it.get("icon", 0)) <= 14000:
+			continue
+		for base in [100, 300]:
+			for variant in [{"transport": int(id)}, {"transport": int(id), "weapon": 20300}]:
+				var mid := int(Equipment.appearance(gd, base, variant).model_id)
+				if mid == base or not Equipment.model_exists(mid):
+					fallback.append([int(id), base, mid])
+	ck("★151 件坐骑 × 男女 × 空手/刀 全部换成坐骑 model", fallback.is_empty(),
+		"未换 %d 个，例：%s" % [fallback.size(), str(fallback.slice(0, 5))])
+
+	# ---- 坐骑颜色：icon 低两位 = 同款 4 色号（PNG_TRANSPORT 分支）----
+	ck("飞龙 14025 色号 0", Equipment.transport_color_of_item(
+		Equipment.item_data(gd, 31046)) == 0)
+	ck("蓝幼龙 14027 色号 2", Equipment.transport_color_of_item(
+		Equipment.item_data(gd, 31120)) == 2)
+	var dragon0 := SpriteComposer.render_frame_image_equipped(
+		int(Equipment.appearance(gd, 100, {"transport": 31046}).model_id), 0,
+		Equipment.appearance(gd, 100, {"transport": 31046}).part_replace)
+	var dragon2 := SpriteComposer.render_frame_image_equipped(
+		int(Equipment.appearance(gd, 100, {"transport": 31120}).model_id), 0,
+		Equipment.appearance(gd, 100, {"transport": 31120}).part_replace)
+	ck("★飞龙与蓝幼龙同 model 但颜色不同",
+		int(Equipment.appearance(gd, 100, {"transport": 31046}).model_id) ==
+		int(Equipment.appearance(gd, 100, {"transport": 31120}).model_id) and
+		_diff(dragon0, dragon2) > 500, "差异像素 " + str(_diff(dragon0, dragon2)))
+
 	# ---- 武器特效层（at=15，15001）：默认不画 ----
 	ck("15001 是武器特效层（at=15）", SpriteComposer.is_effect_layer(15001))
 	ck("普通武器图 8001 不是特效层", not SpriteComposer.is_effect_layer(8001))

@@ -337,6 +337,16 @@ static func transport_style_of_item(item: Dictionary) -> int:
 	return style_from_icon(int(item.get("icon", 0)), START_TRANSPORT, 4)
 
 
+## 坐骑色号（0..3）。0055.js doChangeSpriteIcon 的 PNG_TRANSPORT 分支：
+##   nt = ot - ((ot-1)&3) + Z   —— 模型里的坐骑图号先归到同款 4 色组首，再加色号。
+## 色号就藏在 icon 低两位：icon 14025..14028 → 0..3（飞龙/极地白龙/蓝幼龙/幼龙 同 style 不同色）。
+static func transport_color_of_item(item: Dictionary) -> int:
+	var icon := int(item.get("icon", 0))
+	if icon <= START_TRANSPORT:
+		return 0
+	return (icon - START_TRANSPORT - 1) % 4
+
+
 static func clothes_style_of_item(item: Dictionary) -> int:
 	return style_from_icon(int(item.get("icon", 0)), START_CLOTHES, 8)
 
@@ -373,8 +383,11 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 	if equipped.has("weapon"):
 		wtype = int(item_data(game_data, int(equipped["weapon"])).get("type", 0))
 	var transport_style := 0
+	var transport_color := 0
 	if equipped.has("transport"):
-		transport_style = transport_style_of_item(item_data(game_data, int(equipped["transport"])))
+		var t_item := item_data(game_data, int(equipped["transport"]))
+		transport_style = transport_style_of_item(t_item)
+		transport_color = transport_color_of_item(t_item)
 
 	var mount_used := false
 	if transport_style > 0:
@@ -423,6 +436,23 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 		if wfrag > 0 and FileAccess.file_exists("res://assets/sprite_fragment/%d.png" % wfrag):
 			result.part_replace[weapon_part] = wfrag
 			detail.append("武器图:%d→%d" % [weapon_part, wfrag])
+	elif weapon_part > 0:
+		# 空手：原版 doChangeSpriteIcon 把 PNG_WEAPON 层置 null（没装备武器就不画）。
+		# 坐骑的无武器 model（743/943 等）其实和带武器款共用同一份 json，必须运行时去掉这层。
+		result.part_replace[weapon_part] = -1
+		detail.append("空手:隐藏武器层 %d" % weapon_part)
+
+	# ---- 坐骑颜色：模型里的坐骑图号按 icon 色号换同款 4 色组（PNG_TRANSPORT 分支）----
+	if transport_style > 0:
+		for fid in model_file_ints:
+			if fid / 1000 != 14:
+				continue
+			var base_col: int = fid - ((fid - 1) % 4)
+			var wanted: int = base_col + transport_color
+			if wanted != fid and FileAccess.file_exists(
+					"res://assets/sprite_fragment/%d.png" % wanted):
+				result.part_replace[fid] = wanted
+				detail.append("坐骑色:%d→%d(色 %d)" % [fid, wanted, transport_color])
 
 	# ---- 防具：按性别换算图号，替换当前 model 对应的槽位 ----
 	for d in SLOT_DEFS:
