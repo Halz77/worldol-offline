@@ -431,6 +431,21 @@ func _initialize() -> void:
 	ck("★射手座披风 style = 7 + 16 = 23 → Cloak 1123",
 		Equipment.fashion_back_style(Equipment.item_data(gd, 15183)) == 23 and
 		int(Equipment.appearance(gd, 300, {"fashion": 15183}).cloak_model) == 1123)
+	# 头/发层：F31~40 的头盔是 F+2（射手座 39→41→10161），不是 F+14
+	var zodiac := Equipment.appearance(gd, 300, {"fashion": 15183})
+	ck("★十二星座头盔 style F+2 → 10161（原 10209 是错的）",
+		int(zodiac.part_replace.get(10021, 0)) == 10161,
+		str(zodiac.part_replace))
+	# 时装生效时隐藏基础头发，别让头发盖在时装整颗头上
+	ck("★电玩英雄隐藏基础头发（女款 5→-1）",
+		int(game_hero.part_replace.get(5, 0)) == -1, str(game_hero.part_replace))
+	var brave_look := Equipment.appearance(gd, 100, {"fashion": 28100})
+	ck("★勇气使徒隐藏基础头发（1→-1）",
+		int(brave_look.part_replace.get(1, 0)) == -1, str(brave_look.part_replace))
+	var wing_fash := Equipment.appearance(gd, 100,
+		{"fashion": 28100, "transport": 31164})
+	ck("★整身坐骑不受时装头发规则影响", not wing_fash.part_replace.has(1),
+		str(wing_fash.part_replace))
 
 
 	# ---- 武器特效层（at=15，15001）：默认不画 ----

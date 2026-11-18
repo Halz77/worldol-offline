@@ -506,7 +506,8 @@ static func _fash_styles(item: Dictionary, gender: int) -> Dictionary:
 			if gender == 1:
 				feet = 5
 		31, 32, 33, 34, 35, 36, 37, 38, 39, 40:
-			helm = clothes + 14
+			# 原版 0055.js: case 39 → L=41 / x=40（L = F+2，不是 F+14）
+			helm = clothes + 2
 			helm_c = clothes_c
 			shoulder = clothes + 1
 			shoulder_c = clothes_c
@@ -775,6 +776,7 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 	# ---- 时装：一套部件图整体覆盖（原版 updateIconByFashion 在装备之后覆盖）----
 	# 只替换当前 model 里实际存在的同 at 图层，所以「时装 + 坐骑」时坐骑整幅
 	# model 里的身体部件也会一起换，坐骑本体不受影响。
+	var fash_applied := false
 	if not fash_parts.is_empty():
 		for at in fash_parts.keys():
 			var want := int(fash_parts[at])
@@ -791,7 +793,19 @@ static func appearance(game_data, base_model: int, equipped: Dictionary, sex: in
 						single_use.append(fid)
 					hit += 1
 			if hit > 0:
+				fash_applied = true
 				detail.append("时装:at%d→%d" % [int(at), want])
+
+	# 时装生效时隐藏基础头发：模型里「脸层先画、头发层后画」，头发会盖在
+	# 时装头盔/整颗脸上（电玩英雄、勇气使徒最明显）。98 件时装都带头盔 style，
+	# 但「整个身体被翅膀替掉」的坐骑 model 没有衣服槽 → fash_applied=false，
+	# 不会误伤坐骑上的小人。
+	if fash_applied:
+		for fid in model_file_ints:
+			if fid / 1000 == 0 and fid > 0:
+				result.part_replace[fid] = -1
+				detail.append("时装:隐藏基础头发 %d" % fid)
+				break
 
 	# ---- 背部：独立 cloak model（1100+backStyle），SpriteComposer 把它画在角色图层后面 ----
 	if equipped.has("back"):
