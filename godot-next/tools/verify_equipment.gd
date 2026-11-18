@@ -134,7 +134,9 @@ func _initialize() -> void:
 	ck("★朱红支配衬肩女款 4088 借用同组帧表（2 帧）", f4088.size() == 2, str(f4088.keys()))
 	ck("★星月冥肩 4136 借用同组帧表（不再当单帧整图）", Equipment.is_multi_frame(4136),
 		str(SpriteComposer.fragment_frames(4136).keys()))
-	ck("真·单帧图 4185 仍判单帧（组内无 json）", not Equipment.is_multi_frame(4185))
+	ck("★补表后 4185 是原版 2 帧图集", Equipment.is_multi_frame(4185),
+		str(SpriteComposer.fragment_frames(4185).keys()))
+	ck("整张图本身就是一帧的部件（如头发 1）仍判单帧", not Equipment.is_multi_frame(1))
 
 	# ---- 外观：防具按性别替换正确的槽位与图号 ----
 	var look_robe_f := Equipment.appearance(gd, 300, {"clothes": 10032})  # 女 model，icon 6075
@@ -295,9 +297,18 @@ func _initialize() -> void:
 	ck("★武器特效默认关闭（像素更少）", _opaque(no_flash) < _opaque(with_flash),
 		"%d < %d" % [_opaque(no_flash), _opaque(with_flash)])
 
-	# ---- 恶魔之翼：14169 整组缺帧表，借同段同尺寸（14165 天使之翼）的 7 帧表 ----
+	# ---- 恶魔之翼：14169 的帧表曾漏导出，已按原版清单补齐；整组同表 ----
 	var subs_14169 := SpriteComposer.fragment_frames(14169)
-	ck("★14169 缺帧表 → 借到 7 帧表", subs_14169.size() == 7, str(subs_14169.size()))
+	ck("★14169 有原版帧表（7 帧）", subs_14169.size() == 7, str(subs_14169.size()))
+	ck("★14169 与天使之翼 14165 共用同一张表",
+		subs_14169 == SpriteComposer.fragment_frames(14165))
+	ck("★14169 同组 14170/14171/14172 也补齐",
+		SpriteComposer.fragment_frames(14170).size() == 7
+		and SpriteComposer.fragment_frames(14171).size() == 7
+		and SpriteComposer.fragment_frames(14172).size() == 7)
+	ck("★14229（曾因缺表整张当一帧）现在有 16 帧表",
+		SpriteComposer.fragment_frames(14229).size() == 16,
+		str(SpriteComposer.fragment_frames(14229).size()))
 	var sub0 = SpriteComposer._sub_frame(14169, 0)
 	ck("★14169 子帧是裁切后的翅膀（不是整张 224x212 图集）",
 		sub0 != null and (sub0.get_width() < 224 or sub0.get_height() < 212),

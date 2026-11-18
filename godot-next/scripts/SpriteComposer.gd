@@ -36,12 +36,6 @@ static func _frag_group_base(frag_id: int) -> int:
 	return frag_id - ((frag_id - 1) % 4)
 
 
-## 跨组借表的最大距离（图号差）。只在同一 1000 号段内、且画布尺寸完全一致时生效。
-const TABLE_BORROW_RANGE := 64
-## 借表结果缓存：{图号: 帧表}。只取决于磁盘上的 json 与 png 尺寸，与图集内容无关。
-static var _borrow_cache: Dictionary = {}
-
-
 static func _png_size(frag_id: int) -> Vector2i:
 	var png := FRAG_DIR + str(frag_id) + ".png"
 	if not FileAccess.file_exists(png):
@@ -89,56 +83,9 @@ static func fragment_frames(frag_id: int, atlas: Image = null) -> Dictionary:
 		if _png_size(cand) != size:
 			continue
 		return of
-	# ★ 整组都没有帧表（如坐骑 14169 恶魔之翼：14169~14172 全缺 .json）：
-	#   退一步在同段里找「画布尺寸完全一致」且有帧表的邻居。同段同尺寸基本就是
-	#   同一套图集模板换了造型（14169 与天使之翼 14165 同为 224x212，子帧 0~6 一一对应）。
-	#   找不到就只能整张图集当一帧（老行为），所以只在近距离内找，避免借错布局。
-	return _borrow_neighbour_frames(frag_id, size)
-
-
-static func _borrow_neighbour_frames(frag_id: int, size: Vector2i) -> Dictionary:
-	if _borrow_cache.has(frag_id):
-		return _borrow_cache[frag_id]
-	# ★ 只在「整组都是同尺寸图集」时才跨组借，否则会把真正的单帧图误判成多帧：
-	#   4185 是 59x27 的单张图，同组兄弟（4186~4188）在库里根本不存在；而 14169
-	#   的同组 14170~14172 都是 224x212。所以「同组至少还有一张同尺寸 PNG」才算图集。
-	var base0 := _frag_group_base(frag_id)
-	var group_atlas := false
-	for i in range(4):
-		var mate := base0 + i
-		if mate == frag_id:
-			continue
-		if _png_size(mate) == size:
-			group_atlas = true
-			break
-	if not group_atlas:
-		_borrow_cache[frag_id] = {}
-		return {}
-	var block := (frag_id / 1000) * 1000
-	var lo := maxi(block, frag_id - TABLE_BORROW_RANGE)
-	var hi := mini(block + 999, frag_id + TABLE_BORROW_RANGE)
-	var best_id := -1
-	var best_table: Dictionary = {}
-	for cand in range(lo, hi + 1):
-		if cand == frag_id:
-			continue
-		if best_id > 0 and absi(cand - frag_id) >= absi(best_id - frag_id):
-			continue   # 已有更近的候选，后面的不可能更近
-		var other = _read_json(FRAG_DIR + str(cand) + ".json")
-		if not (other is Dictionary):
-			continue
-		var of = other.get("frames", {})
-		if not (of is Dictionary) or of.is_empty():
-			continue
-		if _png_size(cand) != size:
-			continue
-		best_id = cand
-		best_table = of
-	if best_id > 0 and OS.has_environment("WORLDOL_SPRITE_DEBUG"):
-		print("[sprite-debug] 部件 %d 缺帧表，借同段同尺寸 %d 的（%d 帧）" % [
-			frag_id, best_id, best_table.size()])
-	_borrow_cache[frag_id] = best_table
-	return best_table
+	# 没有帧表：整张 PNG 就是一帧（原版素材里每个部件都有 json，
+	# 缺表说明是导出漏了 —— 用 tools/restore_fragment_tables.py 从原版补齐，不要运行时猜。）
+	return {}
 
 
 ## 这张部件图是否多帧图集（决定替换后是否会被同款的两个图层各画一次）。
