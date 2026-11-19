@@ -249,6 +249,7 @@ func load_equipment() -> void:
 ## PNG 本来就是每帧从磁盘读，不需要额外处理。
 func reload_assets() -> void:
 	_anim_cache.clear()
+	SpriteComposer.clear_asset_cache()   # 改了 PNG/JSON 后强制重读（mtime 相同的情况）
 	state_changed.emit("assets")
 
 

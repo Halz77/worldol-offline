@@ -24,13 +24,59 @@ const MODEL_DIR = "res://assets/sprite_model/"
 const FRAG_DIR = "res://assets/sprite_fragment/"
 
 
+## 素材缓存：按「文件修改时间」校验，改了 PNG/JSON 下一帧仍会立刻生效，
+## 但同一张图不会被反复解码。实测整帧 12 个图层 ≈ 5.30ms，其中约 4.8ms 全是重复解码。
+## 想强制重读（例如批量替换素材后）调 clear_asset_cache()。
+const CACHE_LIMIT := 1500
+
+static var _img_cache: Dictionary = {}      # 图号 -> {mtime, img}
+static var _json_cache: Dictionary = {}     # 路径 -> {mtime, data}
+static var _frames_cache: Dictionary = {}   # 图号 -> {mtime, frames}
+
+
+static func clear_asset_cache() -> void:
+	_img_cache.clear()
+	_json_cache.clear()
+	_frames_cache.clear()
+
+
 static func _read_json(file_path: String):
 	if not FileAccess.file_exists(file_path):
 		return null
+	var mt := FileAccess.get_modified_time(file_path)
+	var hit = _json_cache.get(file_path, null)
+	if hit is Dictionary and int(hit.get("mtime", -1)) == mt:
+		return hit.get("data")
 	var text = FileAccess.get_file_as_string(file_path)
 	if text.is_empty():
 		return null
-	return JSON.parse_string(text)
+	var data = JSON.parse_string(text)
+	_json_cache[file_path] = {"mtime": mt, "data": data}
+	return data
+
+
+## 取部件图（已解码、RGBA8）。★ 返回的是缓存里的共享 Image：
+## 调用方只能读像素，要改（resize / 染色）必须先 duplicate()。
+static func _atlas_of(frag_id: int) -> Image:
+	var png := FRAG_DIR + str(frag_id) + ".png"
+	if not FileAccess.file_exists(png):
+		return null
+	var mt := FileAccess.get_modified_time(png)
+	var hit = _img_cache.get(frag_id, null)
+	if hit is Dictionary and int(hit.get("mtime", -1)) == mt:
+		return hit.get("img")
+	var bytes := FileAccess.get_file_as_bytes(png)
+	if bytes.is_empty():
+		return null
+	var img := Image.new()
+	if img.load_png_from_buffer(bytes) != OK:
+		return null
+	if img.get_format() != Image.FORMAT_RGBA8:
+		img.convert(Image.FORMAT_RGBA8)
+	if _img_cache.size() >= CACHE_LIMIT:
+		_img_cache.clear()   # 粗暴上限：真到这一步说明素材量远超单屏需求
+	_img_cache[frag_id] = {"mtime": mt, "img": img}
+	return img
 
 
 ## 部件图按 4 个色号一组导出（组首 ≡ 1 mod 4），但只有部分色号带 .json 帧表。
@@ -39,14 +85,8 @@ static func _frag_group_base(frag_id: int) -> int:
 
 
 static func _png_size(frag_id: int) -> Vector2i:
-	var png := FRAG_DIR + str(frag_id) + ".png"
-	if not FileAccess.file_exists(png):
-		return Vector2i(-1, -1)
-	var bytes := FileAccess.get_file_as_bytes(png)
-	if bytes.is_empty():
-		return Vector2i(-1, -1)
-	var img := Image.new()
-	if img.load_png_from_buffer(bytes) != OK:
+	var img := _atlas_of(frag_id)
+	if img == null:
 		return Vector2i(-1, -1)
 	return Vector2i(img.get_width(), img.get_height())
 
@@ -59,6 +99,20 @@ static func _png_size(frag_id: int) -> Vector2i:
 static func fragment_frames(frag_id: int, atlas: Image = null) -> Dictionary:
 	if frag_id <= 0:
 		return {}
+	var own_path := FRAG_DIR + str(frag_id) + ".json"
+	var mt := FileAccess.get_modified_time(own_path) if FileAccess.file_exists(own_path) else -1
+	var hit = _frames_cache.get(frag_id, null)
+	if hit is Dictionary and int(hit.get("mtime", -2)) == mt:
+		var cached = hit.get("frames", {})
+		return cached if cached is Dictionary else {}
+	var out := _fragment_frames_uncached(frag_id, atlas)
+	_frames_cache[frag_id] = {"mtime": mt, "frames": out}
+	return out
+
+
+## ★ 借来的帧表跟着「组内别的色号」走：改的是同组其他 .json 时本缓存不会自动失效，
+## 需要调用 clear_asset_cache()（角色屏「重新载入素材」按钮已经这么做）。
+static func _fragment_frames_uncached(frag_id: int, atlas: Image) -> Dictionary:
 	var own = _read_json(FRAG_DIR + str(frag_id) + ".json")
 	if own is Dictionary:
 		var f = own.get("frames", {})
@@ -402,15 +456,11 @@ static func is_effect_layer(frag_id: int) -> bool:
 
 
 ## 从图集切出子帧，并按 sourceW/sourceH + offX/offY 还原包围盒。
+## 返回的永远是**新图**（缓存里的图集只在内部读，不会交给调用方去 resize/染色）。
 static func _sub_frame(frag_id: int, sub: int) -> Image:
-	var png = FRAG_DIR + str(frag_id) + ".png"
-	if not FileAccess.file_exists(png):
+	var atlas := _atlas_of(frag_id)
+	if atlas == null:
 		return null
-	var atlas = Image.new()
-	if atlas.load_png_from_buffer(FileAccess.get_file_as_bytes(png)) != OK:
-		return null
-	if atlas.get_format() != Image.FORMAT_RGBA8:
-		atlas.convert(Image.FORMAT_RGBA8)
 
 	var f = {}
 	var subs := fragment_frames(frag_id, atlas)
@@ -420,7 +470,7 @@ static func _sub_frame(frag_id: int, sub: int) -> Image:
 		else:
 			f = subs[subs.keys()[0]]
 	if f.is_empty():
-		return atlas   # 没有帧表：整张 PNG 就是一帧
+		return atlas.duplicate()   # 没有帧表：整张 PNG 就是一帧（复制，避免调用方改到缓存）
 
 	var cw = int(f.get("w", 0))
 	var ch = int(f.get("h", 0))

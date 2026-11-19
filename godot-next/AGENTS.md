@@ -111,6 +111,21 @@ Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --import
 导出的 JSON/PNG 改动后如果 `load()` 报 "No loader found"，跑一次
 `--headless --path godot-next --import` 生成 `.import`，不要把图当坏图。
 
+### 素材读取缓存（2026-11-19）
+
+`SpriteComposer` 每帧都要拼 10~12 个图层。改造前**每层都从磁盘重解 PNG**，
+实测整帧 5.30ms，其中约 4.8ms 全是重复解码（单张小图解码 0.36ms、手部大图 0.45ms），
+model JSON 一帧还被解析 2~3 次（0.17ms/次）。
+
+现在按「文件修改时间」缓存三样东西：`图号 → Image`、`路径 → JSON`、`图号 → 帧表`。
+**mtime 变了自动重读**，所以「改 PNG 下一帧立刻生效」这个约定没丢；
+要强制重读（同组其他色号的 .json 改过、或同一秒内连写两次）调
+`SpriteComposer.clear_asset_cache()`，角色屏「重新载入素材」按钮已经接上。
+
+实测：首帧（冷）5.21ms → 同帧热态 **1.53ms**、换帧热态 **2.21ms**。
+注意 `_atlas_of()` 返回的是缓存里的**共享 Image**：只能读；要 resize / 染色必须先 `duplicate()`
+（`_sub_frame()` 已经保证对外返回新图）。
+
 ## 地图渲染的关键事实（都是踩过的坑，改之前先看这里）
 
 ### 1. 图层顺序：必须单遍**倒序**画

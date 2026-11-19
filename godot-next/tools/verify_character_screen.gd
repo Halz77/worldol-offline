@@ -196,6 +196,9 @@ func _initialize() -> void:
 		ck("改 PNG 后同帧像素确实变化", not _same(before, after),
 			"原非透明 " + str(_opaque(before)) + " → " + str(_opaque(after)))
 		ck("改后仍能画出人物", _opaque(after) > 300)
+		# SpriteComposer 按「文件修改时间」缓存解码结果（mtime 只到秒）。
+		# 这里隔 1.1s 再写回原图，否则两次写盘落在同一秒，缓存会认为文件没变。
+		OS.delay_msec(1100)
 		var restore_file := FileAccess.open(abs_png, FileAccess.WRITE)
 		if restore_file != null:
 			restore_file.store_buffer(backup)
