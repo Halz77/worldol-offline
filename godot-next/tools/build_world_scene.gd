@@ -48,7 +48,7 @@ func _initialize() -> void:
 
 	_node(root, "Node2D", "WorldMap", "res://scripts/WorldMap.gd")
 	var player := _node(root, "Node2D", "Player", "res://scripts/WorldPlayer.gd")
-	var sprite := _node(player, "Sprite2D", "Sprite")
+	var sprite := _node(player, "AnimatedSprite2D", "Sprite")
 	sprite.centered = false
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var camera := _node(root, "Camera2D", "Camera2D")

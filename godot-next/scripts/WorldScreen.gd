@@ -220,3 +220,7 @@ func _maybe_capture() -> void:
 	DirAccess.make_dir_recursive_absolute(out)
 	var err := img.save_png(out + "/world_screen.png")
 	print("[capture] 保存 ", out, "/world_screen.png err=", err)
+	# WORLDOL_QUITAFTER=n：截图后 n 秒自动退出，便于无人值守批量截图
+	if OS.has_environment("WORLDOL_QUITAFTER"):
+		await get_tree().create_timer(float(OS.get_environment("WORLDOL_QUITAFTER"))).timeout
+		get_tree().quit()

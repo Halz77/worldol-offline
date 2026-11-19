@@ -104,6 +104,50 @@ func _initialize() -> void:
 	ck("负数 tile 索引按 & 255 解码", neg_decoded)
 	world_map.call("load_map", 4)
 
+	# ---------- 图层节点化：TileMapLayer / MapObjectLayer ----------
+	var layers_cfg: Array = (world_map.get("cfg") as Dictionary).get("layers", [])
+	var want_tiles := 0
+	var want_objs := 0
+	for L in layers_cfg:
+		if not (L is Dictionary):
+			continue
+		if int(L.get("type", 0)) == 2 and L.get("data") is Array:
+			want_tiles += 1
+		elif L.get("obj") is Array:
+			want_objs += 1
+	var nodes: Array = world_map.call("layer_nodes")
+	var got_tiles := 0
+	var got_objs := 0
+	var cells_total := 0
+	var ts_ok := true
+	for n in nodes:
+		if n is TileMapLayer:
+			got_tiles += 1
+			cells_total += (n as TileMapLayer).get_used_cells().size()
+			if (n as TileMapLayer).tile_set == null:
+				ts_ok = false
+		elif n.get("objects") != null:
+			got_objs += 1
+	ck("地块层全部转成 TileMapLayer（可含补洞层）", got_tiles >= want_tiles,
+		"%d / %d" % [got_tiles, want_tiles])
+	ck("物件层全部转成独立节点", got_objs == want_objs,
+		"%d / %d" % [got_objs, want_objs])
+	ck("每个 TileMapLayer 都挂了共享 TileSet", ts_ok)
+	ck("TileMapLayer 实际铺出了图块", cells_total > 100, str(cells_total))
+	# 「只看选中层」：图层是真实节点，切 visible 即可，不动数据
+	world_map.call("solo_layer", 0)
+	var hidden := 0
+	for n in nodes:
+		if not (n as CanvasItem).visible:
+			hidden += 1
+	ck("只看某一层会隐藏其它图层节点", hidden >= 1, str(hidden))
+	world_map.call("solo_layer", -1)
+	var all_visible := true
+	for n in nodes:
+		if not (n as CanvasItem).visible:
+			all_visible = false
+	ck("取消只看后图层全部恢复显示", all_visible)
+
 	var npcs: Array = world_map.get("npcs")
 	ck("地图 4 的 NPC 实体数 23", npcs.size() == 23, str(npcs.size()))
 	var textured := 0
@@ -177,7 +221,7 @@ func _initialize() -> void:
 		"%.1f → %.1f" % [key_before, player.position.x])
 
 	# 朝向：素材默认朝左，往右走必须镜像（scale.x < 0），往左走不镜像。
-	var sprite: Sprite2D = player.get_node("Sprite")
+	var sprite: Node2D = player.get_node("Sprite")
 	ck("向右走时人物朝右（素材默认朝左，需镜像）", sprite.scale.x < 0.0,
 		"scale.x=%.2f" % sprite.scale.x)
 	var left_before := player.position.x
@@ -210,6 +254,39 @@ func _initialize() -> void:
 	var walk_model := int(player.get("_walk_model_id"))
 	ck("地图角色使用正常姿势模型（不受战斗姿势影响）",
 		walk_model == 100 or walk_model == 300, str(walk_model))
+
+	# ---------- 动画走 SpriteFrames / AnimatedSprite2D ----------
+	var sf = player.get("_anim_frames")
+	ck("动画已编译成 SpriteFrames", sf is SpriteFrames)
+	if sf is SpriteFrames:
+		ck("有 idle 与 walk 两条命名动作",
+			sf.has_animation("idle") and sf.has_animation("walk"),
+			str(sf.get_animation_names()))
+		ck("walk 帧数与 anis[2] 手势一致",
+			sf.get_frame_count("walk") == walk_frames.size(),
+			"%d / %d" % [sf.get_frame_count("walk"), walk_frames.size()])
+		ck("walk 帧率保持 7fps（与改造前画面速度一致）",
+			is_equal_approx(sf.get_animation_speed("walk"), 7.0),
+			str(sf.get_animation_speed("walk")))
+		ck("idle 是循环动作、walk 也是循环",
+			sf.get_animation_loop("idle") and sf.get_animation_loop("walk"))
+		# 角色节点本身必须是 AnimatedSprite2D，且真的绑上了这套 SpriteFrames
+		ck("地图角色节点是 AnimatedSprite2D", sprite is AnimatedSprite2D)
+		ck("节点绑定了同一套 SpriteFrames", sprite.get("sprite_frames") == sf)
+		# 走起来要播 walk，停下要停在 idle 首帧（不能停在中途帧）
+		Input.action_press("ui_right")
+		for _f in range(6):
+			await process_frame
+		ck("行走时播放 walk 动作",
+			str(sprite.get("animation")) == "walk" and bool(sprite.call("is_playing")),
+			str(sprite.get("animation")))
+		Input.action_release("ui_right")
+		for _f in range(6):
+			await process_frame
+		ck("停下后回到 idle 且暂停在首帧",
+			str(sprite.get("animation")) == "idle" and not bool(sprite.call("is_playing"))
+			and int(sprite.get("frame")) == 0,
+			"%s frame=%d" % [str(sprite.get("animation")), int(sprite.get("frame"))])
 
 	# ---------- 地图小人接装备外观 ----------
 	if state != null:

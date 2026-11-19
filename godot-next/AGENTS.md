@@ -21,9 +21,11 @@ godot-next/
     map/<mapId>.json                   地图视觉数据（mW/mH/tW、tiles、layers）
     map_merged/<mapId>.json|png        该地图的图集（frames 名 → 矩形）
     map_slice/<name>.png               全局切片图集（tile 层主要贴图来源）
+    tilesets/map_ground.tres           地面图块库（TileSet，由 tools/build_map_tileset.gd 生成）
     map_bg/<mapId>.jpg                 ⚠ 不是底图，见下
   data/compiled/
     mapFrames.json                     全局跨图集帧索引（name → atlas + frame）
+    tileAtlas.json                     资源名 → TileSet source / 图集坐标 / 镜像变体
     npcs/<mapId>.json                  该地图 NPC
   scripts/
     ScreenState.gd       Autoload，全局状态 + 信号（含 equipped / appearance 两份独立存档）
@@ -36,8 +38,12 @@ godot-next/
     AppearanceScreen.gd  外观屏：缩略图选档 + 拾色器调色 + 实时预览 + 配色预设
     Recolor.gd           自由调色引擎：相对明度重映射（full 整层 / skin 只染肤色）
     WorldScreen.gd       世界地图屏（相机、输入、切图）
-    WorldMap.gd          地图渲染核心（tile 层 / 物件层 / 变换 / 补洞）
-    WorldPlayer.gd       地图上的角色（行走动画）
+    WorldMap.gd          地图渲染核心：按 cfg 建图层节点（TileMapLayer / 物件层）+ 补洞 + 变换
+    MapTiles.gd          地面 TileSet 索引：资源名 → source / 图集坐标 / 镜像变体
+    MapObjectLayer.gd    一个物件层的绘制节点（自由坐标物件 + 旋转/镜像）
+    MapCellOverlay.gd    单层格子叠色节点（100 号 106_1 轻微压暗）
+    WorldPlayer.gd       地图上的角色（AnimatedSprite2D + SpriteFrames 的 idle/walk）
+    ModelAnimations.gd   模型 anis → SpriteFrames（动作命名、帧率、循环）
     SpriteComposer.gd    运行时拼角色部件成整图
     NpcInfo.gd           NPC 战斗信息聚合（npcType 语义 + battleID→group→monster 数值）
     Naming.gd            中文标签表
@@ -56,6 +62,7 @@ godot-next/
     verify_appearance.gd         外观系统断言（图号公式/档位/渲染差异/存档往返/与装备共存）
     verify_npc_showcase.gd       NPC 展厅 + 编辑器断言（分页/不重叠/存储往返）
     build_npc_showcase.gd        把 1939 个 NPC 排进展厅分页（一次性生成 override）
+    build_map_tileset.gd         扫地图 + map_slice → assets/tilesets/map_ground.tres + 索引
     map_editor/
       MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
       MapEditor.gd         载入 / tile·阻挡·物件三种画笔 / 图层增删 / 新建复制图 / 改尺寸 /
@@ -126,11 +133,50 @@ model JSON 一帧还被解析 2~3 次（0.17ms/次）。
 注意 `_atlas_of()` 返回的是缓存里的**共享 Image**：只能读；要 resize / 染色必须先 `duplicate()`
 （`_sub_frame()` 已经保证对外返回新图）。
 
+## 地图图层节点化（2026-11-19：TileSet / TileMapLayer）
+
+地面不再走 `_draw` 的即时绘制，而是**一个原版图层 = 一个节点**，挂在 `WorldMap/Layers` 下：
+
+| 原版层 | 节点 | 说明 |
+|---|---|---|
+| type 2 地块层 | `TileMapLayer`（`Layer<i>_tiles`） | 共用 `assets/tilesets/map_ground.tres` |
+| type 3 / 4 物件层 | `MapObjectLayer`（`Layer<i>_objects`） | 自由坐标物件，保留精灵式绘制 |
+| 补洞层 | `TileMapLayer`（`Prefill`） | 旧实现画在最底层，这里同样是最底层节点 |
+| 100 号压暗 | `MapCellOverlay`（`Layer<i>_tone`） | 紧跟所属地块层之后，保持「只压这一层」 |
+
+- **顺序靠树顺序**：建节点时仍按 `layers.size()-1 → 0`，先建的在下。**不要改 z_index**，
+  z_index 会把同层内部的前后关系也打乱。
+- **物件不做成 tile**：物件坐标是任意像素、尺寸各异、还带 8 种旋转，TileMapLayer 是整数网格，
+  放不下。原版本身也是「精灵自由定位」，所以只有地块层进 TileMapLayer。
+- **图块库由 `tools/build_map_tileset.gd` 生成**：一个 `map_slice/<name>.png` → 一个
+  `TileSetAtlasSource`，纹理区域 24×24，(col,row) 就是子格（206 张切片全部是 24 的整数倍）。
+  镜像用 alternative tile：`transform 1 → flip_v`、`2 → flip_h`、`3 → 两者`；
+  只给地图里真用到的组合建变体（920 图块 + 1164 变体，.tres 122KB）。
+  **改了切片图或新地图用了新变换 → 重跑生成器**：
+  `Godot --headless --path godot-next --script res://tools/build_map_tileset.gd`
+  它会同时刷新 `data/compiled/tileAtlas.json`，两者必须成对更新。
+- ★ **图层节点不要写死纹理过滤**：旧路径继承 WorldMap 的默认过滤，改成 NEAREST 会让
+  整张图和改造前差 3.6% 像素（缩放时半像素偏移）。现在显式 `TEXTURE_FILTER_PARENT_NODE`。
+- ★ **补缺图不能传染**：同层缺图格用「最近的、本来就有图的格子」补。旧实现的 `painted`
+  数组在补的过程中不更新；新实现必须用 `built.duplicate()` 快照，否则补出来的格子会被
+  后面的格子当样本，材质一路向内扩散（实测 121 格颜色全变）。
+- **补洞从「每帧算」改成「载入时算一次」**：`_prefill_holes()` 只产出 `_prefill_cells`，
+  由 `_rebuild_render()` 写进 `Prefill` 层。
+- **刷新入口**：改完 `cfg` 调 `world_map.refresh()`（重建节点树 + 重画自身）。
+  地图编辑器里 8 处 `queue_redraw()` 已全部换成它；只 `queue_redraw()` 不会重建图块。
+- **「只看选中层」**：图层是真实节点，`solo_layer(li)` 直接切 `visible`，不重算数据。
+
+### 验收口径（换渲染路径时最有用的一条）
+
+新旧实现的截图在**同分辨率**（`--resolution 1200x960` + `WORLDOL_FIT=1`）下逐像素比对：
+地图 4 / 100 / 17 / 458 / 2020 / 9901（NPC 展厅）**全部 0 像素差**。
+以后再改渲染层，用这个办法先确认「画面没变」，再谈优化。
+
 ## 地图渲染的关键事实（都是踩过的坑，改之前先看这里）
 
-### 1. 图层顺序：必须单遍**倒序**画
+### 1. 图层顺序：必须**倒序**建节点
 原版 `scene.init` 从 `layers[length-1] downto 0` 逐个 `addChild`，所以 `layers[0]` 在最上层。
-我们的绘制也必须倒序遍历、边遍历边画，**不能**改成「先全部 tile 层再全部物件层」两遍，
+`_rebuild_render()` 也按倒序建节点，**不能**改成「先建全部 tile 层再建全部物件层」，
 否则交替层的前后关系全错（tile 会盖住物件）。
 
 ### 2. tile 层数据编码
@@ -205,7 +251,7 @@ model JSON 一帧还被解析 2~3 次（0.17ms/次）。
 现在只对 100 号做「轻微压暗」（`_tone_down_map / _tone_down_srcs / _tone_down_alpha`），
 把 106_1 压到接近周围草地，只调色不换铺装。
 
-### 8. 角色行走
+### 8. 角色行走（动画已改 SpriteFrames / AnimatedSprite2D）
 `WorldPlayer` 用正常造型底盘（女 300 / 男 100），但**再走一遍装备外观**：
 `Equipment.appearance(gd, 正常 model, equipped)` 决定最终 model（武器姿势 → +type；坐骑 → 整幅马 model），
 再由 `SpriteComposer.render_frame_equipped()` 换部件图 / 叠披风，跟角色屏、装备屏同一条路径。
@@ -213,6 +259,17 @@ model JSON 一帧还被解析 2~3 次（0.17ms/次）。
 
 行走只播 `anis[2]` 的 `[4,5,6,7,8,9]`，静止显示 `anis[0]` 首帧 0。**不要**取 `frame_numbers()` 全帧、
 也不要跟随角色屏的战斗姿势（会混入战斗动作帧）。地图角色与角色屏**姿势**解耦，但**装备**同源。
+
+动画结构（2026-11-19 起）：
+- `ModelAnimations.build(model_id, replace, single_use, add_parts, cloak_model, tints)`
+  把模型 `anis` 编译成 `SpriteFrames`：动作名 `idle`(id 0) / `walk`(id 2) / `action<id>`，
+  帧率 `walk 7fps`、`idle 4fps`，循环取 `anis.loops`。
+- 场景里 `Player/Sprite` 是 **AnimatedSprite2D**；走 `play("walk")`，停 `play("idle")` + `pause()` + `frame = 0`
+  （保持改造前「静止只显示站立首帧」的画面）。
+- `gesture` 里的第二列**不是毫秒**（0 号动画混着 4/1/2），所以不按它换算帧率，按动作类型给固定帧率。
+- 为什么不烘 `.tres`：帧是「基础模型 + 装备换部件 + 外观换发型 + 自由调色」运行时合成的，
+  组合数远超素材数量；`SpriteFrames` 在换装/换外观时重建一次（10 帧约 15ms）。
+- NPC 展厅的 282 个造型仍是静态站立帧（282 个 SpriteFrames ≈ 4 秒，不值当）。
 
 ### 9. NPC
 默认不渲染（`WorldMap.show_npcs = false`），左侧勾选恢复；数据全量保留。
@@ -577,6 +634,9 @@ model JSON 一帧还被解析 2~3 次（0.17ms/次）。
   缓存的空数组会让新图永远读不到元数据。
 - 编辑器左侧面板内容多，套了 `ScrollContainer`；调色板固定 170px，
   **不要**改回 `SIZE_EXPAND_FILL`，否则会把第二版控件挤出可视区。
+- 2026-11-19 起：改完 cfg 必须调 `world_map.refresh()`（重建 TileMapLayer 节点树），
+  只 `queue_redraw()` 只重画底色/标尺，图块不会变。编辑器原有 8 处调用已全部替换。
+- 新增「只看选中层（隐藏其它层）」开关 → `WorldMap.solo_layer(li)`，直接切图层节点 `visible`。
 
 排查套路：先用 `FIT + GRID` 截图读格子坐标 → 用 node 读 `assets/map/<id>.json` 查该格各层
 tile 与附近物件 → 用 `SKIP` / `NOOBJ` / `ONLYLAYER` 逐项排除 → 确认是「资源缺失」「变换错」
@@ -601,6 +661,11 @@ tile 与附近物件 → 用 `SKIP` / `NOOBJ` / `ONLYLAYER` 逐项排除 → 确
 - 部件帧表曾漏导出 1025 个、model 表漏 417 个，已用 `tools/restore_sprite_tables.py` 从原版补齐；
   另有 23 个碎片原版就没有 PNG（补了表也用不上），少量部件（头发/身体）本来就是整图无表。
 - 4 张地图（814/821/908/914）没有视觉 JSON，只有 NPC/名字，用合成网格兜底。
+- 地图数据仍然以 `assets/map/<id>.json` 为唯一真源：TileMapLayer 是**运行时按 JSON 建**的，
+  不是每张图一个 .tscn。想直接在 Godot 的 TileMap 面板里刷图，得先把某张图导出成场景
+  （还没做，属于「把 JSON 真源换成场景真源」的下一步）。
+- 物件层不是 TileMapLayer（自由坐标 + 旋转，网格放不下），但已经是独立节点。
+- 没有 y-sort：角色/物件的前后关系仍按原版图层顺序，不按 y 坐标排序。
 
 ## 环境备注
 

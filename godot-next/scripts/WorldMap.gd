@@ -14,6 +14,9 @@ extends Node2D
 
 const GameData = preload("res://scripts/GameData.gd")
 const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
+const MapTiles = preload("res://scripts/MapTiles.gd")
+const MapObjectLayer = preload("res://scripts/MapObjectLayer.gd")
+const MapCellOverlay = preload("res://scripts/MapCellOverlay.gd")
 
 const MAP_DIR = "res://assets/map/"
 const ATLAS_DIR = "res://assets/map_merged/"
@@ -60,6 +63,20 @@ var _skip_tiles: Array = []
 var _name_root: Node2D
 var npcs: Array = []
 
+## ---- 渲染节点（TileMapLayer / 物件层） -------------------------------------
+## 每个原版图层在这里都是一个真实节点，按原版 addChild 顺序排列：
+## 下标 0 = 最底层。旧实现是「在 _draw 里倒序单遍画」，现在改成节点树顺序，
+## 好处是图层能在编辑器里看到、能单独隐藏、以后可以做 y-sort。
+var _layer_root: Node2D
+## 图层节点列表（与 cfg.layers 一一对应；值为 Node2D / TileMapLayer）
+var _layer_nodes: Array = []
+## 补洞层：旧实现是画在所有图层之下，这里作为最底部的 TileMapLayer。
+var _prefill_layer: TileMapLayer = null
+## 补洞算出来的填充格 [{index, info}]，由 _prefill_holes() 产出
+var _prefill_cells: Array = []
+## 100 号地图的「压暗」叠层格（原版素材偏亮，只对指定资源名轻压一层暗色）
+var _tone_cells: Dictionary = {}
+
 
 func _ready() -> void:
 	if OS.has_environment("WORLDOL_SKIP"):
@@ -87,6 +104,13 @@ func _ready() -> void:
 		_name_root = Node2D.new()
 		_name_root.name = "Names"
 		add_child(_name_root)
+	# 图层容器：必须排在 Npcs 之前，NPC / 名字才画在地面之上。
+	_layer_root = get_node_or_null("Layers")
+	if _layer_root == null:
+		_layer_root = Node2D.new()
+		_layer_root.name = "Layers"
+		add_child(_layer_root)
+	move_child(_layer_root, 0)
 
 
 func load_map(id: int) -> bool:
@@ -146,6 +170,7 @@ func load_map(id: int) -> bool:
 		if frame_file is Dictionary and frame_file.get("frames") is Dictionary:
 			_atlas_frames = frame_file["frames"]
 
+	_rebuild_render()
 	_build_npcs(id)
 	queue_redraw()
 	map_loaded.emit(id)
@@ -188,6 +213,7 @@ func npc_texture_for(icon: String) -> Texture2D:
 
 
 func _build_npcs(id: int) -> void:
+	_ensure_roots()
 	for c in _npc_root.get_children():
 		c.free()
 	for c in _name_root.get_children():
@@ -317,7 +343,7 @@ func rebuild_from_cfg() -> void:
 	_bright_cache.clear()
 	_solid_cache.clear()
 	_broken_cells.clear()
-	queue_redraw()
+	refresh()
 
 
 func map_size() -> Vector2:
@@ -380,116 +406,8 @@ func _draw() -> void:
 		for y in range(0, h, _tile_h):
 			draw_line(Vector2(0, y), Vector2(w, y), Color(0.22, 0.24, 0.3, 0.45), 1.0)
 
-	# 原版 scene.init 是 i=length-1 downto 0 逐个 addChild：layers[0] 最后加、画在最上层。
-	# 所以这里必须倒序画，正序画会让 tile 层盖住前面的物件层。
-	var layers: Array = cfg.get("layers", [])
-	# 最先铺一层「兜底地面」：把所有 tile 层都没画过的内圈格子，用最近的真实地面补上。
-	# 必须在所有图层之下，才不会盖住湖面/桥/台阶（它们下层本来有 tile）。
-	if _only_layer < 0 and prefill_enabled:
-		_prefill_holes(layers)
-	# 单遍倒序，和原版 addChild 顺序完全一致：tile / 物件层之间的前后关系不能打乱。
-	for li in range(layers.size() - 1, -1, -1):
-		if _only_layer >= 0 and li != _only_layer:
-			continue
-		var layer = layers[li]
-		if not (layer is Dictionary):
-			continue
-		var type := int(layer.get("type", 0))
-		if type == 2 and layer.get("data") is Array:
-			var cells: Array = layer["data"]
-			var count := mini(cells.size(), _cols * _rows)
-			var painted: Array = []
-			var info: Array = []
-			painted.resize(count)
-			info.resize(count)
-			painted.fill(false)
-			for i in range(count):
-				# 引用坏资源的格子：整格不画 tile，只留底下补出来的地面
-				# （否则 layer5 的淡色 106_1 会把补好的地面又盖回去）。
-				if not _broken_cells.is_empty() and i < _broken_cells.size() \
-						and _broken_cells[i]:
-					continue
-				# 原版 sliceLayer.loadSlice 是 `cfg.data[i] & 255`：负数不是空格，
-				# 而是按字节解码的 tileList 索引（约 1.8 万个格子），-1 解码后正好是 255 空。
-				var idx := int(cells[i]) & 255
-				if idx == 255 or idx >= _tile_list.size():
-					continue
-				var t: Dictionary = _tile_list[idx]
-				if not _skip_tiles.is_empty() and _skip_tiles.has(str(t.get("src", ""))):
-					continue
-				var res = _resolve(str(t.get("src", "")), true)
-				if res.is_empty():
-					if OS.has_environment("WORLDOL_DEBUG_SKIP"):
-						print("[skip] layer=", li, " col=", i % _cols, " row=", i / _cols,
-							" src=", t.get("src"), " col/row=", t.get("col"), "/", t.get("row"))
-					continue
-				var region: Rect2 = res.get("region")
-				# 图集可能是 3x3 / 5x1 / 4x1，横纵各自判断，不能要求两轴都大于格子。
-				var crop_x := region.size.x > _tile_w
-				var crop_y := region.size.y > _tile_h
-				region = Rect2(
-					region.position.x + (int(t.get("col", 0)) * _tile_w if crop_x else 0),
-					region.position.y + (int(t.get("row", 0)) * _tile_h if crop_y else 0),
-					_tile_w if crop_x else region.size.x,
-					_tile_h if crop_y else region.size.y)
-				var transform := int(t.get("transform", 0))
-				var dest := Rect2(i % _cols * _tile_w, i / _cols * _tile_h, _tile_w, _tile_h)
-				_draw_tex(res.get("texture"), dest, region, transform)
-				# 100 号中下部那块地面（106_1）原版素材本身偏亮（亮度≈0.60，周围草地≈0.45），
-				# 上层本该盖住它的 182/183 在原版资源表里根本不存在，于是整片发白很突兀。
-				# 这里只做「轻微压暗」，不换铺装、不改其他地图。
-				if map_id == _tone_down_map and _tone_down_srcs.has(str(t.get("src", ""))):
-					draw_rect(dest, Color(0, 0, 0, _tone_down_alpha), true)
-				painted[i] = true
-				info[i] = {"texture": res.get("texture"), "region": region,
-					"transform": transform}
-
-			# ★ 空格（idx=255）是原版语义上的「透明」，必须保持不画：
-			#   水面、桥下、台阶空缺都靠它露出下层/背景。曾试过把空格也补成地面，
-			#   结果 2 号湖面、7 号桥下、17 号台阶全被填成色块——不要再这么干。
-			# 只补「索引有效但资源没导出」的格子（原版有贴图，包里缺文件）。
-			for i in range(count):
-				if painted[i]:
-					continue
-				if (int(cells[i]) & 255) == 255:
-					continue
-				var from := _nearest_painted(i, painted)
-				if from < 0:
-					continue
-				var d: Dictionary = info[from]
-				_draw_tex(d.get("texture"), Rect2(i % _cols * _tile_w,
-					i / _cols * _tile_h, _tile_w, _tile_h), d.get("region"),
-					int(d.get("transform", 0)))
-		elif layer.get("obj") is Array and not _no_objects:
-			for obj in layer["obj"]:
-				if not (obj is Array) or obj.size() < 6:
-					continue
-				var kind := int(obj[0])
-				var x := float(obj[2])
-				var y := float(obj[3])
-				if kind == 2:
-					if not _skip_srcs.is_empty() and _skip_srcs.has(str(obj[1])):
-						continue
-					var res = _resolve(str(obj[1]))
-					if not res.is_empty():
-						var size: Vector2 = res.get("region").size if bool(res.get("logical", false)) \
-							else Vector2(float(obj[4]), float(obj[5]))
-						var tr := int(obj[6]) if obj.size() > 6 else 0
-						if _ignore_transform:
-							tr = 0
-						_draw_tex(res.get("texture"), Rect2(x, y, size.x, size.y),
-							res.get("region"), tr)
-				elif kind == 3 or kind == 4:
-					if not show_npcs:
-						continue
-					var tex := _model_texture(int(obj[5]))
-					if tex != null:
-						var flip = -1.0 if int(obj[4]) != 0 else 1.0
-						draw_set_transform(Vector2(x, y), 0.0, Vector2(0.45 * flip, 0.45))
-						draw_texture(tex, Vector2(-SpriteComposer.CANVAS_W / 2.0,
-							-SpriteComposer.ANCHOR_Y))
-						draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-
+	# 地面/物件已经全部交给 Layers 下的子节点（TileMapLayer / MapObjectLayer），
+	# 这里只画不需要进图层树的东西：底色、合成网格底衬、排查标尺。
 	# 排查用：WORLDOL_GRID=1 画格子标尺，方便肉眼读出某块画面属于哪一格。
 	if OS.has_environment("WORLDOL_GRID"):
 		for gx in range(0, _cols + 1, 5):
@@ -498,6 +416,236 @@ func _draw() -> void:
 		for gy in range(0, _rows + 1, 5):
 			draw_line(Vector2(0, gy * _tile_h), Vector2(w, gy * _tile_h),
 				Color(1, 0, 0, 0.5), 1.0)
+
+
+# ---------------------------------------------------------------- 图层节点
+
+## 按 cfg 重建整棵图层节点树。旧实现是「在 _draw 里倒序单遍画」，
+## 这里保持同一顺序：先建的是下层，最后建的在最上面（layers[0] 与 Npcs 一同在最上）。
+func _rebuild_render() -> void:
+	_ensure_roots()
+	_clear_layers()
+	_prefill_cells.clear()
+	_tone_cells.clear()
+	_broken_cells.clear()
+	if cfg.is_empty():
+		return
+	var layers: Array = cfg.get("layers", [])
+	if _only_layer < 0 and prefill_enabled:
+		_prefill_holes(layers)
+	if not _prefill_cells.is_empty():
+		_prefill_layer = _new_tile_layer("Prefill", -2)
+		for c in _prefill_cells:
+			var ref := _tile_ref(str(c.get("src", "")), int(c.get("col", 0)),
+				int(c.get("row", 0)), int(c.get("transform", 0)))
+			_apply_tile_ref(_prefill_layer, int(c.get("index", 0)), ref)
+	for li in range(layers.size() - 1, -1, -1):
+		if _only_layer >= 0 and li != _only_layer:
+			continue
+		var layer = layers[li]
+		if not (layer is Dictionary):
+			continue
+		if int(layer.get("type", 0)) == 2 and layer.get("data") is Array:
+			_build_tile_layer(li, layer)
+		elif layer.get("obj") is Array and not _no_objects:
+			_build_object_layer(li, layer)
+	_keep_npcs_on_top()
+
+
+## 改完 cfg 后的统一入口（地图编辑器在用）：重建节点树 + 重画底色/标尺。
+func refresh() -> void:
+	_rebuild_render()
+	queue_redraw()
+
+
+## 图层容器：必须排在 Npcs 之前，NPC / 名字才画在地面之上。
+## ★ 懒建：--script 模式下节点的 _ready 不会触发，验收脚本会直接调 load_map()。
+func _ensure_roots() -> void:
+	if _npc_root == null or not is_instance_valid(_npc_root):
+		_npc_root = get_node_or_null("Npcs")
+		if _npc_root == null:
+			_npc_root = Node2D.new()
+			_npc_root.name = "Npcs"
+			add_child(_npc_root)
+	if _name_root == null or not is_instance_valid(_name_root):
+		_name_root = get_node_or_null("Names")
+		if _name_root == null:
+			_name_root = Node2D.new()
+			_name_root.name = "Names"
+			add_child(_name_root)
+	if _layer_root != null and is_instance_valid(_layer_root):
+		return
+	_layer_root = get_node_or_null("Layers")
+	if _layer_root == null:
+		_layer_root = Node2D.new()
+		_layer_root.name = "Layers"
+		add_child(_layer_root)
+	move_child(_layer_root, 0)
+
+
+func _clear_layers() -> void:
+	if _layer_root == null:
+		return
+	for c in _layer_root.get_children():
+		_layer_root.remove_child(c)
+		c.queue_free()
+	_layer_nodes.clear()
+	_prefill_layer = null
+
+
+func _new_tile_layer(node_name: String, layer_index: int = -1) -> TileMapLayer:
+	var l := TileMapLayer.new()
+	l.name = node_name
+	l.tile_set = MapTiles.tileset()
+	# 记住自己对应 cfg.layers 的哪一层：编辑器的「只看当前层」按这个切显隐。
+	l.set_meta("layer_index", layer_index)
+	# ★ 不要在这里写死纹理过滤：旧实现走 WorldMap 的 _draw，继承的是同一个默认过滤。
+	#   改成 NEAREST 会和改造前的画面产生整片「半像素」差异（缩放时尤其明显）。
+	l.texture_filter = CanvasItem.TEXTURE_FILTER_PARENT_NODE
+	# 图层顺序靠树顺序，不用 z_index：z_index 会把同层内部的前后关系也打乱。
+	_layer_root.add_child(l)
+	_layer_nodes.append(l)
+	return l
+
+
+## 一个格子上一块 tile：source + 图集坐标 + 镜像变体。
+func _apply_tile_ref(layer: TileMapLayer, index: int, ref: Dictionary) -> void:
+	if ref.is_empty() or _cols <= 0:
+		return
+	layer.set_cell(Vector2i(index % _cols, index / _cols),
+		int(ref.get("source", -1)), ref.get("coords", Vector2i.ZERO), int(ref.get("alt", 0)))
+
+
+## 资源名 + 图集子格 + 变换 → 可直接 set_cell 的引用。
+## 返回空字典 = 这张图在本工程的 TileSet 里没有（原版就缺图，如 663/182/183）。
+func _tile_ref(src_name: String, col: int, row: int, transform: int) -> Dictionary:
+	var e := MapTiles.entry(src_name)
+	if e.is_empty():
+		return {}
+	var cols := int(e.get("cols", 1))
+	var rows := int(e.get("rows", 1))
+	# 定义格数比图大时（原版也有这种脏数据）夹回图内，避免整格消失。
+	return {
+		"source": int(e.get("source", -1)),
+		"coords": Vector2i(clampi(col, 0, maxi(cols - 1, 0)),
+			clampi(row, 0, maxi(rows - 1, 0))),
+		"alt": MapTiles.alt(src_name, transform),
+	}
+
+
+func _build_tile_layer(li: int, layer: Dictionary) -> void:
+	var cells_data: Array = layer["data"]
+	var count := mini(cells_data.size(), _cols * _rows)
+	if count <= 0:
+		return
+	var l := _new_tile_layer("Layer%d_tiles" % li, li)
+	var built: Dictionary = {}
+	var tone: Array = []
+	for i in range(count):
+		# 引用坏资源的格子：整格不画 tile，只留底下补出来的地面
+		if not _broken_cells.is_empty() and i < _broken_cells.size() and _broken_cells[i]:
+			continue
+		# 原版 sliceLayer.loadSlice 是 `cfg.data[i] & 255`：负数不是空格，
+		# 而是按字节解码的 tileList 索引，-1 解码后正好是 255 空。
+		var idx := int(cells_data[i]) & 255
+		if idx == 255 or idx >= _tile_list.size():
+			continue
+		var t: Dictionary = _tile_list[idx]
+		var src_name := str(t.get("src", ""))
+		if not _skip_tiles.is_empty() and _skip_tiles.has(src_name):
+			continue
+		var ref := _tile_ref(src_name, int(t.get("col", 0)), int(t.get("row", 0)),
+			int(t.get("transform", 0)))
+		if ref.is_empty():
+			if OS.has_environment("WORLDOL_DEBUG_SKIP"):
+				print("[skip] layer=", li, " col=", i % _cols, " row=", i / _cols,
+					" src=", src_name)
+			continue
+		built[i] = ref
+		if map_id == _tone_down_map and _tone_down_srcs.has(src_name):
+			tone.append(i)
+	# ★ 空格（idx=255）是原版语义上的「透明」，必须保持不画：
+	#   水面、桥下、台阶空缺都靠它露出下层/背景。曾试过把空格也补成地面，
+	#   结果 2 号湖面、7 号桥下、17 号台阶全被填成色块——不要再这么干。
+	# 只补「索引有效但资源没导出」的格子（原版有贴图，包里缺文件）。
+	# ★ 补缺只在「本层原本就画出来的格子」里找样本，不能在补出来的格子上二次传染：
+	#   旧实现用不会更新的 painted 数组，补出来的格子不参与查找；这里用快照保持一致，
+	#   否则缺图区的材质会一层层向内扩散，整片颜色和老版本对不上（实测 121 格全差）。
+	var sources := built.duplicate()
+	for i in range(count):
+		if built.has(i):
+			continue
+		if (int(cells_data[i]) & 255) == 255:
+			continue
+		var from := _nearest_built(i, sources)
+		if from < 0:
+			continue
+		built[i] = built[from]
+	for i in built.keys():
+		_apply_tile_ref(l, int(i), built[i])
+	# 100 号中下部那块地面（106_1）原版素材本身偏亮，上层本该盖住它的 182/183
+	# 在原版资源表里根本不存在，整片发白很突兀 —— 只对它轻压一层暗色。
+	if not tone.is_empty():
+		var ov := MapCellOverlay.new()
+		ov.name = "Layer%d_tone" % li
+		ov.cell_size = Vector2(_tile_w, _tile_h)
+		ov.cells = tone
+		ov.cols = _cols
+		ov.tint = Color(0, 0, 0, _tone_down_alpha)
+		ov.set_meta("layer_index", li)
+		_layer_root.add_child(ov)
+		_layer_nodes.append(ov)
+
+
+func _build_object_layer(li: int, layer: Dictionary) -> void:
+	var n := MapObjectLayer.new()
+	n.name = "Layer%d_objects" % li
+	n.set("map", self)
+	n.set("objects", layer["obj"])
+	n.set_meta("layer_index", li)
+	_layer_root.add_child(n)
+	_layer_nodes.append(n)
+
+
+## 「只看某一层」（地图编辑器用）：li < 0 全部显示。
+## 图层是真实节点，切 visible 即可，不用重算数据，也不会影响碰撞/数据本身。
+func solo_layer(li: int) -> void:
+	if _layer_root == null or not is_instance_valid(_layer_root):
+		return
+	for c in _layer_root.get_children():
+		c.visible = li < 0 or int(c.get_meta("layer_index", -1)) == li
+
+
+## 当前建出来的图层节点（自检/编辑器统计用）。
+func layer_nodes() -> Array:
+	return _layer_nodes.duplicate()
+
+
+## NPC / 名字永远画在图层树之上（旧实现里它们是兄弟节点，天然在所有 _draw 之上）。
+func _keep_npcs_on_top() -> void:
+	if _npc_root != null and _npc_root.get_parent() == self:
+		move_child(_npc_root, -1)
+	if _name_root != null and _name_root.get_parent() == self:
+		move_child(_name_root, -1)
+
+
+## 同层内找最近一个「已经确定 tile」的格子（补缺图用）。
+func _nearest_built(index: int, built: Dictionary) -> int:
+	var col := index % _cols
+	var row := index / _cols
+	for radius in range(1, 6):
+		for dr in range(-radius, radius + 1):
+			for dc in range(-radius, radius + 1):
+				if maxi(absi(dr), absi(dc)) != radius:
+					continue
+				var nc := col + dc
+				var nr := row + dr
+				if nc < 0 or nr < 0 or nc >= _cols or nr >= _rows:
+					continue
+				var ni := nr * _cols + nc
+				if built.has(ni):
+					return ni
+	return -1
 
 
 ## 把所有 tile 层都没覆盖到的「内圈空洞」用最近的真实地面补上。
@@ -563,7 +711,8 @@ func _prefill_holes(layers: Array) -> void:
 			if _region_brightness(res.get("texture"), region) < 0.12:
 				continue
 			final_info[i] = {"texture": res.get("texture"), "region": region,
-				"transform": int(t.get("transform", 0)), "src": str(t.get("src", ""))}
+				"transform": int(t.get("transform", 0)), "src": str(t.get("src", "")),
+				"col": int(t.get("col", 0)), "row": int(t.get("row", 0))}
 	# 白名单地图里：最终可见地面是「过亮的浅色地面」的格子，也当空洞重填。
 	# 100 号中下部整片是 106_1（原版就是这张淡色图，亮度≈0.60），
 	# 上层本该盖住它的 182/183 在资源表里不存在，于是整片发白、边缘是直角阶梯。
@@ -634,7 +783,9 @@ func _fill_enclosed_holes(final_info: Array) -> int:
 				# 取图集里偏暗的那一格当草地主体（304 的 (0,1) 亮度≈0.45）。
 				reg0 = Rect2(reg0.position.x, reg0.position.y + _tile_h, _tile_w, _tile_h)
 			broken_fill = {"texture": rr.get("texture"), "region": reg0,
-				"transform": 0, "src": str(_replace_ground[map_id])}
+				"transform": 0, "src": str(_replace_ground[map_id]),
+				# reg0 是切片图里的某个子格：坐标要一起带上，补洞层才能写成真图块。
+				"col": int(reg0.position.x) / _tile_w, "row": int(reg0.position.y) / _tile_h}
 	if broken_fill.is_empty() and not _broken_cells.is_empty():
 		for i in range(cell_total):
 			if i >= _broken_cells.size() or not bool(_broken_cells[i]):
@@ -713,12 +864,17 @@ func _fill_enclosed_holes(final_info: Array) -> int:
 				if pick < 0:
 					continue
 				d2 = final_info[pick]
-			_draw_tex(d2.get("texture"), Rect2(cur2 % _cols * _tile_w,
-				cur2 / _cols * _tile_h, _tile_w, _tile_h), d2.get("region"),
-				int(d2.get("transform", 0)))
+			# 旧实现在这里直接 draw_tex；现在只登记，由 _rebuild_render() 写进最底层的
+			# TileMapLayer（补洞层），这样补出来的地面依旧是「真图块」，能单独隐藏/统计。
+			_prefill_cells.append({
+				"index": cur2,
+				"src": str(d2.get("src", "")), "col": int(d2.get("col", 0)),
+				"row": int(d2.get("row", 0)), "transform": int(d2.get("transform", 0)),
+			})
 			final_info[cur2] = {
 				"texture": d2.get("texture"), "region": d2.get("region"),
-				"transform": int(d2.get("transform", 0)), "src": str(d2.get("src", ""))}
+				"transform": int(d2.get("transform", 0)), "src": str(d2.get("src", "")),
+				"col": int(d2.get("col", 0)), "row": int(d2.get("row", 0))}
 			filled += 1
 			var c2: int = cur2 % _cols
 			var r2: int = cur2 / _cols

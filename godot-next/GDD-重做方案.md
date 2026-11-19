@@ -8,7 +8,7 @@
 | 工程位置 | 工作区 `godot-next/`（独立于源码仓库） |
 | 本机环境 | `D:\Godot\Godot_v4.6.3-stable_win64.exe`（4.6.3.stable.official，2026-11-17 全量自检 + 三个验收脚本通过） |
 | 官方当前稳定版 | **4.7.2**（2026-08-18）；4.3 已 EOL，当前工程在 4.6.3 上验证通过 |
-| 进度 | 阶段 0 ✅ 素材落地；阶段 1 ✅ 角色屏；阶段 2 ✅ 数据编译；**阶段 3 ✅ 世界地图 + 全部 NPC + 角色行走**；**阶段 3.5 ✅ 装备系统基础版**（2026-11-18，无战斗联动）；**阶段 3.6 ✅ NPC 展厅 + NPC 编辑器**（2026-11-18，NPC 暂不进原地图，交互待设计）；**阶段 3.7 ✅ 角色外观系统 + 自由 RGB 调色**（2026-11-19），见 §1.1–§1.6 |
+| 进度 | 阶段 0 ✅ 素材落地；阶段 1 ✅ 角色屏；阶段 2 ✅ 数据编译；**阶段 3 ✅ 世界地图 + 全部 NPC + 角色行走**；**阶段 3.5 ✅ 装备系统基础版**（2026-11-18，无战斗联动）；**阶段 3.6 ✅ NPC 展厅 + NPC 编辑器**（2026-11-18，NPC 暂不进原地图，交互待设计）；**阶段 3.7 ✅ 角色外观系统 + 自由 RGB 调色**（2026-11-19）；**阶段 3.8 ✅ 渲染资产化：TileSet / TileMapLayer / SpriteFrames**（2026-11-19），见 §1.1–§1.7 |
 | 旧 JS 仓库 | 阶段 2 那两批未提交改动已按指示**全部丢弃**；仓库干净，HEAD 停在 `13dc5e8` |
 
 > **取舍已明确**：测试护栏不是目标，不为它保留 JS 工程；数值一致性按「可玩、可人工核对」推进，
@@ -517,6 +517,51 @@ s_hi = min(1.05, 1/目标S)   v_top = min(1.40, 1/目标V)     # 目标很亮/�
   没有证据表明它们会换部件，先不接。
 - **装备改色**：本轮只做角色本体（发/脸/手/脚）；衣裤武器的颜色仍由道具 `icon` 决定。
   要改的话同一条 `tints` 链路可以直接复用，只是要先定义「装备调色存哪」。
+
+---
+
+## 1.7 阶段 3.8 · 渲染资产化：TileSet / TileMapLayer / SpriteFrames（2026-11-19 落地并验收）
+
+**动机**：地图和角色此前都是「按字符串查文件 + 每帧即时绘制」，图块没有引擎侧身份，
+图层不是节点，动画是手写计时器。改成引擎原生结构后，图块能在 TileSet 编辑里看到、
+图层能在场景树里单独隐藏、动画变成有名字的 SpriteFrames。
+
+### 地图：一个原版图层 = 一个节点
+
+- `assets/tilesets/map_ground.tres`：由 `tools/build_map_tileset.gd` 从 206 张
+  `map_slice/*.png` 生成 —— 一图一 `TileSetAtlasSource`、纹理区域 24×24、
+  地图里真用到的镜像组合建成 alternative tile（共 920 图块 + 1164 变体，122KB）。
+- `WorldMap` 按 `cfg.layers` 倒序建节点：地块层 → `TileMapLayer`（共用同一 TileSet）、
+  物件层 → `MapObjectLayer`、补洞 → 最底 `Prefill` 层、100 号压暗 → `MapCellOverlay`。
+  顺序仍由树顺序决定（`layers[0]` 最后建 = 最上层），不用 z_index。
+- 物件层**不进** TileMapLayer：物件是任意像素坐标 + 8 种旋转，整数网格放不下。
+- 补洞从「每帧算」变成「载入时算一次」；`refresh()` 是改完 cfg 的唯一刷新入口；
+  新增 `solo_layer(li)` 供编辑器「只看选中层」。
+
+### 动画：SpriteFrames + AnimatedSprite2D
+
+- `ModelAnimations.build()` 把模型 `anis` 编译成 `SpriteFrames`：
+  `idle`(id 0, 4fps) / `walk`(id 2, 7fps) / `action<id>`，循环取 `anis.loops`。
+- `Player/Sprite` 换成 `AnimatedSprite2D`；走 `play("walk")`，停 `play("idle")+pause()+frame 0`。
+- 不烘 `.tres`：帧是「模型 + 装备 + 外观 + 调色」运行时合成的，组合数远超素材数量，
+  换装/换外观时重建一次（10 帧约 15ms）。
+
+### 验收
+
+- 同分辨率（`--resolution 1200x960` + `WORLDOL_FIT=1`）新旧截图逐像素对比：
+  地图 4 / 100 / 17 / 458 / 2020 / 9901 **全部 0 像素差**。
+- `verify_world_map` 新增 9 项：图层节点类型/数量、共享 TileSet、实铺格数、
+  `solo_layer` 显隐、SpriteFrames 两条动作/帧数/帧率/循环、节点绑定、
+  行走播 walk、停下回 idle 首帧。
+- 载入开销：地图 4（首次，含 TileSet 加载）129ms，其余 8–32ms；
+  `refresh()`（编辑器每次涂格子）8–18ms。
+
+### 明确不做
+
+- **不把地图改成 .tscn 真源**：`assets/map/<id>.json` 仍是唯一数据源，TileMapLayer 运行时按它建。
+  想直接在 Godot 的 TileMap 面板里刷图，需要另做「导出成场景」的一步。
+- **不做 y-sort**：前后关系仍按原版图层顺序。
+- **NPC 展厅不播动画**：282 个 SpriteFrames 约 4 秒，不值当。
 
 ---
 

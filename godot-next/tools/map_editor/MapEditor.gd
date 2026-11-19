@@ -59,6 +59,7 @@ var status_label: Label
 var save_button: Button
 var undo_button: Button
 var grid_check: CheckBox
+var solo_check: CheckBox
 var block_check: CheckBox
 var mode_tile_btn: Button
 var mode_block_btn: Button
@@ -131,7 +132,7 @@ func load_map(id: int) -> void:
 	_refresh_undo_button()
 	_refresh_title()
 	zoom_to_fit()
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 	var nm := data.name_of("worldMaps", id)
 	var synthetic := bool(cfg.get("__synthetic", false))
@@ -323,7 +324,7 @@ func _paint_tile(cell: Vector2i, cols: int, rows: int, erase: bool) -> void:
 		return
 	_record_undo("tile", data_arr, layer_index)
 	data_arr[index] = want
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 
 
@@ -354,7 +355,7 @@ func _paint_block(cell: Vector2i, cols: int, rows: int, erase: bool) -> void:
 		return
 	_record_undo("block", blocks)
 	blocks[index] = want
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 
 
@@ -409,7 +410,7 @@ func undo_last() -> void:
 		# 结构变化（图层增删/改尺寸/批量替换/物件层整体）用整 cfg 快照原地恢复。
 		_restore_cfg_snapshot(before)
 	dirty = true
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 	_refresh_undo_button()
 	_refresh_title()
@@ -605,7 +606,13 @@ func _build_ui() -> void:
 	layer_list = ItemList.new()
 	layer_list.custom_minimum_size = Vector2(0, 108)
 	layer_list.item_selected.connect(_on_layer_selected)
+
+	solo_check = CheckBox.new()
+	solo_check.text = "只看选中层（隐藏其它层）"
+	solo_check.add_theme_font_size_override("font_size", 12)
+	solo_check.toggled.connect(func(_v): _apply_solo())
 	box.add_child(layer_list)
+	box.add_child(solo_check)
 
 	box.add_child(HSeparator.new())
 
@@ -869,6 +876,7 @@ func _rebuild_layers() -> void:
 			layer_list.set_item_custom_fg_color(i, Color(0.62, 0.64, 0.70))
 	if layer_index >= 0 and layer_index < layer_list.item_count:
 		layer_list.select(layer_index)
+	_apply_solo()
 
 
 func _layer_kind(kind: int) -> String:
@@ -891,7 +899,17 @@ func _on_layer_selected(index: int) -> void:
 		_set_status("图层 %d 是物件/角色层：可以查看，但不能用 tile 画笔" % index, false)
 	else:
 		_set_status("正在编辑地块图层 %d" % index, false)
+	_apply_solo()
 	overlay.queue_redraw()
+
+
+## 图层现在是真的节点（TileMapLayer / MapObjectLayer），
+## 所以「只看选中层」只是切 visible，不重算任何数据。
+func _apply_solo() -> void:
+	if world_map == null:
+		return
+	var on := solo_check != null and solo_check.button_pressed
+	world_map.call("solo_layer", layer_index if on else -1)
 
 
 func _rebuild_palette() -> void:
@@ -1332,7 +1350,7 @@ func _place_obj(src: String, world: Vector2) -> void:
 	dirty = true
 	_refresh_title()
 	_refresh_undo_button()
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 	_set_status("放置物件 %s @ (%.0f,%.0f)" % [src, x, y], false)
 
@@ -1352,7 +1370,7 @@ func _delete_selected_obj() -> void:
 	dirty = true
 	_refresh_title()
 	_refresh_undo_button()
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	_set_status("已删除物件 %s" % (str((obj as Array)[1]) if obj is Array else "?"), false)
 
 
@@ -1375,7 +1393,7 @@ func _rotate_selected_obj() -> void:
 	dirty = true
 	_refresh_title()
 	_refresh_undo_button()
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 	_set_status("物件 %s 变换 %d → %d" % [str(oa[1]), tr, int(oa[6])], false)
 
@@ -1387,7 +1405,7 @@ func _move_selected_obj(delta: Vector2) -> void:
 	var arr: Array = obj
 	arr[2] = snappedf(float(arr[2]) + delta.x, float(OBJ_SNAP))
 	arr[3] = snappedf(float(arr[3]) + delta.y, float(OBJ_SNAP))
-	world_map.queue_redraw()
+	world_map.call("refresh")
 	overlay.queue_redraw()
 
 

@@ -10,14 +10,14 @@ const SpriteComposer = preload("res://scripts/SpriteComposer.gd")
 const Equipment = preload("res://scripts/Equipment.gd")
 const GameData = preload("res://scripts/GameData.gd")
 const Appearance = preload("res://scripts/Appearance.gd")
+const ModelAnimations = preload("res://scripts/ModelAnimations.gd")
 
-@onready var sprite: Sprite2D = get_node_or_null("Sprite")
+@onready var sprite: AnimatedSprite2D = get_node_or_null("Sprite")
 
 var game_data = GameData.new()
 var world_map: Node2D = null
 var screen_state = null
 var speed: float = 132.0
-var walk_fps: float = 7.0
 ## 1 = 朝右，-1 = 朝左。★ 原版素材（sprite_model 的站立/行走帧）默认朝左，
 ## 所以「朝右」必须水平镜像：sprite.scale.x 取负值。早期实现按「素材朝右」取符号，
 ## 结果按左键人物朝右、按右键人物朝左。
@@ -26,8 +26,7 @@ var _frames: Array = []          # 行走序列（anis id=2），不是全部帧
 var _walk_model_id: int = 300
 var _stand_frame: int = 0
 var _textures: Dictionary = {}
-var _frame_index: int = 0
-var _timer: float = 0.0
+var _anim_frames: SpriteFrames = null
 var _moving: bool = false
 ## 当前外观：Equipment.appearance() 的返回值（含 model_id / part_replace / cloak_model）
 var _look: Dictionary = {}
@@ -117,8 +116,24 @@ func _rebuild_frames() -> void:
 		_frames = [0]
 	var stand := _gesture(_walk_model_id, 0)
 	_stand_frame = int(stand[0]) if not stand.is_empty() else int(_frames[0])
-	_frame_index = 0
 	_textures.clear()
+	# 动画交给 SpriteFrames：动作名（idle / walk）、帧率、循环都在资源里，
+	# 换装/换外观时按同一套合成规则重建一次。
+	_anim_frames = ModelAnimations.build(_walk_model_id, _replace,
+		_look.get("single_use", []), _look.get("add_parts", []),
+		int(_look.get("cloak_model", 0)), _tints)
+	if sprite != null:
+		sprite.sprite_frames = _anim_frames
+		_apply_sprite_layout()
+
+
+## 人物的锚点/镜像。AnimatedSprite2D 与原来的 Sprite2D 用同一套参数，
+## 保证改造前后站位、朝向完全一致（负 scale.x = 水平镜像）。
+func _apply_sprite_layout() -> void:
+	if sprite == null:
+		return
+	sprite.offset = Vector2(-SpriteComposer.CANVAS_W / 2.0, -SpriteComposer.ANCHOR_Y)
+	sprite.scale = Vector2(-0.5 * float(facing), 0.5)
 
 
 func set_tile(gx: int, gy: int) -> void:
@@ -162,21 +177,26 @@ func _physics_process(delta: float) -> void:
 			position.y += dy
 		if absf(v.x) > 0.1:
 			facing = 1 if v.x > 0.0 else -1
-		_timer += delta
-		if _timer >= 1.0 / maxf(1.0, walk_fps):
-			_timer = 0.0
-			_frame_index = (_frame_index + 1) % _frames.size()
+	# 静止只显示站立首帧（旧行为），移动播 walk；动作由 SpriteFrames 驱动。
+	if _anim_frames == null or sprite.sprite_frames != _anim_frames:
+		_rebuild_frames()
+	if sprite.sprite_frames == null:
+		return
+	var walk_anim := ModelAnimations.anim_name(2)
+	var idle_anim := ModelAnimations.anim_name(0)
+	if not sprite.sprite_frames.has_animation(walk_anim):
+		walk_anim = idle_anim
+	if not sprite.sprite_frames.has_animation(idle_anim):
+		idle_anim = sprite.sprite_frames.get_animation_names()[0]
+	if _moving:
+		if sprite.animation != walk_anim or not sprite.is_playing():
+			sprite.play(walk_anim)
 	else:
-		_frame_index = 0
-		_timer = 0.0
-
-	# 静止显示站立首帧，移动才播行走序列；不再把全部帧（含战斗帧）轮一遍。
-	var frame_no := _stand_frame if not _moving else int(_frames[_frame_index])
-	var tex := _texture(frame_no)
-	if tex != null:
-		sprite.texture = tex
-	sprite.scale = Vector2(-0.5 * float(facing), 0.5)
-	sprite.offset = Vector2(-SpriteComposer.CANVAS_W / 2.0, -SpriteComposer.ANCHOR_Y)
+		if sprite.animation != idle_anim or sprite.is_playing():
+			sprite.play(idle_anim)
+			sprite.pause()
+			sprite.frame = 0
+	_apply_sprite_layout()
 
 
 ## 脚下的小圆环：地图上 NPC 很多，给玩家一个稳定的定位标记。
