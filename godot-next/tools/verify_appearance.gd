@@ -2,7 +2,7 @@ extends SceneTree
 ## 外观系统验收（确定性检查，headless）。
 ##   godot --headless --path godot-next --script res://tools/verify_appearance.gd
 ##
-## 覆盖：图号公式（与原版位域一致）、可用档位、替��只动 at=0/1/2/3、
+## 覆盖：图号公式（与原版位域一致）、可用档位、替换只动 at=0/1/2/3、
 ## 换发型/脸/肤色的渲染差异、性别换边、越界回退、存档往返、与装备外观共存。
 
 const Appearance = preload("res://scripts/Appearance.gd")
