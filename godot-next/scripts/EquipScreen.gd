@@ -8,6 +8,7 @@ const Equipment = preload("res://scripts/Equipment.gd")
 const GameData = preload("res://scripts/GameData.gd")
 const Stats = preload("res://scripts/Stats.gd")
 const Naming = preload("res://scripts/Naming.gd")
+const ItemIcons = preload("res://scripts/ItemIcons.gd")
 const CharacterPlayerScript = preload("res://scripts/CharacterPlayer.gd")
 
 @onready var back_button: Button = $Margin/Root/Header/BackButton
@@ -43,6 +44,7 @@ func _ready() -> void:
 	title.text = "世界OL · 装备（基础版）"
 	back_button.text = "← 返回角色屏"
 	_item_ids = []
+	_setup_icon_lists()
 	_fill_slots()
 	_wire()
 	if state != null and not state.is_connected("state_changed", Callable(self, "_on_state")):
@@ -69,6 +71,24 @@ func _wire() -> void:
 	back_button.pressed.connect(_on_back)
 	slot_list.item_selected.connect(_on_slot_selected)
 	item_list.item_selected.connect(_on_item_selected)
+
+
+## 列表左侧留出图标位。图标来自 assets/ui 图集（ItemIcons 按 bagIcon 取矩形），
+## 统一固定成 28px，避免不同图标原尺寸不一（70×70 / 32×32 混着）把行高撑乱。
+func _setup_icon_lists() -> void:
+	item_list.icon_mode = ItemList.ICON_MODE_LEFT
+	item_list.fixed_icon_size = Vector2i(28, 28)
+	item_list.icon_scale = 1.0
+	slot_list.icon_mode = ItemList.ICON_MODE_LEFT
+	slot_list.fixed_icon_size = Vector2i(20, 20)
+
+
+## 道具 id → 列表图标；没有图标就返回 null（ItemList 会自动不留空位）。
+func _icon_of(item_id: int) -> Texture2D:
+	var d := Equipment.item_data(game_data, item_id)
+	if d.is_empty():
+		return null
+	return ItemIcons.texture(int(d.get("bagIcon", -1)))
 
 
 func _fill_slots() -> void:
@@ -113,7 +133,10 @@ func _rebuild_item_list() -> void:
 		var label := name
 		if id == worn_id:
 			label = "✓ " + name + "（已穿）"
-		item_list.add_item(label)
+		var row := item_list.add_item(label)
+		var icon := _icon_of(int(id))
+		if icon != null:
+			item_list.set_item_icon(row, icon)
 	item_title.text = "%s · 可选 %d 件（当前：%s）" % [
 		Equipment.label_of_slot(_current_slot), _item_ids.size(),
 		worn_name if worn_name != "" else "无"
@@ -150,8 +173,10 @@ func _refresh() -> void:
 			if nm.length() > 7:
 				nm = nm.substr(0, 6) + "…"
 			slot_list.set_item_text(i, "%s：%s" % [Equipment.label_of_slot(slot), nm])
+			slot_list.set_item_icon(i, _icon_of(worn_id))
 		else:
 			slot_list.set_item_text(i, "%s：—" % Equipment.label_of_slot(slot))
+			slot_list.set_item_icon(i, null)
 
 	# 外观描述
 	var base_mid := int(state.call("model_id"))

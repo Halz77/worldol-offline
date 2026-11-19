@@ -22,10 +22,12 @@ godot-next/
     map_merged/<mapId>.json|png        该地图的图集（frames 名 → 矩形）
     map_slice/<name>.png               全局切片图集（tile 层主要贴图来源）
     tilesets/map_ground.tres           地面图块库（TileSet，由 tools/build_map_tileset.gd 生成）
+    ui/item_icon*.png|json             道具/坐骑/宠物图标图集 + 子区域帧表
     map_bg/<mapId>.jpg                 ⚠ 不是底图，见下
   data/compiled/
     mapFrames.json                     全局跨图集帧索引（name → atlas + frame）
     tileAtlas.json                     资源名 → TileSet source / 图集坐标 / 镜像变体
+    itemIcons.json                     道具图标号 → 图集 + 矩形（924 个）
     npcs/<mapId>.json                  该地图 NPC
   scripts/
     ScreenState.gd       Autoload，全局状态 + 信号（含 equipped / appearance 两份独立存档）
@@ -44,6 +46,7 @@ godot-next/
     MapCellOverlay.gd    单层格子叠色节点（100 号 106_1 轻微压暗）
     WorldPlayer.gd       地图上的角色（AnimatedSprite2D + SpriteFrames 的 idle/walk）
     ModelAnimations.gd   模型 anis → SpriteFrames（动作命名、帧率、循环）
+    ItemIcons.gd         道具图标号 → AtlasTexture（assets/ui 图集 + itemIcons.json）
     SpriteComposer.gd    运行时拼角色部件成整图
     NpcInfo.gd           NPC 战斗信息聚合（npcType 语义 + battleID→group→monster 数值）
     Naming.gd            中文标签表
@@ -63,6 +66,8 @@ godot-next/
     verify_npc_showcase.gd       NPC 展厅 + 编辑器断言（分页/不重叠/存储往返）
     build_npc_showcase.gd        把 1939 个 NPC 排进展厅分页（一次性生成 override）
     build_map_tileset.gd         扫地图 + map_slice → assets/tilesets/map_ground.tres + 索引
+    verify_assets.gd             资产闸门：缺图 / 图块库过期 / 图标不可用 → 退出码 1
+    extract_ui_frames.mjs        原版资源表 → assets/ui/*.json + data/compiled/itemIcons.json
     map_editor/
       MapEditor.tscn       地图编辑器入口（正常窗口跑，不做 @tool 插件）
       MapEditor.gd         载入 / tile·阻挡·物件三种画笔 / 图层增删 / 新建复制图 / 改尺寸 /
@@ -89,7 +94,11 @@ godot-next/
 不要用旧 4.3 mono 版打开（会重写 project.godot 并加回 dotnet 段，features 打回 4.3）。
 
 ```bash
+# 一键全跑（资产闸门 + 七套验收，按顺序跑；失败会以非 0 退出）
+自检.cmd                     # Windows 直接双击也行；Godot 不在默认路径就 set GODOT=...
+
 # 自检（headless）
+Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_assets.gd
 Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_world_map.gd
 Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_character_screen.gd
 Godot_v4.7.2-stable_win64_console.exe --headless --path godot-next --script res://tools/verify_map_editor.gd
@@ -102,6 +111,19 @@ WORLDOL_CAPTURE=1 WORLDOL_MAP=16 Godot_v4.7.2-stable_win64_console.exe \
   --path godot-next res://scenes/WorldScreen.tscn --quit-after 60
 # 产物：godot-next/_out/world_screen.png
 ```
+
+### 在编辑器里怎么看图层 / 图块（新手向）
+
+1. Godot 启动界面 →「导入」→ 选 `godot-next/project.godot`，双击打开。
+2. 底部「文件系统」里双击 `scenes/WorldScreen.tscn`；左侧「场景」面板显示节点树。
+3. `WorldScreen → WorldMap` 下面有 `Layers / Npcs / Names` 三个容器。
+   **`Layers` 的子节点是运行时按地图建的**，编辑器里是空的；要看到实际图层（`Layer5_tiles` 等）
+   得先运行：按 **F6**（运行当前场景）或 F5，然后在「场景」面板左上角把
+   **「本地 / Local」切到「远程 / Remote」**，再展开 `WorldScreen → WorldMap → Layers`。
+4. 不想开界面时：`WORLDOL_TREE=1` 跑一次，控制台会打印整棵节点树。
+5. 看图块本身：双击 `assets/tilesets/map_ground.tres`，底部会打开 TileSet 编辑器，
+   一个来源 = 一张 map_slice 图，格子里就是切好的 24×24 图块。
+   改图块属性（锚点/变体）在这里改，改完记得重跑生成器覆盖会丢。
 
 两套自检**不要并行跑**，会抢同一个存档文件导致偶发失败。
 `verify_character_screen.gd` 现在会**先备份、跑完还原** `user://character_screen.json`
@@ -132,6 +154,32 @@ model JSON 一帧还被解析 2~3 次（0.17ms/次）。
 实测：首帧（冷）5.21ms → 同帧热态 **1.53ms**、换帧热态 **2.21ms**。
 注意 `_atlas_of()` 返回的是缓存里的**共享 Image**：只能读；要 resize / 染色必须先 `duplicate()`
 （`_sub_frame()` 已经保证对外返回新图）。
+
+## 资产闸门（tools/verify_assets.gd，2026-11-19）
+
+- **干什么**：确认「地图 tile / 物件、角色部件、道具图标、NPC 造型、UI 图集」引用到的文件都在。
+- **为什么**：缺图在运行时是**静默跳过**的（少一块地面、空图标，不报错），只能靠人眼发现。
+  挂进 `自检.cmd` 后，缺东西当场红。
+- **口径**：
+  - `data/asset_allowlist.json` 是**已知缺口基线**（原版客户端本身就没这些文件）。
+  - 不在基线里的新缺口 → **退出码 1**，并打印 `tiles NOPE ← 地图 [100]（共 3 处）`。
+  - 额外抓「图块库过期」：切片图在、`tileAtlas.json` 里没这个名字 → 改了素材但没重跑
+    `tools/build_map_tileset.gd`。
+  - 会真的把 924 个图标各造一次纹理：PNG 在但编号查不到 / 矩形越界同样算失败。
+- **更新基线**：`-- --update-allowlist`（只在确认缺口是原版真实缺失后才用）。
+- **当前基线**：地块 5 / 物件 37 / 部件 18；道具图标 2505 件全覆盖。
+- **产物**：`_out/asset_report.json`（每个缺口影响哪些地图 / 模型 / 道具）。
+
+## 道具图标（assets/ui + itemIcons.json，2026-11-19）
+
+- 图集是 `assets/ui/item_icon*.png` / `item_mount` / `item_pet`
+  ——一张图上摆着几十个尺寸不同的小图（70×70、32×32 混排），不是等距网格。
+- 矩形来自原版资源表，由 `tools/extract_ui_frames.mjs` 抽成：
+  - `assets/ui/<图集>.json`：与原图同名的帧表（name → x/y/w/h）
+  - `data/compiled/itemIcons.json`：924 个图标，图标号 → 图集 + 矩形
+- 运行时：`ItemIcons.texture(bagIcon)` → `AtlasTexture`（内部缓存）；没有图标返回 null。
+  装备屏的候选列表（28px）与左侧槽位（20px）都已挂上。
+- 改了图标素材 / 新增图集 → 重跑 `node tools/extract_ui_frames.mjs`（默认读原版资源表）。
 
 ## 地图图层节点化（2026-11-19：TileSet / TileMapLayer）
 

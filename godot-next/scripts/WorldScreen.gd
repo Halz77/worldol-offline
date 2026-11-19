@@ -45,6 +45,10 @@ func _ready() -> void:
 	_populate_maps("")
 	_wire()
 	_load_map(_initial_map)
+	# WORLDOL_TREE=1：把 WorldMap 的节点树打印到控制台。
+	# 图层节点是运行时按地图建的，编辑器里看不到内容，这个开关是用来核对结构的。
+	if OS.has_environment("WORLDOL_TREE"):
+		world_map.print_tree_pretty()
 	camera.enabled = true
 	_maybe_capture()
 

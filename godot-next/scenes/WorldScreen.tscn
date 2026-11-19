@@ -21,6 +21,12 @@ script = ExtResource("1_ekd25")
 [node name="WorldMap" type="Node2D" parent="."]
 script = ExtResource("2_k1win")
 
+[node name="Layers" type="Node2D" parent="WorldMap"]
+
+[node name="Npcs" type="Node2D" parent="WorldMap"]
+
+[node name="Names" type="Node2D" parent="WorldMap"]
+
 [node name="Player" type="Node2D" parent="."]
 script = ExtResource("3_qglay")
 

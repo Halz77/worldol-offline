@@ -521,6 +521,30 @@ func _initialize() -> void:
 		await process_frame
 		var look := Equipment.appearance(gd, int(st2.call("model_id")), st2.get("equipped"))
 		ck("UI 穿剑后外观 model=313", int(look.model_id) == 313, str(look.model_id))
+		# 图标：候选列表每行都要有图（bagIcon → assets/ui 图集里的矩形）
+		var with_icon := 0
+		for i in range((item_list as ItemList).item_count):
+			if (item_list as ItemList).get_item_icon(i) != null:
+				with_icon += 1
+		ck("候选装备列表全部带图标",
+			with_icon == (item_list as ItemList).item_count and with_icon > 0,
+			"%d / %d" % [with_icon, (item_list as ItemList).item_count])
+		# 已穿部位在左侧槽位列表也要显示图标。
+		# ★ 必须用「装备屏真正绑定的那个 state」（inst.state）：/root/ScreenState 是 Autoload 时，
+		#   st2 只是另一个同名对象，对它 equip 不会触发界面刷新。这里踩过一次：
+		#   单独跑能过，是因为玩家存档里本来就穿着东西；批量跑（存档刚被还原）就红了。
+		var ss = inst.get("state")
+		if ss != null:
+			var saved_equip: Dictionary = (ss.get("equipped") as Dictionary).duplicate()
+			ss.set("equipped", {"weapon": 20300})
+			inst.call("_refresh")
+			var slot_icons := 0
+			for i in range((slot_list as ItemList).item_count):
+				if (slot_list as ItemList).get_item_icon(i) != null:
+					slot_icons += 1
+			ck("已穿部位在槽位列表显示图标", slot_icons >= 1, str(slot_icons))
+			ss.set("equipped", saved_equip)   # 只改内存，不落盘
+			inst.call("_refresh")
 		# 卸下后回到 300
 		st2.call("unequip", "weapon")
 		await process_frame

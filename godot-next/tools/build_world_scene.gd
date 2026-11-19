@@ -46,7 +46,12 @@ func _initialize() -> void:
 	root.name = "WorldScreen"
 	root.set_script(load("res://scripts/WorldScreen.gd"))
 
-	_node(root, "Node2D", "WorldMap", "res://scripts/WorldMap.gd")
+	var world_map := _node(root, "Node2D", "WorldMap", "res://scripts/WorldMap.gd")
+	# 这三层容器在编辑器里就能看到（内容仍是运行时按地图填），
+	# 免得新手打开 WorldMap 只有一个脚本、不知道图层在哪。
+	_node(world_map, "Node2D", "Layers")
+	_node(world_map, "Node2D", "Npcs")
+	_node(world_map, "Node2D", "Names")
 	var player := _node(root, "Node2D", "Player", "res://scripts/WorldPlayer.gd")
 	var sprite := _node(player, "AnimatedSprite2D", "Sprite")
 	sprite.centered = false
